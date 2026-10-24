@@ -1,0 +1,2 @@
+import {commitSave} from './project-store.js';
+let db;const ready=new Promise((resolve,reject)=>{const r=indexedDB.open('shattered-map-studio-v1',4);r.onsuccess=()=>{db=r.result;db.onversionchange=()=>db.close();resolve();};r.onerror=()=>reject(r.error);});let queue=Promise.resolve();self.onmessage=e=>{const {id,header,parts}=e.data;queue=queue.catch(()=>{}).then(async()=>{try{await ready;await commitSave(db,{header,parts});self.postMessage({id});}catch(error){self.postMessage({id,error:error.message});}});};
