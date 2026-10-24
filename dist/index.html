@@ -6,6 +6,7 @@
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/icon-192.png"><link rel="apple-touch-icon" href="assets/icon-192.png">
   <title>PokéBacon Studio</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="workspace.css"><link rel="stylesheet" href="authoring.css"><link rel="stylesheet" href="editor-controls.css"><link rel="stylesheet" href="story.css">
 <link rel="stylesheet" href="gba-theme.css">
+<link rel="stylesheet" href="install.css">
 </head>
 <body>
 <svg class="svg-defs" aria-hidden="true"><defs>
@@ -36,6 +37,7 @@
     <button id="workspaceButton" class="workspace-button" aria-label="Switch workspace">Map editor ▾</button>
     <button id="projectTitle" class="project-title" title="Project settings">Loading workshop…</button>
     <span id="saveState" class="save-state" role="status">Opening</span>
+    <a href="install.html" data-install-link class="compact" aria-label="Install PokéBacon Studio">Install</a>
     <button id="exportButton" class="primary compact"><svg><use href="#i-export"/></svg><span>Export</span></button>
     <button id="menuButton" class="icon-button" aria-label="Project menu"><svg><use href="#i-menu"/></svg></button>
   </header>
@@ -74,4 +76,5 @@
 <input type="file" id="romInput" accept=".gba,application/octet-stream" hidden>
 <div id="toast" role="status" aria-live="polite"></div>
 <script type="module" src="app.js"></script><script type="module" src="version-ui.js"></script>
+<script src="install.js" defer></script>
 </body></html>
