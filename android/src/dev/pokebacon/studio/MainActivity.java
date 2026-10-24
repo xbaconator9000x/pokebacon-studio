@@ -149,7 +149,7 @@ public class MainActivity extends Activity {
     private static String mime(String name) {
         name=name.toLowerCase(Locale.ROOT);
         if(name.endsWith(".html"))return "text/html";
-        if(name.endsWith(".js"))return "text/javascript";
+        if(name.endsWith(".js")||name.endsWith(".mjs"))return "text/javascript";
         if(name.endsWith(".wasm"))return "application/wasm";
         if(name.endsWith(".css"))return "text/css";
         if(name.endsWith(".json")||name.endsWith(".webmanifest"))return "application/json";
