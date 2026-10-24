@@ -1,0 +1,14 @@
+import {session,assert,fs,newMap,createCanvas,importRomMaps,GbaMaps} from './qa-harness.mjs';
+import {STOCK_FIRE_RED_SHA as hash} from '../dist/verified-frlg.js';
+import {npcTemplates} from '../dist/npc.js';import {newScene,prepareScene,authoring,addVariable} from '../dist/authoring-model.js';
+import {extractMusic} from '../dist/music-assets.js';import {addPortal} from '../dist/world-model.js';
+const bytes=fs.readFileSync(process.env.MAP_STUDIO_SOURCE_ROM),a=await session({},true),{qa}=a,reader=await qa.readROM(bytes,hash);
+const p=(await importRomMaps(null,reader,['3.1'],{sourceId:hash,encodeAtlas:async atlas=>{const cv=createCanvas(atlas.width,atlas.height),c=cv.getContext('2d'),im=c.createImageData(atlas.width,atlas.height);im.data.set(atlas.pixels);c.putImageData(im,0,0);return cv.toDataURL('image/png');}})).project;
+await qa.switchProject(p);const room=newMap('Stock scene room',24,18),town=p.maps[0],grass=town.layers.ground[18*town.width+12];room.layers.ground.fill(grass);room.movement=Array.from({length:432},()=>({mode:'walk',elevation:3}));room.rom={sourceId:hash,generated:true,templateKey:'3.1',mapType:8,originalWidth:0,originalHeight:0,originalBlocks:[]};p.maps.push(room);addPortal(p,{mapId:town.id,x:14,y:19},{mapId:room.id,x:8,y:16});
+const data=authoring(p),variable=addVariable(p,'Answer',{bits:4}),scene=newScene(p,5,8),t=npcTemplates(reader).find(t=>t.graphics===55);
+scene.npc={graphics:55,mapKey:t.mapKey,index:t.index,sourceId:hash,facing:'left'};scene.runtime.steps=[{id:'stock-menu',type:'answers',text:'Choose your route.',choices:['North','South','East','West'].map((label,value)=>({label,steps:[{type:'set',variableId:variable.id,value}]})),cancel:[{type:'abort'}]}];prepareScene(p,scene);room.markers.push(scene);
+data.music.push({id:'stock-music-copy',name:'Imported track',asset:extractMusic(bytes,4862668,300,{sourceHash:'relocation-qa',name:'Imported track'})});room.audio={trackId:'stock-music-copy'};
+console.log('Stock authoring: compiling NPC, scene flags/counter, four-answer menu and relocated music.');
+const built=await qa.compileROM({staticArtwork:true}),out=await new GbaMaps(built.bytes).discover(),report=built.reports.find(r=>r.isNew),map=out.byKey(report.key),events=out.events(map);
+assert.equal(events.npcs.length,1);assert.equal(events.npcs[0].sprite,55);assert.equal(out.u8(events.npcs[0].address+9),9);assert.ok(events.npcs[0].script>0);assert.equal(out.u16(map.address+16),347);assert.ok(built.dataReports.some(r=>/custom answer menus/.test(r)));assert.ok(built.dataReports.some(r=>/Music 347/.test(r)));assert.notEqual(out.ptr(641880),4064432);assert.notEqual(out.ptr(1954076),4862668);assert.equal(Buffer.compare(Buffer.from(reader.bytes),bytes),0);await a.close();
+console.log(JSON.stringify({pass:true,source:hash,placedNPC:true,generatedMap:true,questAndCounterCompiled:true,customAnswers:true,relocatedMusic:true,sourceUnchanged:true,nativeInteractionRetested:false}));
