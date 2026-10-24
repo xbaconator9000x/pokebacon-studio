@@ -1,8 +1,8 @@
-# Shattered Map Studio
+# PokéBacon Studio
 
 **Make your Pokémon ROM hack from start to finish on your phone or Android handheld.**
 
-I wanted to build a ROM hack without being tied to a PC or needing a dozen different programs open. Shattered Map Studio puts maps, events, quests, sprites, music and game data in one place, with touch controls made for a phone or handheld Android device.
+I wanted to build a ROM hack without being tied to a PC or needing a dozen different programs open. PokéBacon Studio puts maps, events, quests, sprites, music and game data in one place, with touch controls made for a phone or handheld Android device.
 
 Open a supported base ROM, build your world, add its characters and story, make the music, playtest it, and export a separate playable ROM—all on the same device. The APK works offline. You don't need a PC for that editing and supported ROM-export workflow. This builds on an existing game base; it isn't a new GBA engine or a guarantee that every ROM hack supports every native feature.
 

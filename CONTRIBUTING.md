@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve Shattered Map Studio.
+Thanks for helping improve PokéBacon Studio.
 
 ## Before opening a change
 
