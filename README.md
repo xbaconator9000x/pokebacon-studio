@@ -36,7 +36,7 @@ Place a whole house or tree instead of hunting down every tile. Browse buildings
 
 ## Brushes
 
-Draw connected paths, mix tree varieties, paint terrain, or build walls and fences. The brushes handle matching edges and corners; you can still edit individual tiles when you want to.
+Draw connected paths, mix tree varieties, paint terrain, or build walls and fences. The building brush paints rows of complete, solid background buildings for dense city blocks, with room left in front. Use the normal building tools for working doors and interiors. The brushes handle matching edges and corners; you can still edit individual tiles when you want to.
 
 ![Paths, walls and tree brushes](docs/previews/brush-tools.gif)
 
