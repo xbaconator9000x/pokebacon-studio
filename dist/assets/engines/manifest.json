@@ -1,0 +1,36 @@
+{
+  "format": "pokebacon-engine-pack",
+  "version": 1,
+  "builds": [
+    {
+      "id": "expanded-firered",
+      "name": "Expanded FireRed · CFRU + DPE",
+      "baseName": "FireRed USA 1.0 (BPRE)",
+      "sourceSize": 16777216,
+      "targetSize": 33554432,
+      "sourceSHA256": "3d0c79f1627022e18765766f6cb5ea067f6b5bf7dca115552189ad65a5c3a8ac",
+      "targetSHA256": "efda0bee44328f20aff62fd695c338df70c5eca565f25bb4c8072a8fc5866c23",
+      "patchSHA256": "db5ab99468ec460b9b6d163fff65122c46b411355c38f489d100293c2ef212b7",
+      "patch": "assets/engines/expanded-firered.bps",
+      "features": [
+        "Expanded Pokémon roster, moves, items and abilities",
+        "Modern battle mechanics including Mega Evolution and Terastallization",
+        "Following Pokémon and engine debug scripts",
+        "Dedicated Studio quest-save record",
+        "Stock music mixer allocation"
+      ],
+      "sources": [
+        {
+          "name": "Shiny’s CFRU Expansion",
+          "url": "https://github.com/Shiny-Miner/CFRU-expansion",
+          "commit": "ee26cd152e9daf6e7ec0a39f66cd7d2cf489bc62"
+        },
+        {
+          "name": "Dynamic Pokémon Expansion Gen 9",
+          "url": "https://github.com/Shiny-Miner/Dynamic-Pokemon-Expansion-Gen-9",
+          "commit": "d60fab11918abe5ac666fa1db50697bade35d612"
+        }
+      ]
+    }
+  ]
+}

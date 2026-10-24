@@ -59,3 +59,7 @@ test('overlapping native split banks retain shared instrument rows through extra
 test('long MIDI arrangements export in full up to the bounded 512-bar limit',()=>{
  const long=score(0);long.length=166*96;const asset=compileMusic(long);assert.equal(musicScore({...asset,arrangement:undefined}).score.length,long.length);assert.equal(readMIDI(writeMIDI(long)).score.length,long.length);long.length=513*96;assert.throws(()=>compileMusic(long),/512 bars/);
 });
+
+test('MIDI imports more than sixteen parts for selection and recovers a missing EOT',()=>{
+ const rows=Array.from({length:24},(_,i)=>[0,0x90,48+i,100,24,0x80,48+i,0,...(i===0?[]:[0,255,47,0])]);const result=readMIDI(midi(rows));assert.equal(result.score.tracks.length,24);assert.equal(result.score.tracks[0].notes[0].duration,24);assert.ok(result.warnings.some(w=>w.includes('missing end-of-track')));
+});

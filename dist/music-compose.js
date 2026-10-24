@@ -1,3 +1,4 @@
+import {packMusicParts} from './music-pack-parts.js';
 import {installCartridgeVoices,CARTRIDGE_VOICES} from './music-cartridge-voices.js';
 import {validateAutomation,automationFor} from './music-controls.js';
 export {readMIDI,writeMIDI} from './music-midi.js';
@@ -12,7 +13,7 @@ import {phraseScore} from './music-phrase-engine.js';
 const MAX_TICKS=96*512,MAX_NOTES=20000;
 const integer=(v,min,max,label)=>{if(!Number.isInteger(v)||v<min||v>max)throw Error('Invalid '+label+'.');return v;};
 export function checkScore(score,{arranging=false}={}){
- if(!score||score.ppq!==24||!Array.isArray(score.tracks)||!score.tracks.length||score.tracks.length>(arranging?16:10))throw Error('Use one to ten export parts (up to sixteen while arranging) at 24 ticks per beat.');
+ if(!score||score.ppq!==24||!Array.isArray(score.tracks)||!score.tracks.length||score.tracks.length>(arranging?256:10))throw Error('Use one to ten export parts (up to 256 while arranging) at 24 ticks per beat.');
  if(score.loopStart!==undefined)integer(score.loopStart,0,score.length-1,'loop start');
  integer(score.length,1,arranging?96*2048:MAX_TICKS,arranging?'arrangement length (up to 2048 bars)':'song length (up to 512 bars)');let count=0;const edges=[];
  if(!Array.isArray(score.tempos)||!score.tempos.length||score.tempos.length>256||score.tempos[0].tick!==0)throw Error('A tempo at the beginning is required.');
@@ -44,6 +45,7 @@ function checkHardware(score,bytes,bank){
  const active=new Map();for(const e of events.sort((a,b)=>a.tick-b.tick||a.delta-b.delta)){const count=(active.get(e.hardware)||0)+e.delta;active.set(e.hardware,count);if(count>1)throw Error('PSG channel '+e.hardware+' has overlapping notes. Each hardware channel plays one note at a time.');}
 }
 export function compileMusic(score,{bankAsset=null,loop=true,name='New track'}={}){
+ if(score?.tracks?.length>10){checkScore(score,{arranging:true});score=packMusicParts(score);}
  checkScore(score);const voices=availableVoices(bankAsset),allowed=new Set(voices.map(v=>v.program));if(score.tracks.some(t=>!allowed.has(t.program)))throw Error('Choose an available instrument for each part.');
  let base,bank;if(bankAsset){const unpacked=unpackMusic(bankAsset);base=unpacked.bytes;bank=new DataView(base.buffer).getUint32(bankAsset.header+4,true)-BASE;}else({bytes:base,bank}=chipBank());
  for(const t of score.tracks){const voice=voices.find(v=>v.program===t.program);if(voice?.keys&&t.notes.some(n=>!voice.keys.includes(n.key)))throw Error((t.name||'Part')+': this copied split or drum instrument does not include every requested key. Use notes from the source track, or choose another instrument.');}checkHardware(score,base,bank);

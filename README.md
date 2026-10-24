@@ -1,6 +1,6 @@
 # PokéBacon Studio
 
-**Make your Pokémon ROM hack from start to finish on your phone or Android handheld.**
+**Build and export Pokémon ROM hacks on your phone or Android handheld.**
 
 I wanted to build a ROM hack without being tied to a PC or needing a dozen different programs open. PokéBacon Studio puts maps, events, quests, sprites, music and game data in one place, with touch controls made for a phone or handheld Android device.
 
@@ -15,6 +15,14 @@ Open a supported base ROM, build your world, add its characters and story, make 
 The Android APK packages the editor for offline use. The browser version is available at the link above. Back up your projects before clearing app or browser data; those saves aren't a cloud account or an automatic sync between devices.
 
 **Coming soon: iOS.** Planned, with no release date yet.
+
+## Expanded FireRed
+
+Open **Engine & source project → Create expanded FireRed ROM**, choose clean FireRed USA 1.0, and save a separate ROM with Shiny’s CFRU Expansion and DPE Gen 9. The prepared pack runs offline, includes expanded Pokémon/data and sprite editing, and reserves its own space for Studio quest progress. Open the resulting ROM to edit it. Start a new game for this save layout.
+
+This is an **engine preview**. Boot, the opening, native saving and fresh-boot loading, and expanded data edit round trips are checked. Every battle mechanic and a complete campaign have not been audited. The pack uses a fixed configuration; arbitrary compile-time switches still need rebuilding. Extended evolution authoring and time-of-day encounter overrides remain source tasks.
+
+Engine versions and upstream credits are included in [the engine notices](dist/assets/engines/notices/README.txt). The [build helper](scripts/build-expanded-engine.py) and [source patches](scripts/engine-patches) reproduce the engine changes using the pinned upstream sources and your own base ROM.
 
 ## Map maker
 
