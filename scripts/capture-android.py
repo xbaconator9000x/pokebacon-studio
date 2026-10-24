@@ -8,11 +8,13 @@ def adb(*args):
     return subprocess.check_output(['adb', *args])
 def nodes():
     adb('shell', 'uiautomator', 'dump', '/sdcard/studio-window.xml')
-    return ET.fromstring(adb('exec-out', 'cat', '/sdcard/studio-window.xml')).iter('node')
+    xml = adb('exec-out', 'cat', '/sdcard/studio-window.xml')
+    (out / 'last-window.xml').write_bytes(xml)
+    return ET.fromstring(xml).iter('node')
 def tap(label):
     for _ in range(12):
         for node in nodes():
-            if label not in (node.get('text', ''), node.get('content-desc', '')):
+            if not any(value.casefold().startswith(label.casefold()) for value in (node.get('text', ''), node.get('content-desc', ''))):
                 continue
             x1, y1, x2, y2 = map(int, re.findall(r'\d+', node.get('bounds', '')))
             adb('shell', 'input', 'tap', str((x1+x2)//2), str((y1+y2)//2))
