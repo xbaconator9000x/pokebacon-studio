@@ -16,49 +16,79 @@ The Android APK packages the editor for offline use. The browser version is avai
 
 **Coming soon: iOS.** Planned, with no release date yet.
 
-## Have a look
+## Map maker
 
-### Brushes: paths, walls and trees
+Paint your maps, sort out the layers and collision, link the exits, then see how they play. Ground, details, objects and overhead tiles stay separate. Imported ROM maps are editable—not just pictures to paint over.
 
-Pick a brush instead of assembling every edge by hand. Mix tree varieties, draw connected paths, and work with walls and fences.
+![Map editor, layers and connections](docs/previews/map-workspace.gif)
 
-![Path, wall and tree brush tools](docs/previews/brush-tools.gif)
+## Map generator
 
-### Town generator
+Want a starting point? Pick a village, town or city, choose the biome, buildings and exits, and generate it. Don't like the layout? Change the seed and have another go. Interiors can be created and linked too. Everything stays editable afterwards.
 
-Choose a biome, settlement size, building sources, facilities and exits. Generate a layout with linked interiors, then edit it like any other map.
+![Town generator and generated coastal city](docs/previews/town-tools.gif)
 
-![Coastal city generator settings and generated map](docs/previews/town-tools.gif)
+## Stamps and asset library
 
-![Generated coastal city with linked entrances](docs/previews/generated-coastal-city.jpg)
+Place a whole house or tree instead of hunting down every tile. Browse buildings, furniture, interiors and decorations by pack or category, save favourites, and keep your own reusable pieces.
 
-### Doors and opening gates
+![Object stamps and building library](docs/previews/asset-library.gif)
 
-Place opening gates, choose their artwork or make a custom gate, and connect doorways to interiors.
+## Brushes
 
-![Opening gates library and controls](docs/previews/gates.jpg)
+Draw connected paths, mix tree varieties, paint terrain, or build walls and fences. The brushes handle matching edges and corners; you can still edit individual tiles when you want to.
 
-### Events, scenes and quests
+![Paths, walls and tree brushes](docs/previews/brush-tools.gif)
 
-Build dialogue and action sequences with visual tools. Start from templates, link quest stages, and track flags and counters.
+## Sprite maker
 
-![Event tools, visual scenes and linked quest templates](docs/previews/script-tools.gif)
+Draw and edit pixels, trace a reference, change palettes and work across front, back, menu and overworld frames. Normal and shiny palettes, animation frames and editable layers stay with the sprite group. Open a compatible ROM to use its existing artwork as a template.
 
-![Visual scene editor and event templates](docs/previews/visual-scenes.jpg)
+The screenshot shows a new blank group and its editing controls.
 
-### Hear a generated track
+![Sprite workbench and palette controls](docs/previews/sprite-maker.jpg)
 
-**[Play Sunny Route — video with audio](docs/examples/sunny-route.mp4?raw=true)** · **[Listen / download MP3](docs/examples/sunny-route.mp3?raw=true)** · **[Download MIDI](docs/examples/sunny-route.mid?raw=true)**
+## Music maker
 
-A complete 57-second Quick Track example, generated with the Sunny Route preset and seed 123 using the original Studio cartridge palette. It includes the intro, main theme and bridge. The video uses a still of the composer controls; the audio is rendered by the app's music engine, not recorded from a game ROM. GitHub may download the media instead of playing it inline.
+Import MIDI or compatible ROM tracks, choose the track you actually want to work with, and edit the notes and arrangement. Select an A–B motif visually, then control how closely a composition follows it, how often it appears and which sections use it. Set the intro, main theme and bridge lengths, instruments, tempo, key and scale.
 
-Map workspace, layers and connections:
+![Music notes and visual motif selection](docs/previews/music-notes.jpg)
 
-![Map workspace, layers and connections](docs/previews/map-workspace.gif)
+## Music generator
 
-Game maker, music library and Quick Track settings:
+Pick a vibe—route, forest, cave, town, ocean, gym, battle, villain and more—then make a track and tweak it. Quick Track builds sections, not just a short loop. Keep the take you like, change the seed for another, or take it into the note editor.
 
-![Music tools and Quick Track](docs/previews/music-workspace.gif)
+![Music library and Quick Track generator](docs/previews/music-workspace.gif)
+
+### Have a listen
+
+**[Open the music demo player](https://xbaconator9000x.github.io/shattered-map-studio/examples/)** — five tracks with proper audio controls. Open this in your browser, not GitHub's file viewer.
+
+- **Sunny route:** upbeat travelling theme.
+- **Forest trail:** winding woodwind-style phrases.
+- **Deep cave:** slower, darker and more spacious.
+- **Trainer battle:** faster and more driven.
+- **Town after dark:** softer and calmer.
+
+Each has an MP3 and an editable MIDI download on the player page. These are 65-second previews generated by the app's composition code with the original Studio cartridge palette. Seeds and playback notes are listed there. They aren't recordings of game tracks.
+
+## Scripting, events and quests
+
+Write dialogue, place triggers, move NPCs and arrange action sequences. Use conditions, flags and counters to remember what the player has done. Start with an event or linked quest template, then change the stages to suit your story.
+
+![Event tools, visual scenes and quest templates](docs/previews/script-tools.gif)
+
+## Doors and gates
+
+Link doors to interiors, set arrival points, and place opening gates. Choose existing gate artwork or make your own, including horizontal and vertical layouts.
+
+![Opening gates and customisation controls](docs/previews/gates.jpg)
+
+## Game data, field rules and playtesting
+
+Edit supported Pokémon data, trainers, encounters, items and text. Change each HM's requirements, use items or quest progress instead, and configure persistent cleared obstacles. Add compatible weather and scene effects, check the project for problems, and playtest before exporting.
+
+![Generated map with linked buildings and interiors](docs/previews/generated-coastal-city.jpg)
 
 ## What's in it?
 
