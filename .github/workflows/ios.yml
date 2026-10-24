@@ -5,6 +5,9 @@ on:
     branches: [ios-port]
   pull_request:
     paths: ['ios/**', 'dist/**', '.github/workflows/ios.yml']
+concurrency:
+  group: ios-preview-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
