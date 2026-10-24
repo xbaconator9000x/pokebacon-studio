@@ -15,3 +15,12 @@ scripts/__pycache__/
 .idea/
 .vscode/
 .qa/
+
+# Generated Apple build files
+ios/Web/
+ios/*.xcodeproj/
+ios/build/
+ios/*.xcresult/
+DerivedData/
+*.xcuserstate
+*.xcuserdatad/
