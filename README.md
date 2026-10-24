@@ -42,7 +42,7 @@ Engine versions and upstream credits are included in [the engine notices](dist/a
 
 Start with **Projects → Build a region**. Pick the number of outdoor maps and settlements, choose meadow or forest geography, then reroll until you like the layout. Select a location to rename it or change its terrain. Add extra connections, or remove one—the planner stops you isolating part of the region.
 
-Build the plan into editable maps with scrolling exits, whole trees and buildings, and optional linked interiors. Pick from the included building sources, with Pokémon Centres, marts and gyms available. The walking checks cover exits and entrances before anything is added to your project. Adding a region is one undoable edit.
+Build the plan into editable maps with scrolling exits, clustered woodland, winding paths and compact settlements. Optional streams and ponds include walkable masonry crossings. Switch water, route scenery and boulders on or off. Trees and buildings stay whole, and interiors can be created and linked for you. Pick from the included building sources, with Pokémon Centres, marts and gyms available. The walking checks cover exits and entrances before anything is added to your project. Adding a region is one undoable edit.
 
 ![A generated region with connected settlements and routes](docs/previews/generated-region.png)
 
