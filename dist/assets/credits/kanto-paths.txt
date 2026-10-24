@@ -1,0 +1,9 @@
+Kanto path and fence kits
+
+Nine small path atlases and two fence kits compiled from the included Pokémon source profile. Shared paths are indexed by their city/route uses rather than duplicated. No ROM file or complete native tileset atlas is included.
+
+Pokémon game graphics: Nintendo / Creatures Inc. / GAME FREAK inc.
+Loaded source graphics: retain the original game authors’ applicable credits and terms.
+These transformations do not change the original artwork’s permissions.
+
+The centred white rail is an explicitly new composition of copied native rail/post pixels. The iron gate open state composes the original outer posts around a clear passage. Neither is a claimed extracted animation frame.

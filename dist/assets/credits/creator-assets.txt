@@ -1,0 +1,37 @@
+Shattered Map Studio — asset sources
+
+v4.3.2 rain puddles: original Pokemon Emerald Fortree/Route 120 metatiles
+0x274, 0x275, 0x27c, 0x27d, decoded from General/Fortree tiles/palettes:
+https://github.com/pret/pokeemerald/tree/master/data/tilesets/secondary/fortree
+The 32x32 stamp retains native pixels with exterior grass made transparent.
+Connected terrain joins are composed from those shore pixels. These are static
+visual assets; native reflections/splash effects are not included. Original game
+artwork retains Nintendo / Creatures Inc. / GAME FREAK inc. ownership.
+
+Native-sized cutouts and structural building strips prepared for Shattered Map Studio.
+Kanto: included Pokémon source profile, FRLG.
+Johto-style interiors: native-size reference artwork from a compatible Gen III source profile. Some service buildings reuse Kanto artwork; Emerald-style furniture is shared where labelled.
+Hoenn exteriors: original Emerald Petalburg City/general tiles, palettes and metatiles from the primary decompilation https://github.com/pret/pokeemerald ; native source references and crop rectangles are recorded in catalog provenance. No whole ROM or full native atlas is bundled.
+Hoenn interiors: Emerald-compatible Centre and Battle Frontier art retained from the compatible source profile. The Mart set intentionally reuses that profile's Emerald-style Mart art.
+All game artwork retains its original creators' ownership and usage terms. Original pixels and source attribution are preserved.
+
+Additional furnishings, trees and themes: Ekat Public Tiles / Ekat Tiny Interiors. See ekat-public-tiles.txt and tiny-interiors.txt for Ekat, Heartlessdragoon and other original contributor terms. Summer Blues, Fancy Centre, Pink Lemonade, home/cabin/cellar/League-style themes retain their source attribution. League-style is an Ekat arena theme, not an official Indigo Plateau interior.
+
+Background removal clears only outdoor scenery or floor pixels around cutouts. Structural extension strips copy native pixel fragments without scaling, signs, logos or door duplication. Per-item provenance in assets/creator/catalog.json records source assets, maps and crop coordinates. The Indigo League building is frontage-only; its original full roof is not present in the supplied map crop.
+
+Furnishings are visual objects with movement defaults. A pictured PC, machine, counter or shop does not automatically provide its game functionality.
+
+Native HM preview sprites (v1.7): Cut tree, Rock Smash rock and Strength boulder,
+16 × 16, extracted from a compatible source profile at native scale.
+New ROM-bound placements decode the opened ROM's matching graphics and palette.
+Original game artwork retains its original usage terms. No complete atlas/ROM
+is included. mGBA runtime licence/source: ../../vendor/mgba/NOTICE.txt.
+
+45 additional objects and 17 portal styles: exact crops of the supplied Ekat Public Tiles sheets. Source rectangles, cleanup masks and original sheet IDs are retained in prefab provenance. Retain original Ekat credits. No generated recolours.
+
+Additional fence gate templates (v3): composed from existing Ekat Public Tiles and included Kanto rail kits at their native pixel scale. Thistle, Classic iron and Dreamyard gate pieces retain Ekat's original contributor credits in ekat-public-tiles.txt. Kanto gate pieces retain Nintendo / Creatures Inc. / GAME FREAK inc. and verified source profile attribution in kanto-paths.txt. These open states are transparent compositions retaining original support pieces; they are not extracted gate-animation frames. Genuine vertical side silhouettes remain separate for west and east enclosure sides. No new ROM or complete native tileset is included.
+
+
+v3.2 reusable interiors and furniture:
+108 named interior layouts, 34 loose furnishing crops and 6 landmark exteriors are native-size artwork from a compatible FRLG-style source profile. Original game pixels retain Nintendo / Creatures Inc. / GAME FREAK inc. ownership and their applicable source terms. Source hashes, map keys/names, crop rectangles and original metatile-plane provenance are recorded in assets/interior-templates-v32/catalog.json. Only deduplicated used plane tiles and individual crops are supplied; no full ROM, complete native tileset, scripts or NPC records are bundled. Map naming reference: https://github.com/pret/pokefirered/blob/master/data/maps/map_groups.json .
+42 additional home/shop/game-room/beach-house furniture crops and 4 sets use Ekat Public Tiles at their native scale. Source sheets, crop rectangles, alpha cleanup and hashes are recorded in assets/interiors-v32/catalog.json. Retain Ekat Public Tiles / Tiny Interiors contributor terms in the adjacent credit files.

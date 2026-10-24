@@ -1,0 +1,26 @@
+Shattered Game Maker
+
+Original scene, item, presentation, composer, MIDI and selective music adapters are included as
+readable JavaScript. No third-party music renderer or DAW code is bundled.
+
+Primary format references:
+https://github.com/pret/pokefirered/tree/master/src
+https://github.com/pret/pokefirered/tree/master/sound
+https://github.com/pret/pokefirered/blob/master/src/script_menu.c
+https://github.com/pret/pokefirered/blob/master/src/scrcmd.c
+https://github.com/pret/pokefirered/blob/master/include/constants/map_scripts.h
+
+Music scanning/format research also checked these upstream implementations:
+https://github.com/ipatix/agbplay/blob/master/src/agbplay/MP2KScanner.cpp
+https://github.com/ipatix/agbplay/blob/master/src/agbplay/MP2KChnPCM.cpp
+
+Native ROM adapters are source-hash locked. Compatible audio is imported from
+the user's own files; the editor does not supply game music or ROMs.
+
+The composer includes original synthesised PCM waveforms. No generative model
+or external music service is bundled or contacted.
+
+Native door format reference:
+https://github.com/pret/pokefirered/blob/master/src/field_door.c
+
+Motif matching and reference composition use original note-pattern code.
