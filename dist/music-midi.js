@@ -13,7 +13,7 @@ export function readMIDI(input){
  }
  const v=new DataView(b.buffer,b.byteOffset,b.byteLength);let p=0;
  const need=n=>{if(p+n>b.length)throw Error('Truncated MIDI file.');},u8=()=>{need(1);return b[p++];},u16=()=>{need(2);const n=v.getUint16(p);p+=2;return n;},u32=()=>{need(4);const n=v.getUint32(p);p+=4;return n;},tag=()=>String.fromCharCode(u8(),u8(),u8(),u8());
- if(tag()!=='MThd')throw Error('Choose a standard .mid file.');const size=u32(),headerEnd=p+size;if(size<6||headerEnd>b.length)throw Error('Invalid MIDI header.');const format=u16(),trackCount=u16(),division=u16();if(format>1||!trackCount||trackCount>64)throw Error('Use MIDI format 0 or 1, with up to 64 file tracks.');if(!division||(division&0x8000))throw Error('SMPTE timing is unsupported. Export MIDI using ticks per quarter note.');p=headerEnd;
+ if(tag()!=='MThd')throw Error('Choose a standard .mid file.');const size=u32(),headerEnd=p+size;if(size<6||headerEnd>b.length)throw Error('Invalid MIDI header.');const format=u16(),trackCount=u16(),division=u16();if(format>1||!trackCount||trackCount>256)throw Error('Use MIDI format 0 or 1, with up to 256 file tracks.');if(!division||(division&0x8000))throw Error('SMPTE timing is unsupported. Export MIDI using ticks per quarter note.');p=headerEnd;
  const events=[],warnings=new Set(),names=new Map(),markers=[];let serial=0,endTick=0;
  for(let tr=0;tr<trackCount;tr++){
   if(tag()!=='MTrk')throw Error('Missing MIDI track.');const trackLength=u32(),trackEnd=p+trackLength;if(trackEnd>b.length)throw Error('Truncated MIDI track.');let tick=0,last=0,ended=false;
@@ -28,7 +28,7 @@ export function readMIDI(input){
    else if(kind===0xc)push({channel,type:'program',value:a});
    else if(kind===0xe)push({channel,type:'bend',value:Math.max(-64,Math.min(63,Math.round((a+c*128-8192)/128)))});
    else if(kind===0xa||kind===0xd)warnings.add('MIDI aftertouch is omitted.');
-  }if(!ended)throw Error('Each MIDI track needs an end-of-track marker.');p=trackEnd;
+  }if(!ended){warnings.add('A missing end-of-track marker was recovered from the track chunk boundary.');endTick=Math.max(endTick,Math.round(tick*24/division));push({type:'end'});}p=trackEnd;
  }
  events.sort((a,b)=>a.tick-b.tick||a.serial-b.serial);
  const parts=new Map(),states=Array.from({length:16},()=>({bend:0,range:2,volume:100,expression:127,pan:64,program:0,rpnMSB:127,rpnLSB:127,pedal:false})),tempos=new Map([[0,120]]);let length=Math.max(1,endTick);
@@ -67,7 +67,7 @@ export function readMIDI(input){
   if(lanes.length>1)warnings.add('Overlapping copies of one pitch are kept in separate voice parts.');
  }
 
- if(!tracks.length)throw Error('This MIDI contains no notes.');if(tracks.length>16)throw Error('This MIDI has more than sixteen sounding parts. Split it into smaller files.');
+ if(!tracks.length)throw Error('This MIDI contains no notes.');if(tracks.length>256)throw Error('This MIDI has more than 256 sounding parts. Split it into smaller files.');
  const score={ppq:24,length,tempos:[...tempos].filter(([tick])=>tick<length).sort((a,b)=>a[0]-b[0]).map(([tick,bpm])=>({tick,bpm})),tracks};
  const loopMarker=markers.find(m=>m.text==='loopstart');if(loopMarker&&loopMarker.tick<length)score.loopStart=loopMarker.tick;
  const stats=checkScore(score,{arranging:true});if(length>512*96)warnings.add('This file exceeds 512 bars. The arranger starts with bars 1–512; choose the section to export.');if(stats.peak>8||stats.parts>10)warnings.add('Solo or mute parts to meet the ten-part / eight-note ROM playback budget.');warnings.add('Timing is quantized to 24 ticks per beat; tempos are rounded to even BPM. MIDI instruments are selected in the arranger.');return{score,warnings:[...warnings]};

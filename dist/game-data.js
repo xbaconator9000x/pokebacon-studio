@@ -1,3 +1,4 @@
+import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 import{patchNativeItems}from'./rom-items.js';
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
@@ -194,7 +195,7 @@ function discoverProfile(bytes, maps, progress = () => {
       Object.assign(profile, { BATTLE_BACKGROUNDS_ADDRESS: battleCandidates[0].address, BATTLE_BACKGROUNDS_COUNT: battleCandidates[0].count });
       profile.VERIFIED_TOOLS.battles = true;
     }
-    if (encounterTables.length === 1 && profile.VERIFIED_TOOLS.monsters) {
+    if (encounterTables.length === 1) {
       profile.MAP_ENCOUNTER_TABLE_DIRECT = encounterTables[0].address;
       profile.VERIFIED_TOOLS.encounters = true;
     }
@@ -313,7 +314,8 @@ var u16data = (list) => {
   list.forEach((n, i) => v.setUint16(i * 2, n, true));
   return b;
 };
-function readLearnset(bytes, at, moveCount) {
+function readLearnset(bytes, at, moveCount, stride=2) {
+ if(stride===3){if(at<0)return [];const entries=[];for(let i=0;i<128;i++){const n=at+i*3;if(at<0||n+3>bytes.length)throw Error("Learnset lies outside ROM.");const move=bytes[n]|bytes[n+1]<<8,level=bytes[n+2];if(level===255||move===65535)return entries;if(move>=moveCount||level>100)throw Error("Invalid expanded learnset.");entries.push({move,level});}throw Error("Learnset has no terminator.");}
   const { v } = get(bytes), entries = [];
   let prev = 0;
   for (let i = 0; i < 128; i++) {
@@ -388,6 +390,7 @@ async function discoverGameData(reader, { sourceSha256, progress = () => {
     const digest = await crypto.subtle.digest("SHA-256", b);
     sha = Array.from(new Uint8Array(digest), (n) => n.toString(16).padStart(2, "0")).join("");
   }
+  const prepared=identifyEngineProfile(b,sha)?.game;if(prepared){const p={...prepared,capabilities:{...prepared.capabilities},sourceSha256:sha};p.wild=get(b).ptr(0x82990);p.wildCount=0;if(p.wild>=0){while(p.wildCount<512){const at=p.wild+p.wildCount*20;if(at+20>b.length)break;if(b[at]===255&&b[at+1]===255)break;p.wildCount++;}p.wildRefs=refsTo(b,p.wild);if(p.wildCount<512&&p.wildRefs.length){p.capabilities.encounters=true;try{readEncounters(b,p);}catch{p.capabilities.encounters=false;}}}trustedGameProfiles.set(p,b);return p;}
   const c = await discoverProfile(b, reader, progress),{ptr}=get(b);
   const caps={species:!!c.VERIFIED_TOOLS.monsters,moves:!!c.VERIFIED_TOOLS.monsters,items:!!c.VERIFIED_TOOLS.items,trainers:!!c.VERIFIED_TOOLS.trainers,encounters:!!c.VERIFIED_TOOLS.encounters};
   if(!Object.values(caps).some(Boolean))return null;
@@ -401,12 +404,12 @@ async function discoverGameData(reader, { sourceSha256, progress = () => {
 function readSpecies(bytes, p, id) {
   integer(id, 0, p.speciesCount - 1, "Species");
   const { b, v, ptr } = get(bytes), a = p.baseStats + id * 28, effort = v.getUint16(a + 10, true), evolutions = [];
-  for (let j = 0; p.evolutions!==null && j < 5; j++) {
-    const at = p.evolutions + (id * 5 + j) * 8, method = v.getUint16(at, true);
+  for (let j = 0; p.evolutions!==null && j < (p.evolutionSlots||5); j++) {
+    const at = p.evolutions + (id * (p.evolutionSlots||5) + j) * 8, method = v.getUint16(at, true);
     if (method)
       evolutions.push({ method, param: v.getUint16(at + 2, true), species: v.getUint16(at + 4, true) });
   }
-  return { id, name: fixedName(b, p.speciesNames + id * 11, 11), stats: Array.from(b.slice(a, a + 6)), types: [b[a + 6], b[a + 7]], catchRate: b[a + 8], baseExp: b[a + 9], evYield: Array.from({ length: 6 }, (_, i) => effort >>> i * 2 & 3), items: [v.getUint16(a + 12, true), v.getUint16(a + 14, true)], genderRatio: b[a + 16], eggCycles: b[a + 17], friendship: b[a + 18], growthRate: b[a + 19], eggGroups: [b[a + 20], b[a + 21]], abilities: [b[a + 22], b[a + 23]], learnset: p.learnsets===null?[]:readLearnset(b, ptr(p.learnsets + id * 4), p.moveCount), evolutions };
+  return { id, name: fixedName(b, p.speciesNames + id * 11, 11), stats: Array.from(b.slice(a, a + 6)), types: [b[a + 6], b[a + 7]], catchRate: b[a + 8], baseExp: b[a + 9], evYield: Array.from({ length: 6 }, (_, i) => effort >>> i * 2 & 3), items: [v.getUint16(a + 12, true), v.getUint16(a + 14, true)], genderRatio: b[a + 16], eggCycles: b[a + 17], friendship: b[a + 18], growthRate: b[a + 19], eggGroups: [b[a + 20], b[a + 21]], abilities: p.speciesAbilities?[v.getUint16(p.speciesAbilities+id*6,true),v.getUint16(p.speciesAbilities+id*6+2,true)]:[b[a + 22], b[a + 23]], learnset: p.learnsets===null?[]:readLearnset(b, ptr(p.learnsets + id * 4), p.moveCount,p.learnsetStride), evolutions };
 }
 function readMove(bytes, p, id) {
   integer(id, 0, p.moveCount - 1, "Move");
@@ -420,12 +423,12 @@ function readItem(bytes, p, id) {
 }
 function readTrainer(bytes, p, id) {
   integer(id, 0, p.trainerCount - 1, "Trainer");
-  const { b, v, ptr } = get(bytes), a = p.trainers + id * 40, flags = b[a], customMoves = !!(flags & 1), heldItems = !!(flags & 2), count = b[a + 32], start = ptr(a + 36), stride = customMoves ? 16 : 8, party = [];
+  const { b, v, ptr } = get(bytes), a = p.trainers + id * 40, flags = b[a], customMoves = !!(flags & 1), heldItems = !!(flags & 2), count = b[a + 32], start = ptr(a + 36), stride = customMoves ? (heldItems&&p.expandedTrainerParty?32:16) : 8, party = [];
   for (let j = 0; j < count; j++) {
     const at = start + j * stride;
-    party.push({ ivQuality: v.getUint16(at, true), level: b[at + 2], species: v.getUint16(at + 4, true), heldItem: heldItems ? v.getUint16(at + 6, true) : 0, moves: customMoves ? Array.from({ length: 4 }, (_, i) => v.getUint16(at + (heldItems ? 8 : 6) + i * 2, true)) : [] });
+    party.push({ ivQuality: v.getUint16(at, true), level: b[at + 2], species: v.getUint16(at + 4, true), heldItem: heldItems ? v.getUint16(at + (stride===32?20:6), true) : 0, moves: customMoves ? Array.from({ length: 4 }, (_, i) => v.getUint16(at + (stride===32?22:heldItems ? 8 : 6) + i * 2, true)) : [],...(stride===32?{ability:b[at+6],nature:b[at+7],ivSpread:Array.from(b.slice(at+8,at+14)),evSpread:Array.from(b.slice(at+14,at+20)),teraType:v.getUint16(at+30,true)}:{}) });
   }
-  return { id, name: fixedName(b, a + 4, 12), trainerClass: b[a + 1], sprite: b[a + 3], genderMusic: b[a + 2], customMoves, heldItems, doubleBattle: !!b[a + 24], ai: v.getUint32(a + 28, true), items: Array.from({ length: 4 }, (_, i) => v.getUint16(a + 16 + i * 2, true)), party };
+  return { id, name: p.expandedTrainerParty&&b.subarray(a,a+40).every(n=>n===0)?'Unused trainer '+id:fixedName(b, a + 4, 12), trainerClass: b[a + 1], sprite: b[a + 3], genderMusic: b[a + 2], customMoves, heldItems, doubleBattle: !!b[a + 24], ai: v.getUint32(a + 28, true), items: Array.from({ length: 4 }, (_, i) => v.getUint16(a + 16 + i * 2, true)), party };
 }
 function readEncounters(bytes, p) {
   const { b, v, ptr } = get(bytes), rows = [];
@@ -445,7 +448,7 @@ function readEncounters(bytes, p) {
   return rows;
 }
 function readGameData(bytes, p) {
-  return { species: Array.from({ length: p.capabilities?.species===false?0:p.speciesCount }, (_, i) => readSpecies(bytes, p, i)), moves: Array.from({ length: p.capabilities?.moves===false?0:p.moveCount }, (_, i) => readMove(bytes, p, i)), items: Array.from({ length: p.capabilities?.items===false?0:p.itemCount }, (_, i) => readItem(bytes, p, i)), abilities: Array.from({ length: p.abilityCount }, (_, i) => fixedName(bytes, p.abilityNames + i * 13, 13)), trainerClasses: Array.from({ length: p.trainerClassCount }, (_, i) => fixedName(bytes, p.trainerClasses + i * 13, 13)), trainers: Array.from({ length: p.trainerCount }, (_, i) => readTrainer(bytes, p, i)), encounters: p.capabilities?.encounters===false?[]:readEncounters(bytes, p) };
+  return { species: Array.from({ length: p.capabilities?.species===false?0:p.speciesCount }, (_, i) => readSpecies(bytes, p, i)), moves: Array.from({ length: p.capabilities?.moves===false?0:p.moveCount }, (_, i) => readMove(bytes, p, i)), items: Array.from({ length: p.capabilities?.items===false?0:p.itemCount }, (_, i) => readItem(bytes, p, i)), abilities: Array.from({ length: p.abilityCount }, (_, i) => fixedName(bytes, p.abilityNames + i * (p.abilityNameLength||13), p.abilityNameLength||13)), trainerClasses: Array.from({ length: p.trainerClassCount }, (_, i) => fixedName(bytes, p.trainerClasses + i * 13, 13)), trainers: Array.from({ length: p.trainerCount }, (_, i) => readTrainer(bytes, p, i)), encounters: p.capabilities?.encounters===false?[]:readEncounters(bytes, p) };
 }
 function record(source, at, length) {
   return source.slice(at, at + length);
@@ -504,11 +507,11 @@ function applyGameDataEdits(source, p, edits, output) {
         throw Error("Six base stats are required.");
       patch.stats.forEach((n, i) => b[i] = integer(n, 1, 255, "Base stat"));
     }
-    for (const [k, off, max] of [["types", 6, 17], ["abilities", 22, p.abilityCount - 1], ["eggGroups", 20, 15]])
+    for (const [k, off, max] of [["types", 6, p.typeMax||17], ["abilities", 22, p.abilityCount - 1], ["eggGroups", 20, 15]])
       if (patch[k]) {
         if (patch[k].length !== 2)
           throw Error(k + " needs two values.");
-        patch[k].forEach((n, i) => b[off + i] = integer(n, 0, max, k));
+        if(k==='abilities'&&p.speciesAbilities){const row=source.slice(p.speciesAbilities+id*6,p.speciesAbilities+id*6+6),v=new DataView(row.buffer);patch[k].forEach((n,i)=>{v.setUint16(i*2,integer(n,0,max,k),true);b[off+i]=n<=255?n:0;});output.write(p.speciesAbilities+id*6,row);}else patch[k].forEach((n, i) => b[off + i] = integer(n, 0, max, k));
       }
     patchFields(b, patch, [["catchRate", 8, 1, 0, 255], ["baseExp", 9, 1, 0, 255], ["genderRatio", 16, 1, 0, 255], ["eggCycles", 17, 1, 1, 255], ["friendship", 18, 1, 0, 255], ["growthRate", 19, 1, 0, 5]]);
     if (patch.evYield) {
@@ -530,18 +533,19 @@ function applyGameDataEdits(source, p, edits, output) {
         throw Error("Keep the learnset within127 entries.");
       let prev = 0;
       const words = patch.learnset.map((e) => {
-        const level = integer(e.level, 1, 100, "Learn level"), move = integer(e.move, 1, p.moveCount - 1, "Learn move");
+        const level = integer(e.level, p.learnsetStride===3?0:1, 100, "Learn level"), move = integer(e.move, 1, p.moveCount - 1, "Learn move");
         if (level < prev)
           throw Error("Learnset must be ordered by level.");
         prev = level;
-        return level << 9 | move;
+        return p.learnsetStride===3?[move&255,move>>>8,level]:level << 9 | move;
       });
-      words.push(65535);
-      const a = output.allocate(u16data(words), "Level-up learnset"), d = new Uint8Array(4);
+      if(p.learnsetStride===3)words.push([0,0,255]);else words.push(65535);
+      const a = output.allocate(p.learnsetStride===3?Uint8Array.from(words.flat()):u16data(words), "Level-up learnset"), d = new Uint8Array(4);
       new DataView(d.buffer).setUint32(0, BASE + a, true);
       output.write(p.learnsets + id * 4, d);
     }
     if (patch.evolutions) {
+      if(p.evolutionSlots>5)throw Error("Expanded evolution branches require source editing in this engine pack.");
       if(p.evolutions===null)throw Error('The evolution table format is not supported in this ROM.');
       if (!Array.isArray(patch.evolutions) || patch.evolutions.length > 5)
         throw Error("At most five evolutions fit the native format.");
@@ -562,7 +566,7 @@ function applyGameDataEdits(source, p, edits, output) {
   }
   for (const [idText, patch] of Object.entries(edits.moves || {})) {
     const id = integer(Number(idText), 1, p.moveCount - 1, "Move"), at = p.moves + id * 12, b = record(source, at, 12);
-    patchFields(b, patch, [["effect", 0, 1, 0, 213], ["power", 1, 1, 0, 255], ["type", 2, 1, 0, 17], ["accuracy", 3, 1, 0, 100], ["pp", 4, 1, 1, 255], ["secondaryChance", 5, 1, 0, 100], ["target", 6, 1, 0, 255], ["priority", 7, 1, -7, 7], ["flags", 8, 1, 0, 255]]);
+    patchFields(b, patch, [["effect", 0, 1, 0, 213], ["power", 1, 1, 0, 255], ["type", 2, 1, 0, p.typeMax||17], ["accuracy", 3, 1, 0, 100], ["pp", 4, 1, 1, 255], ["secondaryChance", 5, 1, 0, 100], ["target", 6, 1, 0, 255], ["priority", 7, 1, -7, 7], ["flags", 8, 1, 0, 255]]);
     if (patch.name !== void 0) {
       const n = record(source, p.moveNames + id * 13, 13);
       writeName(n, 0, 13, patch.name);
@@ -599,18 +603,19 @@ function applyGameDataEdits(source, p, edits, output) {
         throw Error("A trainer party needs1\u20136 Pok\xE9mon.");
       if (tr.doubleBattle && tr.party.length < 2)
         throw Error("A double battle needs at least two Pok\xE9mon.");
-      const stride = tr.customMoves ? 16 : 8, d = new Uint8Array(stride * tr.party.length), dv = new DataView(d.buffer);
+      const stride = tr.customMoves ? (tr.heldItems&&p.expandedTrainerParty?32:16) : 8, d = new Uint8Array(stride * tr.party.length), dv = new DataView(d.buffer);
       tr.party.forEach((m, i) => {
         const o = i * stride;
+        if(stride===32){d[o+6]=integer(m.ability??3,0,4,'Trainer ability selection');d[o+7]=integer(m.nature??0,0,24,'Trainer nature');for(const [key,at,max,fallback]of [['ivSpread',8,31,Math.round((m.ivQuality??0)*31/255)],['evSpread',14,255,0]]){const values=m[key]??Array(6).fill(fallback);if(!Array.isArray(values)||values.length!==6)throw Error('A trainer spread needs six values.');values.forEach((n,j)=>d[o+at+j]=integer(n,0,max,key));}dv.setUint16(o+30,integer(m.teraType??0,0,255,'Trainer Tera type'),true);}
         dv.setUint16(o, integer(m.ivQuality ?? 0, 0, 255, "IV quality"), true);
         d[o + 2] = integer(m.level, 1, 100, "Trainer level");
         dv.setUint16(o + 4, integer(m.species, 1, p.speciesCount - 1, "Trainer Pok\xE9mon"), true);
         if (tr.heldItems)
-          dv.setUint16(o + 6, integer(m.heldItem || 0, 0, p.itemCount - 1, "Trainer held item"), true);
+          dv.setUint16(o + (stride===32?20:6), integer(m.heldItem || 0, 0, p.itemCount - 1, "Trainer held item"), true);
         if (tr.customMoves) {
           if (!Array.isArray(m.moves) || m.moves.length !== 4)
             throw Error("Custom moves need four slots, including0 for empty.");
-          m.moves.forEach((move, j) => dv.setUint16(o + (tr.heldItems ? 8 : 6) + j * 2, integer(move, 0, p.moveCount - 1, "Trainer move"), true));
+          m.moves.forEach((move, j) => dv.setUint16(o + (stride===32?22:tr.heldItems ? 8 : 6) + j * 2, integer(move, 0, p.moveCount - 1, "Trainer move"), true));
         }
       });
       b[0] = (tr.customMoves ? 1 : 0) | (tr.heldItems ? 2 : 0);
