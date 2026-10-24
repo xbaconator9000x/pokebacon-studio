@@ -1,6 +1,8 @@
 name: Android phone previews
 on:
   workflow_dispatch:
+  pull_request:
+    paths: ['.github/workflows/mobile-previews.yml', 'scripts/capture-android.py', 'android/**']
   push:
     branches: [ios-port]
     paths: ['.github/workflows/mobile-previews.yml', 'scripts/capture-android.py']
