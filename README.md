@@ -16,6 +16,8 @@ The Android APK packages the editor for offline use. The browser version is avai
 
 **Coming soon: iOS.** Planned, with no release date yet.
 
+**Found a bug or something that won’t work?** [Open an issue](https://github.com/xbaconator9000x/pokebacon-studio/issues) and tell me what you were doing, your app version and device/browser. Screenshots or a short screen recording would be brilliant, plus the steps to make it happen again.
+
 ## Expanded FireRed
 
 Open **Engine & source project → Create expanded FireRed ROM**, choose clean FireRed USA 1.0, and save a separate ROM with Shiny’s CFRU Expansion and DPE Gen 9. The prepared pack runs offline, includes expanded Pokémon/data and sprite editing, and reserves its own space for Studio quest progress. Open the resulting ROM to edit it. Start a new game for this save layout.
