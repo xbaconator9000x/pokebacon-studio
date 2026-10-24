@@ -1,0 +1,2 @@
+export const HMS={strength:{name:'Strength boulder',move:70,badge:4,graphics:97},rocksmash:{name:'Rock Smash rock',move:249,badge:6,graphics:96},cut:{name:'Cut tree',move:15,badge:2,graphics:95},flash:{name:'Flash',move:148,badge:1},surf:{name:'Surf',move:57,badge:5}};
+export const LEDGES={south:{name:'Jump down',dx:0,dy:1,behavior:0x3b},north:{name:'Jump up',dx:0,dy:-1,behavior:0x3a},west:{name:'Jump left',dx:-1,dy:0,behavior:0x39},east:{name:'Jump right',dx:1,dy:0,behavior:0x38}};

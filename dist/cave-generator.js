@@ -1,0 +1,17 @@
+import{MASKS,normalizeMask}from'./smart-model.js';
+// Joined cave terrain uses filled rock centres and explicit neighbour masks.
+// Legacy libraries retain their old collision-pattern fallback.
+const popcount=n=>{n=n-((n>>>1)&0x55555555);n=(n&0x33333333)+((n>>>2)&0x33333333);return(((n+(n>>>4))&0x0f0f0f0f)*0x01010101)>>>24;};
+export function caveShape(plan){const{width:w,height:h,plots,road,random}=plan,solid=Array(w*h).fill(true),safe=new Set(),carve=(x,y)=>{if(x>1&&y>1&&x<w-2&&y<h-2)solid[y*w+x]=false;},ellipse=(cx,cy,rx,ry)=>{for(let y=Math.max(2,cy-ry);y<=Math.min(h-3,cy+ry);y++)for(let x=Math.max(2,cx-rx);x<=Math.min(w-3,cx+rx);x++)if(((x-cx)/rx)**2+((y-cy)/ry)**2<1)carve(x,y);};
+ for(const p of plots){const cx=Math.round(p.x+p.t.w/2),cy=Math.round(p.y+p.t.h/2);ellipse(cx,cy,Math.ceil(p.t.w/2)+4,Math.ceil(p.t.h/2)+4);for(let y=p.y-2;y<p.y+p.t.h+3;y++)for(let x=p.x-2;x<p.x+p.t.w+2;x++){if(x<0||y<0||x>=w||y>=h)continue;carve(x,y);safe.add(y*w+x);}}
+ for(const i of road){const x=i%w,y=Math.floor(i/w);for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){carve(x+dx,y+dy);safe.add((y+dy)*w+x+dx);}}
+ // Side chambers make the cavern more than a rectangular outdoor map.
+ for(let i=0;i<Math.max(3,plots.length/2);i++){const base=plots[Math.floor(random()*plots.length)];ellipse(Math.round(base.x+base.t.w/2+(random()-.5)*12),Math.round(base.y+base.t.h/2+(random()-.5)*12),4+Math.floor(random()*4),3+Math.floor(random()*4));}
+ // Keep complete pillars away from every doorway and walking route.
+ for(let k=0;k<plots.length*8;k++){const x=4+Math.floor(random()*(w-8)),y=4+Math.floor(random()*(h-8));let clear=true;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(safe.has((y+dy)*w+x+dx)||solid[(y+dy)*w+x+dx])clear=false;if(!clear)continue;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)solid[(y+dy)*w+x+dx]=true;}
+ // Edge tunnels are reserved, including their approach and three-tile opening.
+ for(const e of plan.exits)for(let d=0;d<7;d++)for(let n=-1;n<=1;n++){const x=e.x+(e.edge==='west'?d:e.edge==='east'?-d:n),y=e.y+(e.edge==='north'?d:e.edge==='south'?-d:n);if(x>=0&&y>=0&&x<w&&y<h)solid[y*w+x]=false;}
+ return solid;
+}
+export function caveWallMask(solid,width,height,x,y){let mask=0;for(const[dx,dy,bit]of[[0,-1,1],[1,0,2],[0,1,4],[-1,0,8],[1,-1,16],[1,1,32],[-1,1,64],[-1,-1,128]]){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=width||yy>=height||solid[yy*width+xx])mask|=bit;}return normalizeMask(mask);}
+export function caveTiles(solid,width,height,grammar){if(grammar.version>=2)return Uint16Array.from(solid,(on,i)=>on?MASKS.indexOf(caveWallMask(solid,width,height,i%width,Math.floor(i/width))):0);const get=(x,y)=>x<0||y<0||x>=width||y>=height||solid[y*width+x],cache=new Map(),out=new Uint16Array(solid.length);for(let y=0;y<height;y++)for(let x=0;x<width;x++){const i=y*width+x;if(!solid[i]){const variants=grammar.floorVariants||[],total=variants.reduce((n,v)=>n+v.weight,0);let sample=((Math.imul(x+17,73856093)^Math.imul(y+31,19349663))>>>0)%Math.max(1,total);out[i]=grammar.floor;for(const v of variants){sample-=v.weight;if(sample<0){out[i]=v.tile;break;}}continue;}let mask=0,bit=0;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++,bit++)if(get(x+dx,y+dy))mask|=1<<bit;if(!cache.has(mask)){let best,score=Infinity;for(const s of grammar.samples){const d=mask^s.mask,near=popcount(d&0x738e0),cost=popcount(d)+near*4-Math.min(.8,Math.log2(s.count+1)/20);if(cost<score){score=cost;best=s.tile;}}cache.set(mask,best);}out[i]=cache.get(mask);}return out;}

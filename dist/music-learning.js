@@ -1,0 +1,10 @@
+// Local symbolic analysis, not a pretrained model. No audio or user songs leave
+// the device. Only explicitly selected parts contribute to the vocabulary.
+export function topLine(track){const m=new Map();for(const n of track?.notes||[]){const old=m.get(n.tick);if(!old||n.key>old.key)m.set(n.tick,n);}const line=[...m.values()].sort((a,b)=>a.tick-b.tick);return line.map((n,i)=>({...n,duration:Math.min(n.duration,(line[i+1]?.tick??n.tick+n.duration)-n.tick)}));}
+export function learnPhrases(score,part=0){
+ if(!score?.tracks?.[part])throw Error('Choose a source part for phrase analysis.');const line=topLine(score.tracks[part]);if(!line.length)throw Error('This reference part has no notes.');const intervals={},transitions={},rhythms=new Map(),hist=Array(12).fill(0);let previous=0;
+ for(let i=0;i<line.length;i++){const n=line[i];hist[n.key%12]+=n.duration;if(i){const delta=Math.max(-12,Math.min(12,n.key-line[i-1].key));intervals[delta]=(intervals[delta]||0)+1;const id=previous+','+delta;transitions[id]=(transitions[id]||0)+1;previous=delta;}}
+ for(let start=0;start<score.length;start+=192){const ns=line.filter(n=>n.tick>=start&&n.tick<start+192);if(ns.length<3||ns.length>28)continue;const onsets=ns.map(n=>n.tick-start),key=onsets.join(',');if(!rhythms.has(key))rhythms.set(key,{onsets,count:0});rhythms.get(key).count++;}
+ const keys=line.map(n=>n.key).sort((a,b)=>a-b);return{version:1,notes:line.length,bars:Math.ceil(score.length/96),intervals,transitions,rhythms:[...rhythms.values()].sort((a,b)=>b.count-a.count).slice(0,32),pitchClasses:hist,low:keys[Math.floor(keys.length*.1)],high:keys[Math.floor(keys.length*.9)],register:keys[Math.floor(keys.length/2)]};
+}
+export function blendPhraseModels(models){if(!models.length)return null;const m=structuredClone(models[0]);for(const n of models.slice(1)){m.notes+=n.notes;m.bars+=n.bars;for(const key of ['intervals','transitions'])for(const[k,v]of Object.entries(n[key]))m[key][k]=(m[key][k]||0)+v;m.rhythms.push(...n.rhythms);m.low=Math.min(m.low,n.low);m.high=Math.max(m.high,n.high);}m.rhythms=m.rhythms.slice(0,64);return m;}

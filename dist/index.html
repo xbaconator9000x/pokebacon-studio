@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#514b7d"><meta name="description" content="A phone-first ROM hack workshop. Build maps, draw scenes, paint sprites, make items and import music.">
+  <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/icon-192.png"><link rel="apple-touch-icon" href="assets/icon-192.png">
+  <title>Shattered Map Studio</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="workspace.css"><link rel="stylesheet" href="authoring.css"><link rel="stylesheet" href="editor-controls.css"><link rel="stylesheet" href="story.css">
+<link rel="stylesheet" href="gba-theme.css">
+</head>
+<body>
+<svg class="svg-defs" aria-hidden="true"><defs>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></symbol>
+<symbol id="i-brush" viewBox="0 0 24 24"><path d="m14 5 5 5M5 14 16 3a2.8 2.8 0 0 1 4 4L9 18M5 14c-4 0-1 5-3 7 4 0 8-1 7-4Z"/></symbol>
+<symbol id="i-rect" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1" stroke-dasharray="4 3"/><path d="m14 16 2 2 5-5"/></symbol>
+<symbol id="i-fill" viewBox="0 0 24 24"><path d="m5 5 9 9M10 3l9 9-8 8-9-9ZM3 22h13M20 15s4 5 0 5-0-5 0-5Z"/></symbol>
+<symbol id="i-erase" viewBox="0 0 24 24"><path d="m4 13 9-10 8 8-10 10H7l-5-5ZM9 8l8 8M11 21h10"/></symbol>
+<symbol id="i-pick" viewBox="0 0 24 24"><path d="m14 4 6 6M16 2l6 6M16 6 3 19l-1 3 4-1L19 8"/></symbol>
+<symbol id="i-move" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M8 6l4-4 4 4M8 18l4 4 4-4M6 8l-4 4 4 4M18 8l4 4-4 4"/></symbol>
+<symbol id="i-stamp" viewBox="0 0 24 24"><path d="M4 16h16v5H4ZM7 16v-4h10v4M9 12V5a3 3 0 0 1 6 0v7"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><path d="M12 22s8-8 8-14a8 8 0 0 0-16 0c0 6 8 14 8 14Z"/><circle cx="12" cy="8" r="2"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="m9 15 6-6M6 13l-3 3a4 4 0 0 0 5 5l5-5a4 4 0 0 0 0-5M11 13a4 4 0 0 1 0-5l5-5a4 4 0 0 1 5 5l-3 3"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="m2 7 10-5 10 5-10 5ZM2 12l10 5 10-5M2 17l10 5 10-5"/></symbol>
+<symbol id="i-maps" viewBox="0 0 24 24"><path d="m2 5 6-3 8 3 6-3v17l-6 3-8-3-6 3ZM8 2v17M16 5v17"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><circle cx="8" cy="9" r="2"/><path d="m2 18 6-5 4 3 5-7 5 9"/></symbol>
+<symbol id="i-export" viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M4 14v7h16v-7"/></symbol>
+<symbol id="i-undo" viewBox="0 0 24 24"><path d="m9 5-7 6 7 6M2 11h13a6 6 0 0 1 0 12"/></symbol>
+<symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 5 7 6-7 6M22 11H9a6 6 0 0 0 0 12"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol>
+<symbol id="i-fit" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/><rect x="7" y="7" width="10" height="10" rx="1"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 9a3 3 0 1 1 4 3c-1 1-1 2-1 3M12 18h.01"/></symbol>
+</defs></svg>
+<div id="app">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Shattered Map Studio"><span class="brand-mark"><svg><use href="#i-maps"/></svg></span><span>SHATTERED<small>MAP STUDIO <span>4.34.6</span></small></span></a>
+    <button id="workspaceButton" class="workspace-button" aria-label="Switch workspace">Map editor ▾</button>
+    <button id="projectTitle" class="project-title" title="Project settings">Loading workshop…</button>
+    <span id="saveState" class="save-state" role="status">Opening</span>
+    <button id="exportButton" class="primary compact"><svg><use href="#i-export"/></svg><span>Export</span></button>
+    <button id="menuButton" class="icon-button" aria-label="Project menu"><svg><use href="#i-menu"/></svg></button>
+  </header>
+  <div class="workbench">
+    <aside id="panel" class="panel" data-current="tiles">
+      <div class="panel-tabs" role="tablist" aria-label="Editor panels">
+        <button data-panel="toolbox" class="active" role="tab" aria-selected="true"><svg><use data-toolbox-icon href="#i-grid"/></svg><span data-toolbox-label>Tiles</span></button>
+        <button data-panel="maps" role="tab" aria-selected="false"><svg><use href="#i-maps"/></svg>Maps</button>
+        <button data-panel="layers" role="tab" aria-selected="false"><svg><use href="#i-layers"/></svg>Layers</button>
+        <button data-panel="connections" role="tab" aria-selected="false"><svg><use href="#i-link"/></svg>Connections</button>
+      </div>
+      <div class="panel-handle"><strong id="panelTitle">Tiles & objects</strong><button id="expandPanel" aria-expanded="false">Expand</button><button id="closePanel" aria-label="Close panel and return to map">×</button></div>
+      <div id="panelContent" class="panel-content"></div>
+    </aside>
+    <main class="main">
+      <div class="mapbar"><div class="view-switch" aria-label="Canvas view"><button id="mapView" class="active">Map editor</button><button id="worldView">Connections</button></div><button id="mapTitle" class="map-title" title="Map settings">…</button><button id="newMapButton" class="new-map-button" title="Add a blank map to this project" aria-label="Add a new map"><svg><use href="#i-plus"/></svg><span>New map</span></button><button id="romButton" class="rom-button" title="Open a GBA ROM and browse its maps"><svg><use href="#i-maps"/></svg><span>Open ROM</span></button><button id="referenceButton" class="reference-button" title="Trace a screenshot"><svg><use href="#i-image"/></svg><span>Reference</span></button></div>
+      <div class="toolrow"><div id="tools" class="tools" role="toolbar" aria-label="Map editing tools"></div><div class="history"><button id="undoButton" class="icon-button" title="Undo (Ctrl+Z)" aria-label="Undo"><svg><use href="#i-undo"/></svg></button><button id="redoButton" class="icon-button" title="Redo (Ctrl+Shift+Z)" aria-label="Redo"><svg><use href="#i-redo"/></svg></button></div></div>
+      <div id="toolSubtools" class="tool-subtools" role="toolbar" aria-label="Sub-tools" hidden></div>
+      <div class="contextbar"><button id="activeLayerButton" title="Choose layer">Ground</button><span id="toolHint">Preparing tiles…</span><button id="toolOptionsButton" title="Options for the selected tool">Tiles</button><button id="selectionAction" hidden>Edit object</button><button id="footprintAction" hidden>Footprint</button><span id="coordinate">—</span></div>
+      <div id="sceneFlow" class="map-flow" role="status" hidden></div><div id="linkFlow" class="map-flow" role="status" hidden></div><div id="cropFlow" class="map-flow" role="status" hidden></div>
+      <section id="viewport" class="viewport" aria-label="Map canvas. Use the tools to edit, or two fingers to move and zoom.">
+        <canvas id="canvas" aria-label="Editable map"></canvas>
+        <div id="loading" class="loading"><span class="spinner"></span>Opening your workshop</div>
+        <div class="canvas-label" id="canvasLabel"><span class="dot"></span><span>MAP WORKSPACE</span></div>
+        <div class="zoom-controls"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomLabel">100%</span><button id="zoomIn" aria-label="Zoom in">+</button><button id="fitButton" aria-label="Fit map" title="Fit map"><svg><use href="#i-fit"/></svg></button></div>
+        <div id="playDock" class="play-dock" hidden><div class="play-directions"><button data-play-step="0,-1" aria-label="Walk up">↑</button><button data-play-step="-1,0" aria-label="Walk left">←</button><button data-play-step="0,1" aria-label="Walk down">↓</button><button data-play-step="1,0" aria-label="Walk right">→</button></div><button id="playInteract">A</button><button id="playStop">Stop</button></div><button id="quickHelp" class="quick-help" aria-label="Help"><svg><use href="#i-help"/></svg></button>
+      </section>
+      <footer class="statusbar"><span id="mapStatus">16 px tiles</span><span id="gestureHint">Two fingers to move & zoom</span><button id="eventOverlay">Events</button><button id="gridButton" class="active">Grid</button><button id="markersButton" class="active">Pins</button></footer>
+    </main>
+  </div>
+  <nav class="mobile-dock" aria-label="Map editor navigation"><button data-panel="toolbox"><svg><use data-toolbox-icon href="#i-grid"/></svg><span data-toolbox-label>Tiles</span></button><button data-panel="maps"><svg><use href="#i-maps"/></svg>Maps</button><button data-panel="layers"><svg><use href="#i-layers"/></svg>Layers</button><button data-panel="connections"><svg><use href="#i-link"/></svg>Connections</button><button id="workspaceMenu"><svg><use href="#i-menu"/></svg>Workshop</button></nav>
+</div>
+<dialog id="dialog"><form id="dialogForm"><header><div><span class="eyebrow">SHATTERED MAP STUDIO</span><h2 id="dialogTitle"></h2></div><div class="dialog-header-actions"><button type="button" id="dialogBack" class="dialog-back" aria-label="Back to the previous screen" hidden>Back</button><button type="button" id="closeDialog" class="close-button" aria-label="Close">×</button></div></header><div id="dialogBody"></div><footer id="dialogFooter"><button type="button" id="cancelDialog">Cancel</button><button type="submit" id="submitDialog" class="primary">Save</button></footer></form></dialog>
+<input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+<input type="file" id="projectInput" accept=".json,.shattered.json,application/json" hidden>
+<input type="file" id="romInput" accept=".gba,application/octet-stream" hidden>
+<div id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="app.js"></script><script type="module" src="version-ui.js"></script>
+</body></html>
