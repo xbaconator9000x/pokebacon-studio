@@ -1,0 +1,67 @@
+{
+  "magenta": "1.23.1",
+  "tensorflow": "2.8.6",
+  "checkpoint": "chord_pitches_improv",
+  "files": {
+    "LICENSE-TensorFlow.txt": {
+      "bytes": 11403,
+      "sha256": "88a8bb088f261018ee8de4e120b525164a105fdbed8db601750516fdaaf82eaf"
+    },
+    "tf.min.js": {
+      "bytes": 1167497,
+      "sha256": "0082fff8188ab64a65fd02a936d3f97bdf388a11ae2ba0b9a58ae7d48fa85b14"
+    },
+    "LICENSE-Protobufjs.txt": {
+      "bytes": 1937,
+      "sha256": "49d6a1c9a623784c61c6cb70f773f3457faceb1914a13c8560a9823b7631950c"
+    },
+    "tfjs-backend-wasm-simd.wasm": {
+      "bytes": 230498,
+      "sha256": "faab932f87fc64f9ee483c6b896f120684c3a5c3382796b8944a9107dbb9fd61"
+    },
+    "tfjs-backend-wasm.wasm": {
+      "bytes": 169833,
+      "sha256": "17ad630346c9acaa7e7723886501de6859866188f183851602750ae8dce5a40e"
+    },
+    "music_rnn.js": {
+      "bytes": 155859,
+      "sha256": "ffbea64fb7f73b634e2b588de95238f3ac54a9aa7ab18fe7e3fe084320a4389f"
+    },
+    "NOTICE.txt": {
+      "bytes": 861,
+      "sha256": "88b3001f4df82dfe7f5ab863fc35a74c4f500e3bbfbc0683055d2f1690a75612"
+    },
+    "tf-backend-wasm.min.js": {
+      "bytes": 114361,
+      "sha256": "5f5f16dcd65382fd8ef5d53bcdf80116d8aaad74d39b2cb8456af8ce7fe160bc"
+    },
+    "LICENSE-Magenta.txt": {
+      "bytes": 11410,
+      "sha256": "8e4e2fda4e9654695dee6f4932e7f3265ea707bdc07505704e5497c534863995"
+    },
+    "LICENSE-Model.txt": {
+      "bytes": 11410,
+      "sha256": "a778100806f278aa9d80fb7609414d26fae3d29c5e6afcc7bd8b852213061ca6"
+    },
+    "LICENSE-Tonal.txt": {
+      "bytes": 1074,
+      "sha256": "0ff1a12a0f689d1a300dc75e1efce2f4154b3fc068ef2987adbb505ad2c52123"
+    },
+    "chord_pitches_improv/config.json": {
+      "bytes": 170,
+      "sha256": "d94dbaf436fddaea5648f79361fa8096b173444b76d1db12ee799b3be8806267"
+    },
+    "chord_pitches_improv/group1-shard1of2": {
+      "bytes": 4194304,
+      "sha256": "c360ed7ddd966979509852b79530027bc8de1805644286f556f6a8e7a4edcc44"
+    },
+    "chord_pitches_improv/group1-shard2of2": {
+      "bytes": 1407128,
+      "sha256": "0d92b23e3050a82521a8ed408ac6188d7a32d8ed61b095f80f5829a2d4872857"
+    },
+    "chord_pitches_improv/weights_manifest.json": {
+      "bytes": 817,
+      "sha256": "c235ba9f70255d672cc2ce1b3f33196f40d7cb9ad52056a907712f5d6c6086c9"
+    }
+  }
+}

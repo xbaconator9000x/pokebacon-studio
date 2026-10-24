@@ -1,0 +1,10 @@
+Magenta.js 1.23.1 / MusicRNN — Copyright The Magenta Authors. Apache-2.0.
+https://github.com/magenta/magenta-js
+TensorFlow.js 2.8.6 — Copyright Google LLC. Apache-2.0.
+https://github.com/tensorflow/tfjs
+Official Magenta chord_pitches_improv checkpoint — The Magenta Team.
+https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv/
+Upstream runtime and checkpoint files are bundled unmodified. Studio supplies seeded sampling, score conversion, arrangement and worker integration separately.
+This general pretrained model has not been trained specifically for Pokémon by this app. No Pokémon songs or ROMs are bundled with the model.
+TensorFlow.js WebAssembly backend 2.8.6 is bundled under Apache-2.0.
+The MusicRNN browser bundle also includes Tonal (MIT) and protobuf.js (BSD-3-Clause); their licences are included here.
