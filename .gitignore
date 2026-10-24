@@ -1,0 +1,17 @@
+android/build/
+android/web-assets/
+android/__pycache__/
+*.jks
+*.keystore
+*.p12
+*.idsig
+node_modules/
+scripts/__pycache__/
+*.py[cod]
+*.tar.gz
+*.apk
+*.aab
+.DS_Store
+.idea/
+.vscode/
+.qa/
