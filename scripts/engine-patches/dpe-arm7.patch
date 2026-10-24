@@ -1,0 +1,13 @@
+diff --git a/scripts/build.py b/scripts/build.py
+index d259cfc..d96deff 100644
+--- a/scripts/build.py
++++ b/scripts/build.py
+@@ -55,7 +55,7 @@ STRINGS = './strings'
+ AUDIO = './audio'
+ BUILD = './build'
+ IMAGES = './Images'
+-ASFLAGS = ['-mthumb', '-I', ASSEMBLY]
++ASFLAGS = ['-mcpu=arm7tdmi', '-mthumb', '-I', ASSEMBLY]
+ LDFLAGS = ['BPRE.ld', '-T', 'linker.ld']
+ CFLAGS = ['-mthumb', '-mno-thumb-interwork', '-mcpu=arm7tdmi', '-mtune=arm7tdmi',
+           '-mno-long-calls', '-march=armv4t', '-Wall', '-Wextra', '-Os', '-fira-loop-pressure', '-fipa-pta']
