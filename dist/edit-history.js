@@ -13,3 +13,11 @@ export function applyEdit(project,edit,forward=false){const side=forward?2:1,ind
 export function rollbackEdit(project,before){const edit=finishEdit(project,before);if(edit)applyEdit(project,edit);}
 // Count retained data conservatively, without stringifying large payloads.
 export function editBytes(edit){const seen=new WeakSet();function size(v){if(v==null)return 4;if(typeof v==='string')return v.length*2;if(typeof v!=='object')return 8;if(seen.has(v))return 0;seen.add(v);return 24+Object.entries(v).reduce((n,[k,x])=>n+k.length*2+size(x),0);}return size(edit);}
+
+// Keep the newest edit reversible even when it alone exceeds the usual budget.
+// Older edits are evicted first; the next edit can evict this large one normally.
+export function trimEditHistory(history,maxBytes=12e6,maxEntries=35){
+ let bytes=history.reduce((n,e)=>n+e.bytes,0);
+ while(history.length>maxEntries||bytes>maxBytes&&history.length>1)bytes-=history.shift().bytes;
+ return bytes;
+}

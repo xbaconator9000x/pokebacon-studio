@@ -18,7 +18,7 @@ import{assembledPieces}from'./asset-pieces.js';
 import{packInfo,packOptions,paletteCell}from'./asset-organizer.js';
 import{nativeTerrainPack}from'./rom-terrain.js';
 import{linkPinLabel}from'./map-seams.js';
-import {captureEdit,finishEdit,applyEdit,rollbackEdit,editBytes} from './edit-history.js';
+import {captureEdit,finishEdit,applyEdit,rollbackEdit,editBytes,trimEditHistory} from './edit-history.js';
 import {EXTRA_ASSETS,EXTRA_PREFABS,EXTRA_TERRAINS} from './asset-extras.js';
 import {gateAt,moveGate,removeGate} from './gate-placement.js';
 import {weatherFields,drawWeatherPreview} from './map-environment.js';
@@ -152,7 +152,7 @@ window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.return
 
 function remember(before){
  const edit=finishEdit(project,before);if(!edit)return;edit.bytes=editBytes(edit);history.push(edit);historyBytes+=edit.bytes;future=[];
- while(history.length>35||historyBytes>12e6){historyBytes-=history.shift().bytes;}
+ historyBytes=trimEditHistory(history);
  protectMapImages();markDirty(before.mapId?{mapIds:edit.maps.map(m=>m.id)}:null);updateChrome();requestDraw();if(activePanel==='notes'||activePanel==='maps')renderPanel();
 }
 function change(fn){const before=captureEdit(project);try{fn();invalidateArt();}catch(error){rollbackEdit(project,before);throw error;}remember(before);}
