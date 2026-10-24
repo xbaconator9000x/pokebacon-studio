@@ -35,3 +35,9 @@ Open the **iOS preview** workflow in Actions, select a successful run, and look 
 - **ios-smoke-results** contains the Xcode test results and attachments.
 
 GitHub requires a signed-in account to download Actions artifacts. For a physical iPhone, building and running the source through Xcode is the supported setup path at present.
+
+## Validation
+
+Version 4.37.1 passed the native iPhone simulator checks for the full-screen layout, offline editor boot, secure context, WebAssembly, cryptography, nested Back navigation, IndexedDB data across an editor reload, exact export bytes, Save cancellation and subsequent Share opening. Both the simulator package and unsigned Release device archive build successfully. The prebuilt simulator package targets Apple Silicon; Intel Macs need a source build.
+
+These checks do not replace physical iPhone/iPad testing of Files providers, audio, composition, rotation and memory pressure.
