@@ -36,6 +36,7 @@ jobs:
       - name: Build and run offline smoke test
         run: xcodebuild -project ios/PokeBaconStudio.xcodeproj -scheme PokeBaconStudio -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -derivedDataPath ios/build -resultBundlePath ios/SmokeResults.xcresult CODE_SIGNING_ALLOWED=NO test
       - name: Collect simulator screenshots
+        if: always()
         run: |
           container=$(xcrun simctl get_app_container "$SIMULATOR_ID" dev.pokebacon.studio data)
           mkdir -p ios/previews
