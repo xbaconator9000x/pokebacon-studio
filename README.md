@@ -179,7 +179,7 @@ The included **Publish editor page** workflow deploys `dist/` to GitHub Pages on
 - Objects use transparent cutouts and movement masks. The **Footprint** editor shows which cells block movement, allow walking behind, or remain walkable.
 - Ledges are one-way by default. Water, HM objects, gates, doors, and portals have explicit previews and validation.
 - Generated towns and interiors are bounded to the selected tile family. The generator checks edges, corners, building footprints, entrances, collision, and exits before accepting a layout.
-- Projects can be backed up as editable `.shattered.json` files. Keep a backup before clearing browser or app data.
+- Projects can be backed up as editable `.pokebacon.json` files. Keep a backup before clearing browser or app data.
 
 The **World map** tool arranges maps visually and can edit supported Town Map artwork and location bounds. The **ROM dialogue**, **Menu text**, **Game rules**, **Animated tiles**, and **Asset usage** tools appear when the opened source exposes the matching native table.
 
