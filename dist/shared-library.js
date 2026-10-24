@@ -5,7 +5,7 @@ const COLLECTIONS=['terrainSets','prefabs','roomStyles','wallStyles','gateStyles
 const EMPTY=()=>({id:'shared',format:'shattered-library-1',version:1,assets:[],terrainSets:[],prefabs:[],roomStyles:[],wallStyles:[],gateStyles:[],buildingTemplates:[],interiorTemplates:[],deleted:[],migrated:[],updatedAt:''});
 export function definitionAssets(key,item){return [...new Set(key==='interiorTemplates'?interiorAssets(item):key==='terrainSets'?[item.assetId,...(item.variants||[]),...(item.eraseTile?[item.eraseTile.a]:[])]:key==='prefabs'?[item.assetId,item.sourceAssetId].filter(Boolean):key==='gateStyles'?[item.closedAssetId,item.openAssetId].filter(Boolean):key==='buildingTemplates'?[item.assetId,item.extensionXAssetId,item.extensionYAssetId,item.extensionXYAssetId].filter(Boolean):key==='wallStyles'?[item.assetId]:[item.floor.a,item.wall.a])];}
 export function validateLibrary(value,catalog=[]){
- if(value?.format!=='shattered-library-1'||value.version!==1)throw new Error('Choose an exported Shattered object library (.library.json).');
+ if(value?.format!=='shattered-library-1'||value.version!==1)throw new Error('Choose an exported PokéBacon object library (.library.json).');
  value={wallStyles:[],gateStyles:[],buildingTemplates:[],interiorTemplates:[],...value};
  if(!Array.isArray(value.assets)||value.assets.length>4096||COLLECTIONS.some(k=>!Array.isArray(value[k])||value[k].length>2048))throw new Error('This library is too large or incomplete.');
  const result={...EMPTY(),...clone(value),id:'shared'},ids=new Set();
