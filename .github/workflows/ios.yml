@@ -2,11 +2,12 @@ name: iOS preview
 on:
   workflow_dispatch:
   push:
-    branches: [ios-port]
+    branches: [main, ios-port]
+    paths: ['ios/**', 'dist/**', '.github/workflows/ios.yml']
   pull_request:
     paths: ['ios/**', 'dist/**', '.github/workflows/ios.yml']
 concurrency:
-  group: ios-preview-${{ github.ref }}
+  group: ios-preview-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 permissions:
   contents: read
@@ -33,6 +34,21 @@ jobs:
           PY
       - name: Build and run offline smoke test
         run: xcodebuild -project ios/PokeBaconStudio.xcodeproj -scheme PokeBaconStudio -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -derivedDataPath ios/build -resultBundlePath ios/SmokeResults.xcresult CODE_SIGNING_ALLOWED=NO test
+      - name: Collect simulator screenshots
+        run: |
+          container=$(xcrun simctl get_app_container "$SIMULATOR_ID" dev.pokebacon.studio data)
+          mkdir -p ios/previews
+          cp "$container"/Documents/Previews/*.png ios/previews/
+          xcrun simctl launch "$SIMULATOR_ID" dev.pokebacon.studio
+          sleep 3
+          xcrun simctl io "$SIMULATOR_ID" screenshot ios/previews/ios-simulator.png
+      - name: Build unsigned device archive
+        run: |
+          xcodebuild -project ios/PokeBaconStudio.xcodeproj -scheme PokeBaconStudio -configuration Release -destination 'generic/platform=iOS' -archivePath ios/build/PokeBaconStudio.xcarchive CODE_SIGNING_ALLOWED=NO archive
+          mkdir -p ios/build/unsigned/Payload
+          cp -R ios/build/PokeBaconStudio.xcarchive/Products/Applications/PokeBaconStudio.app ios/build/unsigned/Payload/
+          cd ios/build/unsigned
+          zip -qry ../PokeBacon-iOS-unsigned.ipa Payload
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -43,3 +59,13 @@ jobs:
         with:
           name: PokeBacon-iOS-simulator-preview
           path: ios/build/Build/Products/Debug-iphonesimulator/PokeBaconStudio.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PokeBacon-iOS-unsigned-device
+          path: ios/build/PokeBacon-iOS-unsigned.ipa
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PokeBacon-iOS-screenshots
+          path: ios/previews
+          if-no-files-found: ignore
