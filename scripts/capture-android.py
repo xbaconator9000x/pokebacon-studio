@@ -7,10 +7,13 @@ out.mkdir(parents=True, exist_ok=True)
 def adb(*args):
     return subprocess.check_output(['adb', *args])
 def nodes():
-    adb('shell', 'uiautomator', 'dump', '/sdcard/studio-window.xml')
+    adb('shell', 'uiautomator', 'dump', '--compressed', '/sdcard/studio-window.xml')
     xml = adb('exec-out', 'cat', '/sdcard/studio-window.xml')
     (out / 'last-window.xml').write_bytes(xml)
-    return ET.fromstring(xml).iter('node')
+    try:
+        return list(ET.fromstring(xml).iter('node'))
+    except ET.ParseError:
+        return []  # The emulator's accessibility bridge can still be starting.
 def tap(label):
     for _ in range(12):
         for node in nodes():
@@ -27,8 +30,11 @@ def capture(name):
 
 apk = next((root / 'dist').glob('PokeBacon_Studio_v*.apk'))
 adb('install', '-r', str(apk))
-adb('shell', 'am', 'start', '-n', 'dev.pokebacon.studio/.MainActivity')
+adb('shell', 'wm', 'dismiss-keyguard')
+adb('shell', 'input', 'keyevent', '82')
+adb('shell', 'am', 'start', '-W', '-n', 'dev.pokebacon.studio/.MainActivity')
 time.sleep(8)
+capture('00-launch')
 tap('Start editing')
 time.sleep(2)
 capture('01-map-editor')
