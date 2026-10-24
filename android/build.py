@@ -24,7 +24,7 @@ version_code=metadata.attrib[android+'versionCode']
 version_name=metadata.attrib[android+'versionName']
 shutil.rmtree(BUILD,ignore_errors=True);BUILD.mkdir()
 shutil.rmtree(ASSETS,ignore_errors=True)
-shutil.copytree(ROOT/'dist',ASSETS,ignore=shutil.ignore_patterns('*.apk','*.idsig'))
+shutil.copytree(ROOT/'dist',ASSETS,ignore=shutil.ignore_patterns('*.apk','*.idsig','examples'))
 
 def run(*args):
     subprocess.run([str(x) for x in args],check=True)
@@ -43,7 +43,7 @@ else:
 run(BT/'d8','--lib',PLATFORM,'--min-api','26','--output',BUILD,*sorted((BUILD/'classes').rglob('*.class')))
 with zipfile.ZipFile(BUILD/'base.apk','a',compression=zipfile.ZIP_DEFLATED) as apk:apk.write(BUILD/'classes.dex','classes.dex')
 run(BT/'zipalign','-f','-p','4',BUILD/'base.apk',BUILD/'aligned.apk')
-out=ROOT/'dist'/f'Shattered_Map_Studio_v{version_name}.apk'
+out=ROOT/'dist'/f'PokeBacon_Studio_v{version_name}.apk'
 run(BT/'apksigner','sign','--ks',os.environ['MAP_STUDIO_KEYSTORE'],'--ks-key-alias',os.environ.get('MAP_STUDIO_KEY_ALIAS','mapstudio'),'--ks-pass','env:MAP_STUDIO_KEY_PASSWORD','--key-pass','env:MAP_STUDIO_KEY_PASSWORD','--v4-signing-enabled','false','--out',out,BUILD/'aligned.apk')
 run(BT/'apksigner','verify','--verbose',out)
 run(BT/'zipalign','-c','4',out)

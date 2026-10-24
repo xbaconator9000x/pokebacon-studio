@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="dev.shattered.mapstudio.next" android:versionCode="65" android:versionName="4.34.6">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="dev.pokebacon.studio" android:versionCode="66" android:versionName="4.35.0">
   <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35" />
   <application android:label="PokéBacon Studio" android:icon="@mipmap/ic_launcher" android:theme="@style/AppTheme" android:allowBackup="false" android:usesCleartextTraffic="false" android:supportsRtl="true" android:enableOnBackInvokedCallback="false">
     <activity android:name=".MainActivity" android:exported="true" android:configChanges="keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize" android:windowSoftInputMode="adjustResize">
       <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
     </activity>
-    <provider android:name=".ExportProvider" android:authorities="dev.shattered.mapstudio.next.files" android:exported="false" android:grantUriPermissions="true"/>
+    <provider android:name=".ExportProvider" android:authorities="dev.pokebacon.studio.files" android:exported="false" android:grantUriPermissions="true"/>
   </application>
 </manifest>

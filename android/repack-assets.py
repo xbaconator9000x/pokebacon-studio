@@ -53,7 +53,7 @@ def main():
     if not re.fullmatch('[a-f0-9]{40}',args.base_commit):raise ValueError('Use a full source commit')
     subprocess.run(['git','diff','--exit-code',args.base_commit,'--','android/src','android/res'],cwd=ROOT,check=True,stdout=subprocess.DEVNULL)
     attrs=ET.parse(ROOT/'android/AndroidManifest.xml').getroot().attrib;ns='{http://schemas.android.com/apk/res/android}'
-    version=attrs[ns+'versionName'];code=int(attrs[ns+'versionCode']);out=ROOT/'dist'/f'Shattered_Map_Studio_v{version}.apk'
+    version=attrs[ns+'versionName'];code=int(attrs[ns+'versionCode']);out=ROOT/'dist'/f'PokeBacon_Studio_v{version}.apk'
     bt=args.build_tools.resolve();env=os.environ.copy()
     signer=['java','-jar',str(bt/'lib/apksigner.jar')]
     def run(cmd,**kw):return subprocess.run([str(a) for a in cmd],check=True,**kw)
@@ -61,7 +61,7 @@ def main():
         result=run(signer+['verify','--print-certs',file],capture_output=True,text=True).stdout
         return re.findall(r'certificate SHA-256 digest: ([a-fA-F0-9]+)',result)
     native={};assets={}
-    with tempfile.TemporaryDirectory(prefix='shattered-apk-') as temp:
+    with tempfile.TemporaryDirectory(prefix='pokebacon-apk-') as temp:
         temp=Path(temp);unsigned=temp/'unsigned.apk';aligned=temp/'aligned.apk'
         with zipfile.ZipFile(args.base_apk) as base,zipfile.ZipFile(unsigned,'w',zipfile.ZIP_DEFLATED) as target:
             for item in base.infolist():
@@ -73,7 +73,7 @@ def main():
                 target.writestr(item,data)
             for file in sorted((ROOT/'dist').rglob('*')):
                 relative=file.relative_to(ROOT/'dist')
-                if not file.is_file() or any(p.startswith('.') for p in relative.parts) or file.suffix in ('.apk','.idsig'):continue
+                if relative.parts[0]=='examples' or not file.is_file() or any(p.startswith('.') for p in relative.parts) or file.suffix in ('.apk','.idsig'):continue
                 name='assets/'+relative.as_posix();data=file.read_bytes();assets[name]=hashlib.sha256(data).digest();target.writestr(name,data)
         run([bt/'zipalign','-f','-p','4',unsigned,aligned])
         run(signer+['sign','--ks',env['MAP_STUDIO_KEYSTORE'],'--ks-key-alias',env['MAP_STUDIO_KEY_ALIAS'],'--ks-pass','env:MAP_STUDIO_KEY_PASSWORD','--key-pass','env:MAP_STUDIO_KEY_PASSWORD','--v4-signing-enabled','false','--out',out,aligned],env=env,capture_output=True)
