@@ -1,0 +1,682 @@
+{
+  "families": [
+    {
+      "id": "thistle-chainlink",
+      "name": "Thistle — Steel chainlink fence",
+      "category": "Walls · Mesh fences",
+      "source": {
+        "kind": "asset",
+        "assetId": "ekat-s-public-tiles-thistle-town"
+      },
+      "unit": 16,
+      "wallHeight": 1.5,
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "anchor": "bottom",
+      "supports": {
+        "horizontal": true,
+        "vertical": false,
+        "corners": false,
+        "endpoints": true,
+        "junctions": false
+      },
+      "roles": {
+        "end_w": {
+          "sx": 64,
+          "sy": 760,
+          "sw": 16,
+          "sh": 24
+        },
+        "horizontal": {
+          "sx": 80,
+          "sy": 760,
+          "sw": 16,
+          "sh": 24
+        },
+        "end_e": {
+          "sx": 96,
+          "sy": 760,
+          "sw": 16,
+          "sh": 24
+        }
+      },
+      "panel": {
+        "sx": 64,
+        "sy": 760,
+        "sw": 48,
+        "sh": 24
+      },
+      "panelFootprint": {
+        "w": 3,
+        "h": 1
+      },
+      "notes": [
+        "Exact requested screenshot style: 496 grey frame/mesh pixels in sampled 32×24 crop match source at 100%.",
+        "This entry is the straight-run brush. The full source sheet also supplies thin west/east sides and a lower rail; these are compiled separately as the Thistle enclosure kit.",
+        "Draw at native source scale. A 24px sprite extends 8px above a one-cell 16px footprint; alpha holes preserve the map ground."
+      ]
+    },
+    {
+      "id": "thistle-chainlink-perimeter",
+      "name": "Thistle — Steel chainlink enclosure",
+      "category": "Walls · Mesh fences",
+      "source": {
+        "kind": "asset",
+        "assetId": "ekat-s-public-tiles-thistle-town"
+      },
+      "unit": 16,
+      "wallHeight": 1.5,
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "anchor": "bottom",
+      "supports": {
+        "horizontal": true,
+        "vertical": true,
+        "corners": true,
+        "endpoints": false,
+        "junctions": false,
+        "rectanglePerimeter": true
+      },
+      "roles": {
+        "nw": {
+          "sx": 64,
+          "sy": 760,
+          "sw": 16,
+          "sh": 24
+        },
+        "n": {
+          "sx": 80,
+          "sy": 760,
+          "sw": 16,
+          "sh": 24
+        },
+        "ne": {
+          "sx": 96,
+          "sy": 760,
+          "sw": 16,
+          "sh": 24
+        },
+        "w": {
+          "sx": 64,
+          "sy": 784,
+          "sw": 16,
+          "sh": 16
+        },
+        "e": {
+          "sx": 96,
+          "sy": 784,
+          "sw": 16,
+          "sh": 16
+        },
+        "sw": {
+          "sx": 64,
+          "sy": 808,
+          "sw": 16,
+          "sh": 24
+        },
+        "s": {
+          "sx": 80,
+          "sy": 808,
+          "sw": 16,
+          "sh": 24
+        },
+        "se": {
+          "sx": 96,
+          "sy": 808,
+          "sw": 16,
+          "sh": 24
+        }
+      },
+      "notes": [
+        "All eight enclosure roles use original pixels from the full Thistle sheet, including both thin vertical sides and the lower panel.",
+        "West and east side silhouettes stay separate. Upper and lower corner pieces retain their original 24px height; 16px side pieces align to the same bottom anchor.",
+        "Use Draw enclosure for fitted rectangular fences. No invented vertical mesh, T junction or cross artwork is substituted."
+      ]
+    },
+    {
+      "id": "dreamyard-red-mesh",
+      "name": "Dreamyard — Red framed diamond mesh",
+      "category": "Walls · Mesh fences",
+      "source": {
+        "kind": "asset",
+        "assetId": "ekat-s-public-tiles-revisions-of-old-sets-revised-dreamyard"
+      },
+      "unit": 16,
+      "wallHeight": 2,
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "anchor": "bottom",
+      "supports": {
+        "horizontal": true,
+        "vertical": false,
+        "corners": false,
+        "endpoints": true,
+        "junctions": false
+      },
+      "roles": {
+        "end_w": {
+          "sx": 0,
+          "sy": 592,
+          "sw": 16,
+          "sh": 32
+        },
+        "horizontal": {
+          "sx": 16,
+          "sy": 592,
+          "sw": 16,
+          "sh": 32
+        },
+        "end_e": {
+          "sx": 32,
+          "sy": 592,
+          "sw": 16,
+          "sh": 32
+        }
+      },
+      "panel": {
+        "sx": 0,
+        "sy": 592,
+        "sw": 48,
+        "sh": 32
+      },
+      "panelFootprint": {
+        "w": 3,
+        "h": 1
+      },
+      "notes": [
+        "Native alpha and native 16px grid. The complete front-facing panel has no separate turning mesh or gate-animation frames.",
+        "Nearby 16px-wide long posts are side silhouettes; they are not a complete vertical mesh family and are not offered as one."
+      ]
+    },
+    {
+      "id": "dreamyard-vine-mesh",
+      "name": "Dreamyard — Vine-covered diamond mesh",
+      "category": "Walls · Mesh fences",
+      "source": {
+        "kind": "asset",
+        "assetId": "ekat-s-public-tiles-revisions-of-old-sets-revised-dreamyard"
+      },
+      "unit": 16,
+      "wallHeight": 2,
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "anchor": "bottom",
+      "supports": {
+        "horizontal": true,
+        "vertical": false,
+        "corners": false,
+        "endpoints": true,
+        "junctions": false
+      },
+      "roles": {
+        "end_w": {
+          "sx": 80,
+          "sy": 592,
+          "sw": 16,
+          "sh": 32
+        },
+        "horizontal": {
+          "sx": 96,
+          "sy": 592,
+          "sw": 16,
+          "sh": 32
+        },
+        "end_e": {
+          "sx": 112,
+          "sy": 592,
+          "sw": 16,
+          "sh": 32
+        }
+      },
+      "panel": {
+        "sx": 80,
+        "sy": 592,
+        "sw": 48,
+        "sh": 32
+      },
+      "panelFootprint": {
+        "w": 3,
+        "h": 1
+      },
+      "notes": [
+        "Native alpha and native 16px grid. The complete front-facing panel has no separate turning mesh or gate-animation frames.",
+        "Nearby 16px-wide long posts are side silhouettes; they are not a complete vertical mesh family and are not offered as one."
+      ]
+    },
+    {
+      "id": "dreamyard-flower-mesh",
+      "name": "Dreamyard — Flower-covered diamond mesh",
+      "category": "Walls · Mesh fences",
+      "source": {
+        "kind": "asset",
+        "assetId": "ekat-s-public-tiles-revisions-of-old-sets-revised-dreamyard"
+      },
+      "unit": 16,
+      "wallHeight": 2,
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "anchor": "bottom",
+      "supports": {
+        "horizontal": true,
+        "vertical": false,
+        "corners": false,
+        "endpoints": true,
+        "junctions": false
+      },
+      "roles": {
+        "end_w": {
+          "sx": 80,
+          "sy": 624,
+          "sw": 16,
+          "sh": 32
+        },
+        "horizontal": {
+          "sx": 96,
+          "sy": 624,
+          "sw": 16,
+          "sh": 32
+        },
+        "end_e": {
+          "sx": 112,
+          "sy": 624,
+          "sw": 16,
+          "sh": 32
+        }
+      },
+      "panel": {
+        "sx": 80,
+        "sy": 624,
+        "sw": 48,
+        "sh": 32
+      },
+      "panelFootprint": {
+        "w": 3,
+        "h": 1
+      },
+      "notes": [
+        "Native alpha and native 16px grid. The complete front-facing panel has no separate turning mesh or gate-animation frames.",
+        "Nearby 16px-wide long posts are side silhouettes; they are not a complete vertical mesh family and are not offered as one."
+      ]
+    },
+    {
+      "id": "ekat-classic-iron-perimeter",
+      "name": "Classic — Dark iron perimeter railing",
+      "category": "Walls · Railings",
+      "source": {
+        "kind": "asset",
+        "assetId": "ekat-s-public-tiles-ekat-s-mega-gen-3-set"
+      },
+      "unit": 16,
+      "wallHeight": 2,
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "anchor": "bottom",
+      "supports": {
+        "horizontal": true,
+        "vertical": true,
+        "corners": true,
+        "endpoints": false,
+        "junctions": false,
+        "rectanglePerimeter": true
+      },
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 2656,
+          "sw": 16,
+          "sh": 32
+        },
+        "n": {
+          "sx": 16,
+          "sy": 2656,
+          "sw": 16,
+          "sh": 32
+        },
+        "ne": {
+          "sx": 80,
+          "sy": 2656,
+          "sw": 16,
+          "sh": 32
+        },
+        "w": {
+          "sx": 0,
+          "sy": 2688,
+          "sw": 16,
+          "sh": 16
+        },
+        "e": {
+          "sx": 80,
+          "sy": 2688,
+          "sw": 16,
+          "sh": 16
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 2720,
+          "sw": 16,
+          "sh": 32
+        },
+        "s": {
+          "sx": 16,
+          "sy": 2720,
+          "sw": 16,
+          "sh": 32
+        },
+        "se": {
+          "sx": 80,
+          "sy": 2720,
+          "sw": 16,
+          "sh": 32
+        }
+      },
+      "proofRecipe": {
+        "width": 96,
+        "height": 96,
+        "parts": [
+          {
+            "sx": 0,
+            "sy": 2656,
+            "sw": 96,
+            "sh": 32,
+            "dx": 0,
+            "dy": 0
+          },
+          {
+            "sx": 0,
+            "sy": 2688,
+            "sw": 16,
+            "sh": 32,
+            "dx": 0,
+            "dy": 32
+          },
+          {
+            "sx": 80,
+            "sy": 2688,
+            "sw": 16,
+            "sh": 32,
+            "dx": 80,
+            "dy": 32
+          },
+          {
+            "sx": 0,
+            "sy": 2720,
+            "sw": 96,
+            "sh": 32,
+            "dx": 0,
+            "dy": 64
+          }
+        ]
+      },
+      "notes": [
+        "A complete native rail perimeter exists: north/south rails, thin west/east side posts and all four outer turns.",
+        "This is a perimeter kit with distinct left and right vertical silhouettes. It is safe for rectangles and loops; a generic direction-mask brush must preserve which side faces the interior.",
+        "No native T/cross junction, isolated segment or gate open/closed sequence identified.",
+        "North/south corner sprites are 32px tall, thin side sections 16px tall. Preserve bottom alignment and native source scale; do not stretch side silhouettes into broad front-facing bars."
+      ]
+    },
+    {
+      "id": "rom-kanto-low-white-rail",
+      "name": "Kanto — Low white post-and-rail fence",
+      "category": "Walls · Railings",
+      "source": {
+        "kind": "rom",
+        "sourceMap": "3.1",
+        "pair": "2eccf4-2ecd24",
+        "romCode": "FRLG"
+      },
+      "unit": 16,
+      "wallHeight": 1,
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "anchor": "bottom",
+      "supports": {
+        "horizontal": true,
+        "vertical": true,
+        "corners": true,
+        "endpoints": false,
+        "junctions": false,
+        "rectanglePerimeter": true
+      },
+      "roles": {
+        "horizontal": 231,
+        "nw": 238,
+        "ne": 239,
+        "west": 245,
+        "east": 244,
+        "sw": 246,
+        "se": 247
+      },
+      "extraNativeVariants": {
+        "south_t_left": 236,
+        "south_t_right": 237,
+        "north_t_left": 252,
+        "north_t_right": 253
+      },
+      "backgroundMask": {
+        "removeExactRGB": [
+          [
+            82,
+            164,
+            131
+          ],
+          [
+            131,
+            189,
+            156
+          ],
+          [
+            156,
+            205,
+            180
+          ],
+          [
+            172,
+            213,
+            189
+          ]
+        ],
+        "notes": "Verified exact native grass colors in this ROM only; keep every remaining fence/shadow pixel. Validate palette before applying to other ROMs."
+      },
+      "notes": [
+        "All rectangle roles exist natively in the shared outdoor primary tileset. No need to draw replacement fence art.",
+        "Native west and east vertical lines sit on different half-cell columns. The rectangle proof uses west=0xF5 and east=0xF4 to align with 0xEE/0xEF corners.",
+        "Do not reduce these variants to a single vertical sprite: doing so displaces one side by 8 pixels.",
+        "Extra T-looking tiles have distinct half-cell offsets and must not be advertised as arbitrary junctions without connection tests.",
+        "These IDs refer to the loaded source artwork. Extract locally and validate before enabling; no ROM pixels should be bundled in release assets."
+      ]
+    },
+    {
+      "id": "dreamyard-concrete-wall",
+      "name": "Dreamyard — Stone-capped concrete wall",
+      "category": "Walls · Masonry",
+      "source": {
+        "kind": "asset",
+        "assetId": "ekat-s-public-tiles-revisions-of-old-sets-revised-dreamyard"
+      },
+      "unit": 16,
+      "wallHeight": 2,
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "anchor": "bottom",
+      "supports": {
+        "horizontal": true,
+        "vertical": false,
+        "corners": false,
+        "endpoints": true,
+        "junctions": false
+      },
+      "roles": {
+        "end_w": {
+          "sx": 0,
+          "sy": 704,
+          "sw": 16,
+          "sh": 32
+        },
+        "horizontal": {
+          "sx": 16,
+          "sy": 704,
+          "sw": 16,
+          "sh": 32
+        },
+        "end_e": {
+          "sx": 32,
+          "sy": 704,
+          "sw": 16,
+          "sh": 32
+        }
+      },
+      "panel": {
+        "sx": 0,
+        "sy": 704,
+        "sw": 48,
+        "sh": 32
+      },
+      "panelFootprint": {
+        "w": 3,
+        "h": 1
+      },
+      "notes": [
+        "Native complete front-facing concrete panel with outer stone frame. Native size is 48×32px before extension.",
+        "Only horizontal joining is verified. Nearby vertical trim belongs to wall/frame construction; it is not offered as unseen turning masonry art."
+      ]
+    },
+    {
+      "id": "dreamyard-weathered-wall",
+      "name": "Dreamyard — Weathered concrete wall",
+      "category": "Walls · Masonry",
+      "source": {
+        "kind": "asset",
+        "assetId": "ekat-s-public-tiles-revisions-of-old-sets-revised-dreamyard"
+      },
+      "unit": 16,
+      "wallHeight": 2,
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "anchor": "bottom",
+      "supports": {
+        "horizontal": true,
+        "vertical": false,
+        "corners": false,
+        "endpoints": true,
+        "junctions": false
+      },
+      "roles": {
+        "end_w": {
+          "sx": 0,
+          "sy": 784,
+          "sw": 16,
+          "sh": 32
+        },
+        "horizontal": {
+          "sx": 16,
+          "sy": 784,
+          "sw": 16,
+          "sh": 32
+        },
+        "end_e": {
+          "sx": 32,
+          "sy": 784,
+          "sw": 16,
+          "sh": 32
+        }
+      },
+      "panel": {
+        "sx": 0,
+        "sy": 784,
+        "sw": 48,
+        "sh": 32
+      },
+      "panelFootprint": {
+        "w": 3,
+        "h": 1
+      },
+      "notes": [
+        "Native complete front-facing concrete panel with outer stone frame. Native size is 48×32px before extension.",
+        "Only horizontal joining is verified. Nearby vertical trim belongs to wall/frame construction; it is not offered as unseen turning masonry art."
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "garden-barred-gate",
+      "name": "Garden — Iron barred gate",
+      "category": "Gates · Iron",
+      "source": {
+        "kind": "asset",
+        "assetId": "ekat-s-public-tiles-garden-objects"
+      },
+      "unit": 16,
+      "wallHeight": 3,
+      "footprint": {
+        "w": 3,
+        "h": 1
+      },
+      "anchor": "bottom",
+      "closed": {
+        "kind": "nativeCrop",
+        "sx": 0,
+        "sy": 400,
+        "sw": 48,
+        "sh": 48
+      },
+      "open": {
+        "kind": "nativePartsComposition",
+        "width": 48,
+        "height": 48,
+        "parts": [
+          {
+            "sx": 0,
+            "sy": 400,
+            "sw": 8,
+            "sh": 48,
+            "dx": 0,
+            "dy": 0
+          },
+          {
+            "sx": 40,
+            "sy": 400,
+            "sw": 8,
+            "sh": 48,
+            "dx": 40,
+            "dy": 0
+          }
+        ]
+      },
+      "openPassage": {
+        "x": 1,
+        "y": 0,
+        "w": 1,
+        "h": 1
+      },
+      "notes": [
+        "Closed native iron bar panel is complete at 48×48 pixels. It can serve as a three-cell gate with fixed outer posts.",
+        "No native open animation frame exists. The supplied open proof is explicitly composed by retaining only the two original outer posts; it is not an extracted open-gate frame.",
+        "The centre one map cell provides an unambiguous 16px passage when open. Keep outer post cells blocked if the interaction/collision tool uses full-cell movement.",
+        "An operational gate still needs state toggling and collision updates in Studio. Artwork alone does not define those mechanics."
+      ]
+    }
+  ],
+  "notes": [
+    "Curated from loaded source pixels. All Ekat images use native 16px source cells.",
+    "Three native perimeter styles supply distinct vertical sides and outer corners. The Thistle sheet supplies both a straight-run brush and its complete enclosure kit; the other front-facing brush entries retain their verified source components.",
+    "No native gate open/closed animation sequence was found. One composed open state retains original native gate posts, clearly marked as a composition."
+  ]
+}

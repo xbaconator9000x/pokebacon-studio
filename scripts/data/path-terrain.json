@@ -1,0 +1,1865 @@
+{
+  "terrains": [
+    {
+      "id": "path-basics-sand",
+      "name": "The Basics \u00b7 fine sand path",
+      "category": "Routes \u00b7 sand",
+      "tags": [
+        "The Basics",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 288
+        },
+        "n": {
+          "sx": 16,
+          "sy": 288
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 288
+        },
+        "w": {
+          "sx": 0,
+          "sy": 304
+        },
+        "center": {
+          "sx": 16,
+          "sy": 304
+        },
+        "e": {
+          "sx": 32,
+          "sy": 304
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 320
+        },
+        "s": {
+          "sx": 16,
+          "sy": 320
+        },
+        "se": {
+          "sx": 32,
+          "sy": 320
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "The Basics"
+      ],
+      "notes": "Verified native 16 px source tiles. Missing concaves must be assembled from the matching source edges."
+    },
+    {
+      "id": "path-basics-boardwalk",
+      "name": "The Basics \u00b7 golden timber boardwalk",
+      "category": "Boardwalks & decks",
+      "tags": [
+        "The Basics",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 336
+        },
+        "n": {
+          "sx": 16,
+          "sy": 336
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 336
+        },
+        "w": {
+          "sx": 0,
+          "sy": 352
+        },
+        "center": {
+          "sx": 16,
+          "sy": 352
+        },
+        "e": {
+          "sx": 32,
+          "sy": 352
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 368
+        },
+        "s": {
+          "sx": 16,
+          "sy": 368
+        },
+        "se": {
+          "sx": 32,
+          "sy": 368
+        }
+      },
+      "background": {
+        "sx": 48,
+        "sy": 320
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "The Basics"
+      ],
+      "notes": "Square framed timber decking with clean native centre. This is a boardwalk with a thin wood frame, not a grass-edged sand path; missing concaves need source-edge composition."
+    },
+    {
+      "id": "path-brick-city-limestone",
+      "name": "Brick City \u00b7 pale limestone path / grass",
+      "category": "Cities \u00b7 paving",
+      "tags": [
+        "Brick City",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-brick-city",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 576
+        },
+        "n": {
+          "sx": 16,
+          "sy": 576
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 576
+        },
+        "w": {
+          "sx": 0,
+          "sy": 592
+        },
+        "center": {
+          "sx": 0,
+          "sy": 624
+        },
+        "e": {
+          "sx": 32,
+          "sy": 592
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 608
+        },
+        "s": {
+          "sx": 16,
+          "sy": 608
+        },
+        "se": {
+          "sx": 32,
+          "sy": 608
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Brick City"
+      ],
+      "notes": "Verified native 16 px source tiles. Missing concaves must be assembled from the matching source edges. The framed sample has an unusable centre placeholder or inserted background; generate the centre from the clean inward edge halves.",
+      "centerFromEdges": true
+    },
+    {
+      "id": "path-brick-city-earth",
+      "name": "Brick City \u00b7 ochre earth path / grass",
+      "category": "Routes \u00b7 earth",
+      "tags": [
+        "Brick City",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-brick-city",
+      "roles": {
+        "nw": {
+          "sx": 48,
+          "sy": 576
+        },
+        "n": {
+          "sx": 64,
+          "sy": 576
+        },
+        "ne": {
+          "sx": 80,
+          "sy": 576
+        },
+        "w": {
+          "sx": 48,
+          "sy": 592
+        },
+        "center": {
+          "sx": 32,
+          "sy": 624
+        },
+        "e": {
+          "sx": 80,
+          "sy": 592
+        },
+        "sw": {
+          "sx": 48,
+          "sy": 608
+        },
+        "s": {
+          "sx": 64,
+          "sy": 608
+        },
+        "se": {
+          "sx": 80,
+          "sy": 608
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Brick City"
+      ],
+      "notes": "Verified native 16 px source tiles. Missing concaves must be assembled from the matching source edges. The framed sample has an unusable centre placeholder or inserted background; generate the centre from the clean inward edge halves.",
+      "centerFromEdges": true
+    },
+    {
+      "id": "path-brick-city-bordered-paving",
+      "name": "Brick City \u00b7 framed diamond paving",
+      "category": "Cities \u00b7 paving",
+      "tags": [
+        "Brick City",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-brick-city",
+      "roles": {
+        "nw": {
+          "sx": 80,
+          "sy": 624
+        },
+        "n": {
+          "sx": 96,
+          "sy": 624
+        },
+        "ne": {
+          "sx": 112,
+          "sy": 624
+        },
+        "w": {
+          "sx": 80,
+          "sy": 640
+        },
+        "center": {
+          "sx": 96,
+          "sy": 640
+        },
+        "e": {
+          "sx": 112,
+          "sy": 640
+        },
+        "sw": {
+          "sx": 80,
+          "sy": 656
+        },
+        "s": {
+          "sx": 96,
+          "sy": 656
+        },
+        "se": {
+          "sx": 112,
+          "sy": 656
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Brick City"
+      ],
+      "notes": "Pale diagonal paving inside a raised green-grey stone frame. Native square paving centre; concaves must keep the frame line and grass outside."
+    },
+    {
+      "id": "path-idilio-pale-road",
+      "name": "Idilio City \u00b7 pale road / golden sand",
+      "category": "Cities \u00b7 paving",
+      "tags": [
+        "Idilio - Full City Sheet",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-idilio-full-city-sheet",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 64
+        },
+        "n": {
+          "sx": 16,
+          "sy": 64
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 64
+        },
+        "w": {
+          "sx": 0,
+          "sy": 80
+        },
+        "center": {
+          "sx": 48,
+          "sy": 64
+        },
+        "e": {
+          "sx": 32,
+          "sy": 80
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 96
+        },
+        "s": {
+          "sx": 16,
+          "sy": 96
+        },
+        "se": {
+          "sx": 32,
+          "sy": 96
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Idilio - Full City Sheet"
+      ],
+      "notes": "Verified native 16 px source tiles. Missing concaves must be assembled from the matching source edges. The framed sample has an unusable centre placeholder or inserted background; generate the centre from the clean inward edge halves.",
+      "centerFromEdges": true
+    },
+    {
+      "id": "path-jonquil-grass-sand",
+      "name": "Jonquil Town \u00b7 lawn path / golden sand",
+      "category": "Routes \u00b7 lawn",
+      "tags": [
+        "Jonquil Town",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-jonquil-town",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 224
+        },
+        "n": {
+          "sx": 16,
+          "sy": 224
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 224
+        },
+        "w": {
+          "sx": 0,
+          "sy": 240
+        },
+        "center": {
+          "sx": 48,
+          "sy": 224
+        },
+        "e": {
+          "sx": 32,
+          "sy": 240
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 256
+        },
+        "s": {
+          "sx": 16,
+          "sy": 256
+        },
+        "se": {
+          "sx": 32,
+          "sy": 256
+        }
+      },
+      "background": {
+        "sx": 112,
+        "sy": 208
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Jonquil Town"
+      ],
+      "notes": "Verified native 16 px source tiles. Missing concaves must be assembled from the matching source edges. The framed sample has an unusable centre placeholder or inserted background; generate the centre from the clean inward edge halves.",
+      "centerFromEdges": true
+    },
+    {
+      "id": "path-jonquil-lawn-rock",
+      "name": "Jonquil Town \u00b7 lawn path / stone",
+      "category": "Routes \u00b7 lawn",
+      "tags": [
+        "Jonquil Town",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-jonquil-town",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 272
+        },
+        "n": {
+          "sx": 16,
+          "sy": 272
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 272
+        },
+        "w": {
+          "sx": 0,
+          "sy": 288
+        },
+        "center": {
+          "sx": 48,
+          "sy": 272
+        },
+        "e": {
+          "sx": 32,
+          "sy": 288
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 304
+        },
+        "s": {
+          "sx": 16,
+          "sy": 304
+        },
+        "se": {
+          "sx": 32,
+          "sy": 304
+        }
+      },
+      "background": {
+        "sx": 48,
+        "sy": 320
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Jonquil Town"
+      ],
+      "notes": "Green lawn with a narrow natural grey stone surround. Use the supplied stone background only; this border does not match the golden-sand Jonquil lawn. The framed sample has an unusable centre placeholder or inserted background; generate the centre from the clean inward edge halves.",
+      "centerFromEdges": true
+    },
+    {
+      "id": "path-jonquil-sand-rock",
+      "name": "Jonquil Town \u00b7 sandy path / stone",
+      "category": "Routes \u00b7 sand",
+      "tags": [
+        "Jonquil Town",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-jonquil-town",
+      "roles": {
+        "nw": {
+          "sx": 80,
+          "sy": 336
+        },
+        "n": {
+          "sx": 96,
+          "sy": 336
+        },
+        "ne": {
+          "sx": 112,
+          "sy": 336
+        },
+        "w": {
+          "sx": 80,
+          "sy": 352
+        },
+        "center": {
+          "sx": 48,
+          "sy": 368
+        },
+        "e": {
+          "sx": 112,
+          "sy": 352
+        },
+        "sw": {
+          "sx": 80,
+          "sy": 368
+        },
+        "s": {
+          "sx": 96,
+          "sy": 368
+        },
+        "se": {
+          "sx": 112,
+          "sy": 368
+        }
+      },
+      "background": {
+        "sx": 48,
+        "sy": 320
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Jonquil Town"
+      ],
+      "notes": "Verified native 16 px source tiles. Missing concaves must be assembled from the matching source edges. The framed sample has an unusable centre placeholder or inserted background; generate the centre from the clean inward edge halves.",
+      "centerFromEdges": true,
+      "transparentOutside": true
+    },
+    {
+      "id": "path-thistle-sand",
+      "name": "Thistle Town \u00b7 rounded cream sand path",
+      "category": "Routes \u00b7 sand",
+      "tags": [
+        "Thistle Town",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-thistle-town",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 16
+        },
+        "n": {
+          "sx": 16,
+          "sy": 16
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 16
+        },
+        "w": {
+          "sx": 0,
+          "sy": 32
+        },
+        "center": {
+          "sx": 16,
+          "sy": 32
+        },
+        "e": {
+          "sx": 32,
+          "sy": 32
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 48
+        },
+        "s": {
+          "sx": 16,
+          "sy": 48
+        },
+        "se": {
+          "sx": 32,
+          "sy": 48
+        },
+        "innw": {
+          "sx": 48,
+          "sy": 48
+        },
+        "inne": {
+          "sx": 64,
+          "sy": 48
+        },
+        "insw": {
+          "sx": 48,
+          "sy": 64
+        },
+        "inse": {
+          "sx": 64,
+          "sy": 64
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Thistle Town"
+      ],
+      "notes": "Complete native rounded sand-on-grass family; all four concave corner donors are present in the 2\u00d72 patch beside the sample."
+    },
+    {
+      "id": "path-thistle-earth",
+      "name": "Thistle Town \u00b7 reddish earth path",
+      "category": "Routes \u00b7 earth",
+      "tags": [
+        "Thistle Town",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-thistle-town",
+      "roles": {
+        "nw": {
+          "sx": 80,
+          "sy": 432
+        },
+        "n": {
+          "sx": 96,
+          "sy": 432
+        },
+        "ne": {
+          "sx": 112,
+          "sy": 432
+        },
+        "w": {
+          "sx": 80,
+          "sy": 448
+        },
+        "center": {
+          "sx": 96,
+          "sy": 448
+        },
+        "e": {
+          "sx": 112,
+          "sy": 448
+        },
+        "sw": {
+          "sx": 80,
+          "sy": 464
+        },
+        "s": {
+          "sx": 96,
+          "sy": 464
+        },
+        "se": {
+          "sx": 112,
+          "sy": 464
+        },
+        "innw": {
+          "sx": 80,
+          "sy": 496
+        },
+        "inne": {
+          "sx": 96,
+          "sy": 496
+        },
+        "insw": {
+          "sx": 80,
+          "sy": 512
+        },
+        "inse": {
+          "sx": 96,
+          "sy": 512
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Thistle Town"
+      ],
+      "notes": "Complete native red-earth-on-grass family; the separate 2\u00d72 patch below contains the original concaves."
+    },
+    {
+      "id": "path-moon-village-gravel",
+      "name": "Mt. Moon Village \u00b7 muted gravel path",
+      "category": "Routes \u00b7 gravel",
+      "tags": [
+        "Mt. Moon Village",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-mt-moon-village",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 96
+        },
+        "n": {
+          "sx": 16,
+          "sy": 96
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 96
+        },
+        "w": {
+          "sx": 0,
+          "sy": 112
+        },
+        "center": {
+          "sx": 16,
+          "sy": 112
+        },
+        "e": {
+          "sx": 32,
+          "sy": 112
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 128
+        },
+        "s": {
+          "sx": 16,
+          "sy": 128
+        },
+        "se": {
+          "sx": 32,
+          "sy": 128
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Mt. Moon Village"
+      ],
+      "notes": "Verified native 16 px source tiles. Missing concaves must be assembled from the matching source edges."
+    },
+    {
+      "id": "path-daisy-sand",
+      "name": "Daisy Route \u00b7 sunlit sand path",
+      "category": "Routes \u00b7 sand",
+      "tags": [
+        "Daisy Route",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-daisy-route",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 192
+        },
+        "n": {
+          "sx": 16,
+          "sy": 192
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 192
+        },
+        "w": {
+          "sx": 0,
+          "sy": 208
+        },
+        "center": {
+          "sx": 16,
+          "sy": 208
+        },
+        "e": {
+          "sx": 32,
+          "sy": 208
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 224
+        },
+        "s": {
+          "sx": 16,
+          "sy": 224
+        },
+        "se": {
+          "sx": 32,
+          "sy": 224
+        },
+        "innw": {
+          "sx": 48,
+          "sy": 176
+        },
+        "inne": {
+          "sx": 64,
+          "sy": 176
+        },
+        "insw": {
+          "sx": 48,
+          "sy": 192
+        },
+        "inse": {
+          "sx": 64,
+          "sy": 192
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Daisy Route"
+      ],
+      "notes": "Complete native sand-on-grass family with fluffy irregular edges and four source concaves in the neighbouring 2\u00d72 patch."
+    },
+    {
+      "id": "path-daisy-lawn",
+      "name": "Daisy Route \u00b7 pale lawn trail",
+      "category": "Routes \u00b7 lawn",
+      "tags": [
+        "Daisy Route",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-daisy-route",
+      "roles": {
+        "nw": {
+          "sx": 80,
+          "sy": 192
+        },
+        "n": {
+          "sx": 96,
+          "sy": 192
+        },
+        "ne": {
+          "sx": 112,
+          "sy": 192
+        },
+        "w": {
+          "sx": 80,
+          "sy": 208
+        },
+        "center": {
+          "sx": 96,
+          "sy": 208
+        },
+        "e": {
+          "sx": 112,
+          "sy": 208
+        },
+        "sw": {
+          "sx": 80,
+          "sy": 224
+        },
+        "s": {
+          "sx": 96,
+          "sy": 224
+        },
+        "se": {
+          "sx": 112,
+          "sy": 224
+        },
+        "innw": {
+          "sx": 48,
+          "sy": 208
+        },
+        "inne": {
+          "sx": 64,
+          "sy": 208
+        },
+        "insw": {
+          "sx": 48,
+          "sy": 224
+        },
+        "inse": {
+          "sx": 64,
+          "sy": 224
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Daisy Route"
+      ],
+      "notes": "Complete native pale-lawn-on-grass family with separate four concaves. Keeps the softer green trail distinct from the sandy Daisy path."
+    },
+    {
+      "id": "path-rejuv-brick-paving",
+      "name": "Rejuv Route 2 \u00b7 brick-framed herringbone",
+      "category": "Cities \u00b7 paving",
+      "tags": [
+        "Rejuv Route 2",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-rejuv-route-2",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 608
+        },
+        "n": {
+          "sx": 16,
+          "sy": 608
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 608
+        },
+        "w": {
+          "sx": 0,
+          "sy": 624
+        },
+        "center": {
+          "sx": 16,
+          "sy": 624
+        },
+        "e": {
+          "sx": 32,
+          "sy": 624
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 640
+        },
+        "s": {
+          "sx": 16,
+          "sy": 640
+        },
+        "se": {
+          "sx": 32,
+          "sy": 640
+        },
+        "innw": {
+          "sx": 48,
+          "sy": 608
+        },
+        "inne": {
+          "sx": 64,
+          "sy": 608
+        },
+        "insw": {
+          "sx": 48,
+          "sy": 624
+        },
+        "inse": {
+          "sx": 64,
+          "sy": 624
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Rejuv Route 2"
+      ],
+      "notes": "Complete native tan herringbone paving with reddish brick edging and a grass fringe. Original corner donors at the right retain the brick joint detail. Interior texture has diagonal variation; preserve source phase where possible."
+    },
+    {
+      "id": "path-rejuv-petal-paving",
+      "name": "Rejuv Route 2 \u00b7 petal herringbone paving",
+      "category": "Cities \u00b7 decorative paving",
+      "tags": [
+        "Rejuv Route 2",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-rejuv-route-2",
+      "roles": {
+        "nw": {
+          "sx": 48,
+          "sy": 560
+        },
+        "n": {
+          "sx": 64,
+          "sy": 560
+        },
+        "ne": {
+          "sx": 80,
+          "sy": 560
+        },
+        "w": {
+          "sx": 48,
+          "sy": 576
+        },
+        "center": {
+          "sx": 64,
+          "sy": 576
+        },
+        "e": {
+          "sx": 80,
+          "sy": 576
+        },
+        "sw": {
+          "sx": 48,
+          "sy": 592
+        },
+        "s": {
+          "sx": 64,
+          "sy": 592
+        },
+        "se": {
+          "sx": 80,
+          "sy": 592
+        },
+        "innw": {
+          "sx": 48,
+          "sy": 528
+        },
+        "inne": {
+          "sx": 64,
+          "sy": 528
+        },
+        "insw": {
+          "sx": 48,
+          "sy": 544
+        },
+        "inse": {
+          "sx": 64,
+          "sy": 544
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Rejuv Route 2"
+      ],
+      "notes": "Complete native purple-petal herringbone paving. Uses the petal-marked centre and its own concave patch above; never replace with the plain herringbone centre."
+    },
+    {
+      "id": "path-route-224-sand",
+      "name": "Route 224 \u00b7 coastal sandy path",
+      "category": "Routes \u00b7 sand",
+      "tags": [
+        "Route 224",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-route-224",
+      "roles": {
+        "nw": {
+          "sx": 80,
+          "sy": 48
+        },
+        "n": {
+          "sx": 96,
+          "sy": 48
+        },
+        "ne": {
+          "sx": 112,
+          "sy": 48
+        },
+        "w": {
+          "sx": 80,
+          "sy": 64
+        },
+        "center": {
+          "sx": 96,
+          "sy": 64
+        },
+        "e": {
+          "sx": 112,
+          "sy": 64
+        },
+        "sw": {
+          "sx": 80,
+          "sy": 80
+        },
+        "s": {
+          "sx": 96,
+          "sy": 80
+        },
+        "se": {
+          "sx": 112,
+          "sy": 80
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Route 224"
+      ],
+      "notes": "Native square-coastal sand-on-grass path; granular centre and less rounded corners than Daisy or Thistle. Compose missing concaves from its own grass edge, not the unrelated water sample below."
+    },
+    {
+      "id": "path-route-224-stony",
+      "name": "Route 224 \u00b7 rocky coastal trail",
+      "category": "Routes \u00b7 stone",
+      "tags": [
+        "Route 224",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-route-224",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 48
+        },
+        "n": {
+          "sx": 16,
+          "sy": 48
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 48
+        },
+        "w": {
+          "sx": 0,
+          "sy": 64
+        },
+        "center": {
+          "sx": 48,
+          "sy": 48
+        },
+        "e": {
+          "sx": 32,
+          "sy": 64
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 80
+        },
+        "s": {
+          "sx": 16,
+          "sy": 80
+        },
+        "se": {
+          "sx": 32,
+          "sy": 80
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Route 224"
+      ],
+      "notes": "Flat light-rock patch with a mint grass fringe, distinct from the raised cliff faces elsewhere in the sheet. Never use the red-X middle; clean native rock centre comes from the inward edge halves. The framed sample has an unusable centre placeholder or inserted background; generate the centre from the clean inward edge halves.",
+      "centerFromEdges": true
+    },
+    {
+      "id": "path-nuphar-stony",
+      "name": "Nuphar City \u00b7 rocky ground trail",
+      "category": "Routes \u00b7 stone",
+      "tags": [
+        "Nuphar City",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-nuphar-city",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 368
+        },
+        "n": {
+          "sx": 16,
+          "sy": 368
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 368
+        },
+        "w": {
+          "sx": 0,
+          "sy": 384
+        },
+        "center": {
+          "sx": 0,
+          "sy": 336
+        },
+        "e": {
+          "sx": 32,
+          "sy": 384
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 400
+        },
+        "s": {
+          "sx": 16,
+          "sy": 400
+        },
+        "se": {
+          "sx": 32,
+          "sy": 400
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Nuphar City"
+      ],
+      "notes": "Flat light-rock trail with the Nuphar city grass surround. Native inward edge halves avoid the framed sample\u2019s red-X centre and the small grass notch in the separate 2\u00d72 donor patch. The framed sample has an unusable centre placeholder or inserted background; generate the centre from the clean inward edge halves.",
+      "centerFromEdges": true
+    },
+    {
+      "id": "path-snow-field",
+      "name": "Gen 3 Snow \u00b7 crisp snowfield path",
+      "category": "Snow \u00b7 paths",
+      "tags": [
+        "Gen 3 Snow",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-gen-3-snow",
+      "roles": {
+        "nw": {
+          "sx": 80,
+          "sy": 32
+        },
+        "n": {
+          "sx": 96,
+          "sy": 32
+        },
+        "ne": {
+          "sx": 112,
+          "sy": 32
+        },
+        "w": {
+          "sx": 80,
+          "sy": 48
+        },
+        "center": {
+          "sx": 96,
+          "sy": 48
+        },
+        "e": {
+          "sx": 112,
+          "sy": 48
+        },
+        "sw": {
+          "sx": 80,
+          "sy": 64
+        },
+        "s": {
+          "sx": 96,
+          "sy": 64
+        },
+        "se": {
+          "sx": 112,
+          "sy": 64
+        }
+      },
+      "background": {
+        "sx": 96,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Gen 3 Snow"
+      ],
+      "notes": "Native white snow field with a subtle pale blue snowy boundary. It is intentionally low contrast; use on this sheet\u2019s white flake ground rather than green grass."
+    },
+    {
+      "id": "path-snow-ice",
+      "name": "Gen 3 Snow \u00b7 blue ice trail",
+      "category": "Snow \u00b7 paths",
+      "tags": [
+        "Gen 3 Snow",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-gen-3-snow",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 288
+        },
+        "n": {
+          "sx": 16,
+          "sy": 288
+        },
+        "ne": {
+          "sx": 32,
+          "sy": 288
+        },
+        "w": {
+          "sx": 0,
+          "sy": 304
+        },
+        "center": {
+          "sx": 16,
+          "sy": 304
+        },
+        "e": {
+          "sx": 32,
+          "sy": 304
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 320
+        },
+        "s": {
+          "sx": 16,
+          "sy": 320
+        },
+        "se": {
+          "sx": 32,
+          "sy": 320
+        }
+      },
+      "background": {
+        "sx": 96,
+        "sy": 0
+      },
+      "missingRoles": [
+        "innw",
+        "inne",
+        "insw",
+        "inse"
+      ],
+      "locations": [
+        "Gen 3 Snow"
+      ],
+      "notes": "Pale diagonal blue ice on the sheet\u2019s white snow; source corners and edge frost differ from the snowfield path. Preserve the 32 px diagonal centre phase when available."
+    },
+    {
+      "id": "path-mega-golden-sand",
+      "name": "Mega Gen 3 \u00b7 golden diagonal sand / grass",
+      "category": "Routes \u00b7 sand",
+      "tags": [
+        "Ekat's Mega Gen 3 Set",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-ekat-s-mega-gen-3-set",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 736
+        },
+        "n": {
+          "sx": 32,
+          "sy": 736
+        },
+        "ne": {
+          "sx": 64,
+          "sy": 736
+        },
+        "w": {
+          "sx": 0,
+          "sy": 768
+        },
+        "center": {
+          "sx": 32,
+          "sy": 768
+        },
+        "e": {
+          "sx": 64,
+          "sy": 768
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 800
+        },
+        "s": {
+          "sx": 32,
+          "sy": 800
+        },
+        "se": {
+          "sx": 64,
+          "sy": 800
+        },
+        "innw": {
+          "sx": 32,
+          "sy": 864
+        },
+        "inne": {
+          "sx": 0,
+          "sy": 864
+        },
+        "insw": {
+          "sx": 32,
+          "sy": 832
+        },
+        "inse": {
+          "sx": 0,
+          "sy": 832
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Ekat's Mega Gen 3 Set"
+      ],
+      "notes": "Native 6\u00d76 sand sample; the 2\u00d72 clean inner pattern must retain its 32 px phase. Four true inward corners are provided separately around the small grass island below. This is a 32 px source metatile family: normalize each full 32 px role to 16 px using nearest-neighbour sampling. Concave roles deliberately use the opposite quadrant of the central-island donor patch.",
+      "sourceTileSize": 32,
+      "nativeScale": 0.5
+    },
+    {
+      "id": "path-mega-brown-cobble",
+      "name": "Mega Gen 3 \u00b7 brown cobblestone / grass",
+      "category": "Routes \u00b7 earth",
+      "tags": [
+        "Ekat's Mega Gen 3 Set",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-ekat-s-mega-gen-3-set",
+      "roles": {
+        "nw": {
+          "sx": 96,
+          "sy": 736
+        },
+        "n": {
+          "sx": 128,
+          "sy": 736
+        },
+        "ne": {
+          "sx": 160,
+          "sy": 736
+        },
+        "w": {
+          "sx": 96,
+          "sy": 768
+        },
+        "center": {
+          "sx": 128,
+          "sy": 768
+        },
+        "e": {
+          "sx": 160,
+          "sy": 768
+        },
+        "sw": {
+          "sx": 96,
+          "sy": 800
+        },
+        "s": {
+          "sx": 128,
+          "sy": 800
+        },
+        "se": {
+          "sx": 160,
+          "sy": 800
+        },
+        "innw": {
+          "sx": 128,
+          "sy": 864
+        },
+        "inne": {
+          "sx": 96,
+          "sy": 864
+        },
+        "insw": {
+          "sx": 128,
+          "sy": 832
+        },
+        "inse": {
+          "sx": 96,
+          "sy": 832
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Ekat's Mega Gen 3 Set"
+      ],
+      "notes": "Native 6\u00d76 brown cobble sample with 2\u00d72 repeating centre. The separate inward corners surround its grass island below; retain dark block joints instead of flattening to a solid soil colour. This is a 32 px source metatile family: normalize each full 32 px role to 16 px using nearest-neighbour sampling. Concave roles deliberately use the opposite quadrant of the central-island donor patch.",
+      "sourceTileSize": 32,
+      "nativeScale": 0.5
+    },
+    {
+      "id": "path-mega-pebble-sand",
+      "name": "Mega Gen 3 \u00b7 golden path / white pebble edge",
+      "category": "Routes \u00b7 decorative paths",
+      "tags": [
+        "Ekat's Mega Gen 3 Set",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-ekat-s-mega-gen-3-set",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 896
+        },
+        "n": {
+          "sx": 32,
+          "sy": 896
+        },
+        "ne": {
+          "sx": 64,
+          "sy": 896
+        },
+        "w": {
+          "sx": 0,
+          "sy": 928
+        },
+        "center": {
+          "sx": 32,
+          "sy": 768
+        },
+        "e": {
+          "sx": 64,
+          "sy": 928
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 960
+        },
+        "s": {
+          "sx": 32,
+          "sy": 960
+        },
+        "se": {
+          "sx": 64,
+          "sy": 960
+        },
+        "innw": {
+          "sx": 128,
+          "sy": 928
+        },
+        "inne": {
+          "sx": 96,
+          "sy": 928
+        },
+        "insw": {
+          "sx": 128,
+          "sy": 896
+        },
+        "inse": {
+          "sx": 96,
+          "sy": 896
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Ekat's Mega Gen 3 Set"
+      ],
+      "notes": "Golden diagonal paving with a fine white pebble border. Source 6\u00d76 frame contains a red-X in the deep centre; the supplied 2\u00d72 inner pattern is above it and clean. Its inner corner donors are the separate white-pebble diamond at right. This is a 32 px source metatile family: normalize each full 32 px role to 16 px using nearest-neighbour sampling. Concave roles deliberately use the opposite quadrant of the central-island donor patch. The 32px centre comes from the clean matching golden/grass path above, avoiding the red-X placeholder.",
+      "sourceTileSize": 32,
+      "nativeScale": 0.5,
+      "transparentOutside": true
+    },
+    {
+      "id": "path-mega-pebble-cobble",
+      "name": "Mega Gen 3 \u00b7 brown cobble / white pebble edge",
+      "category": "Routes \u00b7 decorative paths",
+      "tags": [
+        "Ekat's Mega Gen 3 Set",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-ekat-s-mega-gen-3-set",
+      "roles": {
+        "nw": {
+          "sx": 160,
+          "sy": 896
+        },
+        "n": {
+          "sx": 192,
+          "sy": 896
+        },
+        "ne": {
+          "sx": 224,
+          "sy": 896
+        },
+        "w": {
+          "sx": 160,
+          "sy": 928
+        },
+        "center": {
+          "sx": 128,
+          "sy": 768
+        },
+        "e": {
+          "sx": 224,
+          "sy": 928
+        },
+        "sw": {
+          "sx": 160,
+          "sy": 960
+        },
+        "s": {
+          "sx": 192,
+          "sy": 960
+        },
+        "se": {
+          "sx": 224,
+          "sy": 960
+        },
+        "innw": {
+          "sx": 128,
+          "sy": 992
+        },
+        "inne": {
+          "sx": 96,
+          "sy": 992
+        },
+        "insw": {
+          "sx": 128,
+          "sy": 960
+        },
+        "inse": {
+          "sx": 96,
+          "sy": 960
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Ekat's Mega Gen 3 Set"
+      ],
+      "notes": "Brown cobble with a fine white pebble frame. The upper 2\u00d72 inner repeat avoids its red-X placeholder; the separate white-pebble diamond below the golden one supplies concaves. This is a 32 px source metatile family: normalize each full 32 px role to 16 px using nearest-neighbour sampling. Concave roles deliberately use the opposite quadrant of the central-island donor patch. The 32px centre comes from the clean matching brown-cobble/grass path above, avoiding the red-X placeholder.",
+      "sourceTileSize": 32,
+      "nativeScale": 0.5,
+      "transparentOutside": true
+    },
+    {
+      "id": "path-mega-cream-checks",
+      "name": "Mega Gen 3 \u00b7 cream diamond paving / grass",
+      "category": "Cities \u00b7 paving",
+      "tags": [
+        "Ekat's Mega Gen 3 Set",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-ekat-s-mega-gen-3-set",
+      "roles": {
+        "nw": {
+          "sx": 160,
+          "sy": 2464
+        },
+        "n": {
+          "sx": 192,
+          "sy": 2464
+        },
+        "ne": {
+          "sx": 224,
+          "sy": 2464
+        },
+        "w": {
+          "sx": 160,
+          "sy": 2496
+        },
+        "center": {
+          "sx": 192,
+          "sy": 2496
+        },
+        "e": {
+          "sx": 224,
+          "sy": 2496
+        },
+        "sw": {
+          "sx": 160,
+          "sy": 2528
+        },
+        "s": {
+          "sx": 192,
+          "sy": 2528
+        },
+        "se": {
+          "sx": 224,
+          "sy": 2528
+        },
+        "innw": {
+          "sx": 192,
+          "sy": 2592
+        },
+        "inne": {
+          "sx": 160,
+          "sy": 2592
+        },
+        "insw": {
+          "sx": 192,
+          "sy": 2560
+        },
+        "inse": {
+          "sx": 160,
+          "sy": 2560
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Ekat's Mega Gen 3 Set"
+      ],
+      "notes": "Native 6\u00d76 cream diagonal paving sample with green grass fringe and a clean 2\u00d72 repeating centre. Uses the grass-island patch below for four concave donors. This is a 32 px source metatile family: normalize each full 32 px role to 16 px using nearest-neighbour sampling. Concave roles deliberately use the opposite quadrant of the central-island donor patch.",
+      "sourceTileSize": 32,
+      "nativeScale": 0.5
+    },
+    {
+      "id": "path-mega-tan-herringbone",
+      "name": "Mega Gen 3 \u00b7 tan herringbone / grass",
+      "category": "Cities \u00b7 paving",
+      "tags": [
+        "Ekat's Mega Gen 3 Set",
+        "path",
+        "terrain"
+      ],
+      "assetId": "ekat-s-public-tiles-ekat-s-mega-gen-3-set",
+      "roles": {
+        "nw": {
+          "sx": 0,
+          "sy": 3232
+        },
+        "n": {
+          "sx": 32,
+          "sy": 3232
+        },
+        "ne": {
+          "sx": 64,
+          "sy": 3232
+        },
+        "w": {
+          "sx": 0,
+          "sy": 3264
+        },
+        "center": {
+          "sx": 32,
+          "sy": 3264
+        },
+        "e": {
+          "sx": 64,
+          "sy": 3264
+        },
+        "sw": {
+          "sx": 0,
+          "sy": 3296
+        },
+        "s": {
+          "sx": 32,
+          "sy": 3296
+        },
+        "se": {
+          "sx": 64,
+          "sy": 3296
+        },
+        "innw": {
+          "sx": 32,
+          "sy": 3360
+        },
+        "inne": {
+          "sx": 0,
+          "sy": 3360
+        },
+        "insw": {
+          "sx": 32,
+          "sy": 3328
+        },
+        "inse": {
+          "sx": 0,
+          "sy": 3328
+        }
+      },
+      "background": {
+        "sx": 0,
+        "sy": 0
+      },
+      "missingRoles": [],
+      "locations": [
+        "Ekat's Mega Gen 3 Set"
+      ],
+      "notes": "Native 6\u00d76 tan herringbone paving sample. The inner 32 px repeat and corresponding grass-island concaves are separate from the cream diagonal paving family. This is a 32 px source metatile family: normalize each full 32 px role to 16 px using nearest-neighbour sampling. Concave roles deliberately use the opposite quadrant of the central-island donor patch.",
+      "sourceTileSize": 32,
+      "nativeScale": 0.5
+    }
+  ],
+  "coverageNotes": {
+    "Silph City": "The source has white diamond paving centre tiles, but no matching border/concave family. Do not label building roof frames as pathways. Reuse a compatible curated paving brush or explicitly generate a new frame around this native paving.",
+    "Mega Outdoor Tileset": "The sheet contains forest walls, trees, cliffs and stairs; no additional ground path family was found.",
+    "Park Tileset": "Golden diagonal area is raised architectural/roof trim beside the gazebo, not a self-contained ground path family. Do not mislabel it as a park pathway."
+  }
+}

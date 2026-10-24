@@ -1,0 +1,734 @@
+{
+  "id": "composed-kanto-centreline-rail",
+  "name": "Kanto — Centred white rail (composed)",
+  "kind": "sourcePixelComposition",
+  "unit": 16,
+  "cellWidth": 16,
+  "cellHeight": 16,
+  "atlasColumns": 4,
+  "atlasRows": 4,
+  "wallHeight": 1,
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "anchor": "bottom",
+  "maskBits": {
+    "n": 1,
+    "e": 2,
+    "s": 4,
+    "w": 8
+  },
+  "source": {
+    "kind": "rom",
+    "romCode": "FRLG",
+    "pair": "2eccf4-2ecd24",
+    "sourceMap": "3.1",
+    "metatiles": {
+      "horizontal": 231,
+      "vertical": 244
+    }
+  },
+  "components": {
+    "horizontalRail": {
+      "metatile": 231,
+      "crop": [
+        7,
+        6,
+        2,
+        4
+      ]
+    },
+    "vertical": {
+      "metatile": 244,
+      "crop": [
+        2,
+        0,
+        4,
+        16
+      ]
+    },
+    "post": {
+      "metatile": 231,
+      "crop": [
+        1,
+        2,
+        7,
+        14
+      ],
+      "alphaExcludedRects": [
+        [
+          6,
+          4,
+          1,
+          4
+        ]
+      ]
+    }
+  },
+  "removeBackground": "Only original grass pixels with G>R and G>B are made transparent. Validate the source palette or use the discovered exact color list on import.",
+  "variants": [
+    {
+      "mask": 0,
+      "layers": [
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 1,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            0,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 0
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 2,
+      "layers": [
+        {
+          "component": "horizontalRail",
+          "dx": 8,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 10,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 12,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 14,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 3,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            0,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 0
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 8,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 10,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 12,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 14,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 4,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            8,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 8
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 5,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            0,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 0
+        },
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            8,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 8
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 6,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            8,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 8
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 8,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 10,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 12,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 14,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 7,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            0,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 0
+        },
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            8,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 8
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 8,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 10,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 12,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 14,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 8,
+      "layers": [
+        {
+          "component": "horizontalRail",
+          "dx": 0,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 2,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 4,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 6,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 9,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            0,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 0
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 0,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 2,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 4,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 6,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 10,
+      "layers": [
+        {
+          "component": "horizontalRail",
+          "dx": 0,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 2,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 4,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 6,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 8,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 10,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 12,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 14,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 11,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            0,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 0
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 0,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 2,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 4,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 6,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 8,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 10,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 12,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 14,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 12,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            8,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 8
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 0,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 2,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 4,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 6,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 13,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            0,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 0
+        },
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            8,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 8
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 0,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 2,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 4,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 6,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 14,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            8,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 8
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 0,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 2,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 4,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 6,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 8,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 10,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 12,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 14,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "mask": 15,
+      "layers": [
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            0,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 0
+        },
+        {
+          "component": "vertical",
+          "crop": [
+            0,
+            8,
+            4,
+            8
+          ],
+          "dx": 6,
+          "dy": 8
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 0,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 2,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 4,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 6,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 8,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 10,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 12,
+          "dy": 6
+        },
+        {
+          "component": "horizontalRail",
+          "dx": 14,
+          "dy": 6
+        },
+        {
+          "component": "post",
+          "dx": 5,
+          "dy": 2
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "This is an explicitly new composition made from original native rail and post pixels; it is not a claimed native extracted 16-mask family.",
+    "Native vertical rail was shifted from x2..5 to x6..9 and one original native post shifted to centre x8. Horizontal rail sampled only from the clear two-pixel space between native posts, then repeated.",
+    "No source colors, anti-aliasing, rotation, smoothing or invented post/rail pixels are used. Components are copied at native scale.",
+    "All four directions, all outer turns, endpoint masks, T junctions, crosses and isolated cap are defined. Each connected boundary passed full four-pixel alpha continuity checks."
+  ]
+}

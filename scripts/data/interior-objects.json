@@ -1,0 +1,1518 @@
+{
+  "objects": [
+    {
+      "id": "basic-wide-pot",
+      "name": "Spreading plant in grey pot",
+      "category": "Interior \u00b7 Plants",
+      "tags": [
+        "potted",
+        "plant",
+        "home"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 80,
+      "sy": 496,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-round-pot",
+      "name": "Round plant in grey pot",
+      "category": "Interior \u00b7 Plants",
+      "tags": [
+        "potted",
+        "plant",
+        "home"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 96,
+      "sy": 496,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-cone-pot",
+      "name": "Conical plant in grey pot",
+      "category": "Interior \u00b7 Plants",
+      "tags": [
+        "potted",
+        "plant",
+        "home"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 112,
+      "sy": 496,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-geometric-rug",
+      "name": "Cream geometric square rug",
+      "category": "Interior \u00b7 Rugs",
+      "tags": [
+        "rug",
+        "carpet",
+        "square"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 0,
+      "sy": 576,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "sourceTileSize": 16,
+      "nineSlice": 16
+    },
+    {
+      "id": "basic-checked-rug",
+      "name": "Cream checked square rug",
+      "category": "Interior \u00b7 Rugs",
+      "tags": [
+        "rug",
+        "carpet",
+        "square"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 48,
+      "sy": 576,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "sourceTileSize": 16,
+      "nineSlice": 16
+    },
+    {
+      "id": "basic-small-drawers",
+      "name": "Cabinet with small drawers",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "cabinet",
+        "drawer",
+        "wood"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 96,
+      "sy": 528,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-wide-drawers",
+      "name": "Cabinet with wide drawers",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "cabinet",
+        "drawer",
+        "wood"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 112,
+      "sy": 528,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-green-square-stool",
+      "name": "Green square padded stool",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "green",
+        "cushion",
+        "seat"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 96,
+      "sy": 592,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-green-round-stool",
+      "name": "Green rounded padded stool",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "green",
+        "cushion",
+        "seat"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 112,
+      "sy": 592,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-green-square-cushion",
+      "name": "Green square floor cushion",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "green",
+        "cushion",
+        "seat"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 96,
+      "sy": 608,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-green-round-cushion",
+      "name": "Green round floor cushion",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "green",
+        "cushion",
+        "seat"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 112,
+      "sy": 608,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-kitchen-stove",
+      "name": "Wide kitchen stove and oven",
+      "category": "Interior \u00b7 Kitchen",
+      "tags": [
+        "stove",
+        "oven",
+        "cooker"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 96,
+      "sy": 624,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-warm-fridge",
+      "name": "Fridge with warm magnets",
+      "category": "Interior \u00b7 Kitchen",
+      "tags": [
+        "fridge",
+        "refrigerator",
+        "appliance"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 96,
+      "sy": 656,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-plain-fridge",
+      "name": "Plain grey fridge",
+      "category": "Interior \u00b7 Kitchen",
+      "tags": [
+        "fridge",
+        "refrigerator",
+        "appliance"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 112,
+      "sy": 656,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-orange-fridge",
+      "name": "Fridge with orange magnets",
+      "category": "Interior \u00b7 Kitchen",
+      "tags": [
+        "fridge",
+        "refrigerator",
+        "appliance"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 96,
+      "sy": 688,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-green-fridge",
+      "name": "Fridge with green magnets",
+      "category": "Interior \u00b7 Kitchen",
+      "tags": [
+        "fridge",
+        "refrigerator",
+        "appliance"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 112,
+      "sy": 688,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-cream-sofa",
+      "name": "Cream low-backed sofa",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "sofa",
+        "couch",
+        "cream"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 0,
+      "sy": 848,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-low-sofa",
+      "name": "Cream high-backed sofa",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "sofa",
+        "couch",
+        "cream"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 0,
+      "sy": 880,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-yellow-bed",
+      "name": "Yellow single bed",
+      "category": "Interior \u00b7 Beds",
+      "tags": [
+        "bed",
+        "single",
+        "bedroom"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 0,
+      "sy": 912,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-mint-bed",
+      "name": "Mint single bed",
+      "category": "Interior \u00b7 Beds",
+      "tags": [
+        "bed",
+        "single",
+        "bedroom"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 0,
+      "sy": 944,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-aqua-bed",
+      "name": "Aqua single bed",
+      "category": "Interior \u00b7 Beds",
+      "tags": [
+        "bed",
+        "single",
+        "bedroom"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 0,
+      "sy": 976,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-white-bed",
+      "name": "White single bed",
+      "category": "Interior \u00b7 Beds",
+      "tags": [
+        "bed",
+        "single",
+        "bedroom"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 0,
+      "sy": 1008,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-cream-armchair",
+      "name": "Cream armchair",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "chair",
+        "armchair",
+        "cream"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 80,
+      "sy": 912,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "basic-desktop-dark",
+      "name": "Low desktop computer with tower and speakers",
+      "category": "Interior \u00b7 Electronics",
+      "tags": [
+        "computer",
+        "pc",
+        "monitor",
+        "speakers"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 80,
+      "sy": 976,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "tea-wide-mirror-cabinet",
+      "name": "Wide mirrored display cabinet",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "cabinet",
+        "glass",
+        "mirror"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 128,
+      "sy": 192,
+      "sw": 96,
+      "sh": 96,
+      "w": 3,
+      "h": 3,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-narrow-mirror-cabinet",
+      "name": "Narrow mirrored display cabinet",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "cabinet",
+        "glass",
+        "mirror"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 224,
+      "sy": 192,
+      "sw": 32,
+      "sh": 96,
+      "w": 1,
+      "h": 3,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-wide-bookcase",
+      "name": "Wide bookcase with carved header",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "bookcase",
+        "books",
+        "wood"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 128,
+      "sy": 288,
+      "sw": 96,
+      "sh": 96,
+      "w": 3,
+      "h": 3,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-narrow-bookcase",
+      "name": "Narrow bookcase with carved header",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "bookcase",
+        "books",
+        "wood"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 224,
+      "sy": 288,
+      "sw": 32,
+      "sh": 96,
+      "w": 1,
+      "h": 3,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-tall-cabinet",
+      "name": "Tall glass-fronted cabinet",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "cabinet",
+        "glass",
+        "cupboard"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 192,
+      "sy": 384,
+      "sw": 64,
+      "sh": 96,
+      "w": 2,
+      "h": 3,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-wooden-dresser",
+      "name": "Wide wooden dresser",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "dresser",
+        "drawers",
+        "wood"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 96,
+      "sy": 384,
+      "sw": 96,
+      "sh": 64,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-coffee-table",
+      "name": "Wooden coffee table",
+      "category": "Interior \u00b7 Tables",
+      "tags": [
+        "coffee",
+        "table",
+        "wood"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 128,
+      "sy": 480,
+      "sw": 96,
+      "sh": 64,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-tea-table",
+      "name": "Coffee table with tea service",
+      "category": "Interior \u00b7 Tables",
+      "tags": [
+        "tea",
+        "coffee",
+        "table",
+        "cups"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 128,
+      "sy": 544,
+      "sw": 96,
+      "sh": 64,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-pink-vase",
+      "name": "Tall vase of pink roses",
+      "category": "Interior \u00b7 Decor",
+      "tags": [
+        "flowers",
+        "vase",
+        "pink"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 224,
+      "sy": 480,
+      "sw": 32,
+      "sh": 64,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-pink-small-vase",
+      "name": "Small vase of pink roses",
+      "category": "Interior \u00b7 Decor",
+      "tags": [
+        "flowers",
+        "vase",
+        "pink"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 224,
+      "sy": 544,
+      "sw": 32,
+      "sh": 64,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-green-stool",
+      "name": "Green padded tea-room chair",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "stool",
+        "green",
+        "seat"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 224,
+      "sy": 608,
+      "sw": 32,
+      "sh": 32,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-pink-stool",
+      "name": "Pink padded tea-room chair",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "stool",
+        "pink",
+        "seat"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 224,
+      "sy": 640,
+      "sw": 32,
+      "sh": 32,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 32
+    },
+    {
+      "id": "tea-pink-rug",
+      "name": "Pink tea-room rug",
+      "category": "Interior \u00b7 Rugs",
+      "tags": [
+        "rug",
+        "carpet",
+        "pink"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 0,
+      "sy": 704,
+      "sw": 96,
+      "sh": 96,
+      "w": 3,
+      "h": 3,
+      "sourceTileSize": 32,
+      "nineSlice": 16
+    },
+    {
+      "id": "tea-green-rug",
+      "name": "Green tea-room rug",
+      "category": "Interior \u00b7 Rugs",
+      "tags": [
+        "rug",
+        "carpet",
+        "green"
+      ],
+      "assetId": "ekat-s-tiny-interiors-tea-time",
+      "sx": 96,
+      "sy": 704,
+      "sw": 96,
+      "sh": 96,
+      "w": 3,
+      "h": 3,
+      "sourceTileSize": 32,
+      "nineSlice": 16
+    },
+    {
+      "id": "office-orange-notice",
+      "name": "Orange hanging wall panel",
+      "category": "Interior \u00b7 Decor",
+      "tags": [
+        "notice",
+        "wall",
+        "office"
+      ],
+      "assetId": "ekat-s-public-tiles-little-office",
+      "sx": 112,
+      "sy": 0,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "office-calendar",
+      "name": "Office calendar board",
+      "category": "Interior \u00b7 Decor",
+      "tags": [
+        "calendar",
+        "wall",
+        "office"
+      ],
+      "assetId": "ekat-s-public-tiles-little-office",
+      "sx": 112,
+      "sy": 32,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "office-paper-bin",
+      "name": "Wastepaper bin with papers",
+      "category": "Interior \u00b7 Decor",
+      "tags": [
+        "bin",
+        "paper",
+        "office"
+      ],
+      "assetId": "ekat-s-public-tiles-little-office",
+      "sx": 112,
+      "sy": 96,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "office-low-paper-bookcase",
+      "name": "Low bookcase with papers",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "bookcase",
+        "papers",
+        "books",
+        "office"
+      ],
+      "assetId": "ekat-s-public-tiles-little-office",
+      "sx": 32,
+      "sy": 144,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "office-low-book-bookcase",
+      "name": "Low bookcase with upright books",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "bookcase",
+        "books",
+        "office"
+      ],
+      "assetId": "ekat-s-public-tiles-little-office",
+      "sx": 64,
+      "sy": 144,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-chair-front",
+      "name": "Small brown wooden chair",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "chair",
+        "wood",
+        "brown"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 0,
+      "sy": 32,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-chair-back",
+      "name": "Straight-backed wooden chair",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "chair",
+        "wood",
+        "brown"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 0,
+      "sy": 144,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-low-chair",
+      "name": "Low-backed wooden chair",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "chair",
+        "wood",
+        "brown"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 16,
+      "sy": 144,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-conical-plant",
+      "name": "Tall conical house plant",
+      "category": "Interior \u00b7 Plants",
+      "tags": [
+        "plant",
+        "pot",
+        "green"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 0,
+      "sy": 160,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-round-plant",
+      "name": "Round leafy house plant",
+      "category": "Interior \u00b7 Plants",
+      "tags": [
+        "plant",
+        "pot",
+        "green"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 16,
+      "sy": 168,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-blue-tall-flowers",
+      "name": "Tall blue hydrangea pot",
+      "category": "Interior \u00b7 Plants",
+      "tags": [
+        "flowers",
+        "blue",
+        "hydrangea",
+        "pot"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 112,
+      "sy": 176,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-blue-round-flowers",
+      "name": "Round blue hydrangea pot",
+      "category": "Interior \u00b7 Plants",
+      "tags": [
+        "flowers",
+        "blue",
+        "hydrangea",
+        "pot"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 96,
+      "sy": 180,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-palm-planter",
+      "name": "Palm in square planter",
+      "category": "Interior \u00b7 Plants",
+      "tags": [
+        "palm",
+        "plant",
+        "planter"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 112,
+      "sy": 224,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-small-rose",
+      "name": "Rose plant in round pot",
+      "category": "Interior \u00b7 Plants",
+      "tags": [
+        "rose",
+        "flowers",
+        "pot"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 96,
+      "sy": 256,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-gold-drawers",
+      "name": "Golden bedside cabinet",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "cabinet",
+        "drawers",
+        "gold"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 64,
+      "sy": 256,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-raised-gold-drawers",
+      "name": "Tall golden bedside cabinet",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "cabinet",
+        "drawers",
+        "gold"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 80,
+      "sy": 252,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-green-pedestal-stool",
+      "name": "Green pedestal bar stool",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "stool",
+        "green",
+        "bar"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 112,
+      "sy": 288,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-bottle-cabinet",
+      "name": "Bottle display cabinet",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "cabinet",
+        "bottles",
+        "bar"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 0,
+      "sy": 352,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-drinks-fridge",
+      "name": "Glass-fronted drinks fridge",
+      "category": "Interior \u00b7 Kitchen",
+      "tags": [
+        "fridge",
+        "drinks",
+        "bottles",
+        "bar"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 48,
+      "sy": 352,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-low-barrel-stack",
+      "name": "Low stack of wooden barrels",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "barrel",
+        "wood",
+        "stack"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 80,
+      "sy": 400,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-single-barrel",
+      "name": "Single wooden barrel",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "barrel",
+        "wood"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 48,
+      "sy": 416,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-piano",
+      "name": "Upright piano and keyboard",
+      "category": "Interior \u00b7 Music",
+      "tags": [
+        "piano",
+        "keyboard",
+        "music"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 0,
+      "sy": 480,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-drum-kit",
+      "name": "Drum kit with cymbal",
+      "category": "Interior \u00b7 Music",
+      "tags": [
+        "drums",
+        "cymbal",
+        "music"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 48,
+      "sy": 480,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-guitar",
+      "name": "Acoustic guitar on stand",
+      "category": "Interior \u00b7 Music",
+      "tags": [
+        "guitar",
+        "acoustic",
+        "music"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 112,
+      "sy": 448,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-music-stand",
+      "name": "Sheet music on stand",
+      "category": "Interior \u00b7 Music",
+      "tags": [
+        "sheet",
+        "music",
+        "stand"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 96,
+      "sy": 448,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-large-oval-table",
+      "name": "Large oval wooden table",
+      "category": "Interior \u00b7 Tables",
+      "tags": [
+        "table",
+        "wood",
+        "oval"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 80,
+      "sy": 480,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-wide-round-table",
+      "name": "Wide round wooden table",
+      "category": "Interior \u00b7 Tables",
+      "tags": [
+        "table",
+        "wood",
+        "round"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 0,
+      "sy": 512,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-small-round-table",
+      "name": "Small round wooden table",
+      "category": "Interior \u00b7 Tables",
+      "tags": [
+        "table",
+        "wood",
+        "round"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 48,
+      "sy": 512,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-wooden-stool",
+      "name": "Round wooden stool",
+      "category": "Interior \u00b7 Seating",
+      "tags": [
+        "stool",
+        "wood",
+        "round"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 80,
+      "sy": 512,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-side-table",
+      "name": "Round wooden side table",
+      "category": "Interior \u00b7 Tables",
+      "tags": [
+        "table",
+        "wood",
+        "round"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 96,
+      "sy": 512,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-pool-table",
+      "name": "Green pool table",
+      "category": "Interior \u00b7 Games",
+      "tags": [
+        "pool",
+        "billiards",
+        "table",
+        "game"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 0,
+      "sy": 608,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-card-table",
+      "name": "Vertical roulette table",
+      "category": "Interior \u00b7 Games",
+      "tags": [
+        "cards",
+        "table",
+        "casino",
+        "game"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 48,
+      "sy": 592,
+      "sw": 32,
+      "sh": 48,
+      "w": 2,
+      "h": 3,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bar-roulette-table",
+      "name": "Horizontal roulette table",
+      "category": "Interior \u00b7 Games",
+      "tags": [
+        "roulette",
+        "table",
+        "casino",
+        "game"
+      ],
+      "assetId": "ekat-s-public-tiles-speakeasy",
+      "sx": 80,
+      "sy": 592,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-washstand",
+      "name": "White washstand with tap",
+      "category": "Interior \u00b7 Bathroom",
+      "tags": [
+        "sink",
+        "basin",
+        "tap",
+        "washstand"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 32,
+      "sy": 176,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-raised-washstand",
+      "name": "Raised white washstand with tap",
+      "category": "Interior \u00b7 Bathroom",
+      "tags": [
+        "sink",
+        "basin",
+        "tap",
+        "washstand"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 64,
+      "sy": 176,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-microwave",
+      "name": "White microwave on wooden stand",
+      "category": "Interior \u00b7 Kitchen",
+      "tags": [
+        "microwave",
+        "appliance",
+        "stand"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 48,
+      "sy": 176,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "blanket-raised-microwave",
+      "name": "Raised white microwave on wooden stand",
+      "category": "Interior \u00b7 Kitchen",
+      "tags": [
+        "microwave",
+        "appliance",
+        "stand"
+      ],
+      "assetId": "ekat-s-public-tiles-blanket-indoors",
+      "sx": 80,
+      "sy": 176,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "small-pot",
+      "name": "Tall leafy plant in grey pot",
+      "category": "Interior \u00b7 Plants",
+      "tags": [
+        "potted",
+        "plant",
+        "home"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 64,
+      "sy": 496,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "bookcase",
+      "name": "Bookcase with lower drawer",
+      "category": "Interior \u00b7 Storage",
+      "tags": [
+        "bookcase",
+        "books",
+        "cabinet"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 96,
+      "sy": 560,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "television",
+      "name": "Small TV cabinet",
+      "category": "Interior \u00b7 Electronics",
+      "tags": [
+        "television",
+        "screen",
+        "cabinet"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 112,
+      "sy": 560,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "sourceTileSize": 16
+    },
+    {
+      "id": "computer",
+      "name": "Desktop computer with tower and speakers",
+      "category": "Interior \u00b7 Electronics",
+      "tags": [
+        "computer",
+        "pc",
+        "monitor",
+        "speakers"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 80,
+      "sy": 944,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "sourceTileSize": 16,
+      "notes": "Replaces the incorrectly labelled half-stove crop with a complete desktop computer. Existing placed objects retain their stored crop."
+    },
+    {
+      "id": "pink-rug",
+      "name": "Rose bordered square rug",
+      "category": "Interior \u00b7 Rugs",
+      "tags": [
+        "rug",
+        "carpet",
+        "square"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 0,
+      "sy": 528,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "sourceTileSize": 16,
+      "nineSlice": 16
+    },
+    {
+      "id": "yellow-rug",
+      "name": "Cream floral square rug",
+      "category": "Interior \u00b7 Rugs",
+      "tags": [
+        "rug",
+        "carpet",
+        "square"
+      ],
+      "assetId": "ekat-s-public-tiles-basic-interior-collection",
+      "sx": 48,
+      "sy": 528,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "sourceTileSize": 16,
+      "nineSlice": 16
+    },
+    {
+      "id": "garden-house",
+      "name": "Garden house with side annex",
+      "category": "Exterior \u00b7 Houses",
+      "tags": [
+        "house",
+        "garden",
+        "annex",
+        "building"
+      ],
+      "assetId": "ekat-s-public-tiles-garden-house-sheet",
+      "sx": 0,
+      "sy": 16,
+      "sw": 160,
+      "sh": 144,
+      "w": 10,
+      "h": 9,
+      "sourceTileSize": 16,
+      "notes": "Original crop height128 cut off3 bottom pixels. Source house alpha spans y16..146;144-pixel crop includes full house and excludes flowerbed beginningy160."
+    },
+    {
+      "id": "house-sign",
+      "name": "Wooden garden sign",
+      "category": "Exterior \u00b7 Signs",
+      "tags": [
+        "sign",
+        "wood",
+        "garden"
+      ],
+      "assetId": "ekat-s-public-tiles-garden-house-sheet",
+      "sx": 96,
+      "sy": 160,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "sourceTileSize": 16
+    }
+  ]
+}

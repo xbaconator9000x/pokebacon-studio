@@ -1,0 +1,480 @@
+{
+  "families": [
+    {
+      "id": "kanto-pale-grass",
+      "name": "Kanto \u2014 Pale grass clearing",
+      "roles": {
+        "nw": 189,
+        "n": 190,
+        "ne": 191,
+        "w": 197,
+        "center": 198,
+        "e": 199,
+        "sw": 205,
+        "s": 206,
+        "se": 207
+      },
+      "background": 1,
+      "notes": "Primary shared grass-to-pale-grass clearing. Nine verified outer roles; native concave corners are not present as separate metatiles, so compose them from verified edges/background."
+    },
+    {
+      "id": "kanto-rough-dirt",
+      "name": "Kanto \u2014 Rough ochre dirt path",
+      "roles": {
+        "nw": 208,
+        "n": 209,
+        "ne": 210,
+        "w": 216,
+        "center": 217,
+        "e": 218,
+        "sw": 224,
+        "s": 225,
+        "se": 226,
+        "innw": 254,
+        "inne": 255,
+        "insw": 262,
+        "inse": 263
+      },
+      "background": 1,
+      "notes": "Primary dirt path. All nine outer roles and all four concave corners visually and pixel-corner verified."
+    },
+    {
+      "id": "kanto-pale-sand",
+      "name": "Kanto \u2014 Pale sandy path",
+      "roles": {
+        "nw": 211,
+        "n": 212,
+        "ne": 213,
+        "w": 219,
+        "center": 220,
+        "e": 221,
+        "sw": 227,
+        "s": 228,
+        "se": 229,
+        "innw": 258,
+        "inne": 259,
+        "insw": 260,
+        "inse": 261
+      },
+      "background": 1,
+      "notes": "Primary sandy path on grass. All 13 roles verified. The secondary Celadon sand patch is an exact duplicate, so it does not need a separate family."
+    },
+    {
+      "id": "kanto-tan-slabs",
+      "name": "Kanto \u2014 Tan slab paving",
+      "roles": {
+        "nw": 354,
+        "n": 355,
+        "ne": 356,
+        "w": 362,
+        "center": 363,
+        "e": 364,
+        "sw": 370,
+        "s": 371,
+        "se": 372
+      },
+      "background": 1,
+      "notes": "Primary tan horizontal stone/slab paving. Nine outer roles verified; compose missing concave corners."
+    },
+    {
+      "id": "kanto-grey-paving",
+      "name": "Kanto \u2014 Speckled grey paving",
+      "roles": {
+        "nw": 357,
+        "n": 358,
+        "ne": 359,
+        "w": 365,
+        "center": 366,
+        "e": 367,
+        "sw": 373,
+        "s": 374,
+        "se": 375
+      },
+      "background": 1,
+      "notes": "Primary pale grey paving with stone flecks. Nine outer roles verified; compose missing concave corners."
+    },
+    {
+      "id": "kanto-diagonal-cobbles",
+      "name": "Kanto \u2014 Diagonal cobblestone plaza",
+      "roles": {
+        "nw": 440,
+        "n": 441,
+        "ne": 442,
+        "w": 448,
+        "center": 449,
+        "e": 450,
+        "sw": 456,
+        "s": 457,
+        "se": 458,
+        "innw": 443,
+        "inne": 444,
+        "insw": 451,
+        "inse": 452
+      },
+      "background": 1,
+      "notes": "Primary diagonal cobbles with square perimeter stones. All 13 roles verified. Preserve the native tile pattern phase when assembling odd-width shapes."
+    },
+    {
+      "id": "pallet-mint-path",
+      "name": "Pallet Town \u2014 Mint grass path",
+      "roles": {
+        "nw": 653,
+        "n": 654,
+        "ne": 655,
+        "w": 661,
+        "center": 662,
+        "e": 663,
+        "sw": 669,
+        "s": 670,
+        "se": 671,
+        "innw": 648,
+        "inne": 656,
+        "insw": 710,
+        "inse": 711
+      },
+      "background": 1,
+      "notes": "Pallet secondary mint-green grass path with original white flecks and teal rim. Full 13-role family; only available in the Pallet/Route 1/Route 21 tileset pair."
+    },
+    {
+      "id": "saffron-light-stone",
+      "name": "Saffron City \u2014 Light rectangular stone",
+      "roles": {
+        "nw": 736,
+        "n": 737,
+        "ne": 738,
+        "w": 744,
+        "center": 745,
+        "e": 746,
+        "sw": 752,
+        "s": 753,
+        "se": 754
+      },
+      "background": 1,
+      "notes": "Saffron secondary light rectangular stone walkway on grass. Nine outer roles verified; compose missing concave corners. Other similar-looking roof pieces are not corners."
+    },
+    {
+      "id": "saffron-olive-brick",
+      "name": "Saffron City \u2014 Olive brick walkway",
+      "roles": {
+        "nw": 739,
+        "n": 740,
+        "ne": 741,
+        "w": 747,
+        "center": 748,
+        "e": 749,
+        "sw": 755,
+        "s": 756,
+        "se": 757
+      },
+      "background": 1,
+      "notes": "Saffron secondary olive rectangular brick walkway on grass. Nine outer roles verified; compose missing concave corners."
+    }
+  ],
+  "pairs": [
+    {
+      "pair": "2eccf4-2ed024",
+      "sourceMap": "1.0",
+      "locations": [
+        "VIRIDIAN FOREST",
+        "PATTERN BUSH"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecdb4",
+      "sourceMap": "1.63",
+      "locations": [
+        "SAFARI ZONE",
+        "FUCHSIA CITY",
+        "ROUTE 15",
+        "ROUTE 19"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ed2ac",
+      "sourceMap": "1.97",
+      "locations": [
+        "MT. EMBER",
+        "NAVEL ROCK",
+        "ONE ISLAND",
+        "TWO ISLAND",
+        "THREE ISLAND",
+        "KINDLE ROAD",
+        "TREASURE BEACH",
+        "CAPE BRINK",
+        "BOND BRIDGE",
+        "THREE ISLE PORT"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ed264",
+      "sourceMap": "1.109",
+      "locations": [
+        "BERRY FOREST"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ed2dc",
+      "sourceMap": "2.56",
+      "locations": [
+        "BIRTH ISLAND",
+        "SEVEN ISLAND",
+        "SIX ISLAND",
+        "OUTCAST ISLAND",
+        "GREEN PATH",
+        "WATER PATH",
+        "RUIN VALLEY",
+        "TRAINER TOWER",
+        "CANYON ENTRANCE",
+        "SEVAULT CANYON",
+        "TANOBY RUINS"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecd0c",
+      "sourceMap": "3.0",
+      "locations": [
+        "PALLET TOWN",
+        "ROUTE 1",
+        "ROUTE 21"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles",
+        "pallet-mint-path"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecd24",
+      "sourceMap": "3.1",
+      "locations": [
+        "VIRIDIAN CITY",
+        "ROUTE 2",
+        "ROUTE 22"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecd3c",
+      "sourceMap": "3.2",
+      "locations": [
+        "PEWTER CITY",
+        "ROUTE 3"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecd54",
+      "sourceMap": "3.3",
+      "locations": [
+        "CERULEAN CITY",
+        "ROUTE 4",
+        "ROUTE 5",
+        "ROUTE 9",
+        "ROUTE 24",
+        "ROUTE 25"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecd6c",
+      "sourceMap": "3.4",
+      "locations": [
+        "LAVENDER TOWN",
+        "ROUTE 8",
+        "ROUTE 10",
+        "ROUTE 12",
+        "ROUTE 13",
+        "ROUTE 14"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecd84",
+      "sourceMap": "3.5",
+      "locations": [
+        "VERMILION CITY",
+        "ROUTE 6",
+        "ROUTE 11"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecd9c",
+      "sourceMap": "3.6",
+      "locations": [
+        "CELADON CITY",
+        "ROUTE 7",
+        "ROUTE 16",
+        "ROUTE 17",
+        "ROUTE 18",
+        "SEVII ISLE 6",
+        "SEVII ISLE 7",
+        "SEVII ISLE 8",
+        "SEVII ISLE 9"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecdcc",
+      "sourceMap": "3.8",
+      "locations": [
+        "CINNABAR ISLAND",
+        "ROUTE 20",
+        "ROUTE 21"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecde4",
+      "sourceMap": "3.9",
+      "locations": [
+        "INDIGO PLATEAU",
+        "ROUTE 23"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ecdfc",
+      "sourceMap": "3.10",
+      "locations": [
+        "SAFFRON CITY"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles",
+        "saffron-light-stone",
+        "saffron-olive-brick"
+      ]
+    },
+    {
+      "pair": "2eccf4-2ed2c4",
+      "sourceMap": "3.15",
+      "locations": [
+        "FOUR ISLAND",
+        "FIVE ISLAND",
+        "RESORT GORGEOUS",
+        "WATER LABYRINTH",
+        "FIVE ISLE MEADOW",
+        "MEMORIAL PILLAR"
+      ],
+      "families": [
+        "kanto-pale-grass",
+        "kanto-rough-dirt",
+        "kanto-pale-sand",
+        "kanto-tan-slabs",
+        "kanto-grey-paving",
+        "kanto-diagonal-cobbles"
+      ]
+    }
+  ],
+  "notes": [
+    "Recipes refer to exact metatile IDs in the loaded FireRed-family source. Runtime import must validate the ROM profile and read current ROM artwork; never bundle QA screenshots or ROM-derived pixels in app assets.",
+    "All six shared primary families are visible in each of the 16 rendered pairs. The native recipes preserve original palettes and matching grass background tile 0x001.",
+    "Repeated forest, Celadon and island sand patches are duplicate role pixels, not new pathway styles.",
+    "Four native families provide all 13 roles. Five provide nine roles, with missing concave corners explicitly left for composition."
+  ]
+}

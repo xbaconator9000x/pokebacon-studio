@@ -1,0 +1,1155 @@
+{
+  "objects": [
+    {
+      "id": "city-pokemon-center-0",
+      "name": "Pok\u00e9mon Center \u2014 Compact",
+      "category": "Buildings \u00b7 Public",
+      "tags": [
+        "Pok\u00e9mon Center",
+        "red",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 0,
+      "sw": 80,
+      "sh": 80,
+      "w": 5.0,
+      "h": 5.0
+    },
+    {
+      "id": "city-pokemon-center-96",
+      "name": "Pok\u00e9mon Center \u2014 Glass-front",
+      "category": "Buildings \u00b7 Public",
+      "tags": [
+        "Pok\u00e9mon Center",
+        "red",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 96,
+      "sw": 80,
+      "sh": 80,
+      "w": 5.0,
+      "h": 5.0
+    },
+    {
+      "id": "city-pokemon-center-192",
+      "name": "Pok\u00e9mon Center \u2014 Recessed entrance",
+      "category": "Buildings \u00b7 Public",
+      "tags": [
+        "Pok\u00e9mon Center",
+        "red",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 192,
+      "sw": 80,
+      "sh": 80,
+      "w": 5.0,
+      "h": 5.0
+    },
+    {
+      "id": "city-pokemon-center-304",
+      "name": "Pok\u00e9mon Center \u2014 Slim entrance",
+      "category": "Buildings \u00b7 Public",
+      "tags": [
+        "Pok\u00e9mon Center",
+        "red",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 304,
+      "sw": 80,
+      "sh": 80,
+      "w": 5.0,
+      "h": 5.0
+    },
+    {
+      "id": "city-pokemon-center-416",
+      "name": "Pok\u00e9mon Center \u2014 Large double-storey",
+      "category": "Buildings \u00b7 Public",
+      "tags": [
+        "Pok\u00e9mon Center",
+        "red",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 416,
+      "sw": 112,
+      "sh": 96,
+      "w": 7.0,
+      "h": 6.0
+    },
+    {
+      "id": "city-pokemon-center-528",
+      "name": "Pok\u00e9mon Center \u2014 Large arched entrance",
+      "category": "Buildings \u00b7 Public",
+      "tags": [
+        "Pok\u00e9mon Center",
+        "red",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 528,
+      "sw": 112,
+      "sh": 96,
+      "w": 7.0,
+      "h": 6.0
+    },
+    {
+      "id": "city-poke-mart-0",
+      "name": "Pok\u00e9 Mart \u2014 Compact",
+      "category": "Buildings \u00b7 Shops",
+      "tags": [
+        "Pok\u00e9 Mart",
+        "blue",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 624,
+      "sw": 80,
+      "sh": 80,
+      "w": 5.0,
+      "h": 5.0
+    },
+    {
+      "id": "city-poke-mart-96",
+      "name": "Pok\u00e9 Mart \u2014 Glass-front",
+      "category": "Buildings \u00b7 Shops",
+      "tags": [
+        "Pok\u00e9 Mart",
+        "blue",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 720,
+      "sw": 80,
+      "sh": 80,
+      "w": 5.0,
+      "h": 5.0
+    },
+    {
+      "id": "city-poke-mart-192",
+      "name": "Pok\u00e9 Mart \u2014 Recessed entrance",
+      "category": "Buildings \u00b7 Shops",
+      "tags": [
+        "Pok\u00e9 Mart",
+        "blue",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 816,
+      "sw": 80,
+      "sh": 80,
+      "w": 5.0,
+      "h": 5.0
+    },
+    {
+      "id": "city-poke-mart-304",
+      "name": "Pok\u00e9 Mart \u2014 Slim entrance",
+      "category": "Buildings \u00b7 Shops",
+      "tags": [
+        "Pok\u00e9 Mart",
+        "blue",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 928,
+      "sw": 80,
+      "sh": 80,
+      "w": 5.0,
+      "h": 5.0
+    },
+    {
+      "id": "city-poke-mart-416",
+      "name": "Pok\u00e9 Mart \u2014 Large double-storey",
+      "category": "Buildings \u00b7 Shops",
+      "tags": [
+        "Pok\u00e9 Mart",
+        "blue",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 1040,
+      "sw": 112,
+      "sh": 96,
+      "w": 7.0,
+      "h": 6.0
+    },
+    {
+      "id": "city-poke-mart-528",
+      "name": "Pok\u00e9 Mart \u2014 Large arched entrance",
+      "category": "Buildings \u00b7 Shops",
+      "tags": [
+        "Pok\u00e9 Mart",
+        "blue",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-pok-mon-center-and-mart-buildings",
+      "sx": 0,
+      "sy": 1152,
+      "sw": 112,
+      "sh": 96,
+      "w": 7.0,
+      "h": 6.0
+    },
+    {
+      "id": "apathy-yellow-house",
+      "name": "Apathy \u2014 Yellow cottage with tall roof",
+      "category": "Buildings \u00b7 Houses",
+      "tags": [
+        "yellow",
+        "cottage",
+        "pitched roof",
+        "complete house"
+      ],
+      "assetId": "ekat-s-public-tiles-apathy-houses",
+      "sx": 0,
+      "sy": 0,
+      "sw": 80,
+      "sh": 128,
+      "w": 5.0,
+      "h": 8.0
+    },
+    {
+      "id": "apathy-orange-house",
+      "name": "Apathy \u2014 Orange cottage",
+      "category": "Buildings \u00b7 Houses",
+      "tags": [
+        "orange",
+        "cottage",
+        "ornate door",
+        "complete house"
+      ],
+      "assetId": "ekat-s-public-tiles-apathy-houses",
+      "sx": 0,
+      "sy": 288,
+      "sw": 80,
+      "sh": 128,
+      "w": 5.0,
+      "h": 8.0,
+      "parts": [
+        {
+          "sx": 0,
+          "sy": 0,
+          "sw": 80,
+          "sh": 64,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "sx": 16,
+          "sy": 288,
+          "sw": 48,
+          "sh": 16,
+          "dx": 16,
+          "dy": 32
+        },
+        {
+          "sx": 0,
+          "sy": 304,
+          "sw": 80,
+          "sh": 80,
+          "dx": 0,
+          "dy": 48
+        }
+      ],
+      "width": 80,
+      "height": 128,
+      "notes": "Full matching tall roof assembled from the shared yellow-house roof; supplied colour variant provides gable and facade."
+    },
+    {
+      "id": "apathy-teal-house",
+      "name": "Apathy \u2014 Teal cottage",
+      "category": "Buildings \u00b7 Houses",
+      "tags": [
+        "teal",
+        "cottage",
+        "ornate door",
+        "complete house"
+      ],
+      "assetId": "ekat-s-public-tiles-apathy-houses",
+      "sx": 0,
+      "sy": 464,
+      "sw": 80,
+      "sh": 128,
+      "w": 5.0,
+      "h": 8.0,
+      "parts": [
+        {
+          "sx": 0,
+          "sy": 0,
+          "sw": 80,
+          "sh": 64,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "sx": 16,
+          "sy": 464,
+          "sw": 48,
+          "sh": 16,
+          "dx": 16,
+          "dy": 32
+        },
+        {
+          "sx": 0,
+          "sy": 480,
+          "sw": 80,
+          "sh": 80,
+          "dx": 0,
+          "dy": 48
+        }
+      ],
+      "width": 80,
+      "height": 128,
+      "notes": "Full matching tall roof assembled from the shared yellow-house roof; supplied colour variant provides gable and facade."
+    },
+    {
+      "id": "apathy-blue-house",
+      "name": "Apathy \u2014 Blue cottage",
+      "category": "Buildings \u00b7 Houses",
+      "tags": [
+        "blue",
+        "cottage",
+        "ornate door",
+        "complete house"
+      ],
+      "assetId": "ekat-s-public-tiles-apathy-houses",
+      "sx": 0,
+      "sy": 640,
+      "sw": 80,
+      "sh": 128,
+      "w": 5.0,
+      "h": 8.0,
+      "parts": [
+        {
+          "sx": 0,
+          "sy": 0,
+          "sw": 80,
+          "sh": 64,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "sx": 16,
+          "sy": 640,
+          "sw": 48,
+          "sh": 16,
+          "dx": 16,
+          "dy": 32
+        },
+        {
+          "sx": 0,
+          "sy": 656,
+          "sw": 80,
+          "sh": 80,
+          "dx": 0,
+          "dy": 48
+        }
+      ],
+      "width": 80,
+      "height": 128,
+      "notes": "Full matching tall roof assembled from the shared yellow-house roof; supplied colour variant provides gable and facade."
+    },
+    {
+      "id": "apathy-rose-house",
+      "name": "Apathy \u2014 Rose cottage",
+      "category": "Buildings \u00b7 Houses",
+      "tags": [
+        "rose",
+        "cottage",
+        "ornate door",
+        "complete house"
+      ],
+      "assetId": "ekat-s-public-tiles-apathy-houses",
+      "sx": 0,
+      "sy": 816,
+      "sw": 80,
+      "sh": 128,
+      "w": 5.0,
+      "h": 8.0,
+      "parts": [
+        {
+          "sx": 0,
+          "sy": 0,
+          "sw": 80,
+          "sh": 64,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "sx": 16,
+          "sy": 816,
+          "sw": 48,
+          "sh": 16,
+          "dx": 16,
+          "dy": 32
+        },
+        {
+          "sx": 0,
+          "sy": 832,
+          "sw": 80,
+          "sh": 80,
+          "dx": 0,
+          "dy": 48
+        }
+      ],
+      "width": 80,
+      "height": 128,
+      "notes": "Full matching tall roof assembled from the shared yellow-house roof; supplied colour variant provides gable and facade."
+    },
+    {
+      "id": "garden-house",
+      "name": "Garden House \u2014 Timber home with patio",
+      "category": "Buildings \u00b7 Houses",
+      "tags": [
+        "timber",
+        "patio",
+        "large house",
+        "complete house"
+      ],
+      "assetId": "ekat-s-public-tiles-garden-house-sheet",
+      "sx": 0,
+      "sy": 16,
+      "sw": 160,
+      "sh": 144,
+      "w": 10.0,
+      "h": 9
+    },
+    {
+      "id": "brick-cottage",
+      "name": "Brick House \u2014 Brown-roof cottage with chimney",
+      "category": "Buildings \u00b7 Houses",
+      "tags": [
+        "brick",
+        "chimney",
+        "brown roof",
+        "complete house"
+      ],
+      "assetId": "ekat-s-public-tiles-brick-house-tiles",
+      "sx": 0,
+      "sy": 16,
+      "sw": 80,
+      "sh": 112,
+      "w": 5.0,
+      "h": 7.0
+    },
+    {
+      "id": "beach-cottage",
+      "name": "Beach House \u2014 Ochre two-storey cottage",
+      "category": "Buildings \u00b7 Houses",
+      "tags": [
+        "beach",
+        "ochre",
+        "two-storey",
+        "complete house"
+      ],
+      "assetId": "ekat-s-public-tiles-beach-houses",
+      "sx": 0,
+      "sy": 0,
+      "sw": 80,
+      "sh": 176,
+      "w": 5.0,
+      "h": 11.0,
+      "parts": [
+        {
+          "sx": 16,
+          "sy": 0,
+          "sw": 48,
+          "sh": 16,
+          "dx": 16,
+          "dy": 0
+        },
+        {
+          "sx": 0,
+          "sy": 16,
+          "sw": 80,
+          "sh": 160,
+          "dx": 0,
+          "dy": 16
+        }
+      ],
+      "width": 80,
+      "height": 176
+    },
+    {
+      "id": "thistle-wood-cottage",
+      "name": "Thistle \u2014 Grey-roof timber cottage",
+      "category": "Buildings \u00b7 Houses",
+      "tags": [
+        "timber",
+        "grey roof",
+        "single-storey",
+        "complete house"
+      ],
+      "assetId": "ekat-s-public-tiles-thistle-town",
+      "sx": 0,
+      "sy": 576,
+      "sw": 80,
+      "sh": 64,
+      "w": 5.0,
+      "h": 4.0,
+      "parts": [
+        {
+          "sx": 0,
+          "sy": 576,
+          "sw": 48,
+          "sh": 64,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "sx": 48,
+          "sy": 640,
+          "sw": 32,
+          "sh": 64,
+          "dx": 48,
+          "dy": 0
+        }
+      ],
+      "width": 80,
+      "height": 64,
+      "notes": "Joined matching left and right eaves with complete ground-floor door and base."
+    },
+    {
+      "id": "thistle-wide-wood-cottage",
+      "name": "Thistle \u2014 Wide grey-roof timber cottage",
+      "category": "Buildings \u00b7 Houses",
+      "tags": [
+        "timber",
+        "grey roof",
+        "wide",
+        "single-storey",
+        "complete house"
+      ],
+      "assetId": "ekat-s-public-tiles-thistle-town",
+      "sx": 0,
+      "sy": 576,
+      "sw": 112,
+      "sh": 64,
+      "w": 7.0,
+      "h": 4.0,
+      "parts": [
+        {
+          "sx": 0,
+          "sy": 576,
+          "sw": 48,
+          "sh": 64,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "sx": 48,
+          "sy": 576,
+          "sw": 32,
+          "sh": 64,
+          "dx": 48,
+          "dy": 0
+        },
+        {
+          "sx": 48,
+          "sy": 640,
+          "sw": 32,
+          "sh": 64,
+          "dx": 80,
+          "dy": 0
+        }
+      ],
+      "width": 112,
+      "height": 64,
+      "notes": "Middle wall and roof section extends the complete cottage while retaining both eaves."
+    },
+    {
+      "id": "silph-corner-kiosk",
+      "name": "Silph \u2014 Orange-roof corner kiosk",
+      "category": "Buildings \u00b7 Shops",
+      "tags": [
+        "orange roof",
+        "kiosk",
+        "shop",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 0,
+      "sy": 768,
+      "sw": 64,
+      "sh": 64,
+      "w": 4.0,
+      "h": 4.0
+    },
+    {
+      "id": "silph-department-store",
+      "name": "Silph \u2014 Orange-roof department store",
+      "category": "Buildings \u00b7 Shops",
+      "tags": [
+        "department store",
+        "orange roof",
+        "shop",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 16,
+      "sy": 1008,
+      "sw": 96,
+      "sh": 144,
+      "w": 6.0,
+      "h": 9.0,
+      "parts": [
+        {
+          "sx": 16,
+          "sy": 1008,
+          "sw": 96,
+          "sh": 128,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "sx": 16,
+          "sy": 1136,
+          "sw": 32,
+          "sh": 16,
+          "dx": 0,
+          "dy": 128
+        },
+        {
+          "sx": 80,
+          "sy": 1136,
+          "sw": 32,
+          "sh": 16,
+          "dx": 64,
+          "dy": 128
+        }
+      ],
+      "width": 96,
+      "height": 144,
+      "notes": "Front-door pavement placeholders omitted; both planted entrance plinths retained."
+    },
+    {
+      "id": "silph-glass-office",
+      "name": "Silph \u2014 Five-storey glass office",
+      "category": "Buildings \u00b7 Public",
+      "tags": [
+        "glass",
+        "office",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 0,
+      "sy": 1616,
+      "sw": 128,
+      "sh": 144,
+      "w": 8.0,
+      "h": 9.0
+    },
+    {
+      "id": "silph-mixed-use-block",
+      "name": "Silph \u2014 Apartments above shop fronts",
+      "category": "Buildings \u00b7 Shops",
+      "tags": [
+        "apartments",
+        "shops",
+        "mixed use",
+        "city",
+        "complete building"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 0,
+      "sy": 1776,
+      "sw": 112,
+      "sh": 144,
+      "w": 7.0,
+      "h": 9.0
+    },
+    {
+      "id": "route-pine-leafy",
+      "name": "Route \u2014 Leafy conifer",
+      "category": "Outdoors \u00b7 Vegetation",
+      "tags": [
+        "tree",
+        "conifer",
+        "route"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "sx": 0,
+      "sy": 48,
+      "sw": 32,
+      "sh": 48,
+      "w": 2.0,
+      "h": 3.0
+    },
+    {
+      "id": "route-pine-trunk",
+      "name": "Route \u2014 Conifer with visible trunk",
+      "category": "Outdoors \u00b7 Vegetation",
+      "tags": [
+        "tree",
+        "conifer",
+        "route"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "sx": 32,
+      "sy": 48,
+      "sw": 32,
+      "sh": 48,
+      "w": 2.0,
+      "h": 3.0
+    },
+    {
+      "id": "route-broadleaf-tree",
+      "name": "Route \u2014 Round broadleaf tree",
+      "category": "Outdoors \u00b7 Vegetation",
+      "tags": [
+        "tree",
+        "broadleaf",
+        "route"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "sx": 64,
+      "sy": 32,
+      "sw": 48,
+      "sh": 64,
+      "w": 3.0,
+      "h": 4.0,
+      "parts": [
+        {
+          "sx": 80,
+          "sy": 32,
+          "sw": 16,
+          "sh": 16,
+          "dx": 16,
+          "dy": 0
+        },
+        {
+          "sx": 64,
+          "sy": 48,
+          "sw": 48,
+          "sh": 48,
+          "dx": 0,
+          "dy": 16
+        }
+      ],
+      "width": 48,
+      "height": 64,
+      "notes": "Upper canopy tile assembled separately to exclude neighbouring grass and flowers."
+    },
+    {
+      "id": "route-small-boulder",
+      "name": "Route \u2014 Small brown rock",
+      "category": "Outdoors \u00b7 Rocks",
+      "tags": [
+        "rock",
+        "small",
+        "route"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "sx": 48,
+      "sy": 112,
+      "sw": 16,
+      "sh": 16,
+      "w": 1.0,
+      "h": 1.0
+    },
+    {
+      "id": "route-mossy-rock",
+      "name": "Route \u2014 Moss-tipped rock",
+      "category": "Outdoors \u00b7 Rocks",
+      "tags": [
+        "rock",
+        "moss",
+        "route"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "sx": 48,
+      "sy": 128,
+      "sw": 16,
+      "sh": 16,
+      "w": 1.0,
+      "h": 1.0
+    },
+    {
+      "id": "route-pebbles",
+      "name": "Route \u2014 Three pebbles",
+      "category": "Outdoors \u00b7 Rocks",
+      "tags": [
+        "rocks",
+        "pebbles",
+        "route"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "sx": 48,
+      "sy": 144,
+      "sw": 16,
+      "sh": 16,
+      "w": 1.0,
+      "h": 1.0
+    },
+    {
+      "id": "route-large-boulder",
+      "name": "Route \u2014 Large brown boulder",
+      "category": "Outdoors \u00b7 Rocks",
+      "tags": [
+        "boulder",
+        "large",
+        "route"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "sx": 64,
+      "sy": 112,
+      "sw": 48,
+      "sh": 48,
+      "w": 3.0,
+      "h": 3.0
+    },
+    {
+      "id": "route-pointed-boulder",
+      "name": "Route \u2014 Pointed brown boulder",
+      "category": "Outdoors \u00b7 Rocks",
+      "tags": [
+        "boulder",
+        "pointed",
+        "route"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "sx": 32,
+      "sy": 160,
+      "sw": 32,
+      "sh": 32,
+      "w": 2.0,
+      "h": 2.0
+    },
+    {
+      "id": "route-direction-sign",
+      "name": "Route \u2014 Two-way wooden signpost",
+      "category": "Outdoors \u00b7 Signs",
+      "tags": [
+        "signpost",
+        "wood",
+        "route"
+      ],
+      "assetId": "ekat-s-public-tiles-the-basics",
+      "sx": 32,
+      "sy": 192,
+      "sw": 16,
+      "sh": 32,
+      "w": 1.0,
+      "h": 2.0
+    },
+    {
+      "id": "house-sign",
+      "name": "Garden House \u2014 Wooden noticeboard",
+      "category": "Outdoors \u00b7 Signs",
+      "tags": [
+        "sign",
+        "noticeboard",
+        "wood"
+      ],
+      "assetId": "ekat-s-public-tiles-garden-house-sheet",
+      "sx": 96,
+      "sy": 160,
+      "sw": 32,
+      "sh": 32,
+      "w": 2.0,
+      "h": 2.0
+    },
+    {
+      "id": "garden-single-lamp-left",
+      "name": "Garden \u2014 Curved lamp facing left",
+      "category": "Outdoors \u00b7 Lighting",
+      "tags": [
+        "lamp",
+        "streetlight",
+        "garden"
+      ],
+      "assetId": "ekat-s-public-tiles-garden-objects",
+      "sx": 0,
+      "sy": 0,
+      "sw": 32,
+      "sh": 48,
+      "w": 2.0,
+      "h": 3.0,
+      "parts": [
+        {
+          "sx": 0,
+          "sy": 0,
+          "sw": 32,
+          "sh": 32,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "sx": 16,
+          "sy": 32,
+          "sw": 16,
+          "sh": 16,
+          "dx": 16,
+          "dy": 32
+        }
+      ],
+      "width": 32,
+      "height": 48
+    },
+    {
+      "id": "garden-single-lamp-right",
+      "name": "Garden \u2014 Curved lamp facing right",
+      "category": "Outdoors \u00b7 Lighting",
+      "tags": [
+        "lamp",
+        "streetlight",
+        "garden"
+      ],
+      "assetId": "ekat-s-public-tiles-garden-objects",
+      "sx": 64,
+      "sy": 0,
+      "sw": 32,
+      "sh": 48,
+      "w": 2.0,
+      "h": 3.0,
+      "parts": [
+        {
+          "sx": 64,
+          "sy": 0,
+          "sw": 32,
+          "sh": 32,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "sx": 64,
+          "sy": 32,
+          "sw": 16,
+          "sh": 16,
+          "dx": 0,
+          "dy": 32
+        }
+      ],
+      "width": 32,
+      "height": 48
+    },
+    {
+      "id": "garden-double-lamp",
+      "name": "Garden \u2014 Paired ornamental lamps",
+      "category": "Outdoors \u00b7 Lighting",
+      "tags": [
+        "lamps",
+        "streetlights",
+        "garden",
+        "paired"
+      ],
+      "assetId": "ekat-s-public-tiles-garden-objects",
+      "sx": 0,
+      "sy": 0,
+      "sw": 96,
+      "sh": 48,
+      "w": 6.0,
+      "h": 3.0,
+      "parts": [
+        {
+          "sx": 0,
+          "sy": 0,
+          "sw": 96,
+          "sh": 32,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "sx": 16,
+          "sy": 32,
+          "sw": 16,
+          "sh": 16,
+          "dx": 16,
+          "dy": 32
+        },
+        {
+          "sx": 64,
+          "sy": 32,
+          "sw": 16,
+          "sh": 16,
+          "dx": 64,
+          "dy": 32
+        }
+      ],
+      "width": 96,
+      "height": 48
+    },
+    {
+      "id": "silph-round-topiary",
+      "name": "Silph \u2014 Round topiary in stone pot",
+      "category": "Outdoors \u00b7 Potted plants",
+      "tags": [
+        "topiary",
+        "potted plant",
+        "city"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 0,
+      "sy": 336,
+      "sw": 16,
+      "sh": 32,
+      "w": 1.0,
+      "h": 2.0
+    },
+    {
+      "id": "silph-leafy-topiary",
+      "name": "Silph \u2014 Leafy topiary in stone pot",
+      "category": "Outdoors \u00b7 Potted plants",
+      "tags": [
+        "topiary",
+        "potted plant",
+        "city"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 16,
+      "sy": 336,
+      "sw": 16,
+      "sh": 32,
+      "w": 1.0,
+      "h": 2.0
+    },
+    {
+      "id": "silph-round-topiary-tall",
+      "name": "Silph \u2014 Tall round topiary in stone pot",
+      "category": "Outdoors \u00b7 Potted plants",
+      "tags": [
+        "topiary",
+        "potted plant",
+        "city"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 32,
+      "sy": 336,
+      "sw": 16,
+      "sh": 48,
+      "w": 1.0,
+      "h": 3.0
+    },
+    {
+      "id": "silph-leafy-topiary-tall",
+      "name": "Silph \u2014 Tall leafy topiary in stone pot",
+      "category": "Outdoors \u00b7 Potted plants",
+      "tags": [
+        "topiary",
+        "potted plant",
+        "city"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 48,
+      "sy": 336,
+      "sw": 16,
+      "sh": 48,
+      "w": 1.0,
+      "h": 3.0
+    },
+    {
+      "id": "silph-palm-upright",
+      "name": "Silph \u2014 Upright palm",
+      "category": "Outdoors \u00b7 Vegetation",
+      "tags": [
+        "palm",
+        "tree",
+        "city"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 96,
+      "sy": 336,
+      "sw": 32,
+      "sh": 48,
+      "w": 2.0,
+      "h": 3.0
+    },
+    {
+      "id": "silph-palm-drooping",
+      "name": "Silph \u2014 Drooping palm",
+      "category": "Outdoors \u00b7 Vegetation",
+      "tags": [
+        "palm",
+        "tree",
+        "city"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 96,
+      "sy": 384,
+      "sw": 32,
+      "sh": 48,
+      "w": 2.0,
+      "h": 3.0
+    },
+    {
+      "id": "silph-fire-hydrant",
+      "name": "Silph \u2014 Red fire hydrant",
+      "category": "Outdoors \u00b7 Street furniture",
+      "tags": [
+        "hydrant",
+        "red",
+        "city"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 112,
+      "sy": 784,
+      "sw": 16,
+      "sh": 16,
+      "w": 1.0,
+      "h": 1.0
+    },
+    {
+      "id": "silph-street-terminal",
+      "name": "Silph \u2014 Grey street terminal",
+      "category": "Outdoors \u00b7 Street furniture",
+      "tags": [
+        "terminal",
+        "grey",
+        "city"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 64,
+      "sy": 800,
+      "sw": 16,
+      "sh": 32,
+      "w": 1.0,
+      "h": 2.0
+    },
+    {
+      "id": "silph-rubbish-bin",
+      "name": "Silph \u2014 Grey rubbish bin",
+      "category": "Outdoors \u00b7 Street furniture",
+      "tags": [
+        "bin",
+        "grey",
+        "city"
+      ],
+      "assetId": "ekat-s-public-tiles-silph-city",
+      "sx": 0,
+      "sy": 832,
+      "sw": 16,
+      "sh": 32,
+      "w": 1.0,
+      "h": 2.0
+    }
+  ]
+}

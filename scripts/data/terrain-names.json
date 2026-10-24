@@ -1,0 +1,158 @@
+{
+  "0-mt-moon-test": {
+    "name": "Mt. Moon \u00b7 stone-bank water study",
+    "category": "Water \u00b7 studies"
+  },
+  "0-water-test": {
+    "name": "Water \u00b7 pale-bank study",
+    "category": "Water \u00b7 studies"
+  },
+  "coral-1": {
+    "name": "Coral coast \u00b7 golden sand / grey rock",
+    "category": "Coast \u00b7 sand"
+  },
+  "default-1": {
+    "name": "Classic routes \u00b7 pale cobblestone / grass",
+    "category": "Routes \u00b7 stone"
+  },
+  "default-2": {
+    "name": "Classic routes \u00b7 brown earth / grass",
+    "category": "Routes \u00b7 earth"
+  },
+  "default-3": {
+    "name": "Classic routes \u00b7 golden sand / grass",
+    "category": "Routes \u00b7 sand"
+  },
+  "default-4": {
+    "name": "Classic towns \u00b7 cream diamond paving",
+    "category": "Cities \u00b7 paving"
+  },
+  "default-5": {
+    "name": "Classic towns \u00b7 tan herringbone paving",
+    "category": "Cities \u00b7 paving"
+  },
+  "default-6": {
+    "name": "Classic towns \u00b7 framed cream brick",
+    "category": "Cities \u00b7 paving"
+  },
+  "desert-1": {
+    "name": "Desert \u00b7 fine golden sand",
+    "category": "Desert \u00b7 paths"
+  },
+  "desert-2": {
+    "name": "Desert \u00b7 red cobblestone path",
+    "category": "Desert \u00b7 paths"
+  },
+  "desert-3": {
+    "name": "Desert \u00b7 dark pebble crossing",
+    "category": "Desert \u00b7 paths"
+  },
+  "dust-grass": {
+    "name": "Dusty routes \u00b7 muted gravel / grass",
+    "category": "Routes \u00b7 gravel"
+  },
+  "fall-harvest-stone": {
+    "name": "Harvest \u00b7 dark pebbles / golden lawn",
+    "category": "Autumn \u00b7 paths"
+  },
+  "fall-ruins-path": {
+    "name": "Autumn ruins \u00b7 broken brick path",
+    "category": "Ruins \u00b7 paths"
+  },
+  "fall-ruins-stone": {
+    "name": "Autumn ruins \u00b7 grey earth path",
+    "category": "Ruins \u00b7 paths"
+  },
+  "harvest-1": {
+    "name": "Harvest \u00b7 brown earth / golden lawn",
+    "category": "Autumn \u00b7 paths"
+  },
+  "harvest-2": {
+    "name": "Harvest \u00b7 pebble trail / golden lawn",
+    "category": "Autumn \u00b7 paths"
+  },
+  "jonquil-1": {
+    "name": "Jonquil \u00b7 mint lawn / golden sand",
+    "category": "Routes \u00b7 lawn"
+  },
+  "jonquil-2": {
+    "name": "Jonquil \u00b7 mint lawn / grey stone",
+    "category": "Routes \u00b7 lawn"
+  },
+  "moon-1": {
+    "name": "Mt. Moon \u00b7 muted gravel / rock",
+    "category": "Routes \u00b7 gravel"
+  },
+  "moon-2": {
+    "name": "Mt. Moon \u00b7 muted gravel / grass",
+    "category": "Routes \u00b7 gravel"
+  },
+  "moon-3": {
+    "name": "Mt. Moon \u00b7 deep lawn I",
+    "category": "Routes \u00b7 lawn"
+  },
+  "moon-4": {
+    "name": "Mt. Moon \u00b7 deep lawn II",
+    "category": "Routes \u00b7 lawn"
+  },
+  "moon-5": {
+    "name": "Mt. Moon \u00b7 deep lawn III",
+    "category": "Routes \u00b7 lawn"
+  },
+  "moon-6": {
+    "name": "Mt. Moon \u00b7 deep lawn IV",
+    "category": "Routes \u00b7 lawn"
+  },
+  "ruins-1": {
+    "name": "Ruins \u00b7 grey earth trail",
+    "category": "Ruins \u00b7 paths"
+  },
+  "ruins-2": {
+    "name": "Ruins \u00b7 broken brick walk",
+    "category": "Ruins \u00b7 paths"
+  },
+  "ruins-3": {
+    "name": "Ruins \u00b7 tan brick walk",
+    "category": "Ruins \u00b7 paths"
+  },
+  "ruins-4": {
+    "name": "Ruins \u00b7 square slab paving",
+    "category": "Ruins \u00b7 paths"
+  },
+  "sand-grass": {
+    "name": "Coastal routes \u00b7 lawn / golden sand",
+    "category": "Routes \u00b7 lawn"
+  },
+  "snow-stone": {
+    "name": "Snow \u00b7 blue pebble trail",
+    "category": "Snow \u00b7 paths"
+  },
+  "snow-1": {
+    "name": "Snow \u00b7 fresh snowfield",
+    "category": "Snow \u00b7 paths"
+  },
+  "snow-2": {
+    "name": "Snow \u00b7 blue ice trail",
+    "category": "Snow \u00b7 paths"
+  },
+  "snow-3": {
+    "name": "Snow \u00b7 frosted grey cobblestone",
+    "category": "Snow \u00b7 paths"
+  },
+  "snow-4": {
+    "name": "Snow \u00b7 blue pebble crossing",
+    "category": "Snow \u00b7 paths"
+  },
+  "stone-path": {
+    "name": "Town paths \u00b7 framed cream brick",
+    "category": "Cities \u00b7 paving"
+  },
+  "volcano-1": {
+    "name": "Volcano \u00b7 dark cobblestone path",
+    "category": "Volcano \u00b7 paths"
+  },
+  "volcano-2": {
+    "name": "Volcano \u00b7 rocky basalt trail",
+    "category": "Volcano \u00b7 paths"
+  }
+}
