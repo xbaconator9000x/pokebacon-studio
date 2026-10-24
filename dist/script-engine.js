@@ -448,7 +448,7 @@ function disassembleScript(bytes, address, engine = "frlg", inspect = false) {
   if(inspect){const references=[];for(const list of blocks.values())for(const node of list){if(!node.fields)continue;let cursor=node.at+1;node.fields.forEach((f,i)=>{if(f.width===4&&texts.has(offset(node.args[i])))references.push({pointer:cursor,address:offset(node.args[i])});cursor+=f.width;});}return{source,texts:[...texts].map(([address,text])=>({address,text,references:references.filter(r=>r.address===address).map(r=>r.pointer)}))};}
   return source;
 }
-const SCRIPT_TEMPLATE = "@start:\nlock\nfaceplayer\nmsgbox @text, MSG_NORMAL\nrelease\nend\n\n@text:\n= Hello there!\\nWelcome to Shattered.$\n";
+const SCRIPT_TEMPLATE = "@start:\nlock\nfaceplayer\nmsgbox @text, MSG_NORMAL\nrelease\nend\n\n@text:\n= Hello there!\\nWelcome to PokeBacon.$\n";
 function scriptCommandHelp(engine = "frlg") {
   return (SCRIPT_DATA[engine] || SCRIPT_DATA.frlg).map((c) => c.name + " " + c.params.map((p) => p.name + (p.default !== void 0 ? "=" + p.default : "")).join(", ")).join("\n");
 }

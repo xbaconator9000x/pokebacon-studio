@@ -1,4 +1,4 @@
-const KEY='shattered-toolbar-v1';
+const KEY='pokebacon-toolbar-v1';
 export const TOOL_CHOICES=['move','brush','stamp','brushes','rules','event','link','inspect','erase','pick','rect','fill','tree','terrain','building','field','play'];
 const defaults=phone=>phone?['move','brush','stamp','brushes']:['move','brush','stamp','brushes','erase','pick','rect'];
 let preferences=null;try{const value=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(value))preferences=[...new Set(value.filter(x=>TOOL_CHOICES.includes(x)))];}catch{}
