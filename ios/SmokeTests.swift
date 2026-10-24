@@ -76,7 +76,7 @@ final class SmokeTests: XCTestCase {
         try await web.evaluateJavaScript("window.__persisted=false; {const r=indexedDB.open('ios-smoke',1);r.onsuccess=()=>{const db=r.result,t=db.transaction('test','readwrite');t.objectStore('test').put('saved','checkpoint');t.oncomplete=()=>{db.close();window.__persisted=true}}}; void 0")
         try await waitFor("window.__persisted===true", in: web)
         web.reload()
-        try await waitFor("typeof window.mapStudioBack==='function' && document.querySelector('#loading').hidden", in: web)
+        try await waitFor("typeof window.__persisted==='undefined' && typeof window.mapStudioBack==='function' && document.querySelector('#loading').hidden", in: web)
         try await web.evaluateJavaScript("window.__restored=false; {const r=indexedDB.open('ios-smoke',1);r.onsuccess=()=>{const db=r.result,q=db.transaction('test').objectStore('test').get('checkpoint');q.onsuccess=()=>{window.__restored=q.result==='saved';db.close()}}}; void 0")
         try await waitFor("window.__restored===true", in: web)
         try await capture("05-back-to-map", window: window, web: web)
