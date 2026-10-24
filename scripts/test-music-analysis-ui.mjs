@@ -1,0 +1,12 @@
+import {session,newProject} from './qa-harness.mjs';
+import {musicWorkshop} from '../dist/music-ui.js';
+import {authoring} from '../dist/authoring-model.js';
+import {composeMusic,compileMusic} from '../dist/music-compose.js';
+import assert from 'node:assert/strict';
+const s=await session({},true),{w,$}=s,p=newProject('Motif QA');globalThis.document=w.document;let submit,saved;
+const fixture=composeMusic({bars:4}),phrase=fixture.tracks[0].notes.filter(n=>n.tick<96);fixture.tracks[0].notes=Array.from({length:4},(_,bar)=>phrase.map(n=>({...n,tick:n.tick+bar*96}))).flat();
+const t={id:'theme',name:'Theme',tags:[],asset:compileMusic(fixture)};authoring(p).music.push(t);const before=structuredClone(t);
+// Variation now starts a preview; emulate Web Audio while rendering real PCM.
+globalThis.AudioContext=class{resume(){return Promise.resolve();}createBuffer(ch,n){return{getChannelData:()=>new Float32Array(n)};}createBufferSource(){return{connect(){},start(){},stop(){}};}};
+const tool=musicWorkshop({project:()=>p,session:()=>null,esc:s=>String(s).replaceAll('"','&quot;'),modal(title,html,fn){$('#dialogTitle').textContent=title;$('#dialogBody').innerHTML=html;submit=fn;},change:fn=>fn(),save:async(blob,name)=>saved={blob,name},toast(){},error(e){throw e;}});
+tool.open();document.querySelector('[data-music-edit]').click();$('#musicAnalysis').click();assert.ok($('#analysisRoll svg'));assert.ok($('#analysisMotif').options.length>1);$('#analysisHighlight').checked=false;$('#analysisHighlight').onchange();assert.ok(!$('#analysisRoll').textContent.includes('· motif'));document.querySelector('[data-analysis-note]').click();$('#analysisPitch').value=61;await $('#analysisApply').onclick();assert.equal(authoring(p).music.length,1);$('#analysisUndo').click();await $('#analysisMIDI').onclick();assert.equal(saved.name,'Theme_edited.mid');$('#analysisMotif').selectedIndex=1;$('#analysisMotif').onchange();await $('#analysisGenerate').onclick();$('#referenceMode').value='motif';await $('#referenceNext').onclick();await submit();assert.ok($('#composeBank'));await submit();assert.equal(authoring(p).music.length,2);assert.deepEqual(t,before);assert.ok(authoring(p).music[1].asset.arrangement.score.tracks[0].notes.length);tool.stop();await s.close();console.log('PASS motif highlighting, note edit/undo, MIDI export, motif selection, reference composition and saving a separate arrangement');
