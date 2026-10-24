@@ -29,7 +29,7 @@ Minimum iOS: 16.4. The local resource server listens only on the loopback interf
 
 Open the **iOS preview** workflow in Actions, select a successful run, and look under Artifacts:
 
-- **PokeBacon-iOS-simulator-preview** contains the simulator app. Install it into a booted simulator with `xcrun simctl install booted /path/to/PokeBaconStudio.app`.
+- **PokeBacon-iOS-simulator-preview** contains `PokeBacon-iOS-simulator.zip`. Unzip it to recover the app bundle with its executable permissions, then install it into a booted simulator with `xcrun simctl install booted /path/to/PokeBaconStudio.app`.
 - **PokeBacon-iOS-unsigned-device** contains a Release device archive packaged as an unsigned IPA. It needs signing and provisioning before device installation.
 - **PokeBacon-iOS-screenshots** contains captures from the native simulator run.
 - **ios-smoke-results** contains the Xcode test results and attachments.
