@@ -1,0 +1,36 @@
+import{planDistricts}from'./town-districts.js';
+export const BIOMES=['Meadow','Forest','Coastal','Mountain','Underground','Lakeside','Desert','Snow','Metro'];
+export const TOWN_PRESETS=BIOMES.flatMap(b=>['Village','Town','City'].map(s=>({id:b.toLowerCase()+'-'+s.toLowerCase(),name:b+' '+s.toLowerCase(),biome:b.toLowerCase(),size:s.toLowerCase()})));
+export const FACILITIES=[['centre','Pokémon Centre'],['mart','Mart'],['gym','Gym'],['game-corner','Game corner'],['department-store','Department store'],['cave','Cave']];
+export const randomFor=seed=>()=>{seed|=0;seed=seed+0x6d2b79f5|0;let x=Math.imul(seed^seed>>>15,1|seed);x^=x+Math.imul(x^x>>>7,61|x);return((x^x>>>14)>>>0)/4294967296;};
+export function freshTownSeed(){const a=new Uint32Array(1);if(globalThis.crypto?.getRandomValues)crypto.getRandomValues(a);else a[0]=Math.random()*4294967296;return a[0];}
+export function defaultExits(count){return Array.from({length:count},(_,i)=>({edge:['west','east','north','south'][i%4],position:i<4?50:25+50*(i%2)}));}
+export function planTown({seed,preset='meadow-town',buildings,exits=defaultExits(2),layouts=[],layout='auto',spacingPass=0}){
+ if(!Number.isSafeInteger(seed))throw Error('Use a whole-number seed.');const config=TOWN_PRESETS.find(p=>p.id===preset);if(!config)throw Error('Choose a settlement preset.');if(!Array.isArray(exits)||exits.length>8||exits.some(e=>!['north','south','east','west'].includes(e.edge)||!Number.isFinite(e.position)||e.position<5||e.position>95))throw Error('Choose up to eight exits, between 5% and 95% along an edge.');
+ if(config.biome==='metro'||config.biome==='coastal'||config.size==='city'&&config.biome!=='underground')return planDistricts({config,seed,buildings,exits,layout,random:randomFor(seed)});
+ const random=randomFor(seed),base={village:38,town:50,city:66}[config.size],width=base+spacingPass*8+2*Math.floor(random()*6),height=spacingPass*8+Math.max(base-4+2*Math.floor(random()*6),Math.max(2,Math.ceil(buildings.length/(config.size==='city'?4:3)))*10+7),cells=width*height,endpoints=exits.map(e=>{const horizontal=['north','south'].includes(e.edge),length=horizontal?width:height,p=Math.max(3,Math.min(length-4,Math.round((length-1)*e.position/100)));return{...e,x:horizontal?p:e.edge==='west'?0:width-1,y:horizontal?e.edge==='north'?0:height-1:p};});for(let i=0;i<endpoints.length;i++)for(let j=0;j<i;j++)if(Math.abs(endpoints[i].x-endpoints[j].x)+Math.abs(endpoints[i].y-endpoints[j].y)<6)throw Error('Leave six tiles between exits.');
+ const sample=layouts.length?layouts[Math.floor(random()*layouts.length)]:null,mirror=random()<.5,blocked=new Uint8Array(cells),reserved=new Set(),plots=[];
+ for(const e of endpoints)for(let d=0;d<7;d++)for(let n=-2;n<=2;n++){const x=e.x+(e.edge==='west'?d:e.edge==='east'?-d:n),y=e.y+(e.edge==='north'?d:e.edge==='south'?-d:n);if(x>=0&&y>=0&&x<width&&y<height)reserved.add(y*width+x);}
+ const fits=(t,x,y)=>{if(x<3||y<3||x+t.w>width-3||y+t.h>height-5)return false;for(let dy=-1;dy<t.h+3;dy++)for(let dx=-2;dx<t.w+2;dx++){const i=(y+dy)*width+x+dx;if(blocked[i]||reserved.has(i))return false;}return true;};
+ // Source door rows and relative lot positions determine the neighbourhoods.
+ // Mirroring, neighbourhood ordering and spacing vary; houses keep facing south.
+ const source=sample?.lots||[{x:4,y:4,w:5,h:4,front:8},{x:18,y:4,w:5,h:4,front:8},{x:8,y:20,w:5,h:4,front:24},{x:24,y:20,w:5,h:4,front:24}],sw=sample?.width||34,sh=sample?.height||32;
+ const rowCount=Math.max(2,Math.ceil(buildings.length/(config.size==='city'?4:3))),frontRows=Array.from({length:rowCount},(_,i)=>Math.round(13+i*(height-19)/Math.max(1,rowCount-1))),sourceRows=[...new Set(source.map(q=>Math.round(q.front/3)*3))].sort((a,b)=>a-b),anchors=source.map(q=>({kind:q.kind,x:3+(mirror?1-(q.x+q.w/2)/sw:(q.x+q.w/2)/sw)*(width-6),front:frontRows[Math.min(frontRows.length-1,Math.round(sourceRows.indexOf(Math.round(q.front/3)*3)/Math.max(1,sourceRows.length-1)*(frontRows.length-1)))]}));
+ const order=buildings.map((t,i)=>({t,i,r:random()})).sort((a,b)=>(b.t.kind&&b.t.kind!=='house'?1:0)-(a.t.kind&&a.t.kind!=='house'?1:0)||b.t.w*b.t.h-a.t.w*a.t.h||a.r-b.r);
+ for(const{t,i}of order){let p;const candidates=anchors.map((a,j)=>({x:Math.round(a.x-t.w/2),y:a.front-t.h,score:(a.kind===t.kind?-150:0)+(j===i%anchors.length?-80:0)+(t.kind&&t.kind!=='house'?Math.abs(a.x-width/2)+Math.abs(a.front-height/2)*.5:0)+random()*20})).sort((a,b)=>a.score-b.score);for(const c of candidates)if(fits(t,c.x,c.y)){p={t,x:c.x,y:c.y};break;}
+  // Infill follows learned door rows, with spacing rather than free scatter.
+  for(let tries=0;!p&&tries<3000;tries++){const row=frontRows[Math.floor(random()*frontRows.length)],x=3+Math.floor(random()*(width-t.w-6)),y=row-t.h;if(fits(t,x,y))p={t,x,y};}
+  if(!p){if(spacingPass<3)return planTown({seed,preset,buildings,exits,layouts,spacingPass:spacingPass+1});throw Error('These buildings need more room. Choose a larger settlement or fewer facilities.');}plots.push(p);for(let dy=0;dy<t.h;dy++)for(let dx=0;dx<t.w;dx++)blocked[(p.y+dy)*width+p.x+dx]=1;
+ }
+ const road=new Set(),nodes=plots.map(p=>({x:p.x+(p.t.entrances?.[0]?.x??Math.floor(p.t.w/2)),y:p.y+p.t.h+1})).concat(endpoints),centre=nodes.reduce((a,b)=>Math.abs(b.x-width/2)+Math.abs(b.y-height/2)<Math.abs(a.x-width/2)+Math.abs(a.y-height/2)?b:a,nodes[0]);road.add(centre.y*width+centre.x);
+ // Dijkstra routing prefers an existing street over a new parallel one.
+ for(const node of nodes.sort((a,b)=>Math.abs(a.x-centre.x)+Math.abs(a.y-centre.y)-Math.abs(b.x-centre.x)-Math.abs(b.y-centre.y))){const start=node.y*width+node.x,dist=new Float64Array(cells).fill(Infinity),prev=new Int32Array(cells).fill(-1),queue=[[0,start]];dist[start]=0;let end=null;
+  while(queue.length){queue.sort((a,b)=>b[0]-a[0]);const[cost,i]=queue.pop();if(cost!==dist[i])continue;if(road.has(i)){end=i;break;}const x=i%width,y=Math.floor(i/width);for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy,j=ny*width+nx;if(nx<0||ny<0||nx>=width||ny>=height||blocked[j])continue;const near=road.has(j)||road.has(j-width)||road.has(j+width)||nx&&road.has(j-1)||nx<width-1&&road.has(j+1),street=frontRows.some(r=>Math.abs(ny-r-1)<=1),next=cost+(near ? .3 : street ? .75 : 1);if(next<dist[j]){dist[j]=next;prev[j]=i;queue.push([next,j]);}}}
+  if(end===null)throw Error('A doorway cannot reach the street. Try another seed.');let i=end;road.add(i);while(i!==start&&prev[i]!==-1){i=prev[i];road.add(i);}
+ }
+ // Each doorway has a direct approach; the lane itself stays clear of the façade.
+ for(const p of plots)for(const e of p.t.entrances?.length?p.t.entrances:[{x:Math.floor(p.t.w/2)}]){for(let y=p.y+p.t.h;y<=p.y+p.t.h+1;y++)road.add(y*width+p.x+e.x);}
+ for(const i of [...road]){const x=i%width,y=Math.floor(i/width);for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy,j=ny*width+nx;if(nx>=0&&ny>=0&&nx<width&&ny<height&&!blocked[j])road.add(j);}}
+ for(let i=0;i<cells;i++){const x=i%width,y=Math.floor(i/width);if(x&&y&&x<width-1&&y<height-1)continue;if(!endpoints.some(e=>Math.abs(e.x-x)+Math.abs(e.y-y)<=1))road.delete(i);}
+ return{...config,width,height,plots,road,exits:endpoints,random,layoutSample:sample?.id||null,frontRows};
+}
