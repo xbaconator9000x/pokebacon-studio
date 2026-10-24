@@ -11,6 +11,8 @@ scripts/__pycache__/
 *.tar.gz
 *.apk
 *.aab
+*.ipa
+android/previews/
 .DS_Store
 .idea/
 .vscode/
@@ -20,6 +22,7 @@ scripts/__pycache__/
 ios/Web/
 ios/*.xcodeproj/
 ios/build/
+ios/previews/
 ios/*.xcresult/
 DerivedData/
 *.xcuserstate
