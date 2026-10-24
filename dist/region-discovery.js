@@ -22,3 +22,16 @@ export function discoverEmeraldRegion(reader){
  if(candidates.length===1)result=Object.freeze(candidates[0]);
  cache.set(reader,result);return result;
 }
+
+// Read the live FireRed Town Map literals after checking the native loader.
+// This also follows pages relocated by an earlier Studio export.
+export function discoverFireRedRegion(reader){
+ const b=reader.bytes;if(!b||b.length<0xc3d40)return null;
+ const v=new DataView(b.buffer,b.byteOffset,b.byteLength);
+ const anchors=[[0xc0330,'002336f0a5fa4be0'],[0xc035c,'263123f10bfc35e0'],[0xc0370,'0968034a16e00000'],[0xc0388,'0968034a0ae00000'],[0xc03a4,'891823f1e7fb11e0'],[0xc3d38,'08500003e4990302']];
+ for(const[at,hex]of anchors)if(Array.from(b.slice(at-8,at),n=>n.toString(16).padStart(2,'0')).join('')!==hex)return null;
+ const ptr=at=>{const n=v.getUint32(at,true)-0x08000000;return n>=512&&n<b.length?n:null;};
+ const p={label:'Verified FireRed Town Map',palette:ptr(0xc02ec),tiles:ptr(0xc0330),pages:[0xc035c,0xc0370,0xc0388,0xc03a4].map(ptr),names:ptr(0xc0c94),xy:ptr(0xc3d3c),wh:ptr(0xc3d38),count:109};
+ if([p.palette,p.tiles,p.names,p.xy,p.wh,...p.pages].some(n=>n===null)||ptr(0xc2d10)!==p.palette||ptr(0xc4db8)!==p.names)return null;
+ return p;
+}
