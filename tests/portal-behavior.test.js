@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import{nativePortalBehavior}from'../dist/portal-facing.js';
+test('FRLG step portals preserve cave, arrow and staircase arrival/exit semantics',()=>{for(const behavior of [0x60,0x61,0x62,0x63,0x64,0x65,0x6a,0x6b,0x6c,0x6d,0x6e,0x6f])assert.equal(nativePortalBehavior('frlg','step',behavior),behavior);});
+test('plain FRLG step entrances use non-animated doors rather than teleport pads',()=>{for(const behavior of [undefined,0,2,0x10,0x67])assert.equal(nativePortalBehavior('frlg','step',behavior),0x60);});
+test('animated doors and the existing RSE path retain their respective native behaviors',()=>{assert.equal(nativePortalBehavior('frlg','door',0x65),0x69);assert.equal(nativePortalBehavior('rse','door',0),0x69);assert.equal(nativePortalBehavior('rse','step',0x65),0x67);});

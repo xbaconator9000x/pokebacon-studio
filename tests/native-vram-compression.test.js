@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {compressSpriteLZ} from '../dist/native-sprites.js';
+// Model the BIOS's halfword writes: an odd pending byte isn't readable in VRAM.
+function decodeVRAM(bytes){const size=bytes[1]|bytes[2]<<8|bytes[3]<<16,out=new Uint8Array(size);let at=4,n=0,pending=0;const write=b=>{if(n&1){out[n-1]=pending;out[n]=b;}else pending=b;n++;};while(n<size){const flags=bytes[at++];for(let bit=7;bit>=0&&n<size;bit--){if(flags&(1<<bit)){const a=bytes[at++],b=bytes[at++],count=(a>>>4)+3,distance=((a&15)<<8|b)+1;assert.ok(distance>=2,'Video-memory backreferences cannot read a pending byte');for(let i=0;i<count;i++)write(out[n-distance]);}else write(bytes[at++]);}}return out;}
+test('native bitmap compression survives BIOS halfword writes across solid runs and moving art',()=>{for(const shift of [0,19,191]){const pixels=new Uint8Array(240*160);for(let y=35;y<59;y++)pixels.fill(2,y*240+shift,y*240+shift+24);assert.deepEqual(decodeVRAM(compressSpriteLZ(pixels,{vram:true})),pixels);}});
