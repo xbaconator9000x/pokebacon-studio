@@ -1,0 +1,2191 @@
+{
+  "version": "3.2",
+  "source": "Ekat bundled public and Tiny Interiors sheets",
+  "assets": [
+    {
+      "id": "interior-v32-white-display-wood",
+      "name": "White display table — wooden base",
+      "src": "assets/interiors-v32/v32-white-display-wood.png",
+      "width": 48,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-idilio-interiors-formatted"
+    },
+    {
+      "id": "interior-v32-white-display-metal",
+      "name": "White display table — metal legs",
+      "src": "assets/interiors-v32/v32-white-display-metal.png",
+      "width": 48,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-idilio-interiors-formatted"
+    },
+    {
+      "id": "interior-v32-book-display-wood",
+      "name": "Low book display — wooden base",
+      "src": "assets/interiors-v32/v32-book-display-wood.png",
+      "width": 48,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-idilio-interiors-formatted"
+    },
+    {
+      "id": "interior-v32-book-display-metal",
+      "name": "Low book display — metal legs",
+      "src": "assets/interiors-v32/v32-book-display-metal.png",
+      "width": 48,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-idilio-interiors-formatted"
+    },
+    {
+      "id": "interior-v32-white-tall-cabinet",
+      "name": "White double-door storage cabinet",
+      "src": "assets/interiors-v32/v32-white-tall-cabinet.png",
+      "width": 48,
+      "height": 64,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-idilio-interiors-formatted"
+    },
+    {
+      "id": "interior-v32-glass-wall-cabinet",
+      "name": "Wide glass-fronted wall cabinet",
+      "src": "assets/interiors-v32/v32-glass-wall-cabinet.png",
+      "width": 48,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-idilio-interiors-formatted"
+    },
+    {
+      "id": "interior-v32-jonquil-red-bed",
+      "name": "Jonquil — red-trimmed single bed",
+      "src": "assets/interiors-v32/v32-jonquil-red-bed.png",
+      "width": 32,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors"
+    },
+    {
+      "id": "interior-v32-jonquil-green-bed",
+      "name": "Jonquil — green-trimmed single bed",
+      "src": "assets/interiors-v32/v32-jonquil-green-bed.png",
+      "width": 32,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors"
+    },
+    {
+      "id": "interior-v32-jonquil-chair-right",
+      "name": "Jonquil — red dining chair, facing right",
+      "src": "assets/interiors-v32/v32-jonquil-chair-right.png",
+      "width": 32,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors"
+    },
+    {
+      "id": "interior-v32-jonquil-chair-left",
+      "name": "Jonquil — red dining chair, facing left",
+      "src": "assets/interiors-v32/v32-jonquil-chair-left.png",
+      "width": 32,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors"
+    },
+    {
+      "id": "interior-v32-jonquil-red-seat",
+      "name": "Jonquil — red padded square stool",
+      "src": "assets/interiors-v32/v32-jonquil-red-seat.png",
+      "width": 16,
+      "height": 16,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors"
+    },
+    {
+      "id": "interior-v32-jonquil-green-seat",
+      "name": "Jonquil — green padded square stool",
+      "src": "assets/interiors-v32/v32-jonquil-green-seat.png",
+      "width": 16,
+      "height": 16,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors"
+    },
+    {
+      "id": "interior-v32-jonquil-white-island",
+      "name": "Jonquil — wide cream-topped table",
+      "src": "assets/interiors-v32/v32-jonquil-white-island.png",
+      "width": 48,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors"
+    },
+    {
+      "id": "interior-v32-jonquil-narrow-island",
+      "name": "Jonquil — narrow cream side table",
+      "src": "assets/interiors-v32/v32-jonquil-narrow-island.png",
+      "width": 16,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors"
+    },
+    {
+      "id": "interior-v32-jonquil-sink",
+      "name": "Jonquil — grey kitchen sink cabinet",
+      "src": "assets/interiors-v32/v32-jonquil-sink.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors"
+    },
+    {
+      "id": "interior-v32-office-workstation",
+      "name": "Office — computer desk with tower and plant",
+      "src": "assets/interiors-v32/v32-office-workstation.png",
+      "width": 32,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-little-office"
+    },
+    {
+      "id": "interior-v32-office-glass-workstation",
+      "name": "Office — tall glass desk and computer",
+      "src": "assets/interiors-v32/v32-office-glass-workstation.png",
+      "width": 32,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-little-office"
+    },
+    {
+      "id": "interior-v32-office-small-plant",
+      "name": "Office — narrow plant in square pot",
+      "src": "assets/interiors-v32/v32-office-small-plant.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-little-office"
+    },
+    {
+      "id": "interior-v32-ship-red-bunk-left",
+      "name": "Ship cabin — red bunk bed, head left",
+      "src": "assets/interiors-v32/v32-ship-red-bunk-left.png",
+      "width": 48,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-ship-interior"
+    },
+    {
+      "id": "interior-v32-ship-red-bunk-right",
+      "name": "Ship cabin — red bunk bed, head right",
+      "src": "assets/interiors-v32/v32-ship-red-bunk-right.png",
+      "width": 48,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-ship-interior"
+    },
+    {
+      "id": "interior-v32-ship-white-bunk-left",
+      "name": "Ship cabin — white bunk bed, head left",
+      "src": "assets/interiors-v32/v32-ship-white-bunk-left.png",
+      "width": 48,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-ship-interior"
+    },
+    {
+      "id": "interior-v32-ship-white-bunk-right",
+      "name": "Ship cabin — white bunk bed, head right",
+      "src": "assets/interiors-v32/v32-ship-white-bunk-right.png",
+      "width": 48,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-ship-interior"
+    },
+    {
+      "id": "interior-v32-arcade-drink-rack",
+      "name": "Game room — drinks and glassware rack",
+      "src": "assets/interiors-v32/v32-arcade-drink-rack.png",
+      "width": 32,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-game-corner-heist"
+    },
+    {
+      "id": "interior-v32-arcade-glass-rack",
+      "name": "Game room — low drinks and glassware rack",
+      "src": "assets/interiors-v32/v32-arcade-glass-rack.png",
+      "width": 32,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-game-corner-heist"
+    },
+    {
+      "id": "interior-v32-arcade-vending-wide",
+      "name": "Game room — snack vending machine",
+      "src": "assets/interiors-v32/v32-arcade-vending-wide.png",
+      "width": 16,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-game-corner-heist"
+    },
+    {
+      "id": "interior-v32-arcade-vending-narrow",
+      "name": "Game room — tall stocked glass cabinet",
+      "src": "assets/interiors-v32/v32-arcade-vending-narrow.png",
+      "width": 16,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-game-corner-heist"
+    },
+    {
+      "id": "interior-v32-arcade-jukebox",
+      "name": "Game room — wooden jukebox",
+      "src": "assets/interiors-v32/v32-arcade-jukebox.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-game-corner-heist"
+    },
+    {
+      "id": "interior-v32-arcade-prize-counter",
+      "name": "Game room — long glass prize counter",
+      "src": "assets/interiors-v32/v32-arcade-prize-counter.png",
+      "width": 48,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-game-corner-heist"
+    },
+    {
+      "id": "interior-v32-arcade-pool-table",
+      "name": "Game room — green pool table",
+      "src": "assets/interiors-v32/v32-arcade-pool-table.png",
+      "width": 48,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-game-corner-heist"
+    },
+    {
+      "id": "interior-v32-arcade-card-table",
+      "name": "Game room — green card table",
+      "src": "assets/interiors-v32/v32-arcade-card-table.png",
+      "width": 48,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-public-tiles-game-corner-heist"
+    },
+    {
+      "id": "interior-v32-beach-chair",
+      "name": "Beach house — wooden dining chair",
+      "src": "assets/interiors-v32/v32-beach-chair.png",
+      "width": 16,
+      "height": 16,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-beach-house"
+    },
+    {
+      "id": "interior-v32-beach-bookcase",
+      "name": "Beach house — wide yellow-trim bookcase",
+      "src": "assets/interiors-v32/v32-beach-bookcase.png",
+      "width": 48,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-beach-house"
+    },
+    {
+      "id": "interior-v32-beach-narrow-bookcase",
+      "name": "Beach house — narrow yellow-trim bookcase",
+      "src": "assets/interiors-v32/v32-beach-narrow-bookcase.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-beach-house"
+    },
+    {
+      "id": "interior-v32-beach-sink-counter",
+      "name": "Beach house — fitted sink counter",
+      "src": "assets/interiors-v32/v32-beach-sink-counter.png",
+      "width": 48,
+      "height": 80,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-beach-house"
+    },
+    {
+      "id": "interior-v32-beach-red-ball",
+      "name": "Beach house — red and white beach ball",
+      "src": "assets/interiors-v32/v32-beach-red-ball.png",
+      "width": 16,
+      "height": 16,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-beach-house"
+    },
+    {
+      "id": "interior-v32-beach-green-ball",
+      "name": "Beach house — green and white beach ball",
+      "src": "assets/interiors-v32/v32-beach-green-ball.png",
+      "width": 16,
+      "height": 16,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-beach-house"
+    },
+    {
+      "id": "interior-v32-beach-blue-ball",
+      "name": "Beach house — blue and white beach ball",
+      "src": "assets/interiors-v32/v32-beach-blue-ball.png",
+      "width": 16,
+      "height": 16,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-beach-house"
+    },
+    {
+      "id": "interior-v32-beach-red-bowl",
+      "name": "Beach house — red pet bowl",
+      "src": "assets/interiors-v32/v32-beach-red-bowl.png",
+      "width": 16,
+      "height": 16,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-beach-house"
+    },
+    {
+      "id": "interior-v32-beach-green-bowl",
+      "name": "Beach house — green pet bowl",
+      "src": "assets/interiors-v32/v32-beach-green-bowl.png",
+      "width": 16,
+      "height": 16,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-beach-house"
+    },
+    {
+      "id": "interior-v32-beach-blue-bowl",
+      "name": "Beach house — blue pet bowl",
+      "src": "assets/interiors-v32/v32-beach-blue-bowl.png",
+      "width": 16,
+      "height": 16,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-beach-house"
+    },
+    {
+      "id": "interior-v32-station-bench-horizontal",
+      "name": "Station — long lime waiting bench",
+      "src": "assets/interiors-v32/v32-station-bench-horizontal.png",
+      "width": 48,
+      "height": 16,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-train-station"
+    },
+    {
+      "id": "interior-v32-station-bench-vertical",
+      "name": "Station — vertical lime waiting bench",
+      "src": "assets/interiors-v32/v32-station-bench-vertical.png",
+      "width": 16,
+      "height": 48,
+      "tileSize": 16,
+      "category": "Curated interior objects",
+      "sourceId": "ekat-s-tiny-interiors-train-station"
+    }
+  ],
+  "prefabs": [
+    {
+      "id": "v32-white-display-wood",
+      "name": "White display table — wooden base",
+      "category": "Interior · Tables",
+      "tags": [
+        "shop",
+        "display",
+        "white",
+        "table"
+      ],
+      "assetId": "interior-v32-white-display-wood",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · idilio",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Idilio"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-idilio-interiors-formatted.png",
+        "sourceRect": [
+          0,
+          288,
+          48,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-white-display-metal",
+      "name": "White display table — metal legs",
+      "category": "Interior · Tables",
+      "tags": [
+        "shop",
+        "display",
+        "white",
+        "table"
+      ],
+      "assetId": "interior-v32-white-display-metal",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · idilio",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Idilio"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-idilio-interiors-formatted.png",
+        "sourceRect": [
+          48,
+          288,
+          48,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-book-display-wood",
+      "name": "Low book display — wooden base",
+      "category": "Interior · Shop fixtures",
+      "tags": [
+        "shop",
+        "books",
+        "display"
+      ],
+      "assetId": "interior-v32-book-display-wood",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · idilio",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Idilio"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-idilio-interiors-formatted.png",
+        "sourceRect": [
+          0,
+          336,
+          48,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-book-display-metal",
+      "name": "Low book display — metal legs",
+      "category": "Interior · Shop fixtures",
+      "tags": [
+        "shop",
+        "books",
+        "display"
+      ],
+      "assetId": "interior-v32-book-display-metal",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · idilio",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Idilio"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-idilio-interiors-formatted.png",
+        "sourceRect": [
+          48,
+          336,
+          48,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-white-tall-cabinet",
+      "name": "White double-door storage cabinet",
+      "category": "Interior · Storage",
+      "tags": [
+        "cabinet",
+        "storage",
+        "white"
+      ],
+      "assetId": "interior-v32-white-tall-cabinet",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 64,
+      "w": 3,
+      "h": 4,
+      "collisionChoice": "solid",
+      "source": "Ekat · idilio",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Idilio"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-idilio-interiors-formatted.png",
+        "sourceRect": [
+          80,
+          416,
+          48,
+          64
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-glass-wall-cabinet",
+      "name": "Wide glass-fronted wall cabinet",
+      "category": "Interior · Storage",
+      "tags": [
+        "cabinet",
+        "glass",
+        "wall"
+      ],
+      "assetId": "interior-v32-glass-wall-cabinet",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "collisionChoice": "base",
+      "source": "Ekat · idilio",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Idilio"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-idilio-interiors-formatted.png",
+        "sourceRect": [
+          80,
+          480,
+          48,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-jonquil-red-bed",
+      "name": "Jonquil — red-trimmed single bed",
+      "category": "Interior · Beds",
+      "tags": [
+        "home",
+        "bed",
+        "red"
+      ],
+      "assetId": "interior-v32-jonquil-red-bed",
+      "sx": 0,
+      "sy": 0,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · jonquil",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors.png",
+        "sourceRect": [
+          48,
+          368,
+          32,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-jonquil-green-bed",
+      "name": "Jonquil — green-trimmed single bed",
+      "category": "Interior · Beds",
+      "tags": [
+        "home",
+        "bed",
+        "green"
+      ],
+      "assetId": "interior-v32-jonquil-green-bed",
+      "sx": 0,
+      "sy": 0,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · jonquil",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors.png",
+        "sourceRect": [
+          80,
+          368,
+          32,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-jonquil-chair-right",
+      "name": "Jonquil — red dining chair, facing right",
+      "category": "Interior · Seating",
+      "tags": [
+        "home",
+        "dining",
+        "chair",
+        "red"
+      ],
+      "assetId": "interior-v32-jonquil-chair-right",
+      "sx": 0,
+      "sy": 0,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · jonquil",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors.png",
+        "sourceRect": [
+          48,
+          400,
+          32,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "excludedAdjacentSourceRects": [
+          [
+            16,
+            16,
+            16,
+            16
+          ]
+        ],
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-jonquil-chair-left",
+      "name": "Jonquil — red dining chair, facing left",
+      "category": "Interior · Seating",
+      "tags": [
+        "home",
+        "dining",
+        "chair",
+        "red"
+      ],
+      "assetId": "interior-v32-jonquil-chair-left",
+      "sx": 0,
+      "sy": 0,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · jonquil",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors.png",
+        "sourceRect": [
+          80,
+          400,
+          32,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "excludedAdjacentSourceRects": [
+          [
+            0,
+            16,
+            16,
+            16
+          ]
+        ],
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-jonquil-red-seat",
+      "name": "Jonquil — red padded square stool",
+      "category": "Interior · Seating",
+      "tags": [
+        "home",
+        "seat",
+        "stool",
+        "red"
+      ],
+      "assetId": "interior-v32-jonquil-red-seat",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "collisionChoice": "solid",
+      "source": "Ekat · jonquil",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors.png",
+        "sourceRect": [
+          16,
+          416,
+          16,
+          16
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-jonquil-green-seat",
+      "name": "Jonquil — green padded square stool",
+      "category": "Interior · Seating",
+      "tags": [
+        "home",
+        "seat",
+        "stool",
+        "green"
+      ],
+      "assetId": "interior-v32-jonquil-green-seat",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "collisionChoice": "solid",
+      "source": "Ekat · jonquil",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors.png",
+        "sourceRect": [
+          32,
+          416,
+          16,
+          16
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-jonquil-white-island",
+      "name": "Jonquil — wide cream-topped table",
+      "category": "Interior · Tables",
+      "tags": [
+        "home",
+        "kitchen",
+        "dining",
+        "table"
+      ],
+      "assetId": "interior-v32-jonquil-white-island",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · jonquil",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors.png",
+        "sourceRect": [
+          80,
+          304,
+          48,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-jonquil-narrow-island",
+      "name": "Jonquil — narrow cream side table",
+      "category": "Interior · Tables",
+      "tags": [
+        "home",
+        "kitchen",
+        "table"
+      ],
+      "assetId": "interior-v32-jonquil-narrow-island",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 48,
+      "w": 1,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · jonquil",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors.png",
+        "sourceRect": [
+          64,
+          304,
+          16,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-jonquil-sink",
+      "name": "Jonquil — grey kitchen sink cabinet",
+      "category": "Interior · Kitchen",
+      "tags": [
+        "home",
+        "kitchen",
+        "sink",
+        "tap"
+      ],
+      "assetId": "interior-v32-jonquil-sink",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · jonquil",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-revisions-of-old-sets-revised-jonquil-interiors.png",
+        "sourceRect": [
+          16,
+          304,
+          16,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-office-workstation",
+      "name": "Office — computer desk with tower and plant",
+      "category": "Interior · Office",
+      "tags": [
+        "office",
+        "lab",
+        "computer",
+        "desk"
+      ],
+      "assetId": "interior-v32-office-workstation",
+      "sx": 0,
+      "sy": 0,
+      "sw": 32,
+      "sh": 48,
+      "w": 2,
+      "h": 3,
+      "collisionChoice": "base",
+      "source": "Ekat · office",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-little-office.png",
+        "sourceRect": [
+          48,
+          96,
+          32,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-office-glass-workstation",
+      "name": "Office — tall glass desk and computer",
+      "category": "Interior · Office",
+      "tags": [
+        "office",
+        "lab",
+        "computer",
+        "desk"
+      ],
+      "assetId": "interior-v32-office-glass-workstation",
+      "sx": 0,
+      "sy": 0,
+      "sw": 32,
+      "sh": 48,
+      "w": 2,
+      "h": 3,
+      "collisionChoice": "base",
+      "source": "Ekat · office",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-little-office.png",
+        "sourceRect": [
+          80,
+          96,
+          32,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "excludedAdjacentSourceRects": [
+          [
+            16,
+            0,
+            16,
+            16
+          ]
+        ],
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-office-small-plant",
+      "name": "Office — narrow plant in square pot",
+      "category": "Interior · Plants",
+      "tags": [
+        "office",
+        "plant"
+      ],
+      "assetId": "interior-v32-office-small-plant",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "collisionChoice": "base",
+      "source": "Ekat · office",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-little-office.png",
+        "sourceRect": [
+          0,
+          16,
+          16,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-ship-red-bunk-left",
+      "name": "Ship cabin — red bunk bed, head left",
+      "category": "Interior · Beds",
+      "tags": [
+        "ship",
+        "cabin",
+        "bed",
+        "bunk",
+        "red"
+      ],
+      "assetId": "interior-v32-ship-red-bunk-left",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · ship",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Vurtax",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-ship-interior.png",
+        "sourceRect": [
+          0,
+          192,
+          48,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-ship-red-bunk-right",
+      "name": "Ship cabin — red bunk bed, head right",
+      "category": "Interior · Beds",
+      "tags": [
+        "ship",
+        "cabin",
+        "bed",
+        "bunk",
+        "red"
+      ],
+      "assetId": "interior-v32-ship-red-bunk-right",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · ship",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Vurtax",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-ship-interior.png",
+        "sourceRect": [
+          48,
+          192,
+          48,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-ship-white-bunk-left",
+      "name": "Ship cabin — white bunk bed, head left",
+      "category": "Interior · Beds",
+      "tags": [
+        "ship",
+        "cabin",
+        "bed",
+        "bunk",
+        "white"
+      ],
+      "assetId": "interior-v32-ship-white-bunk-left",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · ship",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Vurtax",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-ship-interior.png",
+        "sourceRect": [
+          0,
+          240,
+          48,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-ship-white-bunk-right",
+      "name": "Ship cabin — white bunk bed, head right",
+      "category": "Interior · Beds",
+      "tags": [
+        "ship",
+        "cabin",
+        "bed",
+        "bunk",
+        "white"
+      ],
+      "assetId": "interior-v32-ship-white-bunk-right",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · ship",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Vurtax",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-ship-interior.png",
+        "sourceRect": [
+          48,
+          240,
+          48,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-arcade-drink-rack",
+      "name": "Game room — drinks and glassware rack",
+      "category": "Interior · Shop fixtures",
+      "tags": [
+        "game corner",
+        "arcade",
+        "shop",
+        "drinks"
+      ],
+      "assetId": "interior-v32-arcade-drink-rack",
+      "sx": 0,
+      "sy": 0,
+      "sw": 32,
+      "sh": 48,
+      "w": 2,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · arcade",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax",
+          "Aveontrainer",
+          "HeroAlistar",
+          "Redblueyellow",
+          "SteamyJ",
+          "Anonaplacca",
+          "Pokémon Rejuvenation",
+          "Puggsoy"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-game-corner-heist.png",
+        "sourceRect": [
+          64,
+          1200,
+          32,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-arcade-glass-rack",
+      "name": "Game room — low drinks and glassware rack",
+      "category": "Interior · Shop fixtures",
+      "tags": [
+        "game corner",
+        "arcade",
+        "shop",
+        "drinks"
+      ],
+      "assetId": "interior-v32-arcade-glass-rack",
+      "sx": 0,
+      "sy": 0,
+      "sw": 32,
+      "sh": 32,
+      "w": 2,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · arcade",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax",
+          "Aveontrainer",
+          "HeroAlistar",
+          "Redblueyellow",
+          "SteamyJ",
+          "Anonaplacca",
+          "Pokémon Rejuvenation",
+          "Puggsoy"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-game-corner-heist.png",
+        "sourceRect": [
+          96,
+          1216,
+          32,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-arcade-vending-wide",
+      "name": "Game room — snack vending machine",
+      "category": "Interior · Shop fixtures",
+      "tags": [
+        "game corner",
+        "arcade",
+        "shop",
+        "vending"
+      ],
+      "assetId": "interior-v32-arcade-vending-wide",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 48,
+      "w": 1,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · arcade",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax",
+          "Aveontrainer",
+          "HeroAlistar",
+          "Redblueyellow",
+          "SteamyJ",
+          "Anonaplacca",
+          "Pokémon Rejuvenation",
+          "Puggsoy"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-game-corner-heist.png",
+        "sourceRect": [
+          96,
+          1248,
+          16,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-arcade-vending-narrow",
+      "name": "Game room — tall stocked glass cabinet",
+      "category": "Interior · Shop fixtures",
+      "tags": [
+        "game corner",
+        "arcade",
+        "shop",
+        "vending"
+      ],
+      "assetId": "interior-v32-arcade-vending-narrow",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 48,
+      "w": 1,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · arcade",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax",
+          "Aveontrainer",
+          "HeroAlistar",
+          "Redblueyellow",
+          "SteamyJ",
+          "Anonaplacca",
+          "Pokémon Rejuvenation",
+          "Puggsoy"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-game-corner-heist.png",
+        "sourceRect": [
+          112,
+          1248,
+          16,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-arcade-jukebox",
+      "name": "Game room — wooden jukebox",
+      "category": "Interior · Entertainment",
+      "tags": [
+        "game corner",
+        "arcade",
+        "jukebox"
+      ],
+      "assetId": "interior-v32-arcade-jukebox",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · arcade",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax",
+          "Aveontrainer",
+          "HeroAlistar",
+          "Redblueyellow",
+          "SteamyJ",
+          "Anonaplacca",
+          "Pokémon Rejuvenation",
+          "Puggsoy"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-game-corner-heist.png",
+        "sourceRect": [
+          64,
+          1392,
+          16,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-arcade-prize-counter",
+      "name": "Game room — long glass prize counter",
+      "category": "Interior · Counters",
+      "tags": [
+        "game corner",
+        "arcade",
+        "shop",
+        "prizes",
+        "counter"
+      ],
+      "assetId": "interior-v32-arcade-prize-counter",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · arcade",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax",
+          "Aveontrainer",
+          "HeroAlistar",
+          "Redblueyellow",
+          "SteamyJ",
+          "Anonaplacca",
+          "Pokémon Rejuvenation",
+          "Puggsoy"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-game-corner-heist.png",
+        "sourceRect": [
+          0,
+          1392,
+          48,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-arcade-pool-table",
+      "name": "Game room — green pool table",
+      "category": "Interior · Entertainment",
+      "tags": [
+        "game corner",
+        "arcade",
+        "pool",
+        "table"
+      ],
+      "assetId": "interior-v32-arcade-pool-table",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 48,
+      "w": 3,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · arcade",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax",
+          "Aveontrainer",
+          "HeroAlistar",
+          "Redblueyellow",
+          "SteamyJ",
+          "Anonaplacca",
+          "Pokémon Rejuvenation",
+          "Puggsoy"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-game-corner-heist.png",
+        "sourceRect": [
+          0,
+          1024,
+          48,
+          48
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-arcade-card-table",
+      "name": "Game room — green card table",
+      "category": "Interior · Entertainment",
+      "tags": [
+        "game corner",
+        "arcade",
+        "cards",
+        "table"
+      ],
+      "assetId": "interior-v32-arcade-card-table",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · arcade",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon",
+          "Vurtax",
+          "Aveontrainer",
+          "HeroAlistar",
+          "Redblueyellow",
+          "SteamyJ",
+          "Anonaplacca",
+          "Pokémon Rejuvenation",
+          "Puggsoy"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-public-tiles-game-corner-heist.png",
+        "sourceRect": [
+          64,
+          1040,
+          48,
+          32
+        ],
+        "sourceTileSize": 16,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/ekat-public-tiles.txt"
+      }
+    },
+    {
+      "id": "v32-beach-chair",
+      "name": "Beach house — wooden dining chair",
+      "category": "Interior · Seating",
+      "tags": [
+        "home",
+        "beach",
+        "chair"
+      ],
+      "assetId": "interior-v32-beach-chair",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "collisionChoice": "solid",
+      "source": "Ekat · beach",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-beach-house.png",
+        "sourceRect": [
+          96,
+          768,
+          32,
+          32
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-beach-bookcase",
+      "name": "Beach house — wide yellow-trim bookcase",
+      "category": "Interior · Storage",
+      "tags": [
+        "home",
+        "beach",
+        "books",
+        "bookcase"
+      ],
+      "assetId": "interior-v32-beach-bookcase",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 32,
+      "w": 3,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · beach",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-beach-house.png",
+        "sourceRect": [
+          96,
+          800,
+          96,
+          64
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-beach-narrow-bookcase",
+      "name": "Beach house — narrow yellow-trim bookcase",
+      "category": "Interior · Storage",
+      "tags": [
+        "home",
+        "beach",
+        "books",
+        "bookcase"
+      ],
+      "assetId": "interior-v32-beach-narrow-bookcase",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 32,
+      "w": 1,
+      "h": 2,
+      "collisionChoice": "solid",
+      "source": "Ekat · beach",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-beach-house.png",
+        "sourceRect": [
+          192,
+          800,
+          32,
+          64
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-beach-sink-counter",
+      "name": "Beach house — fitted sink counter",
+      "category": "Interior · Kitchen",
+      "tags": [
+        "home",
+        "beach",
+        "kitchen",
+        "sink",
+        "counter"
+      ],
+      "assetId": "interior-v32-beach-sink-counter",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 80,
+      "w": 3,
+      "h": 5,
+      "collisionChoice": "solid",
+      "source": "Ekat · beach",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-beach-house.png",
+        "sourceRect": [
+          0,
+          768,
+          96,
+          160
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-beach-red-ball",
+      "name": "Beach house — red and white beach ball",
+      "category": "Interior · Decorations",
+      "tags": [
+        "home",
+        "beach",
+        "ball"
+      ],
+      "assetId": "interior-v32-beach-red-ball",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "collisionChoice": "solid",
+      "source": "Ekat · beach",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-beach-house.png",
+        "sourceRect": [
+          96,
+          896,
+          32,
+          32
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-beach-green-ball",
+      "name": "Beach house — green and white beach ball",
+      "category": "Interior · Decorations",
+      "tags": [
+        "home",
+        "beach",
+        "ball"
+      ],
+      "assetId": "interior-v32-beach-green-ball",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "collisionChoice": "solid",
+      "source": "Ekat · beach",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-beach-house.png",
+        "sourceRect": [
+          128,
+          896,
+          32,
+          32
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-beach-blue-ball",
+      "name": "Beach house — blue and white beach ball",
+      "category": "Interior · Decorations",
+      "tags": [
+        "home",
+        "beach",
+        "ball"
+      ],
+      "assetId": "interior-v32-beach-blue-ball",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "collisionChoice": "solid",
+      "source": "Ekat · beach",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-beach-house.png",
+        "sourceRect": [
+          160,
+          896,
+          32,
+          32
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-beach-red-bowl",
+      "name": "Beach house — red pet bowl",
+      "category": "Interior · Decorations",
+      "tags": [
+        "home",
+        "beach",
+        "pet",
+        "bowl"
+      ],
+      "assetId": "interior-v32-beach-red-bowl",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "collisionChoice": "solid",
+      "source": "Ekat · beach",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-beach-house.png",
+        "sourceRect": [
+          192,
+          896,
+          32,
+          32
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-beach-green-bowl",
+      "name": "Beach house — green pet bowl",
+      "category": "Interior · Decorations",
+      "tags": [
+        "home",
+        "beach",
+        "pet",
+        "bowl"
+      ],
+      "assetId": "interior-v32-beach-green-bowl",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "collisionChoice": "solid",
+      "source": "Ekat · beach",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-beach-house.png",
+        "sourceRect": [
+          224,
+          896,
+          32,
+          32
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-beach-blue-bowl",
+      "name": "Beach house — blue pet bowl",
+      "category": "Interior · Decorations",
+      "tags": [
+        "home",
+        "beach",
+        "pet",
+        "bowl"
+      ],
+      "assetId": "interior-v32-beach-blue-bowl",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 16,
+      "w": 1,
+      "h": 1,
+      "collisionChoice": "solid",
+      "source": "Ekat · beach",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-beach-house.png",
+        "sourceRect": [
+          224,
+          928,
+          32,
+          32
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-station-bench-horizontal",
+      "name": "Station — long lime waiting bench",
+      "category": "Interior · Seating",
+      "tags": [
+        "interior",
+        "waiting",
+        "bench",
+        "lime"
+      ],
+      "assetId": "interior-v32-station-bench-horizontal",
+      "sx": 0,
+      "sy": 0,
+      "sw": 48,
+      "sh": 16,
+      "w": 3,
+      "h": 1,
+      "collisionChoice": "solid",
+      "source": "Ekat · station",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-train-station.png",
+        "sourceRect": [
+          160,
+          384,
+          96,
+          32
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    },
+    {
+      "id": "v32-station-bench-vertical",
+      "name": "Station — vertical lime waiting bench",
+      "category": "Interior · Seating",
+      "tags": [
+        "interior",
+        "waiting",
+        "bench",
+        "lime"
+      ],
+      "assetId": "interior-v32-station-bench-vertical",
+      "sx": 0,
+      "sy": 0,
+      "sw": 16,
+      "sh": 48,
+      "w": 1,
+      "h": 3,
+      "collisionChoice": "solid",
+      "source": "Ekat · station",
+      "provenance": {
+        "author": "Ekat",
+        "credits": [
+          "Ekat",
+          "Heartlessdragoon"
+        ],
+        "sourceFile": "assets/tilesets/ekat-s-tiny-interiors-train-station.png",
+        "sourceRect": [
+          160,
+          288,
+          32,
+          96
+        ],
+        "sourceTileSize": 32,
+        "outputTileSize": 16,
+        "backgroundRemoval": "Existing alpha preserved; only edge-connected exact-black sheet separators removed",
+        "licenseFile": "assets/credits/tiny-interiors.txt"
+      }
+    }
+  ],
+  "furnishingSets": [
+    {
+      "id": "set-v32-jonquil-house",
+      "name": "Jonquil — home & kitchen",
+      "region": "Creator · Ekat",
+      "kind": "home",
+      "description": "Jonquil cream kitchen, beds and matching seats",
+      "prefabIds": [
+        "v32-jonquil-red-bed",
+        "v32-jonquil-green-bed",
+        "v32-jonquil-chair-right",
+        "v32-jonquil-chair-left",
+        "v32-jonquil-red-seat",
+        "v32-jonquil-green-seat",
+        "v32-jonquil-white-island",
+        "v32-jonquil-narrow-island",
+        "v32-jonquil-sink"
+      ]
+    },
+    {
+      "id": "set-v32-white-display-shop",
+      "name": "White display shop",
+      "region": "Creator · Ekat",
+      "kind": "mart",
+      "description": "White-topped tables, book displays, glass cabinets and service counter",
+      "prefabIds": [
+        "v32-white-display-wood",
+        "v32-white-display-metal",
+        "v32-book-display-wood",
+        "v32-book-display-metal",
+        "v32-white-tall-cabinet",
+        "v32-glass-wall-cabinet"
+      ]
+    },
+    {
+      "id": "set-v32-game-room",
+      "name": "Game room & prize shop",
+      "region": "Creator · Ekat",
+      "kind": "arcade",
+      "description": "Counters, drinks displays, vending machines and games",
+      "prefabIds": [
+        "v32-arcade-drink-rack",
+        "v32-arcade-glass-rack",
+        "v32-arcade-vending-wide",
+        "v32-arcade-vending-narrow",
+        "v32-arcade-jukebox",
+        "v32-arcade-prize-counter",
+        "v32-arcade-pool-table",
+        "v32-arcade-card-table"
+      ]
+    },
+    {
+      "id": "set-v32-beach-house",
+      "name": "Beach house — furnishings",
+      "region": "Creator · Ekat",
+      "kind": "home",
+      "description": "Wooden chair, yellow bookcases, kitchen sink and beach decorations",
+      "prefabIds": [
+        "v32-beach-chair",
+        "v32-beach-bookcase",
+        "v32-beach-narrow-bookcase",
+        "v32-beach-sink-counter",
+        "v32-beach-red-ball",
+        "v32-beach-green-ball",
+        "v32-beach-blue-ball",
+        "v32-beach-red-bowl",
+        "v32-beach-green-bowl",
+        "v32-beach-blue-bowl"
+      ]
+    }
+  ]
+}
