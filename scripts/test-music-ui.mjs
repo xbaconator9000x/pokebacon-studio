@@ -1,0 +1,13 @@
+import {session,newProject} from './qa-harness.mjs';
+import {musicWorkshop} from '../dist/music-ui.js';
+import {authoring} from '../dist/authoring-model.js';
+import {writeMIDI,composeMusic,checkScore} from '../dist/music-compose.js';
+import {validateMusicAsset} from '../dist/music-assets.js';
+import assert from 'node:assert/strict';
+const s=await session({},true),{w,$}=s,p=newProject('Music QA');globalThis.document=w.document;let submit,changes=0,saved;
+// Variation now starts a preview; emulate Web Audio while rendering real PCM.
+globalThis.AudioContext=class{resume(){return Promise.resolve();}createBuffer(ch,n){return{getChannelData:()=>new Float32Array(n)};}createBufferSource(){return{connect(){},start(){},stop(){}};}};
+const tool=musicWorkshop({project:()=>p,session:()=>null,esc:s=>String(s).replaceAll('"','&quot;'),modal(title,html,fn){$('#dialogTitle').textContent=title;$('#dialogBody').innerHTML=html;submit=fn;},change(fn){changes++;fn();},save:async(blob,name)=>{saved={blob,name};},toast(){},error(e){throw e;}});
+tool.open();$('#musicCompose').click();assert.equal(authoring(p).music.length,0);$('#composeMood').value='Spooky';$('#composeMood').onchange();assert.equal($('#composeScale').value,'Phrygian');$('#composeName').value='Spooky route';await $('#composeVariation').onclick();await $('#composeMIDI').onclick();assert.equal(saved.name,'Spooky_route.mid');await submit();assert.equal(changes,1);const t=authoring(p).music[0];assert.equal(t.name,'Spooky route');assert.equal(validateMusicAsset(t.asset).song.trackCount,4);assert.ok(checkScore(t.asset.arrangement.score).notes>0);
+document.querySelector('[data-music-edit]').click();$('#musicRemix').click();$('#remixTempo').value=75;await submit();assert.equal(authoring(p).music.length,2);assert.equal(authoring(p).music[1].asset.sourceHash,'');assert.equal(t.name,'Spooky route');
+const midi=writeMIDI(composeMusic({bars:4}));await tool.composer.importFile({name:'import.mid',size:midi.length,arrayBuffer:async()=>midi.buffer});$('#composeBank').value=t.id;$('#composeBank').onchange();await submit();assert.equal(authoring(p).music.length,3);assert.ok(authoring(p).music[2].asset.sourceName.includes('Composed'));tool.composer.open();const include=document.querySelector('[data-compose-enabled="3"]');include.checked=false;include.onchange();await $('#composeEditNotes').onclick();assert.equal($('#analysisOriginal').disabled,true);await submit();await submit();assert.equal(authoring(p).music.length,4);assert.equal(authoring(p).music[3].asset.trackCount,3);tool.stop();await s.close();console.log('PASS composer, mood presets, MIDI export/import, bank selection, tempo variation, separate library saves');
