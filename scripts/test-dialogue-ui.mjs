@@ -1,0 +1,8 @@
+import {session,newProject} from './qa-harness.mjs';
+import {ROMTextWorkshop} from '../dist/rom-text.js';
+import {compileScript} from '../dist/script-engine.js';
+import {STOCK_FIRE_RED_SHA as hash} from '../dist/verified-frlg.js';
+import assert from 'node:assert/strict';
+const s=await session({},true),{w,$}=s;globalThis.document=w.document;const p=newProject('Dialogue QA'),bytes=new Uint8Array(4096).fill(255),code=compileScript('msgbox @text 4\nend\n@text:\n= Hello!$',0x600,'frlg');bytes.set(code.bytes,0x600);const reader={bytes,engine:'frlg',maps:[{label:'Town',key:'0.0'}],events:()=>({npcs:[{script:0x600}],signs:[],triggers:[]})};let save,modals=[];const api={project:()=>p,session:()=>({id:hash,reader}),esc:String,modal(title,html,callback){modals.push(title);$('#dialogBody').innerHTML=html;$('#dialog').open=true;save=callback;},change:fn=>fn(),toast(){},error(e){throw e;}};
+const tool=ROMTextWorkshop(api);await tool.open();assert.equal(modals.at(-1),'ROM dialogue');$('[data-text]').click();$('#romTextValue').value='First\\nSecond\\pThird';$('#romTextValue').oninput();assert.equal($('#romTextPreview').textContent,'First\nSecond\n\nThird');$('#romTextValue').value='';save();$('#dialog').open=false;await tool.open();$('[data-text]').click();assert.equal($('#romTextValue').value,'');
+const cancelTool=ROMTextWorkshop(api);const pending=cancelTool.open();assert.equal(modals.at(-1),'Indexing dialogue');$('#dialog').open=false;await pending;assert.equal(modals.at(-1),'Indexing dialogue');await s.close();console.log('PASS dialogue UI: empty text retained; closing index cancels without reopening');

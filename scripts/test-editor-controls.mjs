@@ -1,0 +1,33 @@
+import {session,assert,fs,createCanvas,GbaMaps,movementAt,setMovement,importRomMaps,validateProject} from './qa-harness.mjs';
+import {createHash} from 'node:crypto';
+import {newScene,prepareScene} from '../dist/authoring-model.js';
+import {objectDefaults} from '../dist/movement-defaults.js';
+import {rebindStoryBeat,applyStoryPrerequisite} from '../dist/story-model.js';
+const file=process.env.MAP_STUDIO_SOURCE_ROM,projectFile=process.env.MAP_STUDIO_SOURCE_PROJECT;
+if(!file||!projectFile)throw Error('Set source ROM and source project.');
+const bytes=fs.readFileSync(file),hash=createHash('sha256').update(bytes).digest('hex'),a=await session({},true),{$,qa,input,submit,wait,tap,pointer}=a;
+const reader=await qa.readROM(bytes,hash),project=JSON.parse(fs.readFileSync(projectFile));
+await qa.switchProject(project);qa.switchMap(qa.state.project.maps.find(m=>m.rom?.key==='3.1').id);const p=qa.state.project,m=qa.state.map;
+const beforeArt=JSON.stringify(m.layers),authored=m.layers.details.map((t,i)=>t?i:-1).filter(i=>i>=0),oldDetails=structuredClone(m.layers.details);
+await qa.hydrateROMInfo();assert.ok(m.rom.nativeLayerSplit);for(const i of authored)assert.deepEqual(m.layers.details[i],oldDetails[i]);assert.notEqual(JSON.stringify(m.layers),beforeArt);
+qa.setPanel('layers',true);assert.ok($('#layersMovement'));$('#layersMovement').click();assert.ok($('#movementCollision'));
+input('#movementDisplay','collision','change');input('#movementCollision','2','change');input('#movementHeight','7','change');$('#useMovementBrush').click();tap(11,18);assert.equal(movementAt(m,11,18).collision,2);assert.equal(movementAt(m,11,18).elevation,7);
+qa.undo();assert.notEqual(movementAt(m,11,18).elevation,7);qa.redo();assert.equal(movementAt(m,11,18).collision,2);
+qa.setPanel('movement',true);$('#movementInspect').click();tap(12,18);assert.ok($('#tileRule'));input('#tileCollision','3');input('#tileHeight','6');submit();await wait(()=>!$('#dialog').open);assert.equal(movementAt(m,12,18).collision,3);
+const baseline=movementAt(m,16,23).collision,obj={id:'collision-test',name:'Large tree',x:15,y:20,w:3,h:4,...objectDefaults({name:'Large trees',w:3,h:4})};qa.change(()=>m.objects.push(obj));assert.equal(movementAt(m,16,23).collision,1);assert.ok(movementAt(m,15,20).behind);qa.change(()=>obj.x++);assert.equal(movementAt(m,16,23).collision,baseline);assert.equal(movementAt(m,17,23).collision,1);qa.undo();qa.undo();
+qa.customiseToolbar();input('#toolbarAddChoice','rules');$('#toolbarPin').click();submit();assert.ok($('#tools [data-tool="rules"]'));
+const rules=$('#tools [data-tool="rules"]'),move=$('#tools [data-tool="move"]');a.w.document.elementFromPoint=()=>move;
+pointer('pointerdown',10,10,rules);await new Promise(r=>setTimeout(r,470));pointer('pointermove',1,10,rules);pointer('pointerup',1,10,rules);assert.equal($('#tools [data-tool]').dataset.tool,'rules');assert.equal(JSON.parse(a.w.localStorage.getItem('shattered-toolbar-v1'))[0],'rules');
+const scenes=[newScene(p,5,5),newScene(p,7,5),newScene(p,9,5)];qa.change(()=>{for(const n of scenes){prepareScene(p,n);m.markers.push(n);}});
+qa.openWorkspace('story');assert.ok(!$('#storyWorkspace').hidden);$('#storySync').click();const beats=p.story.beats.filter(b=>scenes.some(s=>s.id===b.eventId));assert.equal(beats.length,3);
+const oldX=beats[0].x,card=$('[data-story-beat="'+beats[0].id+'"]');pointer('pointerdown',20,20,card);pointer('pointermove',100,70,$('#storyBoard'));pointer('pointerup',100,70,$('#storyBoard'));const moved=p.story.beats.find(b=>b.id===beats[0].id);assert.notEqual(moved.x,oldX);$('#storyConnect').click();const target=$('[data-story-beat="'+beats[1].id+'"]');pointer('pointerdown',220,20,target);pointer('pointerup',220,20,$('#storyBoard'));assert.ok($('#storyLinkPrerequisite'));$('#storyLinkPrerequisite').checked=true;submit();assert.ok(scenes[1].runtime.conditions.some(c=>c.eventId===scenes[0].id));
+const link=p.story.links.at(-1);qa.change(()=>rebindStoryBeat(p,p.story.beats.find(b=>b.id===beats[1].id),{eventId:scenes[2].id}));assert.equal(scenes[1].runtime.conditions.length,0);assert.ok(scenes[2].runtime.conditions.some(c=>c.storyLinkId===link.id));qa.change(()=>applyStoryPrerequisite(p,link,false));
+$('#storyExit').click();validateProject(structuredClone(p),JSON.parse(fs.readFileSync('dist/assets/catalog.json')));
+// Export controls against an isolated native map. The user's existing custom
+// art also has a separate graphics-capacity limit; its edits remain untouched.
+const isolated=(await importRomMaps(null,reader,['3.1'],{sourceId:hash,encodeAtlas:async atlas=>{const cv=createCanvas(atlas.width,atlas.height),ctx=cv.getContext('2d'),im=ctx.createImageData(atlas.width,atlas.height);im.data.set(atlas.pixels);ctx.putImageData(im,0,0);return cv.toDataURL('image/png');}})).project;
+await qa.switchProject(isolated);const imap=qa.state.map;setMovement(imap,11,18,{mode:'walk',collision:2,elevation:7,overrideObjects:true});setMovement(imap,12,18,{mode:'walk',collision:3,elevation:6,overrideObjects:true});
+const built=await qa.compileROM(),out=await new GbaMaps(built.bytes).discover(),words=out.blocks(out.byKey(imap.rom.key));assert.equal(words[18*imap.width+11]>>>10&3,2);assert.equal(words[18*imap.width+11]>>>12&15,7);assert.equal(words[18*imap.width+12]>>>10&3,3);assert.equal(Buffer.compare(Buffer.from(reader.bytes),bytes),0);
+await qa.switchProject(p);
+const saved=await a.close(),b=await session(saved,true);assert.equal(b.$('#tools [data-tool]').dataset.tool,'rules');assert.equal(b.qa.state.project.story.links.length,1);assert.equal(movementAt(b.qa.state.map,11,18).collision,2);await b.close();
+console.log(JSON.stringify({pass:true,source:hash,authoredLayersPreserved:true,collisionUndoExportReopen:true,toolbarHoldDragSaved:true,storyDragPrerequisiteRebindSaved:true,physicalAndroid:false}));

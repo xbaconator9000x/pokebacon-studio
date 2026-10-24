@@ -1,0 +1,18 @@
+import{session,assert,fs,newProject,createCanvas,movementAt}from'./qa-harness.mjs';
+const a=await session({},true),{qa,$,tap,input,wait}=a;
+await qa.switchProject(newProject('Native Emerald puddles'));
+qa.setTool('brush');$('.mobile-dock [data-panel="toolbox"]').click();$('[data-tile-library="ready"]').click();input('#objectSearch','emerald puddle');
+assert.equal(a.w.document.querySelectorAll('[data-object-id]').length,1);$('[data-object-id="emerald-route120-puddle"]').click();tap(4,4);
+const object=qa.state.map.objects.at(-1);assert.equal(object.w,2);assert.equal(object.h,2);assert.equal(movementAt(qa.state.map,5,5).collision,0);
+qa.setTool('brush');$('.mobile-dock [data-panel="toolbox"]').click();$('[data-tile-library="terrain"]').click();input('#terrainGroup','Water','change');input('#brushSearch','emerald puddle');
+const beforeGround=JSON.stringify(qa.state.map.layers.ground),button=$('[data-brush-style="emerald-puddle-terrain"]');assert.ok(button,'Native puddles discoverable in Water terrain');button.click();assert.equal(qa.state.activeLayer,'details');
+for(const [x,y]of [[10,5],[11,5],[12,5],[10,6],[11,6],[10,7]])tap(x,y);
+const map=qa.state.map;for(const [x,y]of [[10,5],[11,5],[12,5],[10,6],[11,6],[10,7]]){assert.equal(map.layers.details[y*map.width+x].terrain,'emerald-puddle-terrain');assert.equal(movementAt(map,x,y).collision,0);assert.equal(map.layers.details[y*map.width+x].movementMode,'walk');}assert.equal(JSON.stringify(map.layers.ground),beforeGround,'Puddle brush preserves the ground artwork');
+const image=await new Promise((resolve,reject)=>{const im=new a.w.Image();im.onload=()=>resolve(im);im.onerror=reject;im.src='assets/objects/emerald-route120-puddle.png';});
+const native=await new Promise((resolve,reject)=>{const im=new a.w.Image();im.onload=()=>resolve(im);im.onerror=reject;im.src='data:image/png;base64,'+fs.readFileSync('scripts/data/emerald-puddle-source.png').toString('base64');});
+const raster=im=>{const c=createCanvas(32,32),ctx=c.getContext('2d');ctx.drawImage(im,0,0);return ctx.getImageData(0,0,32,32).data;},original=raster(native),stamp=raster(image);let retained=0,transparent=0;
+for(let i=0;i<stamp.length;i+=4){if(stamp[i+3]){assert.deepEqual([...stamp.slice(i,i+4)],[...original.slice(i,i+4)]);retained++;}else transparent++;}assert.equal(retained,920);assert.equal(transparent,104);
+let saved;qa.setSaveHook(async(blob,name)=>saved={blob,name});$('#exportButton').click();$('#exportProject').click();await wait(()=>$('#readySave'));$('#readySave').click();await wait(()=>saved);
+const copy=JSON.parse(await saved.blob.text());for(const id of ['emerald-route120-puddle','emerald-puddle-terrain'])assert.match(copy.assets.find(a=>a.id===id).data,/^data:image\/png;base64,/);
+await qa.switchProject(copy);assert.equal(qa.state.map.objects[0].prefabId,'emerald-route120-puddle');assert.ok(qa.state.project.terrainSets.some(t=>t.id==='emerald-puddle-terrain'));
+await a.close();console.log('PASS native Emerald pixels, transparent grass corners, mobile named stamp/Water brush, walkable collision and portable backup/reopen.');
