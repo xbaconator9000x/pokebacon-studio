@@ -1,4 +1,4 @@
-Shattered Map Studio — asset sources
+PokéBacon Studio — asset sources
 
 v4.3.2 rain puddles: original Pokemon Emerald Fortree/Route 120 metatiles
 0x274, 0x275, 0x27c, 0x27d, decoded from General/Fortree tiles/palettes:
@@ -8,7 +8,7 @@ Connected terrain joins are composed from those shore pixels. These are static
 visual assets; native reflections/splash effects are not included. Original game
 artwork retains Nintendo / Creatures Inc. / GAME FREAK inc. ownership.
 
-Native-sized cutouts and structural building strips prepared for Shattered Map Studio.
+Native-sized cutouts and structural building strips prepared for PokéBacon Studio.
 Kanto: included Pokémon source profile, FRLG.
 Johto-style interiors: native-size reference artwork from a compatible Gen III source profile. Some service buildings reuse Kanto artwork; Emerald-style furniture is shared where labelled.
 Hoenn exteriors: original Emerald Petalburg City/general tiles, palettes and metatiles from the primary decompilation https://github.com/pret/pokeemerald ; native source references and crop rectangles are recorded in catalog provenance. No whole ROM or full native atlas is bundled.
