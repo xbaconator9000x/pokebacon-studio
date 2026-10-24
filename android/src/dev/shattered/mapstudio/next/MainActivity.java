@@ -116,8 +116,8 @@ public class MainActivity extends Activity {
         web.loadUrl("https://"+ORIGIN+"/assets/index.html");
         if (!getPreferences(MODE_PRIVATE).getBoolean("migration-notice-seen",false)) {
             new AlertDialog.Builder(this)
-                .setTitle("Welcome to Shattered Studio 4.5.0")
-                .setMessage("This app includes visual scenes, NPC and item makers, selective music import, opening/credits tools and custom options. It updates Shattered Studio 3.1 and 3.2 in place. If you used the older Shattered Map Studio app, it installs alongside it.\n\nTo bring your work across, open the old app and export each project, then choose Import a project here. For saved custom objects and terrain, export and import My library too.\n\nKeep the old app until you have checked your imported work.")
+                .setTitle("Welcome to PokéBacon Studio 4.5.0")
+                .setMessage("This app includes visual scenes, NPC and item makers, selective music import, opening/credits tools and custom options. It updates PokéBacon Studio 3.1 and 3.2 in place. If you used the older PokéBacon Studio app, it installs alongside it.\n\nTo bring your work across, open the old app and export each project, then choose Import a project here. For saved custom objects and terrain, export and import My library too.\n\nKeep the old app until you have checked your imported work.")
                 .setPositiveButton("Start editing",(dialog,which)->getPreferences(MODE_PRIVATE).edit().putBoolean("migration-notice-seen",true).apply())
                 .setCancelable(false)
                 .show();
@@ -194,14 +194,14 @@ public class MainActivity extends Activity {
                         try{startActivity(Intent.createChooser(intent,"Share "+name));}catch(Exception error){notifyResult(false,"No app can share this file. Use Save file instead.");}
                     });
                 }else if(Build.VERSION.SDK_INT>=29){
-                    ContentValues values=new ContentValues();values.put(MediaStore.MediaColumns.DISPLAY_NAME,name);values.put(MediaStore.MediaColumns.MIME_TYPE,mimeType);values.put(MediaStore.MediaColumns.RELATIVE_PATH,Environment.DIRECTORY_DOWNLOADS+"/Shattered Map Studio");values.put(MediaStore.MediaColumns.IS_PENDING,1);
+                    ContentValues values=new ContentValues();values.put(MediaStore.MediaColumns.DISPLAY_NAME,name);values.put(MediaStore.MediaColumns.MIME_TYPE,mimeType);values.put(MediaStore.MediaColumns.RELATIVE_PATH,Environment.DIRECTORY_DOWNLOADS+"/PokéBacon Studio");values.put(MediaStore.MediaColumns.IS_PENDING,1);
                     Uri uri=getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI,values);
                     if(uri==null)throw new IOException("Could not create download");
                     try{
                         try(OutputStream stream=getContentResolver().openOutputStream(uri)){if(stream==null)throw new IOException("Could not open download");stream.write(data);}
                         values.clear();values.put(MediaStore.MediaColumns.IS_PENDING,0);getContentResolver().update(uri,values,null,null);
                     }catch(Exception error){getContentResolver().delete(uri,null,null);throw error;}
-                    notifyResult(true,"Saved to Downloads / Shattered Map Studio / "+name);
+                    notifyResult(true,"Saved to Downloads / PokéBacon Studio / "+name);
                 }else{
                     runOnUiThread(()->{
                         if(pendingBytes!=null){notifyResult(false,"Finish the current save first.");return;}
@@ -227,7 +227,7 @@ public class MainActivity extends Activity {
             android.content.pm.PackageInfo provider=WebView.getCurrentWebViewPackage();report.put("webView",provider==null?"unknown":provider.packageName+" "+provider.versionName);
             report.put("lastResponseAgeMs",lastHealthAt==0?-1:android.os.SystemClock.elapsedRealtime()-lastHealthAt);
             report.put("lastEditorState",new org.json.JSONTokener(lastHealth).nextValue());
-            android.content.ClipboardManager clipboard=(android.content.ClipboardManager)getSystemService(CLIPBOARD_SERVICE);clipboard.setPrimaryClip(ClipData.newPlainText("Shattered Studio diagnostics",report.toString(2)));Toast.makeText(this,"Diagnostics copied. Paste them into your bug report.",Toast.LENGTH_LONG).show();
+            android.content.ClipboardManager clipboard=(android.content.ClipboardManager)getSystemService(CLIPBOARD_SERVICE);clipboard.setPrimaryClip(ClipData.newPlainText("PokéBacon Studio diagnostics",report.toString(2)));Toast.makeText(this,"Diagnostics copied. Paste them into your bug report.",Toast.LENGTH_LONG).show();
         }catch(Exception error){Toast.makeText(this,"Could not copy diagnostics.",Toast.LENGTH_LONG).show();}
     }
     private void editorRecovery(boolean stalled){
