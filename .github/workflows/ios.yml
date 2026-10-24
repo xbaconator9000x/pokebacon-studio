@@ -31,10 +31,12 @@ jobs:
           devices=json.loads(subprocess.check_output(['xcrun','simctl','list','devices','available','-j']))['devices']
           choices=[d for runtime, rows in devices.items() if 'iOS' in runtime for d in rows if d.get('isAvailable') and d['name'].startswith('iPhone')]
           if not choices: raise SystemExit('No available iPhone simulator')
+          if choices[0]['state'] != 'Booted': subprocess.run(['xcrun','simctl','boot',choices[0]['udid']],check=True)
+          subprocess.run(['xcrun','simctl','bootstatus',choices[0]['udid'],'-b'],check=True)
           with open(os.environ['GITHUB_ENV'],'a') as f: f.write('SIMULATOR_ID='+choices[0]['udid']+'\n')
           PY
       - name: Build and run offline smoke test
-        run: xcodebuild -project ios/PokeBaconStudio.xcodeproj -scheme PokeBaconStudio -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -derivedDataPath ios/build -resultBundlePath ios/SmokeResults.xcresult CODE_SIGNING_ALLOWED=NO test
+        run: xcodebuild -project ios/PokeBaconStudio.xcodeproj -scheme PokeBaconStudio -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -parallel-testing-enabled NO -derivedDataPath ios/build -resultBundlePath ios/SmokeResults.xcresult CODE_SIGNING_ALLOWED=NO test
       - name: Collect simulator screenshots
         if: always()
         run: |
