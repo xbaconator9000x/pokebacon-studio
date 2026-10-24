@@ -57,7 +57,7 @@ final class AssetServer {
         let relative = path == "/" ? "index.html" : String(path.dropFirst())
         let file = root.appendingPathComponent(relative).resolvingSymlinksInPath()
         guard file.path.hasPrefix(root.path + "/"), let data = try? Data(contentsOf: file, options: .mappedIfSafe) else { respond(connection, status: "404 Not Found"); return }
-        let types = ["html":"text/html", "js":"text/javascript", "css":"text/css", "json":"application/json", "webmanifest":"application/manifest+json", "wasm":"application/wasm", "png":"image/png", "jpg":"image/jpeg", "jpeg":"image/jpeg", "svg":"image/svg+xml", "webp":"image/webp", "gif":"image/gif", "mp3":"audio/mpeg", "wav":"audio/wav", "mid":"audio/midi"]
+        let types = ["html":"text/html", "js":"text/javascript", "mjs":"text/javascript", "css":"text/css", "json":"application/json", "webmanifest":"application/manifest+json", "wasm":"application/wasm", "png":"image/png", "jpg":"image/jpeg", "jpeg":"image/jpeg", "svg":"image/svg+xml", "webp":"image/webp", "gif":"image/gif", "mp3":"audio/mpeg", "wav":"audio/wav", "mid":"audio/midi"]
         respond(connection, status: "200 OK", body: data, mime: types[file.pathExtension.lowercased()] ?? "application/octet-stream", head: first[0] == "HEAD")
     }
     private func respond(_ connection: NWConnection, status: String, body: Data = Data(), mime: String = "text/plain", head: Bool = false) {

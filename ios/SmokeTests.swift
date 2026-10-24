@@ -3,6 +3,34 @@ import WebKit
 @testable import PokeBaconStudio
 
 final class SmokeTests: XCTestCase {
+    @MainActor private func waitFor(_ script: String, in web: WKWebView) async throws {
+        for _ in 0..<160 {
+            if let value = try? await web.evaluateJavaScript(script), value as? Bool == true { return }
+            try await Task.sleep(nanoseconds: 250_000_000)
+        }
+        XCTFail("Timed out waiting for: \(script)")
+        throw NSError(domain: "StudioSmoke", code: 1)
+    }
+
+    @MainActor private func capture(_ name: String, window: UIWindow, web: WKWebView) async throws {
+        try await Task.sleep(nanoseconds: 500_000_000)
+        let image: UIImage = try await withCheckedThrowingContinuation { continuation in
+            web.takeSnapshot(with: nil) { image, error in
+                if let image { continuation.resume(returning: image) }
+                else { continuation.resume(throwing: error ?? NSError(domain: "StudioSnapshot", code: 1)) }
+            }
+        }
+        let rendered = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+            window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+            image.draw(in: web.convert(web.bounds, to: window))
+        }
+        let folder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Previews", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        try XCTUnwrap(rendered.pngData()).write(to: folder.appendingPathComponent(name + ".png"))
+        let attachment = XCTAttachment(image: rendered)
+        attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
+    }
+
     @MainActor func testOfflineEditorBootsWithPersistentStorageAndNativeBridge() async throws {
         let window = try XCTUnwrap(UIApplication.shared.windows.first(where: { $0.isKeyWindow }))
         let editor = try XCTUnwrap(window.rootViewController as? EditorViewController)
@@ -24,5 +52,33 @@ final class SmokeTests: XCTestCase {
             try await Task.sleep(nanoseconds: 250_000_000)
         }
         XCTAssertTrue(storageReady, "IndexedDB must open successfully")
+        // Exercise nested navigation through the same controls used on the phone.
+        try await waitFor("document.querySelector('#loading').hidden", in: web)
+        try await capture("01-map-editor", window: window, web: web)
+        try await web.evaluateJavaScript("document.querySelector('#menuButton').click(); void 0")
+        try await waitFor("document.querySelector('#dialogTitle').textContent==='Projects'", in: web)
+        try await capture("02-projects", window: window, web: web)
+        try await web.evaluateJavaScript("document.querySelector('#helpMenu').click(); void 0")
+        try await waitFor("document.querySelector('#dialogTitle').textContent!=='Projects'", in: web)
+        let back = try XCTUnwrap(editor.view.subviews.compactMap { $0 as? UIButton }.first)
+        back.sendActions(for: .touchUpInside)
+        try await waitFor("document.querySelector('#dialogTitle').textContent==='Projects' && document.querySelector('#dialog').open", in: web)
+        back.sendActions(for: .touchUpInside)
+        try await waitFor("!document.querySelector('#dialog').open", in: web)
+        try await web.evaluateJavaScript("document.querySelector('#workspaceButton').click(); void 0")
+        try await capture("03-workspaces", window: window, web: web)
+        try await web.evaluateJavaScript("document.querySelector('[data-workspace=\"sprites\"]').click(); void 0")
+        try await waitFor("document.querySelector('#app').dataset.workspace==='sprites' && document.querySelector('#dialog').open", in: web)
+        try await capture("04-sprites", window: window, web: web)
+        try await web.evaluateJavaScript("document.querySelector('#closeDialog').click(); void 0")
+        try await waitFor("document.querySelector('#app').dataset.workspace==='map'", in: web)
+        // Commit actual IndexedDB data and verify it survives reloading the editor.
+        try await web.evaluateJavaScript("window.__persisted=false; {const r=indexedDB.open('ios-smoke',1);r.onsuccess=()=>{const db=r.result,t=db.transaction('test','readwrite');t.objectStore('test').put('saved','checkpoint');t.oncomplete=()=>{db.close();window.__persisted=true}}}; void 0")
+        try await waitFor("window.__persisted===true", in: web)
+        web.reload()
+        try await waitFor("typeof window.mapStudioBack==='function' && document.querySelector('#loading').hidden", in: web)
+        try await web.evaluateJavaScript("window.__restored=false; {const r=indexedDB.open('ios-smoke',1);r.onsuccess=()=>{const db=r.result,q=db.transaction('test').objectStore('test').get('checkpoint');q.onsuccess=()=>{window.__restored=q.result==='saved';db.close()}}}; void 0")
+        try await waitFor("window.__restored===true", in: web)
+        try await capture("05-back-to-map", window: window, web: web)
     }
 }
