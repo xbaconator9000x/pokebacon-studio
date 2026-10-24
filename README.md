@@ -8,9 +8,9 @@ Open a supported base ROM, build your world, add its characters and story, make 
 
 ## Try it
 
-**[Download the Android APK](https://github.com/xbaconator9000x/shattered-map-studio/releases/latest)** — grab the `.apk` under Assets, open it on your phone and allow installation from your browser when Android asks.
+**[Download the Android APK](https://github.com/xbaconator9000x/pokebacon-studio/releases/latest)** — grab the `.apk` under Assets, open it on your phone and allow installation from your browser when Android asks.
 
-**[Open the web editor](https://xbaconator9000x.github.io/shattered-map-studio/)** — no install needed. Open the link in your browser, choose **Open ROM**, and select your own `.gba` file. You don't need GitHub or a development setup to use it.
+**[Open the web editor](https://xbaconator9000x.github.io/pokebacon-studio/)** — no install needed. Open the link in your browser, choose **Open ROM**, and select your own `.gba` file. You don't need GitHub or a development setup to use it.
 
 The Android APK packages the editor for offline use. The browser version is available at the link above. Back up your projects before clearing app or browser data; those saves aren't a cloud account or an automatic sync between devices.
 
@@ -87,7 +87,7 @@ The applicable Magenta, model and runtime licences are included in [the bundled 
 
 ### Have a listen
 
-**[Open the music demo player](https://xbaconator9000x.github.io/shattered-map-studio/examples/)** — five tracks with proper audio controls. Open this in your browser, not GitHub's file viewer.
+**[Open the music demo player](https://xbaconator9000x.github.io/pokebacon-studio/examples/)** — five tracks with proper audio controls. Open this in your browser, not GitHub's file viewer.
 
 - **Sunny route:** upbeat travelling theme.
 - **Forest trail:** winding woodwind-style phrases.
