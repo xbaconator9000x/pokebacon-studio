@@ -46,6 +46,8 @@ jobs:
           xcrun simctl launch "$SIMULATOR_ID" dev.pokebacon.studio
           sleep 3
           xcrun simctl io "$SIMULATOR_ID" screenshot ios/previews/ios-simulator.png
+      - name: Package simulator app
+        run: ditto -c -k --sequesterRsrc --keepParent ios/build/Build/Products/Debug-iphonesimulator/PokeBaconStudio.app ios/build/PokeBacon-iOS-simulator.zip
       - name: Build unsigned device archive
         run: |
           xcodebuild -project ios/PokeBaconStudio.xcodeproj -scheme PokeBaconStudio -configuration Release -destination 'generic/platform=iOS' -archivePath ios/build/PokeBaconStudio.xcarchive CODE_SIGNING_ALLOWED=NO archive
@@ -62,7 +64,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: PokeBacon-iOS-simulator-preview
-          path: ios/build/Build/Products/Debug-iphonesimulator/PokeBaconStudio.app
+          path: ios/build/PokeBacon-iOS-simulator.zip
       - uses: actions/upload-artifact@v4
         with:
           name: PokeBacon-iOS-unsigned-device
