@@ -80,5 +80,22 @@ final class SmokeTests: XCTestCase {
         try await web.evaluateJavaScript("window.__restored=false; {const r=indexedDB.open('ios-smoke',1);r.onsuccess=()=>{const db=r.result,q=db.transaction('test').objectStore('test').get('checkpoint');q.onsuccess=()=>{window.__restored=q.result==='saved';db.close()}}}; void 0")
         try await waitFor("window.__restored===true", in: web)
         try await capture("05-back-to-map", window: window, web: web)
+        // Exercise the real JS-to-Swift export bridge and byte storage, not a mock.
+        try await web.evaluateJavaScript("window.__exportProbe='pending'; NativeBridge.exportBlob(new Blob([new Uint8Array([77,84,104,100,0,255])]),'native-smoke.mid').then(()=>window.__exportProbe='ready').catch(e=>window.__exportProbe=e.message); void 0")
+        try await waitFor("window.__exportProbe==='ready'", in: web)
+        let picker = try XCTUnwrap(editor.presentedViewController as? UIDocumentPickerViewController)
+        let exported = try XCTUnwrap(FileManager.default.enumerator(at: FileManager.default.temporaryDirectory, includingPropertiesForKeys: nil)?.allObjects.compactMap { $0 as? URL }.first { $0.lastPathComponent == "native-smoke.mid" })
+        XCTAssertEqual(try Data(contentsOf: exported), Data([77,84,104,100,0,255]))
+        editor.documentPickerWasCancelled(picker)
+        picker.dismiss(animated: false)
+        for _ in 0..<20 {
+            if editor.presentedViewController == nil { break }
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: exported.path), "Cancelled exports must remove temporary output")
+        try await web.evaluateJavaScript("window.__exportProbe='pending'; NativeBridge.exportBlob(new Blob(['retry']),'native-smoke.mid',true).then(()=>window.__exportProbe='ready').catch(e=>window.__exportProbe=e.message); void 0")
+        try await waitFor("window.__exportProbe==='ready'", in: web)
+        XCTAssertTrue(editor.presentedViewController is UIActivityViewController, "Share must open the native activity sheet after a cancelled save")
+        editor.presentedViewController?.dismiss(animated: false)
     }
 }
