@@ -1,0 +1,92 @@
+[
+  {
+    "preset": "sunny-route",
+    "seed": 123,
+    "engine": "hybrid",
+    "temperature": 0.85,
+    "modelStages": {
+      "engine": "Hybrid melody development",
+      "model": "Contour scaffold + chord-aware melody",
+      "version": "Local contour + melody stages",
+      "phrases": 4,
+      "temperature": 0.85,
+      "seed": 123,
+      "reference": false,
+      "training": "The contour stage supplies bounded inspiration; the melody stage develops chord-aware phrases; the GBA-safe arranger owns rhythm, harmony and cadence"
+    },
+    "previewSeconds": 65,
+    "palette": "Studio cartridge"
+  },
+  {
+    "preset": "forest",
+    "seed": 241,
+    "engine": "hybrid",
+    "temperature": 0.85,
+    "modelStages": {
+      "engine": "Hybrid melody development",
+      "model": "Contour scaffold + chord-aware melody",
+      "version": "Local contour + melody stages",
+      "phrases": 4,
+      "temperature": 0.85,
+      "seed": 241,
+      "reference": false,
+      "training": "The contour stage supplies bounded inspiration; the melody stage develops chord-aware phrases; the GBA-safe arranger owns rhythm, harmony and cadence"
+    },
+    "previewSeconds": 65,
+    "palette": "Studio cartridge"
+  },
+  {
+    "preset": "cave",
+    "seed": 83,
+    "engine": "hybrid",
+    "temperature": 0.85,
+    "modelStages": {
+      "engine": "Hybrid melody development",
+      "model": "Contour scaffold + chord-aware melody",
+      "version": "Local contour + melody stages",
+      "phrases": 4,
+      "temperature": 0.85,
+      "seed": 83,
+      "reference": false,
+      "training": "The contour stage supplies bounded inspiration; the melody stage develops chord-aware phrases; the GBA-safe arranger owns rhythm, harmony and cadence"
+    },
+    "previewSeconds": 65,
+    "palette": "Studio cartridge"
+  },
+  {
+    "preset": "trainer-battle",
+    "seed": 401,
+    "engine": "hybrid",
+    "temperature": 0.85,
+    "modelStages": {
+      "engine": "Hybrid melody development",
+      "model": "Contour scaffold + chord-aware melody",
+      "version": "Local contour + melody stages",
+      "phrases": 4,
+      "temperature": 0.85,
+      "seed": 401,
+      "reference": false,
+      "training": "The contour stage supplies bounded inspiration; the melody stage develops chord-aware phrases; the GBA-safe arranger owns rhythm, harmony and cadence"
+    },
+    "previewSeconds": 65,
+    "palette": "Studio cartridge"
+  },
+  {
+    "preset": "night-town",
+    "seed": 77,
+    "engine": "hybrid",
+    "temperature": 0.85,
+    "modelStages": {
+      "engine": "Hybrid melody development",
+      "model": "Contour scaffold + chord-aware melody",
+      "version": "Local contour + melody stages",
+      "phrases": 4,
+      "temperature": 0.85,
+      "seed": 77,
+      "reference": false,
+      "training": "The contour stage supplies bounded inspiration; the melody stage develops chord-aware phrases; the GBA-safe arranger owns rhythm, harmony and cadence"
+    },
+    "previewSeconds": 65,
+    "palette": "Studio cartridge"
+  }
+]
