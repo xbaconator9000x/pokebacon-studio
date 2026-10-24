@@ -8,6 +8,7 @@ parser.add_argument('ios', type=Path)
 parser.add_argument('android', type=Path)
 parser.add_argument('--output', type=Path, default=Path('docs/previews'))
 parser.add_argument('--android-insets', nargs=2, type=int, default=(0, 0), metavar=('TOP', 'BOTTOM'))
+parser.add_argument('--ios-insets', nargs=2, type=int, default=(0, 0), metavar=('TOP', 'BOTTOM'))
 args = parser.parse_args()
 args.output.mkdir(parents=True, exist_ok=True)
 
@@ -21,9 +22,9 @@ def fit(image, width):
     return image.resize((width, round(image.height * width / image.width)), Image.Resampling.LANCZOS)
 
 groups = {'ios': frames(args.ios), 'android': frames(args.android)}
-top, bottom = args.android_insets
-if top or bottom:
-    groups['android'] = [image.crop((0, top, image.width, image.height-bottom)) for image in groups['android']]
+for platform, (top, bottom) in [('android', args.android_insets), ('ios', args.ios_insets)]:
+    if top or bottom:
+        groups[platform] = [image.crop((0, top, image.width, image.height-bottom)) for image in groups[platform]]
 for platform, captures in groups.items():
     fit(captures[0], 600).save(args.output / f'{platform}-phone.png', optimize=True)
     scaled = [fit(image, 420) for image in captures]
