@@ -1,0 +1,42 @@
+name: iOS preview
+on:
+  workflow_dispatch:
+  push:
+    branches: [ios-port]
+  pull_request:
+    paths: ['ios/**', 'dist/**', '.github/workflows/ios.yml']
+permissions:
+  contents: read
+jobs:
+  simulator:
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install project generator
+        run: brew install xcodegen
+      - name: Stage offline editor
+        run: python3 ios/prepare-assets.py
+      - name: Generate Xcode project
+        run: xcodegen generate --spec ios/project.yml
+      - name: Select available iPhone simulator
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          devices=json.loads(subprocess.check_output(['xcrun','simctl','list','devices','available','-j']))['devices']
+          choices=[d for runtime, rows in devices.items() if 'iOS' in runtime for d in rows if d.get('isAvailable') and d['name'].startswith('iPhone')]
+          if not choices: raise SystemExit('No available iPhone simulator')
+          with open(os.environ['GITHUB_ENV'],'a') as f: f.write('SIMULATOR_ID='+choices[0]['udid']+'\n')
+          PY
+      - name: Build and run offline smoke test
+        run: xcodebuild -project ios/PokeBaconStudio.xcodeproj -scheme PokeBaconStudio -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -derivedDataPath ios/build -resultBundlePath ios/SmokeResults.xcresult CODE_SIGNING_ALLOWED=NO test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-smoke-results
+          path: ios/SmokeResults.xcresult
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PokeBacon-iOS-simulator-preview
+          path: ios/build/Build/Products/Debug-iphonesimulator/PokeBaconStudio.app
