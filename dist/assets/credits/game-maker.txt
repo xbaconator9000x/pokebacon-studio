@@ -1,4 +1,4 @@
-Shattered Game Maker
+PokeBacon Game Maker
 
 Original scene, item, presentation, composer, MIDI and selective music adapters are included as
 readable JavaScript. No third-party music renderer or DAW code is bundled.
