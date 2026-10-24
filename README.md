@@ -20,7 +20,7 @@ The Android APK packages the editor for offline use. The browser version is avai
 
 Paint your maps, sort out the layers and collision, link the exits, then see how they play. Ground, details, objects and overhead tiles stay separate. Imported ROM maps are editable—not just pictures to paint over.
 
-![Map editor, layers and connections](docs/previews/map-workspace.gif)
+![Drawing a connected path and placing whole objects](docs/previews/map-workspace.gif?v=editing-435)
 
 ## Map generator
 
@@ -32,21 +32,21 @@ Want a starting point? Pick a village, town or city, choose the biome, buildings
 
 Place a whole house or tree instead of hunting down every tile. Browse buildings, furniture, interiors and decorations by pack or category, save favourites, and keep your own reusable pieces.
 
-![Object stamps and building library](docs/previews/asset-library.gif)
+![Placing whole houses, a laboratory and trees](docs/previews/asset-library.gif?v=editing-435)
 
 ## Brushes
 
 Draw connected paths, mix tree varieties, paint terrain, or build walls and fences. The building brush paints rows of complete, solid background buildings for dense city blocks, with room left in front. Use the normal building tools for working doors and interiors. The brushes handle matching edges and corners; you can still edit individual tiles when you want to.
 
-![Paths, walls and tree brushes](docs/previews/brush-tools.gif)
+![Drawing path corners and a junction, then undoing and redoing a stroke](docs/previews/brush-tools.gif?v=editing-435)
 
 ## Sprite maker
 
 Draw and edit pixels, trace a reference, change palettes and work across front, back, menu and overworld frames. Normal and shiny palettes, animation frames and editable layers stay with the sprite group. Open a compatible ROM to use its existing artwork as a template.
 
-The screenshot shows a new blank group and its editing controls.
+Draw an icon from a blank canvas, fill its colours, add highlights and shadows, change its palette, and undo a pixel edit. The demo below shows those edits in the app, sped up.
 
-![Sprite workbench and palette controls](docs/previews/sprite-maker.jpg)
+![Drawing, filling, recolouring and editing a sprite](docs/previews/sprite-maker.gif)
 
 ## Music maker
 
