@@ -17,7 +17,7 @@ final class SmokeTests: XCTestCase {
         let text = try XCTUnwrap(capabilities as? String)
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Bool])
         for key in ["secure", "crypto", "wasm", "idb", "bridge"] { XCTAssertEqual(object[key], true, key) }
-        let result = try await web.evaluateJavaScript("new Promise((resolve,reject)=>{const r=indexedDB.open('ios-smoke',1);r.onupgradeneeded=()=>r.result.createObjectStore('test');r.onsuccess=()=>{r.result.close();resolve(true)};r.onerror=()=>reject(r.error.message)})")
+        let result = try await web.callAsyncJavaScript("return await new Promise((resolve,reject)=>{const r=indexedDB.open('ios-smoke',1);r.onupgradeneeded=()=>r.result.createObjectStore('test');r.onsuccess=()=>{r.result.close();resolve(true)};r.onerror=()=>reject(r.error.message)})", arguments: [:], in: nil, contentWorld: .page)
         XCTAssertEqual(result as? Bool, true)
     }
 }
