@@ -51,7 +51,7 @@ export function mapToolbox(api){
     $('#objectCreate').onclick=api.importArtwork;$('#manageObjects').onclick=()=>api.smart().open('objects');$('#extractObject').onclick=()=>{api.smart().state.extractStart=null;ready('extract');};cards();
   }
   function brushTabFor(tool){return{terrain:'paths',texture:'textures',tree:'trees',wall:'walls',wallbox:'walls',room:'rooms',ledge:'ledges'}[tool];}
-  function follow(tool){const tab=brushTabFor(tool);if(tab){state.brushTab=tab;state.lastBrush=tool;}if(tool==='stamp'&&['interiors','doors'].includes(state.scope))state.scope='all';if(tool==='building')state.scope='buildings';if(tool==='interior')state.scope='interiors';if(tool==='door'||tool==='gate')state.scope='doors';}
+  function follow(tool){const tab=tool==='tree'&&api.builder()?.state.buildingBrush?'buildings':brushTabFor(tool);if(tab){state.brushTab=tab;state.lastBrush=tool;}if(tool==='stamp'&&['interiors','doors'].includes(state.scope))state.scope='all';if(tool==='building')state.scope='buildings';if(tool==='interior')state.scope='interiors';if(tool==='door'||tool==='gate')state.scope='doors';}
   function brushes(target){
     target.innerHTML=tabs([['paths','Paths'],['textures','Textures'],['trees','Trees'],['buildings','Buildings'],['walls','Walls'],['rooms','Rooms'],['ledges','Ledges']],state.brushTab,'data-brush-tab')+'<div id="brushBrowser"></div>';
     target.querySelectorAll('[data-brush-tab]').forEach(b=>b.onclick=()=>{state.brushTab=b.dataset.brushTab;state.brushQuery='';state.brushGroup='all';state.brushLimit=30;brushes(target);});

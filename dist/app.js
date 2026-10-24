@@ -162,7 +162,7 @@ function updateChrome() {renderToolButtons();
   $('#mapView').classList.toggle('active',view==='map');$('#worldView').classList.toggle('active',view==='world');
   $('#canvasLabel span:last-child').textContent=view==='map'?'MAP WORKSPACE':'MAP CONNECTIONS';
   const layerName=activeLayer==='objects'?'Objects':activeLayer[0].toUpperCase()+activeLayer.slice(1);
-  $('#toolHint').textContent=view==='world'?'Drag map cards to arrange · tap to open':`${toolInfo[activeTool][1]} · ${activeTool==='tree'&&builder?.state.erase?'Erase brush trees':activeTool==='wall'&&world?.state.erase?'Erase walls':toolInfo[activeTool][2]}`;
+  $('#toolHint').textContent=view==='world'?'Drag map cards to arrange · tap to open':`${activeTool==='tree'&&builder?.state.buildingBrush?'Building rows':toolInfo[activeTool][1]} · ${activeTool==='tree'&&builder?.state.buildingBrush?'Drag to paint complete background buildings':activeTool==='tree'&&builder?.state.erase?'Erase brush trees':activeTool==='wall'&&world?.state.erase?'Erase walls':toolInfo[activeTool][2]}`;
   $('#selectionAction').hidden=!selection||view==='world';$('#selectionAction').textContent=selection?.kind==='link'?'Edit connection':selection?.kind==='gate'?'Edit gate':selection?.kind==='marker'?'Edit pin':selection?.kind==='field'?'Edit HM object':'Edit object';
   $('#activeLayerButton').textContent=layerName;$('#toolOptionsButton').textContent=panelTitle(toolContext);syncNavigation();
   $('#footprintAction').hidden=selection?.kind!=='object'||view!=='map';
