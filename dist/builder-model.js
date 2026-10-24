@@ -60,8 +60,9 @@ export function plantTree(map,p,x,y,{spacing=1,erase=false}={}){
  const foot=treeFootprint(p),left=Math.round(x-foot.x),top=Math.round(y-foot.y);
  if(erase){const before=map.objects.length;map.objects=map.objects.filter(o=>!o.tree||Math.abs(o.x+(o.footprint?.x||0)-x)>=spacing||Math.abs(o.y+(o.footprint?.y||o.h-1)-y)>=spacing);return before!==map.objects.length;}
  if(left<0||top<0||left+p.w>map.width||top+p.h>map.height)return false;
+ if(map.objects.some(o=>!o.tree&&left<o.x+o.w&&left+p.w>o.x&&top<o.y+o.h&&top+p.h>o.y))return false;
  for(const o of map.objects){if(!o.tree)continue;const f=o.footprint||{x:0,y:o.h-1,w:o.w,h:1};if(Math.abs(o.x+f.x-x)<spacing&&Math.abs(o.y+f.y-y)<spacing)return false;}
- assertObjectPlacement(map,{x:left,y:top,w:p.w,h:p.h});
+ assertObjectPlacement(map,{x:left,y:top,w:p.w,h:p.h},{allowTreeCanopies:true});
  const o=prefabObject(p,left,top);o.tree=true;o.footprint=foot;o.collisionChoice=map.autoCollision===false?'keep':'footprint';map.objects.push(o);return true;
 }
 export function validateBuilder(project,assetIds){
@@ -72,4 +73,14 @@ export function validateBuilder(project,assetIds){
   if(t.extensionXAssetId&&t.extensionYAssetId&&!t.extensionXYAssetId)throw Error('A building needs corner extension artwork for resizing both ways.');
  }
  for(const m of project.maps)for(const o of m.objects){if(o.building&&(!o.building.entrance||![o.building.entrance.x,o.building.entrance.y].every(Number.isInteger)))throw Error('A building entrance is invalid.');if(o.footprint&&(![o.footprint.x,o.footprint.y,o.footprint.w,o.footprint.h].every(Number.isFinite)||o.footprint.x<0||o.footprint.y<0||o.footprint.w<=0||o.footprint.h<=0||o.footprint.x+o.footprint.w>o.w||o.footprint.y+o.footprint.h>o.h))throw Error('An object collision footprint is invalid.');}
+}
+
+export function paintBuildingRow(map,p,x,y,{gap=1}={}){
+ const stride=p.w+Math.max(0,Math.round(gap)),left=Math.floor(x/stride)*stride,top=Math.floor(y/(p.h+1))*(p.h+1);
+ if(left<0||top<0||left+p.w>map.width||top+p.h>=map.height||map.objects.length>=5000)return false;
+ const rect={x:left,y:top,w:p.w,h:p.h+1};
+ const overlaps=o=>rect.x<o.x+o.w&&rect.x+rect.w>o.x&&rect.y<o.y+o.h&&rect.y+rect.h>o.y;
+ if(map.objects.some(overlaps)||(map.nativeAssemblies||[]).some(overlaps)||map.markers.some(o=>o.x>=left&&o.x<left+p.w&&o.y>=top&&o.y<=top+p.h))return false;
+ assertObjectPlacement(map,rect);
+ const o=prefabObject(p,left,top);o.buildingRow=true;o.collisionChoice='solid';map.objects.push(o);return true;
 }

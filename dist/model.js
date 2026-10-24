@@ -114,7 +114,7 @@ export function snapshot(project) { return JSON.stringify({name: project.name, a
 export function restore(project, value) { const data=JSON.parse(value);if(!Object.hasOwn(data,'authoring'))delete project.authoring;if(!Object.hasOwn(data,'sourceEngine'))delete project.sourceEngine;Object.assign(project,data); }
 export function validateProject(p, catalog = []) {
   const fail = message => {throw new Error(message);};
-  if (!p || p.format !== FORMAT || p.version !== VERSION) fail('Choose a Shattered Map Studio v1 project (.shattered.json).');
+  if (!p || p.format !== FORMAT || p.version !== VERSION) fail('Choose a PokéBacon Studio v1 project (.shattered.json).');
   if (!Array.isArray(p.maps) || p.maps.length < 1 || p.maps.length > 80) fail('A project needs 1–80 maps.');
   if (!Array.isArray(p.assets) || p.assets.length > 512 || !Array.isArray(p.links) || p.links.length > 2000) fail('This project has too many assets or connections.');
   const ids = new Set(), assetIds = new Set(catalog.map(a => a.id)), embeddedIds = new Set();

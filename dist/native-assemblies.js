@@ -5,7 +5,7 @@ const inside=(r,x,y)=>x>=r.x&&y>=r.y&&x<r.x+r.w&&y<r.y+r.h;
 const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 const signature=v=>JSON.stringify(v??null);
 export function assemblyAt(map,x,y){return(map.nativeAssemblies||[]).find(a=>a.locked!==false&&inside(a,x,y));}
-export function assertObjectPlacement(map,r){if(r.x<0||r.y<0||r.x+r.w>map.width||r.y+r.h>map.height)throw Error('The complete object must fit inside the map.');if((map.nativeAssemblies||[]).some(a=>a.locked!==false&&overlap(r,a)))throw Error('This overlaps a protected ROM object. Move or unlock it first.');}
+export function assertObjectPlacement(map,r,{allowTreeCanopies=false}={}){if(!allowTreeCanopies&&map.objects.some(o=>o.tree&&overlap(r,o)))throw Error('This would cut through a complete tree. Move or erase the tree first.');if(r.x<0||r.y<0||r.x+r.w>map.width||r.y+r.h>map.height)throw Error('The complete object must fit inside the map.');if((map.nativeAssemblies||[]).some(a=>a.locked!==false&&overlap(r,a)))throw Error('This overlaps a protected ROM object. Move or unlock it first.');}
 export function assertAssemblyEdit(map,x,y){const a=assemblyAt(map,x,y);if(a)throw Error(a.name+' is a complete object. Move, remove or unlock it in Objects → ROM objects before editing its tiles or rules.');}
 export function assemblyCompatibility(map,template){return !!map.rom&&(template.overlay?map.rom.metatileLayers===template.layerCount:map.rom.sourceId===template.sourceId&&map.rom.layerAtlasIds?.length===template.layerCount&&map.rom.atlasId===template.atlasId);}
 export function captureNativeAssembly(map,rect,{id,name='ROM object',category='Other',sourceKey=map.rom?.key||map.rom?.templateKey,entrances=[]}={}){

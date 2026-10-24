@@ -1,3 +1,4 @@
+import{generatedBorder}from'./map-border.js';
 import {assemblyFindings} from './native-assemblies.js';
 import {installGameRules} from './game-rules.js';
 import {installTilesetAnimations} from './tileset-animation.js';
@@ -192,7 +193,7 @@ export async function buildRom(project,reader,{sourceId,renderMap,wallStyles=[],
   if(changed&&!table&&!layoutChanged){installEvents(output,native,events);}
   else if(changed){
    if(!table&&reader.maps.filter(m=>m.layout.address===base.layout.address).length!==1)throw Error(map.name+': the layout is shared and its global layout table needs an adapter. Event-only edits remain available.');
-   const layout=reader.bytes.slice(base.layout.address,base.layout.address+reader.layoutRecordSize),lv=new DataView(layout.buffer),blocks=new Uint8Array(words.length*2),bv=new DataView(blocks.buffer);words.forEach((word,i)=>bv.setUint16(i*2,word,true));lv.setUint32(0,map.width,true);lv.setUint32(4,map.height,true);lv.setUint32(12,BASE+output.allocate(blocks,'Map blocks'),true);const at=table?output.allocate(layout,'Map layout'):base.layout.address,id=isNew?0:reader.u16(native.address+18);output.int(native.address,BASE+at);pendingLayouts.push({compiler,layout,at,pair});
+   const layout=reader.bytes.slice(base.layout.address,base.layout.address+reader.layoutRecordSize),lv=new DataView(layout.buffer),blocks=new Uint8Array(words.length*2),bv=new DataView(blocks.buffer);words.forEach((word,i)=>bv.setUint16(i*2,word,true));lv.setUint32(0,map.width,true);lv.setUint32(4,map.height,true);lv.setUint32(12,BASE+output.allocate(blocks,'Map blocks'),true);const border=generatedBorder(map,words,reader.layoutRecordSize);if(border){lv.setUint32(8,BASE+output.allocate(border.bytes,'Generated map border'),true);layout[24]=border.width;layout[25]=border.height;}const at=table?output.allocate(layout,'Map layout'):base.layout.address,id=isNew?0:reader.u16(native.address+18);output.int(native.address,BASE+at);pendingLayouts.push({compiler,layout,at,pair});
    if(!table){output.write(at,layout);}else if(!isNew&&layoutUses.get(id)===1)tableView.setUint32((id-1)*4,BASE+at,true);else{const newId=table.count+newLayoutEntries.length+1;if(newId>65535)throw Error('No global map layout IDs remain.');newLayoutEntries.push(at);output.int(native.address+18,newId,2);}installEvents(output,native,events);
   }
   reports.push({mapId:map.id,key:native.key,name:map.name,changed,isNew,newGraphics:compiler.newTiles,newMetatiles:compiler.newMetatiles,paletteMappedPixels:compiler.changedPixels,staticArtwork:changed&&staticArtwork});if(compiler.changedPixels)warnings.push(map.name+': '+compiler.changedPixels+' pixels use the nearest available GBA palette colour.');await new Promise(r=>setTimeout(r,0));
