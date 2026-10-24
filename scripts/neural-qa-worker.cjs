@@ -1,0 +1,6 @@
+// Executes the shipped classic-worker runtime with file-only fetches.
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),{parentPort,workerData}=require('node:worker_threads'),{performance}=require('node:perf_hooks');
+const root=workerData.root,c={console,performance,URL,TextEncoder,TextDecoder,setTimeout,clearTimeout,Float32Array,Int32Array,Uint8Array,Uint16Array,Uint32Array,ArrayBuffer,Date,Math,Promise,WebAssembly,Response};
+c.self=c;c.location={href:'https://local/music-neural-worker.js'};c.navigator={userAgent:'Studio worker QA'};
+c.fetch=async url=>{const u=new URL(url,'https://local/');if(u.origin!=='https://local')throw Error('Unexpected network access: '+u.origin);const file=path.resolve(root,'.'+u.pathname);if(!file.startsWith(root+path.sep))throw Error('Invalid asset path.');const b=fs.readFileSync(file);return new Response(b,{headers:{'Content-Type':file.endsWith('.wasm')?'application/wasm':'application/octet-stream'}});};
+vm.createContext(c);c.importScripts=(...paths)=>paths.forEach(p=>vm.runInContext(fs.readFileSync(path.resolve(root,p),'utf8'),c));c.postMessage=x=>parentPort.postMessage(structuredClone(x));vm.runInContext(fs.readFileSync(path.join(root,'music-neural-worker.js'),'utf8'),c);parentPort.on('message',data=>c.onmessage({data}));

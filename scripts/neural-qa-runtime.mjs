@@ -1,0 +1,2 @@
+import {Worker} from 'node:worker_threads';import {resolve} from 'node:path';
+export function neuralQAWorker(){const worker=new Worker(new URL('./neural-qa-worker.cjs',import.meta.url),{workerData:{root:resolve('dist')}}),adapter={onmessage:null,onerror:null,postMessage:value=>worker.postMessage(value),terminate:()=>worker.terminate()};worker.on('message',data=>adapter.onmessage?.({data}));worker.on('error',error=>adapter.onerror?.(error));return adapter;}
