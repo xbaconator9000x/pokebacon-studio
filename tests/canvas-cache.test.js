@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {CanvasCache,releaseCanvas} from '../dist/canvas-cache.js';
+const image=()=>({width:256,height:256,getContext(){}});
+test('canvas cache releases backing stores on replacement, eviction and clear',()=>{const cache=new CanvasCache(),a={image:image()},b={image:image()};cache.set('map',a);cache.set('map',a);assert.equal(a.image.width,256);cache.set('map',b);assert.equal(a.image.width,1);assert.equal(a.image.height,1);cache.delete('map');assert.equal(b.image.width,1);assert.equal(cache.delete('missing'),false);const c={image:image()};cache.set('c',c);cache.set('empty',{image:null});cache.clear();assert.equal(c.image.height,1);assert.equal(cache.size,0);releaseCanvas(null);});
