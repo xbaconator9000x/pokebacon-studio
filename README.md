@@ -14,9 +14,19 @@ Open a supported base ROM, build your world, add its characters and story, make 
 
 The Android APK packages the editor for offline use. The browser version is available at the link above. Back up your projects before clearing app or browser data; those saves aren't a cloud account or an automatic sync between devices.
 
-**Coming soon: iOS.** Planned, with no release date yet.
+**iPhone and iPad:** the native offline port is available to build from [the iOS project](ios/README.md). It includes Files import/export, Share and a Back button. [Release downloads](https://github.com/xbaconator9000x/pokebacon-studio/releases/latest) include an unsigned iOS device package and an Apple Silicon simulator build. Installing on an iPhone still needs Apple signing; there is no App Store or TestFlight download yet.
 
 **Found a bug or something that won’t work?** [Open an issue](https://github.com/xbaconator9000x/pokebacon-studio/issues) and tell me what you were doing, your app version and device/browser. Screenshots or a short screen recording would be brilliant, plus the steps to make it happen again.
+
+## On a phone
+
+Here’s what it looks like on a phone. The clips show Projects, workspace switching and returning to the map, captured from the native iOS and Android builds. System bars are cropped.
+
+| iPhone · development build | Android |
+| --- | --- |
+| ![Opening projects and switching workspaces on iOS](docs/previews/ios-phone.gif) | ![Opening projects and switching workspaces on Android](docs/previews/android-phone.gif) |
+
+[Compare the native layouts](docs/previews/native-phone-layouts.png) · [iPhone screenshot](docs/previews/ios-phone.png) · [Android screenshot](docs/previews/android-phone.png)
 
 ## Expanded FireRed
 
@@ -25,6 +35,10 @@ Open **Engine & source project → Create expanded FireRed ROM**, choose clean F
 This is an **engine preview**. Boot, the opening, native saving and fresh-boot loading, and expanded data edit round trips are checked. Every battle mechanic and a complete campaign have not been audited. The pack uses a fixed configuration; arbitrary compile-time switches still need rebuilding. Extended evolution authoring and time-of-day encounter overrides remain source tasks.
 
 Engine versions and upstream credits are included in [the engine notices](dist/assets/engines/notices/README.txt). The [build helper](scripts/build-expanded-engine.py) and [source patches](scripts/engine-patches) reproduce the engine changes using the pinned upstream sources and your own base ROM.
+
+## Cartographer region imports
+
+Generate a region in Cartographer, then bring its project ZIP into **Projects → Import Cartographer region**. Studio converts the actual map layouts, source movement tables, drawing priorities, edge connections and supported doors into editable GBA maps. The review lists anything that needs manual conversion. Cartographer itself runs on a computer; it is not bundled in the APK. [Import guide and limits](docs/cartographer.md).
 
 ## Map maker
 
@@ -219,7 +233,7 @@ export MAP_STUDIO_KEY_PASSWORD='use-a-local-secret-store'
 python3 android/build.py
 ```
 
-The signed APK is written to `dist/`. Never commit a keystore, password, or generated signing files. `android/repack-assets.py` can update web assets in an existing signed shell when the native source and signing certificate are unchanged.
+The signed APK is written to `dist/`. `android/repack-assets.py` can update web assets in an existing signed shell when the native source and signing certificate are unchanged.
 
 ## Compatibility and limits
 

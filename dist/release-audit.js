@@ -8,6 +8,7 @@ export function releaseAudit(project,{sourceHash=null,startMapId=null}={}) {
  const connect=(from,to)=>{if(byId.has(from)&&byId.has(to))edges.get(from).add(to);};
  let persistent=hasHMRules(project)&&hmNeedsQuest(project);
  for(const map of maps){
+  if(map.cartographer?.notes?.length)add('warning','cartographer-review',map.name+': '+map.cartographer.notes.join(' '),map.id);
   if(!map.rom)add('error','unbound-map',map.name+': assign a native ROM map slot before export.',map.id);
   for(const marker of map.markers||[]){if(!marker.runtime||marker.runtime.enabled===false)continue;
    persistent ||= needsQuest(marker);

@@ -12,3 +12,14 @@ test('Town Map relocation preserves source bytes and native flip/palette words',
 test('Town Map validation refuses unsupported sources and invalid pages before writes',()=>{const r=regionFixture();assert.throws(()=>readRegionMap(r,'b'.repeat(64)),/adapter/);assert.throws(()=>validateRegionEdits({[hash]:{pages:{0:[0]},locations:{}}}),/tile page/);const cells=Array(600).fill(9),out=new RomOutput(r.bytes),old=out.bytes.slice();assert.throws(()=>installRegionMap({regionMaps:{[hash]:{pages:{0:cells},locations:{}}}},r,hash,out),/outside/);assert.deepEqual(out.bytes,old);});
 test('World-map edits survive undo, redo, backup and restore',()=>{const p=newProject(),before=captureEdit(p);p.regionMaps={[hash]:{pages:{0:Array(600).fill(0)},locations:{0:{name:'Town',x:1,y:2,width:1,height:1}}}};validateProject(p);const edit=finishEdit(p,before);applyEdit(p,edit);assert.equal(p.regionMaps,undefined);applyEdit(p,edit,true);const saved=snapshot(p);p.regionMaps={};restore(p,saved);assert.equal(p.regionMaps[hash].locations[0].y,2);});
 test('Town Map renderer applies tile flips and selected palette',()=>{const tiles=new Uint8Array(32);tiles[0]=1;const palettes=Array.from({length:80},()=>[0,0,0]);palettes[17]=[255,0,0];const cells=Array(600).fill(0x1c00),pixels=regionPixels({tiles,palettes},cells);assert.deepEqual([...pixels.slice((7*240+7)*4,(7*240+7)*4+4)],[255,0,0,255]);assert.deepEqual([...pixels.slice(0,4)],[0,0,0,255]);});
+
+test('edited FireRed Town Maps follow verified live loader pointers across repeated exports',()=>{
+ const reader=regionFixture(),b=reader.bytes,v=new DataView(b.buffer);
+ const anchors=[[0xc0330,'002336f0a5fa4be0'],[0xc035c,'263123f10bfc35e0'],[0xc0370,'0968034a16e00000'],[0xc0388,'0968034a0ae00000'],[0xc03a4,'891823f1e7fb11e0'],[0xc3d38,'08500003e4990302']];
+ for(const[at,hex]of anchors)b.set(Buffer.from(hex,'hex'),at-8);
+ for(const[at,to]of [[0xc02ec,0x3ef2dc],[0xc2d10,0x3ef2dc],[0xc0330,0x3ef61c],[0xc035c,0x3f089c],[0xc0370,0x3f0afc],[0xc0388,0x3f0c0c],[0xc03a4,0x3f0cf0],[0xc0c94,0x3f1cac],[0xc4db8,0x3f1cac],[0xc3d3c,0x3f1e60],[0xc3d38,0x3f2178]])v.setUint32(at,0x08000000+to,true);
+ const editedHash='c'.repeat(64),n=readRegionMap(reader,editedHash),cells=[...n.pages[0]];cells[3]=0x400;
+ const out=new RomOutput(b);installRegionMap({regionMaps:{[editedHash]:{pages:{0:cells},locations:{}}}},reader,editedHash,out);
+ assert.equal(readRegionMap({bytes:out.bytes},'d'.repeat(64)).pages[0][3],0x400);
+ b[0xc0330-1]^=1;assert.throws(()=>readRegionMap(reader,editedHash),/adapter/);
+});

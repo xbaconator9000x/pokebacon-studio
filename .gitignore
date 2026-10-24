@@ -11,7 +11,19 @@ scripts/__pycache__/
 *.tar.gz
 *.apk
 *.aab
+*.ipa
+android/previews/
 .DS_Store
 .idea/
 .vscode/
 .qa/
+
+# Generated Apple build files
+ios/Web/
+ios/*.xcodeproj/
+ios/build/
+ios/previews/
+ios/*.xcresult/
+DerivedData/
+*.xcuserstate
+*.xcuserdatad/

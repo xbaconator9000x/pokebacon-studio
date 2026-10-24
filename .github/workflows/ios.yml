@@ -1,0 +1,77 @@
+name: iOS preview
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, ios-port]
+    paths: ['ios/**', 'dist/**', '.github/workflows/ios.yml']
+  pull_request:
+    paths: ['ios/**', 'dist/**', '.github/workflows/ios.yml']
+concurrency:
+  group: ios-preview-${{ github.event_name == 'pull_request' && github.head_ref == 'ios-port' && github.run_id || github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  simulator:
+    if: github.event_name != 'pull_request' || github.head_ref != 'ios-port'
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install project generator
+        run: brew install xcodegen
+      - name: Stage offline editor
+        run: python3 ios/prepare-assets.py
+      - name: Generate Xcode project
+        run: xcodegen generate --spec ios/project.yml
+      - name: Select available iPhone simulator
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          devices=json.loads(subprocess.check_output(['xcrun','simctl','list','devices','available','-j']))['devices']
+          choices=[d for runtime, rows in devices.items() if 'iOS' in runtime for d in rows if d.get('isAvailable') and d['name'].startswith('iPhone')]
+          if not choices: raise SystemExit('No available iPhone simulator')
+          if choices[0]['state'] != 'Booted': subprocess.run(['xcrun','simctl','boot',choices[0]['udid']],check=True)
+          subprocess.run(['xcrun','simctl','bootstatus',choices[0]['udid'],'-b'],check=True)
+          with open(os.environ['GITHUB_ENV'],'a') as f: f.write('SIMULATOR_ID='+choices[0]['udid']+'\n')
+          PY
+      - name: Build and run offline smoke test
+        run: xcodebuild -project ios/PokeBaconStudio.xcodeproj -scheme PokeBaconStudio -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -parallel-testing-enabled NO -derivedDataPath ios/build -resultBundlePath ios/SmokeResults.xcresult CODE_SIGNING_ALLOWED=NO test
+      - name: Collect simulator screenshots
+        if: always()
+        run: |
+          container=$(xcrun simctl get_app_container "$SIMULATOR_ID" dev.pokebacon.studio data)
+          mkdir -p ios/previews
+          cp "$container"/Documents/Previews/*.png ios/previews/
+          xcrun simctl launch "$SIMULATOR_ID" dev.pokebacon.studio
+          sleep 3
+          xcrun simctl io "$SIMULATOR_ID" screenshot ios/previews/ios-simulator.png
+      - name: Package simulator app
+        run: ditto -c -k --sequesterRsrc --keepParent ios/build/Build/Products/Debug-iphonesimulator/PokeBaconStudio.app ios/build/PokeBacon-iOS-simulator.zip
+      - name: Build unsigned device archive
+        run: |
+          xcodebuild -project ios/PokeBaconStudio.xcodeproj -scheme PokeBaconStudio -configuration Release -destination 'generic/platform=iOS' -archivePath ios/build/PokeBaconStudio.xcarchive CODE_SIGNING_ALLOWED=NO archive
+          mkdir -p ios/build/unsigned/Payload
+          cp -R ios/build/PokeBaconStudio.xcarchive/Products/Applications/PokeBaconStudio.app ios/build/unsigned/Payload/
+          cd ios/build/unsigned
+          zip -qry ../PokeBacon-iOS-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-smoke-results
+          path: ios/SmokeResults.xcresult
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PokeBacon-iOS-simulator-preview
+          path: ios/build/PokeBacon-iOS-simulator.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PokeBacon-iOS-unsigned-device
+          path: ios/build/PokeBacon-iOS-unsigned.ipa
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PokeBacon-iOS-screenshots
+          path: ios/previews
+          if-no-files-found: ignore

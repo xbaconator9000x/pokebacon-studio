@@ -30,7 +30,8 @@ def run(*args):
     subprocess.run([str(x) for x in args],check=True)
 
 for tool in ['aapt2','d8','zipalign','apksigner']:
-    p=BT/tool;p.chmod(p.stat().st_mode|0o111)
+    p=BT/tool
+    if not os.access(p, os.X_OK): p.chmod(p.stat().st_mode|0o111)
 run(BT/'aapt2','compile','--dir',ROOT/'android/res','-o',BUILD/'compiled.zip')
 run(BT/'aapt2','link','-o',BUILD/'base.apk','-I',PLATFORM,'--manifest',manifest,'--min-sdk-version','26','--target-sdk-version','35','--version-code',version_code,'--version-name',version_name,'-A',ASSETS,BUILD/'compiled.zip')
 (BUILD/'classes').mkdir()
