@@ -1,0 +1,21 @@
+mGBA offline playtest engine
+
+This app bundles the unmodified mGBA WebAssembly runtime from
+@wasm-gaming/mgba-wasm 0.1.1, under Mozilla Public License 2.0.
+Full licence: LICENSE.txt alongside this notice.
+
+Corresponding upstream mGBA source (pinned build revision):
+https://github.com/mgba-emu/mgba/tree/c034660f007c543233f1cadeb0ca13c71afd8f41
+
+Corresponding wrapper source and build instructions:
+https://github.com/wasm-gaming/mGBA-wasm/tree/6b19a50a1aa45055970b46999d5cde2451f1f5d0
+The C shim and build script are also included in source/.
+
+Distribution:
+https://www.npmjs.com/package/@wasm-gaming/mgba-wasm/v/0.1.1
+
+mgba.js SHA-256: e4d7a15cc5bead4cef965eecacf40e20454081d3e97d0fa44b948aa1db41abdc
+mgba.wasm SHA-256: 11be9f4b88f5c26249b5b48b677470b2c0d20e5cdc31d8415650cbfd7171c90a
+
+The application-owned controls, adapter and test-save UI are separate from
+the unmodified engine. No ROMs, game saves or BIOS files are distributed.
