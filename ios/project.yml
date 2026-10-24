@@ -24,11 +24,12 @@ targets:
         type: folder
       - path: Assets.xcassets
         buildPhase: resources
-    info:
-      path: Info.plist
+      - path: LaunchScreen.storyboard
+        buildPhase: resources
     settings:
       base:
         GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
   PokeBaconSmokeTests:
     type: bundle.unit-test

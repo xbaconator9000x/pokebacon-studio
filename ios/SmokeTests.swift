@@ -33,6 +33,7 @@ final class SmokeTests: XCTestCase {
 
     @MainActor func testOfflineEditorBootsWithPersistentStorageAndNativeBridge() async throws {
         let window = try XCTUnwrap(UIApplication.shared.windows.first(where: { $0.isKeyWindow }))
+        XCTAssertGreaterThan(window.bounds.height, 600, "Use the full modern iPhone layout, not legacy compatibility dimensions")
         let editor = try XCTUnwrap(window.rootViewController as? EditorViewController)
         let web = try XCTUnwrap(editor.web)
         var ready = false
@@ -54,6 +55,7 @@ final class SmokeTests: XCTestCase {
         XCTAssertTrue(storageReady, "IndexedDB must open successfully")
         // Exercise nested navigation through the same controls used on the phone.
         try await waitFor("document.querySelector('#loading').hidden", in: web)
+        try await waitFor("!document.querySelector('#toast').classList.contains('show')", in: web)
         try await capture("01-map-editor", window: window, web: web)
         try await web.evaluateJavaScript("document.querySelector('#menuButton').click(); void 0")
         try await waitFor("document.querySelector('#dialogTitle').textContent==='Projects'", in: web)
@@ -83,6 +85,10 @@ final class SmokeTests: XCTestCase {
         // Exercise the real JS-to-Swift export bridge and byte storage, not a mock.
         try await web.evaluateJavaScript("window.__exportProbe='pending'; NativeBridge.exportBlob(new Blob([new Uint8Array([77,84,104,100,0,255])]),'native-smoke.mid').then(()=>window.__exportProbe='ready').catch(e=>window.__exportProbe=e.message); void 0")
         try await waitFor("window.__exportProbe==='ready'", in: web)
+        for _ in 0..<100 {
+            if editor.presentedViewController is UIDocumentPickerViewController { break }
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
         let picker = try XCTUnwrap(editor.presentedViewController as? UIDocumentPickerViewController)
         let exported = try XCTUnwrap(FileManager.default.enumerator(at: FileManager.default.temporaryDirectory, includingPropertiesForKeys: nil)?.allObjects.compactMap { $0 as? URL }.first { $0.lastPathComponent == "native-smoke.mid" })
         XCTAssertEqual(try Data(contentsOf: exported), Data([77,84,104,100,0,255]))
@@ -95,6 +101,10 @@ final class SmokeTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: exported.path), "Cancelled exports must remove temporary output")
         try await web.evaluateJavaScript("window.__exportProbe='pending'; NativeBridge.exportBlob(new Blob(['retry']),'native-smoke.mid',true).then(()=>window.__exportProbe='ready').catch(e=>window.__exportProbe=e.message); void 0")
         try await waitFor("window.__exportProbe==='ready'", in: web)
+        for _ in 0..<100 {
+            if editor.presentedViewController is UIActivityViewController { break }
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
         XCTAssertTrue(editor.presentedViewController is UIActivityViewController, "Share must open the native activity sheet after a cancelled save")
         editor.presentedViewController?.dismiss(animated: false)
     }
