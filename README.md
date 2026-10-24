@@ -14,6 +14,8 @@ Open a supported base ROM, build your world, add its characters and story, make 
 
 The Android APK packages the editor for offline use. The browser version is available at the link above. Back up your projects before clearing app or browser data; those saves aren't a cloud account or an automatic sync between devices.
 
+**[Install the web app on your Home Screen](https://xbaconator9000x.github.io/pokebacon-studio/install.html)** — Android gets an install prompt when supported; iPhone and iPad get the short Safari instructions. The Apple web version needs no signing or App Store download. It uses the same web editor; keep exported project backups.
+
 **iPhone and iPad:** the native offline port is available to build from [the iOS project](ios/README.md). It includes Files import/export, Share and a Back button. [Release downloads](https://github.com/xbaconator9000x/pokebacon-studio/releases/latest) include an unsigned iOS device package and an Apple Silicon simulator build. Installing on an iPhone still needs Apple signing; there is no App Store or TestFlight download yet.
 
 **Found a bug or something that won’t work?** [Open an issue](https://github.com/xbaconator9000x/pokebacon-studio/issues) and tell me what you were doing, your app version and device/browser. Screenshots or a short screen recording would be brilliant, plus the steps to make it happen again.
