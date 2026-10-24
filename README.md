@@ -1,8 +1,68 @@
 # Shattered Map Studio
 
-Shattered Map Studio is a phone-friendly editor for Pokémon-style Game Boy Advance projects. It combines map authoring, object and interior libraries, event and quest tools, native game-data editing, world-map layout, sprite editing, music tools, and an offline playtester.
+I wanted to make a Pokémon ROM hack without needing a dozen different programs open. So, this is Shattered Map Studio: maps, events, quests, sprites, music and game data in one place, with controls you can actually use on a phone.
 
-This repository contains the browser editor, its bundled public assets, the offline Android wrapper, and the portable test suite. It does not contain a game ROM, extracted ROM dump, signing key, or user project.
+## Try it
+
+**[Download the Android APK](https://github.com/xbaconator9000x/shattered-map-studio/releases/latest)** — grab the `.apk` under Assets, open it on your phone and allow installation from your browser when Android asks.
+
+**[Open the web editor](https://xbaconator9000x.github.io/shattered-map-studio/)** — no install needed. Open the link in your browser, choose **Open ROM**, and select your own `.gba` file. You don't need GitHub or a development setup to use it.
+
+The Android APK packages the editor for offline use. The browser version is available at the link above. Back up your projects before clearing app or browser data; those saves aren't a cloud account or an automatic sync between devices.
+
+**Coming soon: iOS.** Planned, with no release date yet.
+
+## Have a look
+
+Map workspace, layers and connections:
+
+![Map workspace, layers and connections](docs/previews/map-workspace.gif)
+
+Game maker, music library and Quick Track settings:
+
+![Music tools and Quick Track](docs/previews/music-workspace.gif)
+
+## What's in it?
+
+### Maps and world building
+
+- Paint individual tiles or stamp whole buildings, trees, furniture and other objects. Search asset packs, keep favourites, and make your own reusable pieces.
+- Separate ground, detail and overhead layers, automatic collision defaults, and manual movement/footprint editing. One-way ledges, water and obstacles have their own behaviour.
+- Terrain, path, tree and rocky-wall brushes; map resizing and cropping; colour picking and palette tools.
+- Generate towns, villages, cities and interiors with biome presets, building choices, source families, exits and variation seeds. Generated layouts are a starting point you can edit, not a substitute for checking your map.
+- Building/interior templates, Pokémon Centres, marts, gyms and multi-floor department stores.
+- Connect neighbouring maps, position scrolling exits, edit doors and warps, and arrange the world visually. Edit supported Town Map artwork and location bounds too.
+
+### Events, quests and field rules
+
+- Place NPCs, write dialogue, draw movement paths, and build scenes with triggers, conditions, branches and repeatable or one-time events.
+- Quest templates, stages and prerequisites, plus shops and interactive objects.
+- Weather and compatible field effects, including screen shakes, rock falls and reflections.
+- Adjust requirements separately for each HM: badges, items, possession, events or quest progress. Configure persistent cleared obstacles and conditional Strength puzzles.
+- Preview maps and events in the playtester, with validation and debugging tools to help catch broken links and movement problems.
+
+### Game data and sprites
+
+- Edit supported Pokémon data, trainer parties, encounters, items, dialogue, menu text and game rules.
+- Browse compatible ROM sprites, edit copies or use templates, work with palettes and animation frames, and manage imported artwork.
+- Supported animated tiles, door animations, cries and asset-usage tools appear when the source exposes the required data.
+- Source-project tools for supported decompilation workflows. Native features depend on the actual base and adapter; opening a ROM doesn't magically make every engine extension compatible.
+
+### Music
+
+- Import MIDI or compatible ROM music, preview individual tracks, and choose which reference to compose from.
+- See and edit notes, select an A–B motif, and decide how closely the new track should follow it, where it appears and how often it returns.
+- Quick Track presets for different settings and moods, with genre, key, scale, tempo and variation controls.
+- Build intros, main themes and bridges with section lengths and a repeating song structure, rather than just a tiny loop.
+- Hybrid composition, arrangement and instrument controls, playback with a stop button, and GBA-aware timing and voice limits.
+
+### Import, export and backups
+
+- Import supported ROM maps with editable layout and movement data instead of treating them as one flat picture.
+- Save editable project backups, review export warnings, and compile a separate edited ROM where the source supports it. Your original ROM stays untouched.
+- In-app help and shortcuts. Compatibility checks make unsupported native features explicit instead of pretending they were exported.
+
+## Running locally
 
 ## Use the editor
 
