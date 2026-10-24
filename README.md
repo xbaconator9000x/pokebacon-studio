@@ -62,6 +62,8 @@ Pick a vibe—route, forest, cave, town, ocean, gym, battle, villain and more—
 
 ### What's doing the composing?
 
+**Hybrid is the recommended mode.** It combines a contour suggested by a GAN checkpoint from MusiGAN's Pokémon MIDI experiments with a general music model that develops that idea over the song's chords. The first stage gives the melody a direction; the second turns that into phrases. Studio supplies the arrangement and fits the result to GBA timing and voice limits. These are two models working in sequence, rather than one model retrained by combining their weights.
+
 There are three choices:
 
 | Mode | What it uses |
@@ -93,7 +95,7 @@ The applicable Magenta, model and runtime licences are included in [the bundled 
 - **Trainer battle:** faster and more driven.
 - **Town after dark:** softer and calmer.
 
-Each has an MP3 and an editable MIDI download on the player page. These five 65-second previews use **Phrase composer · instant**, with the original Studio cartridge palette. They do not demonstrate Hybrid or Melody composer. Seeds and playback notes are listed there.
+Each has an MP3 and an editable MIDI download on the player page. All five 65-second previews use **Hybrid composer**, with both MusiGAN and Magenta stages completed, followed by the original Studio cartridge sound palette. Seeds, model-stage records and playback notes are listed there.
 
 ## Scripting, events and quests
 
