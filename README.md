@@ -1,6 +1,10 @@
 # Shattered Map Studio
 
-I wanted to make a Pokémon ROM hack without needing a dozen different programs open. So, this is Shattered Map Studio: maps, events, quests, sprites, music and game data in one place, with controls you can actually use on a phone.
+**Make your Pokémon ROM hack from start to finish on your phone or Android handheld.**
+
+I wanted to build a ROM hack without being tied to a PC or needing a dozen different programs open. Shattered Map Studio puts maps, events, quests, sprites, music and game data in one place, with touch controls made for a phone or handheld Android device.
+
+Open a supported base ROM, build your world, add its characters and story, make the music, playtest it, and export a separate playable ROM—all on the same device. The APK works offline. You don't need a PC for that editing and supported ROM-export workflow. This builds on an existing game base; it isn't a new GBA engine or a guarantee that every ROM hack supports every native feature.
 
 ## Try it
 
@@ -13,6 +17,40 @@ The Android APK packages the editor for offline use. The browser version is avai
 **Coming soon: iOS.** Planned, with no release date yet.
 
 ## Have a look
+
+### Brushes: paths, walls and trees
+
+Pick a brush instead of assembling every edge by hand. Mix tree varieties, draw connected paths, and work with walls and fences.
+
+![Path, wall and tree brush tools](docs/previews/brush-tools.gif)
+
+### Town generator
+
+Choose a biome, settlement size, building sources, facilities and exits. Generate a layout with linked interiors, then edit it like any other map.
+
+![Coastal city generator settings and generated map](docs/previews/town-tools.gif)
+
+![Generated coastal city with linked entrances](docs/previews/generated-coastal-city.jpg)
+
+### Doors and opening gates
+
+Place opening gates, choose their artwork or make a custom gate, and connect doorways to interiors.
+
+![Opening gates library and controls](docs/previews/gates.jpg)
+
+### Events, scenes and quests
+
+Build dialogue and action sequences with visual tools. Start from templates, link quest stages, and track flags and counters.
+
+![Event tools, visual scenes and linked quest templates](docs/previews/script-tools.gif)
+
+![Visual scene editor and event templates](docs/previews/visual-scenes.jpg)
+
+### Hear a generated track
+
+**[Play Sunny Route — video with audio](docs/examples/sunny-route.mp4?raw=true)** · **[Listen / download MP3](docs/examples/sunny-route.mp3?raw=true)** · **[Download MIDI](docs/examples/sunny-route.mid?raw=true)**
+
+A complete 57-second Quick Track example, generated with the Sunny Route preset and seed 123 using the original Studio cartridge palette. It includes the intro, main theme and bridge. The video uses a still of the composer controls; the audio is rendered by the app's music engine, not recorded from a game ROM. GitHub may download the media instead of playing it inline.
 
 Map workspace, layers and connections:
 
@@ -63,8 +101,6 @@ Game maker, music library and Quick Track settings:
 - In-app help and shortcuts. Compatibility checks make unsupported native features explicit instead of pretending they were exported.
 
 ## Running locally
-
-## Use the editor
 
 The editor is a static web application. Serve the repository root over HTTP, then open `dist/index.html` in a browser:
 
