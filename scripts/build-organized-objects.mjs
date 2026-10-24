@@ -1,0 +1,22 @@
+import fs from'node:fs';import{createHash}from'node:crypto';import{pathToFileURL}from'node:url';
+const{createCanvas,loadImage}=await import(pathToFileURL(process.env.MAP_STUDIO_QA_RUNTIME+'/@napi-rs/canvas/index.js'));
+const out='dist/assets/organized';fs.rmSync(out,{recursive:true,force:true});fs.mkdirSync(out,{recursive:true});const assets=[],prefabs=[],sources=new Map(),recipes=[],seen=new Set();
+function add(sheet,name,x,y,w,h,group,pack){recipes.push({sheet,name,x,y,w,h,group,pack});}
+const big=[['Round broadleaf',0],['Layered broadleaf',192],['Dense leafy tree',384],['Gnarled oak',592],['Broad palm',816],['Weeping tree',1008],['Round fruit tree',1168],['Bare tree',1328],['Long willow',1392]];
+for(const[name,y]of big){const small=['Weeping tree','Round fruit tree'].includes(name),width=small?32:48,second=small?40:56;for(const[x,v]of[[0,'A'],[second,'B']])if(!(name==='Long willow'&&v==='B'))add('outdoor-collection-big-trees',name+' · '+v,name==='Long willow'&&v==='B'?48:x,y,name==='Long willow'&&v==='B'?32:width,48,'Trees & plants','Ekat · Woodland trees');}
+for(const[name,y]of[['Tiered fir',0],['Dense conifer',160],['Young fir',320],['Wide pine',480],['Round conifer',640],['Sparse fir',800],['Tall spruce',960]])for(const[x,v]of[[0,'A'],[40,'B']])add('outdoor-collection-pine-trees',name+' · '+v,x,y,32,48,'Trees & plants','Ekat · Conifers');
+for(let row=0;row<3;row++)for(let col=0;col<4;col++)add('more-ruins-tiles',(row===1?'Mossy boulder':row===2?'Square weathered boulder':'Rounded weathered boulder')+' · '+['field','sand','dark stone','blue-grey'][col],col*32,416+row*32,32,32,'Rocks & ruins','Ekat · Overgrown ruins');
+for(let row=0;row<3;row++)for(let col=0;col<3;col++)add('more-ruins-tiles',['Large','Medium','Small'][col]+' rubble cluster · '+['pale','grey','rose'][row],col*16,176+row*16,16,16,'Rocks & ruins','Ekat · Overgrown ruins');
+for(let index=0;index<recipes.length;index++){
+ const r=recipes[index];if(!sources.has(r.sheet))sources.set(r.sheet,await loadImage('dist/assets/tilesets/ekat-s-public-tiles-'+r.sheet+'.png'));const im=sources.get(r.sheet),c=createCanvas(r.w,r.h),ctx=c.getContext('2d');ctx.drawImage(im,r.x,r.y,r.w,r.h,0,0,r.w,r.h);
+ // Boulder variants share the same silhouette; remove scenery outside it only.
+ if(r.w===32&&r.group==='Rocks & ruins'){
+  const mask=createCanvas(32,32),mc=mask.getContext('2d');mc.drawImage(im,0,r.y,32,32,0,0,32,32);const ref=mc.getImageData(0,0,32,32).data,pixels=ctx.getImageData(0,0,32,32),seen=new Uint8Array(1024),queue=[];for(let i=0;i<32;i++)queue.push(i,992+i,i*32,i*32+31);
+  while(queue.length){const i=queue.pop();if(seen[i])continue;seen[i]=1;const p=i*4,green=ref[p+1]>ref[p]*1.12&&ref[p+1]>ref[p+2]*1.08;if(ref[p+3]&&!green)continue;pixels.data[p+3]=0;const x=i%32,y=i>>5;if(x)queue.push(i-1);if(x<31)queue.push(i+1);if(y)queue.push(i-32);if(y<31)queue.push(i+32);}
+  ctx.putImageData(pixels,0,0);
+ }
+ const hash=createHash('sha256').update(ctx.getImageData(0,0,r.w,r.h).data).digest('hex');if(seen.has(hash))continue;seen.add(hash);
+ const id='organized-'+r.sheet+'-'+index,src='assets/organized/'+id+'.png';fs.writeFileSync('dist/'+src,c.toBuffer('image/png'));assets.push({id,name:r.name,src,width:r.w,height:r.h,tileSize:16,category:r.group,packId:r.pack.toLowerCase(),packName:r.pack});prefabs.push({id,assetId:id,name:r.name,category:r.group,packId:r.pack.toLowerCase(),packName:r.pack,tags:[r.group,r.pack,'complete object'],sx:0,sy:0,sw:r.w,sh:r.h,w:r.w/16,h:r.h/16,source:'Ekat public tiles',provenance:{type:'bundled-sheet',sheet:r.sheet,rect:[r.x,r.y,r.w,r.h],method:r.w===32&&r.group==='Rocks & ruins'?'Shared silhouette; retained pixels unchanged':'Exact transparent source crop'}});
+}
+const cv=createCanvas(9*96,6*100),ctx=cv.getContext('2d');ctx.fillStyle='#e5eadb';ctx.fillRect(0,0,cv.width,cv.height);ctx.font='10px sans-serif';for(let i=0;i<assets.length;i++){const im=await loadImage('dist/'+assets[i].src),x=i%9*96,y=Math.floor(i/9)*100;ctx.imageSmoothingEnabled=false;ctx.drawImage(im,x+(96-im.width)/2,y,im.width,im.height);ctx.fillStyle='#243c2a';ctx.fillText(prefabs[i].name.slice(0,18),x+2,y+65);ctx.fillText(''+i,x+2,y+79);}if(process.env.MAP_STUDIO_CONTACT_SHEET)fs.writeFileSync(process.env.MAP_STUDIO_CONTACT_SHEET,cv.toBuffer('image/png'));
+fs.writeFileSync('dist/assets/organized-catalog.json',JSON.stringify({assets,prefabs}));console.log('Prepared '+prefabs.length+' additional complete objects.');
