@@ -22,3 +22,7 @@ test('tree and building brushes cannot hide half of one another',()=>{
  assert(plantTree(m,tree,3,4));assert.throws(()=>assertObjectPlacement(m,{x:3,y:2,w:5,h:6}),/complete tree/);
  const n=newMap('Town',24,24);paintBuildingRow(n,p,0,0);assert.equal(plantTree(n,tree,3,4),false);
 });
+
+test('moving a tree ignores itself and still rejects buildings',()=>{
+ const m=newMap('Town',24,24),tree={id:'tree',name:'Tree',assetId:'tree',w:2,h:3};plantTree(m,tree,3,4);const o=m.objects[0];assert.doesNotThrow(()=>assertObjectPlacement(m,o));m.objects.push({id:'house',x:10,y:10,w:4,h:4});assert.throws(()=>assertObjectPlacement(m,{...o,x:10,y:10}),/complete tree/);
+});
