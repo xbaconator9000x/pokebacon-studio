@@ -38,6 +38,16 @@ This is an **engine preview**. Boot, the opening, native saving and fresh-boot l
 
 Engine versions and upstream credits are included in [the engine notices](dist/assets/engines/notices/README.txt). The [build helper](scripts/build-expanded-engine.py) and [source patches](scripts/engine-patches) reproduce the engine changes using the pinned upstream sources and your own base ROM.
 
+## Region builder · beta
+
+Start with **Projects → Build a region**. Pick the number of outdoor maps and settlements, choose meadow or forest geography, then reroll until you like the layout. Select a location to rename it or change its terrain. Add extra connections, or remove one—the planner stops you isolating part of the region.
+
+Build the plan into editable maps with scrolling exits, whole trees and buildings, and optional linked interiors. Pick from the included building sources, with Pokémon Centres, marts and gyms available. The walking checks cover exits and entrances before anything is added to your project. Adding a region is one undoable edit.
+
+![A generated region with connected settlements and routes](docs/previews/generated-region.png)
+
+This is a starting world to build your hack around. The first version supports 6–20 outdoor maps, 2–6 settlements, meadow/forest terrain and village/town layouts. Encounters, quests, progression, other region biomes and native Town Map artwork still need authoring. Your ROM's export capacity is checked separately. [Region builder guide](docs/region-builder.md).
+
 ## Cartographer region imports
 
 Generate a region in Cartographer, then bring its project ZIP into **Projects → Import Cartographer region**. Studio converts the actual map layouts, source movement tables, drawing priorities, edge connections and supported doors into editable GBA maps. The review lists anything that needs manual conversion. Cartographer itself runs on a computer; it is not bundled in the APK. [Import guide and limits](docs/cartographer.md).
