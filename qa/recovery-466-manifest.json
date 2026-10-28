@@ -1,0 +1,23 @@
+{
+  "release": "4.66.0",
+  "recovery_kind": "Production web assets extracted from user-owned Android APK and reconciled with 4.62 source checkpoint; native Android build reproducibility NOT established",
+  "source_checkpoint_sha256": "eea2910dedc6846755ea5d048067ce44f9c5ec4e2bb52de868f5bd2ba0c169fb",
+  "apk_sha256": "41aa59124e0b5af7f522ceb229e4044cb2c4d4cdeebc7dd21530a5e48f937378",
+  "expected_sha256": {
+    "dist/rom-archive.js": "a1c53e5e12fcc7e17c3c163de900dd3d9866c7e31a0821fd07cee6a633658212",
+    "dist/shattered-south-gate-data.js": "08703eff0e2dd860af4bc4f971c9155585bb81e282f6005f4eb89a4f92afa5db",
+    "dist/app.js": "f683399a01fe51ad43e9d9a3dede81e013661aa4e5e9b6e853dd31f0e3b3d36d",
+    "dist/movement-ui.js": "ac05a867b222e95cb0de2973192c69c5a2f423a35c63dcc8a30524b2baef60fe",
+    "dist/movement-visuals.js": "331c9dd8b8f84c6cac5502b42886a27b91244ce7b0929fc027854745b1866dd9",
+    "dist/native-artwork-pack.js": "3565083cfaf2defabf37131ff99b6db53477347acbf2a71cb9b4e8b5c2f39747",
+    "dist/portal-facing.js": "719df1599ccb3da35b868c2b2f7d23aa476f64bd7d82be1d4ffbe4159c26ff02",
+    "dist/rom-geometry.js": "ef3933a8ce879cb14a9fc45583ed8419b779022745b19f1202bca50053cfe9b7",
+    "dist/rom-project.js": "09d75771bd8dc1e77188bb53f64cc2baca8d7a9156a85566815446d5babda57b",
+    "dist/rom-refresh.js": "06ad5959e078225c552fc32e5d87ea8c24ab30020295868c04b7c5a43590afad",
+    "dist/rom-writer.js": "2937dead8b8ec146c640c6bc3d005dbfaeb677ea7431092896fcab7f23d5c68a",
+    "dist/script-tile-bindings.js": "5a25742708ce0dfe694090d7eeba5c031dbc045222da0e4ccdecef1168817a36",
+    "dist/sw.js": "f9f2be2e3ba8811c0c2b916ba24a09928b2641929171f85629bddc4209761044",
+    "dist/version-ui.js": "323a81b50d59a649b3badea71e344568189c69d1612673ff2b927034174fb342",
+    "dist/zip.js": "8d949c3fd348631a849c36b974a5bc162a2f131bb4f671d5547891ffb7234266"
+  }
+}
