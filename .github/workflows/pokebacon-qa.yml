@@ -1,0 +1,52 @@
+name: PokéBacon QA
+on:
+  push:
+    branches: [main, 'qa/**']
+  pull_request:
+  schedule:
+    - cron: '23 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pokebacon-qa-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-parity:
+    name: Source parity (must pass before release)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compare repository against recovered 4.66 baseline
+        run: node scripts/qa-source-gate.mjs
+
+  portable-regressions:
+    name: Portable regression suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Execute portable unit and integration tests
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p qa/reports
+          npm test 2>&1 | tee qa/reports/portable-tests.log
+      - name: Keep QA failure log for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portable-tests-${{ github.run_id }}
+          path: qa/reports/portable-tests.log
+          if-no-files-found: ignore
+          retention-days: 7
