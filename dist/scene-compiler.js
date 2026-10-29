@@ -1,4 +1,5 @@
 import {questReadSource,questWriteSource,questLogGuardSource} from './quest-runtime.js';
+import {scenePages} from './scene-pages.js';
 import {readAuthoring,sceneIssues,pathDirections,findEvent} from './authoring-model.js';
 import {wrapDialogue} from './world-model.js';
 import {fieldWriteSource} from './field-persistence.js';
@@ -73,7 +74,19 @@ export function sceneSource(n,context={}){
   const fail=label('requirements_failed');
   if(r.repeat==='once'){code.push(...questReadSource(questRuntime,slot(r.completionFlag),'@scene_conflict'),'compare_var_to_value 0x800D 1','goto_if 1 @scene_repeat');}
   for(const c of r.conditions||[])condition(c,fail);
-  actions(r.steps);code.push('@scene_complete:');
+  const pages=scenePages(r);
+  if(pages){
+    // Highest numbered enabled page wins. Failed conditions fall through to lower pages.
+    for(let index=pages.length-1;index>=0;index--){
+      const page=pages[index];if(page.enabled===false)continue;
+      const next=label('page_next');
+      for(const conditionSpec of page.conditions||[])condition(conditionSpec,next);
+      actions(page.steps);
+      code.push('goto @scene_complete',next+':');
+    }
+    code.push('goto '+fail);
+  }else actions(r.steps);
+  code.push('@scene_complete:');
   if(r.completionFlag&&questRuntime)code.push(...questWriteSource(questRuntime,slot(r.completionFlag),true,'@scene_conflict'));
   if(r.counterId)actions([{type:'add',variableId:r.counterId,value:1}]);
   code.push('goto @scene_end','@scene_repeat:');actions(r.repeatSteps);code.push('goto @scene_end',fail+':');if(r.failText?.trim())say(r.failText);code.push('goto @scene_end','@scene_conflict:');say('This save belongs to another project. Use its project or a fresh test save.');code.push('@scene_end:','closemessage','releaseall',context.endCommand==='return'?'return':'end');return code.join('\n')+'\n'+data.join('\n');

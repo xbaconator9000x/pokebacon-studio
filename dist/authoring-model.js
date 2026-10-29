@@ -1,6 +1,7 @@
 import {hmAllowed} from './hm-rules.js';
 // Shared authoring data. References are stable IDs; drafts may contain unresolved IDs.
 import {effectIssues} from './scene-effects.js';
+import {scenePages,pageStructureIssues} from './scene-pages.js';
 import {uid,inBounds} from './model.js';
 import {addQuestFlag} from './quest-model.js';
 import {wrapDialogue,movementAt} from './world-model.js';
@@ -17,10 +18,10 @@ export function addVariable(project,name,{bits=8,kind='counter',id=uid()}={}){
   for(let i=0;i<bits;i++){const q=addQuestFlag(project,v.name+' · bit '+i);q.hidden=true;q.ownerId=id;v.bitIds.push(q.id);}data.variables.push(v);return v;
 }
 export function completionFlag(project,n){if(!n.runtime.completionFlag){const q=addQuestFlag(project,'Completed: '+n.title);q.hidden=true;q.ownerId=n.id;n.runtime.completionFlag=q.id;}return n.runtime.completionFlag;}
-export function prepareScene(project,n){completionFlag(project,n);if(['radius','area'].includes(n.runtime.trigger)&&!n.runtime.areaActiveFlag){const q=addQuestFlag(project,'Inside: '+n.title);q.hidden=true;q.ownerId=n.id;n.runtime.areaActiveFlag=q.id;}const a=authoring(project);for(const c of [...n.runtime.conditions||[],...sceneActions(n).flatMap(s=>s.conditions||[])])if(c.kind==='visited'&&c.mapId){a.presentation.visitFlags??={};if(!a.presentation.visitFlags[c.mapId]){const q=addQuestFlag(project,'Visited: '+(project.maps.find(m=>m.id===c.mapId)?.name||c.mapId));q.hidden=true;q.ownerId=c.mapId;a.presentation.visitFlags[c.mapId]=q.id;}}}
+export function prepareScene(project,n){completionFlag(project,n);if(['radius','area'].includes(n.runtime.trigger)&&!n.runtime.areaActiveFlag){const q=addQuestFlag(project,'Inside: '+n.title);q.hidden=true;q.ownerId=n.id;n.runtime.areaActiveFlag=q.id;}const a=authoring(project);for(const c of [...n.runtime.conditions||[],...(scenePages(n.runtime)||[]).flatMap(page=>page.conditions||[]),...sceneActions(n).flatMap(s=>s.conditions||[])])if(c.kind==='visited'&&c.mapId){a.presentation.visitFlags??={};if(!a.presentation.visitFlags[c.mapId]){const q=addQuestFlag(project,'Visited: '+(project.maps.find(m=>m.id===c.mapId)?.name||c.mapId));q.hidden=true;q.ownerId=c.mapId;a.presentation.visitFlags[c.mapId]=q.id;}}}
 export function newScene(project,x,y){return{id:uid(),x,y,title:'New scene',kind:'event',text:'',runtime:{action:'scene',trigger:'interact',enabled:true,blocksMovement:false,repeat:'always',conditions:[],steps:[{id:uid(),type:'say',text:'Hello there!',fit:true,scroll:false}],repeatSteps:[]}};}
 export function flattenActions(steps,depth=0){if(depth>8)throw Error('Keep branching within eight levels.');if(steps!==undefined&&!Array.isArray(steps))throw Error('An action queue must be a list.');const out=[];for(const s of steps||[]){if(!s||typeof s.type!=='string')throw Error('An action has an invalid type.');out.push(s);for(const key of ['then','else','yes','no','cancel'])if(s[key])out.push(...flattenActions(s[key],depth+1));for(const c of s.choices||[])out.push(...flattenActions(c.steps,depth+1));if(out.length>256)throw Error('Keep one scene within 256 actions.');}return out;}
-export function sceneActions(n){return [...flattenActions(n.runtime?.steps),...flattenActions(n.runtime?.repeatSteps)];}
+export function sceneActions(n){return [...(scenePages(n.runtime)||[{steps:n.runtime?.steps}]).flatMap(page=>flattenActions(page.steps)),...flattenActions(n.runtime?.repeatSteps)];}
 export function findEvent(project,id){for(const map of project.maps){const marker=map.markers.find(n=>n.id===id);if(marker)return{map,n:marker};}return null;}
 export function sceneCells(n,map){const r=n.runtime;
   if(r.trigger==='radius'){const radius=Math.max(1,Math.min(8,Math.round(r.radius||2))),out=[];for(let y=n.y-radius;y<=n.y+radius;y++)for(let x=n.x-radius;x<=n.x+radius;x++)if(inBounds(map,x,y)&&Math.abs(x-n.x)+Math.abs(y-n.y)<=radius)out.push({x,y});return out;}
@@ -61,7 +62,10 @@ export function sceneIssues(n,p,map,{native=false}={}){
   if(native&&(r.trigger==='portal'||r.trigger==='enter'&&!map.rom?.generated))add('Trigger','Native '+r.trigger+' hooks are not verified for this map. Use a step or drawn area at the arrival tile. Map-enter scenes are supported on newly generated maps.');
   if(native&&['area','radius'].includes(r.trigger)&&sceneCells(n,map).length>200)add('Trigger','Use an area of at most 200 tiles for native coordinate events.');
   for(const [i,c]of (r.conditions||[]).entries())issues.push(...conditionIssues(c,p,'Requirement '+(i+1)));
-  if(!r.steps?.length)add('Actions','Add at least one action.');
+  for(const message of pageStructureIssues(r))add('Pages',message);
+  for(const [i,page]of (scenePages(r)||[]).entries())for(const [j,c]of (page.conditions||[]).entries())
+    issues.push(...conditionIssues(c,p,'Page '+(i+1)+' / prerequisite '+(j+1)));
+  if(!scenePages(r)&&!r.steps?.length)add('Actions','Add at least one action.');
   const actions=sceneActions(n);if(actions.length>256)add('Actions','Keep one scene within 256 actions.');
   for(const [i,s]of actions.entries()){
     const at='Action '+(i+1);for(const message of effectIssues(s,map))add(at,message);if(s.type==='completeField'&&!map.fieldObjects?.some(o=>o.id===s.targetId&&o.permanent))add(at,'Choose a permanent HM object.');
