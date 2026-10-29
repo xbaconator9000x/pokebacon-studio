@@ -1,5 +1,7 @@
 # PokéBacon Studio
 
+Source version **4.69.3** includes the recovered Android editor and multipart MIDI updates. [Build provenance and verification](docs/source-reconciliation.md).
+
 **Build and export Pokémon ROM hacks on your phone or Android handheld.**
 
 I wanted to build a ROM hack without being tied to a PC or needing a dozen different programs open. PokéBacon Studio puts maps, events, quests, sprites, music and game data in one place, with touch controls made for a phone or handheld Android device.

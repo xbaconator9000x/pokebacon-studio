@@ -1,3 +1,5 @@
+import{storedTilesetCount}from'./tileset-storage.js';
+import{detectLayerEncoding,decodeLayerAttribute,encodeLayerAttribute,nativeLayerValue}from'./native-layer-encoding.js';
 /* Gen III map reader. Read-only: no ROM bytes are ever written.
  * Format research: pret/pokefirered, pret/pokeemerald, and jugales/pokewebkit.
  * PokeWebKit's author permits reuse of its logic and data; thanks to jugales.
@@ -142,7 +144,7 @@ export class GbaMaps {
     const counts=new Map();for(const address of new Set(this.maps.map(m=>m.layout.primary))){const t=this.tileset(address);if([512,640].includes(t.count))counts.set(t.count,(counts.get(t.count)||0)+1);}
     if(counts.size){this.primaryCount=[...counts].sort((a,b)=>b[1]-a[1])[0][0];this.primaryPalettes=this.primaryCount===640?7:6;}
     this.layoutRecordSize=this.engine==='frlg'||this.maps.some(m=>{const t=this.tileset(m.layout.primary);return t.compressed&&this.u8(t.graphics)!==16;})?28:24;
-    this.findMetatileFormat();this.findNames();if(this.engine==='rse')this.findRegionNames();for(const map of this.maps){map.label=this.names[map.section-this.nameOffset]||`Map ${map.key}`;map.name=`${map.label} · ${map.key}`;map.typeName=MAP_TYPES[map.type]||'Map';}
+    this.mixedAttributeLayouts=new Set();if(this.engine==='rse')for(const m of this.maps){const t=this.tileset(m.layout.primary),span=t.metatiles-t.attrs;if(this.u8(m.layout.address+24)===1&&[512*4,640*4].includes(span))this.mixedAttributeLayouts.add(m.layout.address);}if(this.mixedAttributeLayouts.size)this.layoutRecordSize=28;this.layoutBorderOffset=this.mixedAttributeLayouts.size?25:24;this.findMetatileFormat();this.findNames();if(this.engine==='rse')this.findRegionNames();for(const map of this.maps){map.label=this.names[map.section-this.nameOffset]||`Map ${map.key}`;map.name=`${map.label} · ${map.key}`;map.typeName=MAP_TYPES[map.type]||'Map';}
     if(!this.names.length)this.warnings.push('Map labels could not be decoded; maps are identified by their group and map numbers.');
     return this;
   }
@@ -151,7 +153,7 @@ export class GbaMaps {
     // tables. A tileset count or game code alone is not evidence of 3 layers.
     // In Emerald-family headers attributes can precede metatiles: the verified
     // 512/640-entry attribute span gives a count independent of pixel stride.
-    if(this.engine!=='rse')return;
+    if(this.engine==='frlg'){const encoding=this.layerEncoding();if(encoding.extended){this.mixedMetatileLayers=this.maps.some(m=>{const p=this.profile(m),a=this.tileset(m.layout.primary),b=this.tileset(m.layout.secondary);return [...this.blocks(m)].some(w=>{const id=w&1023,t=id<p.primaryCount?a:b,n=id<p.primaryCount?id:id-p.primaryCount;return nativeLayerValue(this.u32(t.attrs+n*4),encoding)===3;});});if(this.mixedMetatileLayers)this.metatileLayers=3;}return;}
     const layouts=[...this.layouts.values()],tilesets=[...new Set(layouts.flatMap(m=>[m.primary,m.secondary]))].map(a=>this.tileset(a));
     const bounds=new Set(tilesets.flatMap(t=>[t.address,t.metatiles,t.attrs,t.graphics,t.palettes]).filter(a=>a>=0));
     const primaries=[...new Set(layouts.map(m=>m.primary))].map(a=>this.tileset(a));
@@ -188,24 +190,28 @@ export class GbaMaps {
 
   byKey(key){return this.maps.find(m=>m.key===key);}
   blocks(map){const a=new Uint16Array(map.layout.width*map.layout.height);for(let i=0;i<a.length;i++)a[i]=this.u16(map.layout.blocks+i*2);return a;}
-  tileset(o){const attrs=this.ptr(o+(this.engine==='frlg'?20:16)),metatiles=this.ptr(o+12),possible=attrs>metatiles?(attrs-metatiles)/this.metatileBytes:(metatiles-attrs)/(this.engine==='frlg'?4:2);return{address:o,compressed:!!(this.u8(o)&1),graphics:this.ptr(o+4),palettes:this.ptr(o+8),metatiles,attrs,count:Number.isInteger(possible)&&possible>0&&possible<=1024?possible:null};}
+  tileset(o,attributeSize=this.engine==='frlg'?4:2){const attrs=this.ptr(o+(this.engine==='frlg'?20:16)),metatiles=this.ptr(o+12),possible=attrs>metatiles?(attrs-metatiles)/this.metatileBytes:(metatiles-attrs)/attributeSize;return{address:o,compressed:!!(this.u8(o)&1),graphics:this.ptr(o+4),palettes:this.ptr(o+8),metatiles,attrs,count:storedTilesetCount(this,o,attributeSize,this.metatileBytes)??(Number.isInteger(possible)&&possible>0&&possible<=1024?possible:null)};}
   graphics(t){if(this.gfxCache.has(t.address))return this.gfxCache.get(t.address);const expected=(this.u8(t.address+1)?1024-this.primaryCount:this.primaryCount)*32;let bytes=t.compressed?decompressGraphics(this.bytes,t.graphics):this.bytes.slice(t.graphics,Math.min(this.size,t.graphics+expected));this.gfxCache.set(t.address,bytes);return bytes;}
-  profile(map){const t=this.tileset(map.layout.primary),length=this.graphics(t).length/32,graphicsCount=this.engine==='frlg'||t.count===640||length>512?640:512,primaryCount=[512,640].includes(t.count)?t.count:graphicsCount;return{primaryCount,graphicsCount,primaryPalettes:graphicsCount===640?7:6,attributeSize:this.engine==='frlg'?4:2,metatileLayers:this.metatileLayers,metatileBytes:this.metatileBytes};}
-  pairKey(map){return`${map.layout.primary.toString(16)}-${map.layout.secondary.toString(16)}`;}
+  profile(map){const attributeSize=this.engine==='frlg'||this.mixedAttributeLayouts?.has(map.layout.address)?4:2,t=this.tileset(map.layout.primary,attributeSize),length=this.graphics(t).length/32,graphicsCount=this.engine==='frlg'||t.count===640||length>512?640:512,primaryCount=[512,640].includes(t.count)?t.count:graphicsCount;return{primaryCount,graphicsCount,primaryPalettes:graphicsCount===640?7:6,attributeSize,attributeEngine:attributeSize===4?'frlg':'rse',metatileLayers:this.metatileLayers,metatileBytes:this.metatileBytes,mixedMetatileLayers:!!this.mixedMetatileLayers};}
+  layerEncoding(){if(!this._layerEncoding)this._layerEncoding=detectLayerEncoding(this);return this._layerEncoding;}
+  encodeAttribute(attribute){return this.engine==='frlg'?encodeLayerAttribute(attribute,this.layerEncoding()):attribute;}
+  pairKey(map){return`${map.layout.primary.toString(16)}-${map.layout.secondary.toString(16)}`+(this.mixedAttributeLayouts?.has(map.layout.address)?'-attr32':'');}
   atlas(map){
     const key=this.pairKey(map);if(this.atlasCache.has(key))return this.atlasCache.get(key);
-    const primary=this.tileset(map.layout.primary),secondary=this.tileset(map.layout.secondary),pg=this.graphics(primary),sg=this.graphics(secondary);
-    const {primaryCount,graphicsCount,primaryPalettes}=this.profile(map);
+    const {primaryCount,graphicsCount,primaryPalettes,attributeSize}=this.profile(map);
+    const primary=this.tileset(map.layout.primary,attributeSize),secondary=this.tileset(map.layout.secondary,attributeSize),pg=this.graphics(primary),sg=this.graphics(secondary);
     let maxUsed=0;for(const word of this.blocks(map))maxUsed=Math.max(maxUsed,word&1023);
     const count=Math.max(primaryCount,Math.min(1024,primaryCount+(secondary.count??Math.max(1,maxUsed-primaryCount+1))));
-    const width=256,height=Math.ceil(count/16)*16,pixels=new Uint8ClampedArray(width*height*4),layers=Array.from({length:this.metatileLayers},()=>new Uint8ClampedArray(width*height*4)),attrs=new Array(count).fill(0),errors=[],missingBlocks=new Set();
+    const width=256,height=Math.ceil(count/16)*16,pixels=new Uint8ClampedArray(width*height*4),layers=Array.from({length:this.metatileLayers},()=>new Uint8ClampedArray(width*height*4)),attrs=new Array(count).fill(0),errors=[],missingBlocks=new Set(),unsupportedBlocks=[];
     const colors=Array.from({length:16},(_,pal)=>{const source=pal<primaryPalettes?primary:secondary;return Array.from({length:16},(_,i)=>{const c=this.u16(source.palettes+(pal*16+i)*2);return[(c&31)*255/31|0,((c>>>5)&31)*255/31|0,((c>>>10)&31)*255/31|0];});});
     for(let block=0;block<count;block++){
       const t=block<primaryCount?primary:secondary,id=block<primaryCount?block:block-primaryCount;
       if(t.count!==null&&id>=t.count)continue;
-      attrs[block]=this.engine==='frlg'?this.u32(t.attrs+id*4):this.u16(t.attrs+id*2);
+      try{attrs[block]=this.engine==='frlg'?decodeLayerAttribute(this.u32(t.attrs+id*4),this.layerEncoding()):attributeSize===4?this.u32(t.attrs+id*4):this.u16(t.attrs+id*2);}catch(error){unsupportedBlocks.push(block);missingBlocks.add(block);continue;}
+      const nativeType=this.mixedMetatileLayers?nativeLayerValue(this.u32(t.attrs+id*4),this.layerEncoding()):null;
       for(let layer=0;layer<this.metatileLayers;layer++)for(let sub=0;sub<4;sub++){
-        const data=this.u16(t.metatiles+id*this.metatileBytes+(layer*4+sub)*2),tile=data&1023,pal=data>>>12,flipX=!!(data&1024),flipY=!!(data&2048),gfx=tile<graphicsCount?pg:sg,tileIndex=tile<graphicsCount?tile:tile-graphicsCount;
+        let sourceLayer=layer;if(this.mixedMetatileLayers&&nativeType!==3){const type=attrs[block]>>>29&3;sourceLayer=type===0?(layer===0?-1:layer-1):type===1?(layer===2?-1:layer):(layer===1?-1:layer===2?1:0);if(sourceLayer<0)continue;}
+        const data=this.u16(t.metatiles+id*this.metatileBytes+(sourceLayer*4+sub)*2),tile=data&1023,pal=data>>>12,flipX=!!(data&1024),flipY=!!(data&2048),gfx=tile<graphicsCount?pg:sg,tileIndex=tile<graphicsCount?tile:tile-graphicsCount;
         if(tileIndex*32+32>gfx.length){missingBlocks.add(block);if(errors.length<12)errors.push({block,tile});continue;}
         for(let y=0;y<8;y++)for(let x=0;x<8;x++){
           const sx=flipX?7-x:x,sy=flipY?7-y:y,byte=gfx[tileIndex*32+sy*4+(sx>>>1)],index=sx&1?byte>>>4:byte&15;
@@ -214,17 +220,17 @@ export class GbaMaps {
         }
       }
     }
-    const result={key,width,height,count,primaryCount,graphicsCount,primaryPalettes,metatileLayers:this.metatileLayers,metatileBytes:this.metatileBytes,pixels,layers,attrs,errors,missingBlocks:[...missingBlocks],primary,secondary};this.atlasCache.set(key,result);while(this.atlasCache.size>8)this.atlasCache.delete(this.atlasCache.keys().next().value);return result;
+    const result={key,width,height,count,primaryCount,graphicsCount,primaryPalettes,metatileLayers:this.metatileLayers,metatileBytes:this.metatileBytes,mixedMetatileLayers:!!this.mixedMetatileLayers,pixels,layers,attrs,errors,unsupportedBlocks,missingBlocks:[...missingBlocks],primary,secondary};this.atlasCache.set(key,result);while(this.atlasCache.size>8)this.atlasCache.delete(this.atlasCache.keys().next().value);return result;
   }
   mapWarnings(map){const atlas=this.atlas(map),used=new Set([...this.blocks(map)].map(word=>word&1023)),missing=atlas.missingBlocks.filter(id=>used.has(id));const outside=[...used].filter(id=>id>=atlas.count);return[...(missing.length?[`Some graphics could not be read from this map's static tileset and may appear blank (metatiles ${missing.join(', ')}).`]:[]),...(outside.length?[`This source map references metatiles outside its tileset (IDs ${outside.join(', ')}). It may be an unused legacy map.`]:[])];}
   render(map){const atlas=this.atlas(map),words=this.blocks(map),width=map.layout.width*16,height=map.layout.height*16,pixels=new Uint8ClampedArray(width*height*4);for(let i=0;i<words.length;i++){const id=words[i]&1023;if(id>=atlas.count)continue;const sx=(id%16)*16,sy=Math.floor(id/16)*16,dx=(i%map.layout.width)*16,dy=Math.floor(i/map.layout.width)*16;for(let y=0;y<16;y++)pixels.set(atlas.pixels.subarray(((sy+y)*atlas.width+sx)*4,((sy+y)*atlas.width+sx+16)*4),((dy+y)*width+dx)*4);}return{width,height,pixels};}
   events(map){
     const out={npcs:[],warps:[],signs:[],triggers:[]},p=map.events;if(p<0||!this.valid(p,20))return out;
     const lists=[['npcs',this.u8(p),this.ptr(p+4),24],['warps',this.u8(p+1),this.ptr(p+8),8],['triggers',this.u8(p+2),this.ptr(p+12),16],['signs',this.u8(p+3),this.ptr(p+16),12]];
-    for(const[kind,count,start,size]of lists){if(count>255||!this.valid(start,count*size))continue;for(let i=0;i<count;i++){const o=start+i*size,x=this.i16(o+(kind==='npcs'?4:0)),y=this.i16(o+(kind==='npcs'?6:2));if(x<0||y<0||x>=map.layout.width||y>=map.layout.height)continue;const e={index:i,address:o,x,y,elevation:this.u8(o+(kind==='npcs'?8:4))};if(kind==='npcs')Object.assign(e,{localId:this.u8(o),sprite:this.u8(o+1),movement:this.u8(o+9),script:this.ptr(o+16),flag:this.u16(o+20)});if(kind==='warps')Object.assign(e,{warp:this.u8(o+5),map:this.u8(o+6),bank:this.u8(o+7),target:`${this.u8(o+7)}.${this.u8(o+6)}`});if(kind==='signs')Object.assign(e,{type:this.u8(o+5),script:this.ptr(o+8)});if(kind==='triggers')Object.assign(e,{variable:this.u16(o+6),value:this.u16(o+8),script:this.ptr(o+12)});out[kind].push(e);}}
+    for(const[kind,count,start,size]of lists){if(count>255||!this.valid(start,count*size))continue;for(let i=0;i<count;i++){const o=start+i*size,x=this.i16(o+(kind==='npcs'?4:0)),y=this.i16(o+(kind==='npcs'?6:2));if(x<0||y<0||x>=map.layout.width||y>=map.layout.height)continue;const e={index:i,address:o,x,y,elevation:this.u8(o+(kind==='npcs'?8:4))};if(kind==='npcs')Object.assign(e,{localId:this.u8(o),sprite:this.u8(o+1),movement:this.u8(o+9),script:this.ptr(o+16),flag:this.u16(o+20)});if(kind==='warps')Object.assign(e,{warp:this.u8(o+5),map:this.u8(o+6),bank:this.u8(o+7),target:`${this.u8(o+7)}.${this.u8(o+6)}`});if(kind==='signs')Object.assign(e,{type:this.u8(o+5),script:this.ptr(o+8)});if(kind==='signs'&&e.type>=5&&e.type<=7)Object.assign(e,{itemId:this.u16(o+8),hiddenItemId:this.u8(o+10),hiddenItemQuantity:this.u8(o+11)});if(kind==='triggers')Object.assign(e,{variable:this.u16(o+6),value:this.u16(o+8),script:this.ptr(o+12)});out[kind].push(e);}}
     return out;
   }
   connections(map){const p=map.connections;if(p<0||!this.valid(p,8))return[];const n=this.u32(p),a=this.ptr(p+4);if(n>30||!this.valid(a,n*12))return[];const out=[];for(let i=0;i<n;i++){const o=a+i*12,direction=this.u32(o);if(direction<1||direction>6)continue;out.push({direction,kind:['','south','north','west','east','dive','emerge'][direction],offset:this.i32(o+4),bank:this.u8(o+8),map:this.u8(o+9),target:`${this.u8(o+8)}.${this.u8(o+9)}`});}return out;}
-  adjacent(map){return[...new Set([...this.connections(map).map(c=>c.target),...this.events(map).warps.map(w=>w.target)])].map(k=>this.byKey(k)).filter(Boolean);}
+  adjacent(map){return[...new Set([...this.connections(map).map(c=>c.target),...this.events(map).warps.filter(w=>w.elevation!==255).map(w=>w.target)])].map(k=>this.byKey(k)).filter(Boolean);}
   summary(){return{filename:this.filename,title:this.title,code:this.code,engine:this.engine,mapTable:this.mapTable,banks:this.bankCount,mapCount:this.maps.length};}
 }

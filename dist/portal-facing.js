@@ -2,8 +2,10 @@
 // Reuse a source tile's native entrance semantics when the art supplies them.
 export function nativePortalBehavior(engine,style,artBehavior){
  if(style==='door')return 0x69;
- if(engine!=='frlg')return 0x67;
- return [0x60,0x61,0x62,0x63,0x64,0x65,0x6a,0x6b,0x6c,0x6d,0x6e,0x6f].includes(artBehavior)?artBehavior:0x60;
+ // Keep native entrance/animation semantics on imported artwork. A regular
+ // step warp must not silently become a cave door (with forced exit motion).
+ if(Number.isInteger(artBehavior)&&artBehavior>=0x60&&artBehavior<=0x6f)return artBehavior;
+ return 0x67;
 }
 import{compileScript}from'./script-engine.js';
 import{FACINGS}from'./map-seams.js';

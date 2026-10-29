@@ -1,3 +1,4 @@
+import {identifySaveProfile} from './save-profiles.js';
 // Generated from linked engine symbols. Save layouts are never accepted from project files.
 const BUILDS=[
   {
@@ -127,6 +128,7 @@ export const ENGINE_SAVE_PROFILES=Object.assign(Object.create(null),{
 });
 
 export function identifyEngineProfile(bytes,hash){
+ identifySaveProfile(bytes,hash);
  if(!/^[a-f0-9]{64}$/.test(hash||''))return null;
  const p=BUILDS.find(p=>p.anchors.every(a=>a.at+a.hex.length/2<=bytes.length&&Array.from({length:a.hex.length/2},(_,i)=>bytes[a.at+i]===parseInt(a.hex.slice(i*2,i*2+2),16)).every(Boolean)));
  if(!p)return null;

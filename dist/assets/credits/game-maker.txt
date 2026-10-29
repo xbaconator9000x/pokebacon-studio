@@ -24,3 +24,13 @@ Native door format reference:
 https://github.com/pret/pokefirered/blob/master/src/field_door.c
 
 Motif matching and reference composition use original note-pattern code.
+
+Region ledge strip: pixel-exact Kanto metatiles 176, 135 and 177 from an authorised FireRed Rocket Edition reference (map 3.19). Original Pokémon graphics © Nintendo / Game Freak / Creatures; source hack by colonelsalt. No source ROM is included.
+Region grass tile: pixel-exact metatile 10 from the same authorised Kanto reference. Original game and source-hack credits above apply.
+
+Outdoor ridge and stair terrain: existing FireRed graphics, metatiles 104–106, 112–114, 120–122, 136–138 and 144–146 from the authorised Rocket Edition source, map 3.19. Original Pokémon graphics belong to their respective creators; Rocket Edition by colonelsalt. No ROM is bundled.
+Joined outdoor cliff masks also copy the four native inner corners (115, 117, 179, 178). Whole rock formations preserve source footprints from maps 3.20, 3.27, 3.29, 3.41 and 3.64. The included terrain recipe can reproduce and audit these copies with an authorised compatible source.
+
+Included stationary people: original Pokémon FireRed overworld graphics 20, 23, 25, 39, 40, 56, 57 and 62, copied without redrawing. Native source templates are used when compatible; included images support generation without a ROM.
+
+Region generation: terrain, climate, route/population planning and cellular-cave smoothing adapted from Cartographer by Unbayleefable, with permission for non-RPG Maker use. https://www.pokecommunity.com/threads/pokemon-region-generator.429142/

@@ -28,15 +28,18 @@ def tap(label):
 def capture(name):
     (out / (name + '.png')).write_bytes(adb('exec-out', 'screencap', '-p'))
 
-apk = next((root / 'dist').glob('PokeBacon_Studio_v*.apk'))
+manifest = ET.parse(root / 'android' / 'AndroidManifest.xml').getroot()
+package = manifest.attrib['package']
+activity = manifest.find('application/activity').attrib['{http://schemas.android.com/apk/res/android}name']
+if activity.startswith('.'): activity = package + activity
+apk = root / 'dist' / ('PokeBacon_Studio_v' + manifest.attrib['{http://schemas.android.com/apk/res/android}versionName'] + '.apk')
 adb('install', '-r', str(apk))
 adb('shell', 'wm', 'dismiss-keyguard')
 adb('shell', 'input', 'keyevent', '82')
-adb('shell', 'am', 'start', '-W', '-n', 'dev.pokebacon.studio/.MainActivity')
+adb('shell', 'am', 'start', '-W', '-n', package + '/' + activity)
 time.sleep(8)
 capture('00-launch')
-tap('Start editing')
-time.sleep(2)
+# Current Studio opens directly in the editor; the old onboarding button was removed.
 capture('01-map-editor')
 tap('Project menu')
 capture('02-projects')

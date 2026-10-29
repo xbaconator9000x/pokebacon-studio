@@ -4,8 +4,8 @@ import {nativeMovementDefaults} from './movement-defaults.js';
 
 export async function exposeNativeLayers(project,map,reader,encode){
  if(!map.rom||map.rom.generated)return false;const source=reader.byKey(map.rom.key);if(!source)return false;
- const atlas=reader.atlas(source),info=map.rom;let changed=false;if(info.engine!==reader.engine||!info.layerTypes){info.engine=reader.engine;info.layerTypes=nativeLayerTypes(atlas.attrs,reader.engine);changed=true;}
- if(!info.tileDefaults){info.tileDefaults=nativeMovementDefaults(info.originalBlocks||reader.blocks(source),atlas.attrs,reader.engine);changed=true;}
+ const atlas=reader.atlas(source),info=map.rom,attributeEngine=reader.profile(source).attributeEngine;let changed=false;if(info.engine!==reader.engine||info.attributeEngine!==attributeEngine||!info.layerTypes){info.engine=reader.engine;info.attributeEngine=attributeEngine;info.layerTypes=nativeLayerTypes(atlas.attrs,attributeEngine);changed=true;}
+ if(!info.tileDefaults){info.tileDefaults=nativeMovementDefaults(info.originalBlocks||reader.blocks(source),atlas.attrs,attributeEngine);changed=true;}
  if(info.nativeLayerSplit)return changed;
  const ids=Array.from({length:atlas.metatileLayers||2},(_,i)=>info.atlasId+'-layer-'+i),base=project.assets.find(a=>a.id===info.atlasId);
  if(!base)return changed;
