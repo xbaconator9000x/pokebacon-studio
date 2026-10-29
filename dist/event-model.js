@@ -1,5 +1,6 @@
 import{questReadSource,questWriteSource,questLogGuardSource}from'./quest-runtime.js';
 import {sceneActions} from './authoring-model.js';
+import {scenePages} from './scene-pages.js';
 import {sceneSource} from './scene-compiler.js';
 import{hmActionSource}from'./field-rom.js';
 import{HMS}from'./field-model.js';
@@ -7,7 +8,7 @@ import{inBounds,uid}from'./model.js';
 import{wrapDialogue}from'./world-model.js';
 export const EVENT_ACTIONS={say:'Show dialogue',wait:'Wait',move:'Move player / NPC',warp:'Go to another map',gate:'Open a gate',hm:'HM / field action',choice:'Ask Yes / No',condition:'Only continue if…',item:'Give / take an item',money:'Give / take money',heal:'Heal the party',shop:'Open a shop',battle:'Trainer battle',giveMon:'Give a Pokémon',quest:'Set quest progress',sound:'Play a sound',music:'Change background music',fade:'Fade screen',portrait:'Show Pokémon portrait'};
 export const ADVANCED_EVENT_TYPES=new Set(['choice','condition','item','money','heal','shop','battle','giveMon','quest','sound','music','fade','portrait']);
-export function needsQuest(n){return(n.runtime?.action==='scene'&&(n.runtime.repeat==='once'||!!n.runtime.areaActiveFlag||!!n.runtime.counterId||[...n.runtime.conditions||[],...sceneActions(n).flatMap(s=>s.conditions||[])].some(c=>['flag','event','visited','variable','option'].includes(c.kind))||sceneActions(n).some(s=>['flag','set','add','completeField'].includes(s.type))))||!!n.runtime?.onceFlag||sequenceOf(n).some(s=>s.type==='quest'||s.type==='condition'&&s.kind==='quest');}
+export function needsQuest(n){return(n.runtime?.action==='scene'&&(n.runtime.repeat==='once'||!!n.runtime.areaActiveFlag||!!n.runtime.counterId||[...n.runtime.conditions||[],...(scenePages(n.runtime)||[]).flatMap(p=>p.conditions||[]),...sceneActions(n).flatMap(s=>s.conditions||[])].some(c=>['flag','event','visited','variable','option'].includes(c.kind))||sceneActions(n).some(s=>['flag','set','add','completeField'].includes(s.type))))||!!n.runtime?.onceFlag||sequenceOf(n).some(s=>s.type==='quest'||s.type==='condition'&&s.kind==='quest');}
 export function sequenceOf(n){return n.runtime?.action==='scene'?sceneActions(n):n.runtime?.action==='dialogue'?[{type:'say',text:n.runtime.text}]:n.runtime?.steps||[];}
 export function validateEvent(n,project,map=null){
  if(n.runtime?.action==='scene'){if(!Array.isArray(n.runtime.steps)||JSON.stringify(n.runtime).length>256000)throw Error('The scene draft is too large or invalid.');sceneActions(n);return;}
