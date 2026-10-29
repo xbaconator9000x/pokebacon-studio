@@ -343,7 +343,7 @@ function compileScript(source, base = 0, engine = "frlg") {
   const entry = labels["@start"] ?? labels.start ?? labels["@main"] ?? labels.main ?? firstCode;
   return { bytes, entryOffset: entry, labels, commands };
 }
-function disassembleScript(bytes, address, engine = "frlg", inspect = false) {
+function disassembleScript(bytes, address, engine = "frlg", inspect = false, limits = {}) {
   const definitions = SCRIPT_DATA[engine] || SCRIPT_DATA.frlg, byCode = new Map(definitions.map((c) => [c.code, c])), view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const blocks = /* @__PURE__ */ new Map(), texts = /* @__PURE__ */ new Map(), movements = /* @__PURE__ */ new Map(), labels = /* @__PURE__ */ new Map();
   let total = 0;
@@ -380,12 +380,12 @@ function disassembleScript(bytes, address, engine = "frlg", inspect = false) {
   const scan = (p, depth = 0) => {
     if (blocks.has(p))
       return;
-    if (!valid(p) || depth > 24 || blocks.size >= 128)
+    if (!valid(p) || depth > Math.min(limits.maxDepth??24,256) || blocks.size >= Math.min(limits.maxBlocks??128,2048))
       throw new Error("A script branch cannot be decoded within the bounds.");
     const list = [];
     blocks.set(p, list);
     label(p, "@script");
-    for (let at = p, count = 0; count < 2048 && total++ < 8192; count++) {
+    for (let at = p, count = 0; count < 2048 && total++ < Math.min(limits.maxInstructions??8192,131072); count++) {
       if (at !== p && blocks.has(at)) {
         list.push({ jump: at });
         return;
@@ -453,6 +453,7 @@ function scriptCommandHelp(engine = "frlg") {
   return (SCRIPT_DATA[engine] || SCRIPT_DATA.frlg).map((c) => c.name + " " + c.params.map((p) => p.name + (p.default !== void 0 ? "=" + p.default : "")).join(", ")).join("\n");
 }
 export {
+  textEncode as encodeScriptText,
   SCRIPT_TEMPLATE,
   compileScript,
   decodeScriptText,

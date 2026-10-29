@@ -1,7 +1,7 @@
 import{studioData,nearestPixels,indexRGBA}from'./sprite-workbench.js';
-export const ABILITY_TRIGGERS=['switch_in','turn_start','hit_received','move_used','turn_end'];
-export const ABILITY_CONDITIONS=['always','hp_below','move_type','weather','status'];
-export const ABILITY_EFFECTS=['damage_multiplier','heal_percent','stat_stage','status','weather'];
+export const ABILITY_TRIGGERS=['always','damage_calculation','switch_in','turn_start','hit_received','move_used','turn_end'];
+export const ABILITY_CONDITIONS=['contact','non_contact','contact_non_fire','fire','water','always','hp_below','move_type','weather','status'];
+export const ABILITY_EFFECTS=['pp_multiplier','critical_stage','damage_multiplier','heal_percent','stat_stage','status','weather'];
 const int=(v,a,b)=>Number.isInteger(v)&&v>=a&&v<=b;
 export function validateCreature(c){
  if(!c||!['new','regional','alternate','evolution'].includes(c.category)||c.parent!==null&&c.parent!==undefined&&!int(c.parent,1,8191))throw Error('Choose a creature type and valid parent species.');
@@ -11,7 +11,7 @@ export function validateCreature(c){
  if(!Array.isArray(c.learnset)||c.learnset.length>127||c.learnset.some(e=>!int(e.level,1,255)||!int(e.move,1,65534)))throw Error('Level-up moves need a level from 1–255 and a move ID.');
  if(!Array.isArray(c.evolutions)||c.evolutions.length>32||c.evolutions.some(e=>!['level','trade','item'].includes(e.method)||!int(e.target,1,8191)||!int(e.param,0,65535)||e.method==='level'&&!int(e.param,1,100)))throw Error('Check the evolution targets and requirements.');
  if(!Array.isArray(c.abilityDesigns)||c.abilityDesigns.length>32)throw Error('Use up to 32 custom ability designs.');
- for(const a of c.abilityDesigns){if(typeof a.id!=='string'||typeof a.name!=='string'||a.name.length>40||!a.name.trim()||String(a.description||'').length>1024||!Array.isArray(a.rules)||a.rules.length>32)throw Error('An ability design needs a name and up to 32 rules.');for(const r of a.rules)if(!ABILITY_TRIGGERS.includes(r.when)||!ABILITY_CONDITIONS.includes(r.condition)||!ABILITY_EFFECTS.includes(r.effect)||!Number.isFinite(r.value)||Math.abs(r.value)>10000||String(r.parameter||'').length>80)throw Error('An ability design rule is invalid.');}
+ for(const a of c.abilityDesigns){if(typeof a.id!=='string'||typeof a.name!=='string'||a.name.length>40||!a.name.trim()||String(a.description||'').length>1024||!Array.isArray(a.rules)||a.rules.length>32)throw Error('An ability design needs a name and up to 32 rules.');for(const r of a.rules)if(r.target!==undefined&&!['self','ally','enemy','field'].includes(r.target)||!ABILITY_TRIGGERS.includes(r.when)||!ABILITY_CONDITIONS.includes(r.condition)||!ABILITY_EFFECTS.includes(r.effect)||!Number.isFinite(r.value)||Math.abs(r.value)>10000||String(r.parameter||'').length>80)throw Error('An ability design rule is invalid.');}
  return c;
 }
 export function creatureDefaults(g){const c=g.creature??={};Object.assign(c,{category:c.category||'new',parent:c.parent??null,types:c.types||[1,1],stats:c.stats||[50,50,50,50,50,50],abilities:[...(c.abilities||[0,0]),0].slice(0,3),catchRate:c.catchRate??45,baseExp:c.baseExp??64,friendship:c.friendship??70,height:c.height??10,weight:c.weight??100,description:c.description||'',dexCategory:c.dexCategory||'',nativeName:c.nativeName||g.name.slice(0,12),learnset:c.learnset||[],evolutions:c.evolutions||[],abilityDesigns:c.abilityDesigns||[]});return c;}

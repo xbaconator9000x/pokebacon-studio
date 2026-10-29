@@ -1,3 +1,9 @@
+import{validateNativeEventSuppressions}from'./native-event-suppression.js';
+import{validateWarpRemovals}from'./warp-removal.js';
+import{validateAbilityStudio}from'./ability-studio-model.js';
+import{validateNativeStory}from'./native-story.js';
+import{authoredRenderTile,nativeRenderTile,validateRenderIntents,lockObjectRenderIntent,lockMapRenderIntent}from'./render-intent.js';
+import{validateGeneratedEncounters}from'./region-progression.js';
 import{upgradeFormat,formatFingerprint}from'./format-upgrade.js';
 import {validateSourceSettings} from './source-project.js';
 import {assertAssemblyEdit,validateAssemblies} from './native-assemblies.js';
@@ -31,7 +37,7 @@ export const clone = value => JSON.parse(JSON.stringify(value));
 export const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
 export function newMap(name = 'Untitled map', width = 32, height = 24) {
   width = clamp(Math.round(width), 1, LIMIT); height = clamp(Math.round(height), 1, LIMIT);
-  return {id: uid(), name, width, height, background: '#aacb85', layers: Object.fromEntries(LAYERS.map(k => [k, Array(width * height).fill(null)])), objects: [], markers: [], reference: null, notes: '', world: {x: 0, y: 0}};
+  return {id: uid(), name, width, height, renderIntentVersion:1, background: '#aacb85', layers: Object.fromEntries(LAYERS.map(k => [k, Array(width * height).fill(null)])), objects: [], markers: [], reference: null, notes: '', world: {x: 0, y: 0}};
 }
 export function newProject(name = 'My map project') {
   const m = newMap('Map 1');
@@ -40,8 +46,15 @@ export function newProject(name = 'My map project') {
 export function inBounds(m, x, y) { return Number.isInteger(x) && Number.isInteger(y) && x >= 0 && y >= 0 && x < m.width && y < m.height; }
 export function setTile(m, layer, x, y, tile) {
  if(!LAYERS.includes(layer)||!inBounds(m,x,y))return;const i=y*m.width+x;assertAssemblyEdit(m,x,y);
- m.layers[layer][i]=tile?withNativeRule(m,{...tile}):null;
- if(layer==='ground'&&tile&&tile.a===m.rom?.atlasId&&m.rom?.layerAtlasIds)for(const upper of ['details','overhead'])if(m.rom.layerAtlasIds.includes(m.layers[upper][i]?.a))m.layers[upper][i]=null;
+ if(layer==='ground'&&tile&&m.rom&&tile.a===m.rom.atlasId&&tile.size===16&&m.rom?.nativeLayerSplit&&m.rom.layerAtlasIds?.length){
+  const ids=m.rom.layerAtlasIds,planes=['ground','details','overhead'];
+  const decorations=planes.slice(1,ids.length).map(k=>m.layers[k][i]).filter(t=>t&&!ids.includes(t.a));
+  if(decorations.length>1||decorations.length&&m.layers.objects[i])throw Error('This native tile needs its upper planes. Move the existing decorations from this cell first.');
+  if(decorations.length)m.layers.objects[i]={...decorations[0]};
+  for(let n=0;n<ids.length;n++)m.layers[planes[n]][i]=nativeRenderTile(withNativeRule(m,{...tile,a:ids[n]}),(m.rom.attributeEngine??m.rom.engine)==='frlg'?(m.rom.attributes[tile.sy/16*16+tile.sx/16]>>>29)&3:(m.rom.attributes[tile.sy/16*16+tile.sx/16]>>>12)&15,n,ids.length);return;
+ }
+ m.layers[layer][i]=tile?authoredRenderTile(withNativeRule(m,{...tile}),layer):null;
+ if(layer==='ground'&&tile&&tile.a===m.rom?.atlasId&&!m.rom?.nativeLayerSplit&&m.rom?.layerAtlasIds)for(const upper of ['details','overhead'])if(m.rom.layerAtlasIds.includes(m.layers[upper][i]?.a))m.layers[upper][i]=null;
 }
 export function getTile(m, layer, x, y) { return inBounds(m, x, y) ? m.layers[layer]?.[y * m.width + x] ?? null : null; }
 export function paint(m, layer, x, y, brush, erase = false) {
@@ -111,14 +124,16 @@ export function usedAssetIds(project) {
   }
   return ids;
 }
-export function snapshot(project) { return JSON.stringify({name: project.name, activeMapId: project.activeMapId, maps: project.maps, links: project.links,sourceEngine:project.sourceEngine||undefined,authoring:project.authoring||undefined,terrainSets:project.terrainSets||[],prefabs:project.prefabs||[],roomStyles:project.roomStyles||[],wallStyles:project.wallStyles||[],gateStyles:project.gateStyles||[],buildingTemplates:project.buildingTemplates||[],interiorTemplates:project.interiorTemplates||[],romEdits:project.romEdits||{},textEdits:project.textEdits||{},regionMaps:project.regionMaps||{},travelEdits:project.travelEdits||{},tilesetAnimations:project.tilesetAnimations||{},doorAnimations:project.doorAnimations||{},cryEdits:project.cryEdits||{},hmRules:project.hmRules||undefined,developer:project.developer||{enabled:false},questFlags:project.questFlags||[],questToken:project.questToken||0,spriteStudio:project.spriteStudio||{version:1,groups:[],palettes:[],drafts:{}}}); }
-export function restore(project, value) { const data=JSON.parse(value);if(!Object.hasOwn(data,'authoring'))delete project.authoring;if(!Object.hasOwn(data,'sourceEngine'))delete project.sourceEngine;Object.assign(project,data); }
+export function snapshot(project) { return JSON.stringify({name: project.name, activeMapId: project.activeMapId, maps: project.maps, links: project.links,sourceEngine:project.sourceEngine||undefined,authoring:project.authoring||undefined,abilityStudio:project.abilityStudio||undefined,terrainSets:project.terrainSets||[],prefabs:project.prefabs||[],roomStyles:project.roomStyles||[],wallStyles:project.wallStyles||[],gateStyles:project.gateStyles||[],buildingTemplates:project.buildingTemplates||[],interiorTemplates:project.interiorTemplates||[],romEdits:project.romEdits||{},textEdits:project.textEdits||{},regionMaps:project.regionMaps||{},travelEdits:project.travelEdits||{},tilesetAnimations:project.tilesetAnimations||{},doorAnimations:project.doorAnimations||{},cryEdits:project.cryEdits||{},hmRules:project.hmRules||undefined,developer:project.developer||{enabled:false},questFlags:project.questFlags||[],questToken:project.questToken||0,spriteStudio:project.spriteStudio||{version:1,groups:[],palettes:[],drafts:{}}}); }
+export function restore(project, value) { const data=JSON.parse(value);if(!Object.hasOwn(data,'authoring'))delete project.authoring;if(!Object.hasOwn(data,'abilityStudio'))delete project.abilityStudio;if(!Object.hasOwn(data,'sourceEngine'))delete project.sourceEngine;Object.assign(project,data); }
 export function validateProject(p, catalog = []) {
+
   const fail = message => {throw new Error(message);};
   upgradeFormat(p,FORMAT,0x199556ed);
   if(p&&formatFingerprint(p.name)===0x133eb465)p.name='PokéBacon · map workshop';
   if (!p || p.format !== FORMAT || p.version !== VERSION) fail('Choose a PokéBacon Studio v1 project (.pokebacon.json).');
   if (!Array.isArray(p.maps) || p.maps.length < 1 || p.maps.length > 80) fail('A project needs 1–80 maps.');
+  for(const m of p.maps){validateGeneratedEncounters(m);validateWarpRemovals(m);validateNativeEventSuppressions(m);}
   if (!Array.isArray(p.assets) || p.assets.length > 512 || !Array.isArray(p.links) || p.links.length > 2000) fail('This project has too many assets or connections.');
   const ids = new Set(), assetIds = new Set(catalog.map(a => a.id)), embeddedIds = new Set();
   for (const a of p.assets) {
@@ -159,6 +174,6 @@ export function validateProject(p, catalog = []) {
   for(const t of p.interiorTemplates||[])validateInterior(t,assetIds);
   p.tileSize = TILE; p.name = String(p.name || 'Imported project').slice(0,120); p.id = typeof p.id === 'string' ? p.id : uid();
   if (!ids.has(p.activeMapId)) p.activeMapId = p.maps[0].id;
-  validateRegionEdits(p.regionMaps);validateTravelEdits(p.travelEdits);validateTilesetAnimations(p.tilesetAnimations);validateDoorAnimations(p.doorAnimations);validateCryEdits(p.cryEdits);validateHMRules(p);validateSpriteStudio(p,assetIds);for(const g of p.spriteStudio?.groups||[])if(g.creature)validateCreature(creatureDefaults(g));for(const e of Object.values(p.romEdits||{}))for(const f of e.forms||[])if(!p.spriteStudio?.groups?.some(g=>g.id===f.groupId))throw Error('A native form references a missing sprite group.');if(p.developer!==undefined&&(!p.developer||typeof p.developer.enabled!=='boolean'))throw Error('Invalid developer mode.');if(p.textEdits!==undefined&&(!p.textEdits||Array.isArray(p.textEdits)||JSON.stringify(p.textEdits).length>8e6||Object.keys(p.textEdits).some(h=>!(/^[a-f0-9]{64}$/).test(h))))throw Error('Invalid dialogue edits.');validateQuests(p);validateGameEdits(p);validateAssemblies(p,assetIds);validateSmart(p,assetIds);validateWorld(p,assetIds);validateSeams(p);validateBuilder(p,assetIds);
-  validateSourceSettings(p.sourceEngine);validateAuthoring(p);validateStory(p);return p;
+  validateRegionEdits(p.regionMaps);validateTravelEdits(p.travelEdits);validateTilesetAnimations(p.tilesetAnimations);validateDoorAnimations(p.doorAnimations);validateCryEdits(p.cryEdits);validateHMRules(p);validateSpriteStudio(p,assetIds);for(const g of p.spriteStudio?.groups||[])if(g.creature)validateCreature(creatureDefaults(g));for(const e of Object.values(p.romEdits||{}))for(const f of e.forms||[])if(!p.spriteStudio?.groups?.some(g=>g.id===f.groupId))throw Error('A native form references a missing sprite group.');if(p.developer!==undefined&&(!p.developer||typeof p.developer.enabled!=='boolean'))throw Error('Invalid developer mode.');if(p.textEdits!==undefined&&(!p.textEdits||Array.isArray(p.textEdits)||JSON.stringify(p.textEdits).length>8e6||Object.keys(p.textEdits).some(h=>!(/^[a-f0-9]{64}$/).test(h))))throw Error('Invalid dialogue edits.');validateQuests(p);validateGameEdits(p);for(const m of p.maps)lockMapRenderIntent(m);validateRenderIntents(p);validateAssemblies(p,assetIds);validateSmart(p,assetIds);validateWorld(p,assetIds);validateSeams(p);validateBuilder(p,assetIds);
+  validateAbilityStudio(p);validateSourceSettings(p.sourceEngine);validateAuthoring(p);validateStory(p);validateNativeStory(p);return p;
 }

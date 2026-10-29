@@ -1,4 +1,5 @@
 import {ENGINE_SAVE_PROFILES} from './engine-profiles.js';
+import {VERIFIED_SAVE_PROFILES} from './save-profiles.js';
 /* Dedicated persistent project flags. No native story flag allocation.
  * The helper is verified against the stock profile and keeps its save data
  * with native saves, fresh boots, ownership conflicts and guard regions. Thumb code is position
@@ -8,7 +9,7 @@ import {STOCK_FIRE_RED_SHA,verifiedFRLGSource} from './verified-frlg.js';
 export const QUEST_SOURCE_SHA=STOCK_FIRE_RED_SHA;
 export const QUEST_SLOTS=1024;
 export const newerQuestSource=()=>false;
-export const verifiedQuestSource=hash=>verifiedFRLGSource(hash)||Object.hasOwn(ENGINE_SAVE_PROFILES,hash);
+export const verifiedQuestSource=hash=>verifiedFRLGSource(hash)||Object.hasOwn(ENGINE_SAVE_PROFILES,hash)||Object.hasOwn(VERIFIED_SAVE_PROFILES,hash);
 const HEX='0220274bf0b51a682649274b274c1b88098820808020c000834220d202291ed88020800482421ad32148824217d821488446214e10589444b04204d11f4817581f48874213d060461e4fd7190578002d05d10130b842f9d1002903d12180f0bc01bc00471348164d165014481550072001221840db0810338240634401290ad1197811430906090e19701b781a40531e9a412280e3e70229f7d119789143f3e708500003ba700302b8700302d070030200c003028c340000534d513190340000887766551c350000';
 const CFRU_HEX='2a492b4af0b512880c880221294b2a481b6801808021c9008a4223d2022c21d8802189048b421dd324498b421ad8e225e2212d015d59224e09015918b54204d1204d5f59204daf4216d0eb270d003f01df192e78002e05d10135bd42f9d1002c03d10480f0bc01bc0047e225144e2d015e51144d144e5e51072501231540d2081032ab408a18012c0ad1117819430906090e1170127813405a1e93410380e1e7022cf7d111789943f3e7c046ba700302b87003020c500003d070030200c00302534d5131240e000088776655';
 const installed=new WeakMap();
@@ -21,7 +22,7 @@ export function installQuest(output,sourceSHA,projectToken){
  integer(projectToken,1,0xFFFFFFFF,'A project quest token must be an unsigned 32-bit integer greater than 0. Preserve it with your project.');
  if(!output||typeof output.allocate!=='function')throw Error('A ROM output allocator is required.');
  const prior=installed.get(output);if(prior){if(prior.token!==projectToken)throw Error('One ROM export cannot contain two different project quest owners.');return prior;}
- const adapter=ENGINE_SAVE_PROFILES[sourceSHA],template=adapter?CFRU_HEX:HEX,tokenOffset=adapter?0xC8:0xC0;
+ const adapter=VERIFIED_SAVE_PROFILES[sourceSHA]||ENGINE_SAVE_PROFILES[sourceSHA],template=adapter?CFRU_HEX:HEX,tokenOffset=adapter?0xC8:0xC0;
  const bytes=Uint8Array.from(template.match(/../g),h=>parseInt(h,16)),view=new DataView(bytes.buffer);
  if(bytes.length!==(adapter?204:200)||view.getUint32(tokenOffset,true)!==0x55667788)throw Error('The project quest runtime template is invalid.');
  view.setUint32(tokenOffset,projectToken,true);const address=output.allocate(bytes,'Persistent project quest runtime');

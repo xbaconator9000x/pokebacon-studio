@@ -55,7 +55,7 @@ export function mapLinkWorkshop(api){
       api.change(()=>saveMapLink(project(),draft));api.refresh();
     },'Save connection');
     $('#visitLinkFrom').onclick=()=>visit(link,'from');$('#visitLinkTo').onclick=()=>visit(link,'to');$('#moveLinkFrom').onclick=()=>relocate(link,'from');$('#moveLinkTo').onclick=()=>relocate(link,'to');
-    $('#deleteLink').onclick=()=>{if(imported){api.toast('This is an original ROM warp. Disable or replace its native event before removing the planning link.');return;}api.change(()=>removeMapLink(project(),link.id));api.close();api.select(null);api.refresh();};
+    $('#deleteLink').onclick=e=>{e.preventDefault();e.stopPropagation();try{api.change(()=>removeMapLink(project(),link.id));api.close();api.select(null);api.refresh();api.toast('Connection deleted. Undo restores it.');}catch(error){api.error(error);}};
   }
   function flow(){
     const el=$('#linkFlow');if(!el)return;const p=state.pending;el.hidden=!p;if(!p){el.innerHTML='';return;}

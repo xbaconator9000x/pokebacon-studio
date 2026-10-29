@@ -1,0 +1,34 @@
+import{gateLocal}from'./gate-cells.js';
+// Visual intent is project data. Walking rules never choose a locked priority.
+export const RENDER_ROLES=['ground','behind','foreground','player'];
+export function nativePlaneRoles(layerType,count=2){return count===3?['ground','behind','foreground']:['ground',layerType===1?'behind':'foreground'];}
+export function nativeRenderTile(tile,layerType,plane,count=2){return{...tile,renderRole:nativePlaneRoles(layerType,count)[plane],renderNativePriority:layerType};}
+export function authoredRenderTile(tile,layer){if(!tile)return null;const result={...tile,renderRole:layer==='ground'?'ground':layer==='overhead'?'foreground':'behind'};delete result.renderNativePriority;return result;}
+export function cellRenderIntent(map,x,y,{objects=map.objects||[],assemblies=map.nativeAssemblies||[],gates=map.gates||[]}={}){
+ const i=y*map.width+x,count=map.rom?.metatileLayers||2,roles=[],native=map.layers.ground?.[i]?.renderNativePriority;
+ for(const layer of ['ground','details','objects','overhead']){const tile=map.layers[layer]?.[i];if(tile?.renderRole){if(layer==='ground'&&tile.renderRole!=='ground')throw Error('Ground/floor must stay below the player.');if(!RENDER_ROLES.includes(tile.renderRole))throw Error('Invalid visual layer at '+x+', '+y);roles.push(tile.renderRole);}}
+ let priority=null;
+ for(const a of assemblies){if(!a.overlay||x<a.x||y<a.y||x>=a.x+a.w||y>=a.y+a.h)continue;const j=(y-a.y)*a.w+x-a.x;if(!a.overlay.mask[j])continue;const intent=a.renderIntents?.[j];if(intent){priority=intent.layerType;roles.push(...nativePlaneRoles(priority,count));}}
+ for(const o of objects)if(x>=o.x&&y>=o.y&&x<o.x+o.w&&y<o.y+o.h){const role=objectRenderRoleAt(o,x,y);if(role)roles.push(role);else return null;}
+ for(const g of gates){const role=gateRenderRoleAt(g,x,y);if(role)roles.push(role);}
+ if(!roles.length)return null;if(roles.includes('player'))throw Error('Player-level artwork needs a native NPC/event sprite. Background tiles cannot provide sprite depth sorting.');
+ if(count===2&&map.layerPriorityDecisions?.[i]===2&&roles.includes('foreground'))priority=2;
+ const foreground=priority!==null?nativePlaneRoles(priority,count).includes('foreground'):roles.includes('foreground');return{version:1,locked:true,layerType:priority!==null?priority:count===3?(native??1):foreground?(priority===0||priority===null&&native===0?0:2):native===undefined?2:1,foreground};
+}
+export function setCellRenderRoles(map,x,y,roles){const i=y*map.width+x;for(const [layer,role]of Object.entries(roles)){if(!RENDER_ROLES.includes(role))throw Error('Invalid visual layer.');if(layer==='ground'&&role!=='ground')throw Error('Ground/floor must stay below the player.');const tile=map.layers[layer]?.[i];if(tile){map.layers[layer][i]={...tile,renderRole:role};delete map.layers[layer][i].renderNativePriority;}}}
+export function validateRenderIntents(project){for(const map of project.maps){for(const tile of map.layers.ground)if(tile?.renderRole&&tile.renderRole!=='ground')throw Error('Ground/floor must stay below the player.');for(const cells of Object.values(map.layers))for(const tile of cells)if(tile?.renderRole!==undefined&&!RENDER_ROLES.includes(tile.renderRole))throw Error('Invalid stored visual layer.');for(const o of map.objects){if(o.renderMask&&(!Array.isArray(o.renderMask)||o.renderMask.length!==Math.ceil(o.h)||o.renderMask.some(row=>!Array.isArray(row)||row.length!==Math.ceil(o.w)||row.some(v=>!RENDER_ROLES.includes(v)))))throw Error('Invalid object visual mask.');}for(const o of map.objects)if(o.renderRole!==undefined&&!RENDER_ROLES.includes(o.renderRole))throw Error('Invalid object visual layer.');for(const a of map.nativeAssemblies||[])if(a.renderIntents&&(!Array.isArray(a.renderIntents)||a.renderIntents.length!==a.w*a.h||a.renderIntents.some(v=>v&&!Number.isInteger(v.layerType))))throw Error('Invalid object render intent.');}}
+
+export function objectRenderRoleAt(o,x,y){return o.renderMask?.[Math.floor(y-o.y)]?.[Math.floor(x-o.x)]||o.renderRole||null;}
+// One-time compatibility conversion: save the old footprint's visual half as
+// its own mask. Later collision edits never rewrite this mask.
+export function lockObjectRenderIntent(o){if(o.renderRole||o.renderMask)return o;const w=Math.ceil(o.w),h=Math.ceil(o.h);if(w*h>4096){o.renderRole='behind';return o;}o.renderMask=Array.from({length:h},(_,y)=>Array.from({length:w},(_,x)=>{let foreground=false;if(o.collisionChoice==='behind')foreground=true;else if(o.collisionChoice==='mask'){const v=o.collisionMask?.[y]?.[x];foreground=v===2||o.collisionMaskVersion!==2&&!!o.building&&v===0&&y<h-1;}else if(['base','footprint'].includes(o.collisionChoice)){const f=o.collisionChoice==='base'?{x:0,y:h-1,w,h:1}:o.footprint||{x:0,y:h-1,w,h:1},e=o.building?.entrance;foreground=!(x>=f.x&&y>=f.y&&x<f.x+f.w&&y<f.y+f.h)&&!(e&&x===e.x&&y===e.y);}return foreground?'foreground':'behind';}));return o;}
+export function lockMapRenderIntent(map){
+ const migrate=(tile,layer)=>{if(!tile||tile.renderRole)return tile;const r=map.rom,plane=r?.layerAtlasIds?.indexOf(tile.a)??-1,id=tile.sy/16*16+tile.sx/16;if(plane>=0&&r.attributes?.[id]!==undefined){const type=(r.attributeEngine??r.engine)==='frlg'?r.attributes[id]>>>29&3:r.attributes[id]>>>12&15;return nativeRenderTile(tile,type,plane,r.metatileLayers||2);}return tile.a!==r?.atlasId?authoredRenderTile(tile,layer):tile;};
+ for(const layer of ['ground','details','objects','overhead'])for(let i=0;i<map.width*map.height;i++)map.layers[layer][i]=migrate(map.layers[layer][i],layer);
+ for(const o of map.objects||[])lockObjectRenderIntent(o);
+ for(const a of map.nativeAssemblies||[]){for(const data of [a.before,a.expected])for(const [layer,tiles]of Object.entries(data?.layers||{}))data.layers[layer]=tiles.map(t=>migrate(t,layer));if(a.overlay&&!a.renderIntents){const rules=a.reconstruction?.nativeRules||a.sourceRules;if(rules)a.renderIntents=rules.map(r=>({version:1,layerType:r?.layerType??1}));}}
+ map.renderIntentVersion=1;return map;
+}
+
+export function gateRenderRoleAt(g,x,y){const p=gateLocal(g,x,y);return !p?null:(g.behindMask?g.behindMask[p.y][p.x]:p.y<g.h-1)?'foreground':'behind';}
+export function createRenderIntentQuery(map){const objects=new Map(),assemblies=new Map(),gates=new Map(),empty=[];const add=(index,item,r)=>{for(let y=Math.max(0,Math.floor(r.y));y<Math.min(map.height,Math.ceil(r.y+r.h));y++)for(let x=Math.max(0,Math.floor(r.x));x<Math.min(map.width,Math.ceil(r.x+r.w));x++){const i=y*map.width+x;if(!index.has(i))index.set(i,[]);index.get(i).push(item);}};for(const o of map.objects||[])add(objects,o,o);for(const a of map.nativeAssemblies||[])add(assemblies,a,a);for(const g of map.gates||[])add(gates,g,{x:g.x,y:g.y-g.h+1,w:g.w,h:g.h});return(x,y)=>{const i=y*map.width+x;return cellRenderIntent(map,x,y,{objects:objects.get(i)||empty,assemblies:assemblies.get(i)||empty,gates:gates.get(i)||empty});};}

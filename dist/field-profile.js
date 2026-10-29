@@ -1,4 +1,5 @@
 import{discoverObjectGraphics}from'./rom-npc-profile.js';
+import{discoverExpandedFieldGraphics}from'./expanded-field-graphics.js';
 // Bounded, read-only FRLG profile discovery. No literal ROM offsets are used.
 // Reference: pret/pokefirered field_moves.inc, flash.inc, event_object_movement.c.
 import { SCRIPT_DATA } from './script-data.js';
@@ -31,18 +32,21 @@ function discoverSprites(r){
  const result={table:tables[0],paletteTable:pals[0],sprites:{}};for(const id of[95,96,97]){const info=r.ptr(tables[0]+id*4),paletteTag=r.u16(info+2),images=r.ptr(info+28);result.sprites[id]={id,info,width:16,height:16,size:128,paletteTag,palette:r.ptr(pals[0]+tags.indexOf(paletteTag)*8),images,pixels:r.ptr(images)};}return result;
 }
 const profiles=new WeakMap();
+const actionProfiles=new WeakMap();
 const graphicsProfiles=new WeakMap();
-export function discoverFieldGraphics(reader){if(!graphicsProfiles.has(reader))graphicsProfiles.set(reader,(reader.engine==='frlg'?discoverSprites(reader):null)||discoverObjectGraphics(reader));return graphicsProfiles.get(reader);}
-function discover(reader){
+export function discoverFieldGraphics(reader){if(!graphicsProfiles.has(reader))graphicsProfiles.set(reader,discoverExpandedFieldGraphics(reader)||(reader.engine==='frlg'?discoverSprites(reader):null)||discoverObjectGraphics(reader));return graphicsProfiles.get(reader);}
+function discoverActions(reader){
  const r=reader;if(r.engine!=='frlg')return null;
  const byKind={cut:[],rocksmash:[],strength:[]},kinds={95:'cut',96:'rocksmash',97:'strength'};
  for(const map of r.maps)for(const e of r.events(map).npcs){const kind=kinds[e.sprite];if(!kind||e.script<0||byKind[kind].some(x=>x.address===e.script))continue;const match=canonical(r,e.script,kind);if(match)byKind[kind].push({...match,example:{mapKey:map.key,localId:e.localId,address:e.address}});}
  if(Object.values(byKind).some(v=>v.length!==1))return null;
  // Native Flash helper has no pointer fields and must be unique.
  const flash=[];for(let p=0;p<r.size-6;p++)if(r.u8(p)===0x9a&&r.u8(p+1)===0&&r.u8(p+2)===0x99&&r.u16(p+3)===0&&r.u8(p+5)===2)flash.push(p);
- const sprites=discoverFieldGraphics(r);if(!sprites||flash.length!==1)return null;
- return {engine:'frlg',scripts:Object.fromEntries(Object.entries(byKind).map(([k,v])=>[k,v[0]])),...sprites,flash:{scriptAddress:flash[0],caveHeaderOffset:21,caveValue:1,activeFlag:0x806,badgeFlag:0x820,moveId:148,animateOpcode:0x9a,setLevelOpcode:0x99,async:true},strength:{activeFlag:0x805,graphicsId:97,resetOnMapLoad:true},limits:{mapObjectTemplates:64,simultaneouslyVisibleObjects:16,defaultRemovalFlag:0,permanentFlagsAllocated:false,removal:'visit-local-template-coordinates'},signature:'canonical-native-field-scripts+95-97-info-relations+native-palette-tag-run+unique-flash-script'};
+ if(flash.length!==1)return null;
+ return {engine:'frlg',scripts:Object.fromEntries(Object.entries(byKind).map(([k,v])=>[k,v[0]])),flash:{scriptAddress:flash[0],caveHeaderOffset:21,caveValue:1,activeFlag:0x806,badgeFlag:0x820,moveId:148,animateOpcode:0x9a,setLevelOpcode:0x99,async:true},strength:{activeFlag:0x805,graphicsId:97,resetOnMapLoad:true},limits:{mapObjectTemplates:64,simultaneouslyVisibleObjects:16,defaultRemovalFlag:0,permanentFlagsAllocated:false,removal:'visit-local-template-coordinates'},signature:'canonical-native-field-scripts+unique-flash-script'};
 }
+export function discoverFieldActions(reader){if(!actionProfiles.has(reader))actionProfiles.set(reader,discoverActions(reader));return actionProfiles.get(reader);}
+function discover(reader){const actions=discoverFieldActions(reader),graphics=actions&&discoverFieldGraphics(reader);return actions&&graphics?{...actions,...graphics}:null;}
 export function spritePixels(reader,sprite){const out=new Uint8ClampedArray(16*16*4);for(let y=0;y<16;y++)for(let x=0;x<16;x++){const v=reader.u8(sprite.pixels+(Math.floor(y/8)*2+Math.floor(x/8))*32+(y%8)*4+Math.floor(x%8/2))>>>((x&1)*4)&15,c=reader.u16(sprite.palette+v*2),a=(y*16+x)*4;out[a]=(c&31)*255/31;out[a+1]=(c>>>5&31)*255/31;out[a+2]=(c>>>10&31)*255/31;out[a+3]=v?255:0;}return out;}
 
 export function discoverFieldProfile(reader){if(!profiles.has(reader))profiles.set(reader,discover(reader));return profiles.get(reader);}

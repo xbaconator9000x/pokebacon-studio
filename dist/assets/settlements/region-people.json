@@ -1,0 +1,134 @@
+{
+  "assets": [
+    {
+      "id": "region-person-20",
+      "name": "Kanto · Bug Catcher",
+      "src": "assets/settlements/region-person-20.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "People · stationary"
+    },
+    {
+      "id": "region-person-23",
+      "name": "Kanto · Woman 1",
+      "src": "assets/settlements/region-person-23.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "People · stationary"
+    },
+    {
+      "id": "region-person-25",
+      "name": "Kanto · Man",
+      "src": "assets/settlements/region-person-25.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "People · stationary"
+    },
+    {
+      "id": "region-person-39",
+      "name": "Kanto · Camper",
+      "src": "assets/settlements/region-person-39.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "People · stationary"
+    },
+    {
+      "id": "region-person-40",
+      "name": "Kanto · Picnicker",
+      "src": "assets/settlements/region-person-40.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "People · stationary"
+    },
+    {
+      "id": "region-person-56",
+      "name": "Kanto · Hiker",
+      "src": "assets/settlements/region-person-56.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "People · stationary"
+    },
+    {
+      "id": "region-person-57",
+      "name": "Kanto · Fisher",
+      "src": "assets/settlements/region-person-57.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "People · stationary"
+    },
+    {
+      "id": "region-person-62",
+      "name": "Kanto · Sailor",
+      "src": "assets/settlements/region-person-62.png",
+      "width": 16,
+      "height": 32,
+      "tileSize": 16,
+      "category": "People · stationary"
+    }
+  ],
+  "people": [
+    {
+      "graphics": 20,
+      "name": "Bug Catcher",
+      "width": 16,
+      "height": 32,
+      "assetId": "region-person-20"
+    },
+    {
+      "graphics": 23,
+      "name": "Woman 1",
+      "width": 16,
+      "height": 32,
+      "assetId": "region-person-23"
+    },
+    {
+      "graphics": 25,
+      "name": "Man",
+      "width": 16,
+      "height": 32,
+      "assetId": "region-person-25"
+    },
+    {
+      "graphics": 39,
+      "name": "Camper",
+      "width": 16,
+      "height": 32,
+      "assetId": "region-person-39"
+    },
+    {
+      "graphics": 40,
+      "name": "Picnicker",
+      "width": 16,
+      "height": 32,
+      "assetId": "region-person-40"
+    },
+    {
+      "graphics": 56,
+      "name": "Hiker",
+      "width": 16,
+      "height": 32,
+      "assetId": "region-person-56"
+    },
+    {
+      "graphics": 57,
+      "name": "Fisher",
+      "width": 16,
+      "height": 32,
+      "assetId": "region-person-57"
+    },
+    {
+      "graphics": 62,
+      "name": "Sailor",
+      "width": 16,
+      "height": 32,
+      "assetId": "region-person-62"
+    }
+  ]
+}

@@ -27,3 +27,12 @@ ios/*.xcresult/
 DerivedData/
 *.xcuserstate
 *.xcuserdatad/
+
+# Local signing configuration and private fixture inputs
+*signing*.json
+*.pem
+*.key
+*.gba
+*.sav
+*.pokebacon.json
+recovered/

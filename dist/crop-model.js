@@ -1,3 +1,4 @@
+import{rebaseLayerDecisions}from'./project-authority.js';
 import {LIMIT,LAYERS} from './model.js';
 import {sourceIndex} from './source-cells.js';
 import {removeFieldObject} from './field-model.js';
@@ -36,7 +37,7 @@ export function cropMap(project,mapId,rect){
   const copy=old=>{const cells=Array(r.width*r.height).fill(null);for(let y=0;y<r.height;y++)for(let x=0;x<r.width;x++){const ox=x+r.x,oy=y+r.y;if(ox>=0&&oy>=0&&ox<ow&&oy<oh)cells[y*r.width+x]=old[oy*ow+ox];}return cells;};
   const source=map.rom?Array.from({length:ow*oh},(_,i)=>sourceIndex(map,i%ow,Math.floor(i/ow))):null;
   for(const k of LAYERS)map.layers[k]=copy(map.layers[k]);
-  for(const k of ['movement','wallCells'])if(map[k])map[k]=copy(map[k]);
+  for(const k of ['movement','wallCells','layerPriorityDecisions'])if(map[k])map[k]=copy(map[k]);
   if(source){map.rom.sourceCells=copy(source);const old=map.rom.cropOffset||{x:0,y:0};map.rom.cropOffset={x:old.x+r.x,y:old.y+r.y};}
   const shift=p=>{p.x-=r.x;p.y-=r.y;};
   const removedBuildings=map.objects.filter(o=>plan.removedObjectIds.includes(o.id)&&o.building);
@@ -52,5 +53,5 @@ export function cropMap(project,mapId,rect){
   for(const l of project.links){for(const end of ['from','to'])if(l[end].mapId===mapId)shift(l[end]);if(l.seam){const axis=['north','south'].includes(l.seam.direction)?'x':'y';l.seam.offset=l.from[axis]-l.to[axis];}}
   for(const other of project.maps)for(const n of other.markers){if(n.runtime?.steps){n.runtime.steps=n.runtime.steps.filter(s=>!plan.removedGateIds.includes(s.gateId));if(!n.runtime.steps.length&&n.runtime.action!=='scene')delete n.runtime;else for(const s of [...flattenActions(n.runtime.steps),...flattenActions(n.runtime.repeatSteps)])if(s.type==='warp'&&s.to?.mapId===mapId)shift(s.to);}}
   for(const o of removedBuildings){for(const other of project.maps)if(other.generator?.buildingId===o.id)delete other.generator.buildingId;for(const l of project.links)if(l.buildingId===o.id)delete l.buildingId;}
-  map.width=r.width;map.height=r.height;return plan;
+  map.width=r.width;map.height=r.height;rebaseLayerDecisions(project,map,r.x,r.y);delete project.nativeArtworkPacks;return plan;
 }

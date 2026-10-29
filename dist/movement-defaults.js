@@ -23,11 +23,11 @@ export function objectDefaults(p){
 }
 export function nativeMovementDefaults(blocks,attributes=[],engine=null){
  const counts=new Map(),best=[];
- for(const word of blocks){const id=word&1023,key=id+':'+(word>>>10),n=(counts.get(key)||0)+1;counts.set(key,n);if(!best[id]||n>best[id].count){const behavior=(attributes[id]||0)&511;best[id]={count:n,mode:behavior===0x10?'water':word&0xc00?'block':'walk',collision:word>>>10&3,elevation:word>>>12&15,behavior,...(engine?{layerType:engine==='frlg'?(attributes[id]>>>29)&3:(attributes[id]>>>12)&15}:{})};}}
+ for(const word of blocks){const id=word&1023,key=id+':'+(word>>>10),n=(counts.get(key)||0)+1;counts.set(key,n);if(!best[id]||n>best[id].count){const behavior=(attributes[id]||0)&(engine==='rse'?255:511);best[id]={count:n,mode:behavior===0x10?'water':word&0xc00?'block':'walk',collision:word>>>10&3,elevation:word>>>12&15,behavior,...(engine?{layerType:engine==='frlg'?(attributes[id]>>>29)&3:(attributes[id]>>>12)&15}:{})};}}
  return best.map(r=>r?(({count,...rule})=>rule)(r):null);
 }
 export function resizeObjectRules(object,w,h){
- const patch={};
+ const patch={};if(object.renderMask&&Number.isInteger(w)&&Number.isInteger(h))patch.renderMask=Array.from({length:h},(_,y)=>Array.from({length:w},(_,x)=>object.renderMask[Math.min(object.renderMask.length-1,Math.floor(y*object.h/h))]?.[Math.min(Math.ceil(object.w)-1,Math.floor(x*object.w/w))]||'behind'));
  if(object.footprint){const f=object.footprint;patch.footprint={x:f.x*w/object.w,y:f.y*h/object.h,w:f.w*w/object.w,h:f.h*h/object.h};}
  if(object.collisionMask){if(Number.isInteger(w)&&Number.isInteger(h))patch.collisionMask=Array.from({length:h},(_,y)=>Array.from({length:w},(_,x)=>object.collisionMask[Math.min(object.h-1,Math.floor(y*object.h/h))]?.[Math.min(object.w-1,Math.floor(x*object.w/w))]??null));else if(object.collisionChoice==='mask')patch.collisionChoice='base';}
  return patch;

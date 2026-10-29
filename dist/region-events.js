@@ -1,0 +1,23 @@
+import{readTrainer}from'./game-data.js';import{editsFor}from'./game-edits.js';import{nativeHabitatPool}from'./region-roster.js';
+import{addQuestFlag}from'./quest-model.js';import{newScene,prepareScene}from'./authoring-model.js';import{createMovementQuery}from'./world-model.js';import{landscapeHash}from'./landscape-field.js';
+export function regionEventStage(project,maps){return{...project,maps,questFlags:structuredClone(project.questFlags||[]),questToken:project.questToken||0,authoring:project.authoring?structuredClone(project.authoring):undefined,romEdits:undefined,originalRomEdits:project.romEdits};}
+export function addRegionEvents(stage,map,node){
+ const features=node.settings.features,summary={milestones:0,items:0,trainers:0,trainersSkipped:0};
+ if(features.milestones===true){const flag=addQuestFlag(stage,'Visited: '+map.name),event=newScene(stage,0,0);event.title='Arrive: '+map.name;Object.assign(event.runtime,{trigger:'enter',repeat:'once',completionFlag:flag.id,steps:[{type:'flag',flagId:flag.id,value:true}]});prepareScene(stage,event);map.markers.push(event);map.region.visitFlag=flag.id;summary.milestones++;}
+ if(node.kind!=='route')return summary;
+ if(features.items===true){const pool=node.settings.itemPool||[13,4],query=createMovementQuery(map),candidates=[];
+  const origin=map.generator.exits[0],seen=new Set(),todo=[origin.y*map.width+origin.x];while(todo.length){const i=todo.pop();if(seen.has(i))continue;const x=i%map.width,y=Math.floor(i/map.width),r=query(x,y);if(x<0||y<0||x>=map.width||y>=map.height||r.collision||r.mode==='water')continue;seen.add(i);if(x)todo.push(i-1);if(x<map.width-1)todo.push(i+1);if(y)todo.push(i-map.width);if(y<map.height-1)todo.push(i+map.width);}
+  for(const i of seen){const x=i%map.width,y=Math.floor(i/map.width);if(x<5||y<5||x>=map.width-5||y>=map.height-5||map.markers.some(n=>Math.abs(n.x-x)+Math.abs(n.y-y)<5))continue;candidates.push({x,y,score:landscapeHash(node.seed^911,x,y)});}candidates.sort((a,b)=>b.score-a.score);
+  for(const p of candidates){if(summary.items>=2)break;if(map.markers.some(n=>Math.abs(n.x-p.x)+Math.abs(n.y-p.y)<7))continue;const event=newScene(stage,p.x,p.y);event.title='Hidden supply';Object.assign(event.runtime,{repeat:'once',steps:[{type:'item',operation:'give',itemId:pool[summary.items%pool.length],quantity:1}],repeatSteps:[]});prepareScene(stage,event);map.markers.push(event);summary.items++;}
+ }
+ if(features.trainers===true&&node.settings.trainerIds?.length){const people=map.markers.filter(n=>n.npc||n.portablePerson);for(let i=0;i<people.length;i++){const n=people[i];stage.usedTrainerIds??=new Set();const id=node.settings.trainerIds.find(id=>!stage.usedTrainerIds.has(id));if(id===undefined){summary.trainersSkipped++;continue;}stage.usedTrainerIds.add(id);
+ const mode=node.settings.trainerTeamMode||'keep';if(mode!=='keep'){
+  const roster=stage.nativeRoster;if(!roster?.profile||roster.profile.capabilities?.trainers===false||!stage.reader||!stage.sourceId)throw Error('Trainer team generation needs verified Pokémon and trainer tables from an opened ROM.');if(id>=roster.profile.trainerCount)throw Error('A selected trainer slot is outside this ROM.');
+  stage.romEdits??=structuredClone(stage.originalRomEdits||{});const edits=editsFor(stage,stage.sourceId,true),old={...readTrainer(stage.reader.bytes,roster.profile,id),...edits.trainers[id]},pool=nativeHabitatPool(roster,node.biome,node.progression.minLevel);let patch;
+  if(mode==='generate'){if(!pool?.length)throw Error('No suitable native Pokémon are available for this trainer.');const count=Math.min(6,1+Math.floor(node.progression.minLevel/12));patch={customMoves:false,heldItems:false,doubleBattle:false,party:Array.from({length:count},(_,j)=>({species:pool[Math.floor(landscapeHash(node.seed,j,39)*pool.length)],level:Math.min(100,node.progression.minLevel+j%3),ivQuality:Math.min(255,Math.round(node.progression.minLevel*3)),heldItem:0,moves:[]}))};}
+  else{if(!old.party.length)throw Error('The selected trainer has no party. Use habitat team generation or choose another slot.');patch={party:old.party.map((mon,j)=>({...mon,level:Math.min(100,node.progression.minLevel+j%3)}))};}
+  edits.trainers[id]={...edits.trainers[id],...patch};stage.trainerEditsChanged=true;
+ }
+ const scene=newScene(stage,n.x,n.y);scene.id=n.id;scene.npc=n.npc;scene.kind='npc';scene.title='Trainer · '+n.title;Object.assign(scene.runtime,{repeat:'once',blocksMovement:true,steps:[{type:'battle',trainerId:id,intro:'Ready for a battle?',defeat:'Well fought!'}],repeatSteps:[{type:'say',text:'That was a good battle.'}]});prepareScene(stage,scene);Object.assign(n,scene);summary.trainers++;}}
+ return summary;
+}

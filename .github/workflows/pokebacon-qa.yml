@@ -1,0 +1,54 @@
+name: PokéBacon QA
+on:
+  push:
+    branches: [main, 'reconcile/**']
+  pull_request:
+  schedule:
+    - cron: '23 2 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pokebacon-qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/qa-source-gate.mjs
+  android-source-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Install official Android SDK components
+        run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Compile native shell and package all reconciled assets
+        run: ANDROID_SDK_ROOT="$ANDROID_HOME" python3 android/build.py --unsigned
+  portable-and-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+      - run: npm install --prefix "$RUNNER_TEMP/qa" --no-audit --no-fund jsdom@26 fake-indexeddb esbuild @napi-rs/canvas
+      - name: Run music UI and full editor checks
+        env:
+          MAP_STUDIO_QA_RUNTIME: ${{ runner.temp }}/qa/node_modules
+          MAP_STUDIO_BUILD_RUNTIME: ${{ runner.temp }}/qa/node_modules
+        run: |
+          node scripts/test-music-midi-parts-ui.mjs
+          node scripts/test-music-track-style-ui.mjs
+          node scripts/test-music-quick-ui.mjs

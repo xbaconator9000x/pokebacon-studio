@@ -6,17 +6,28 @@ export function nativeWarpBinding(reader,project,link,end){
   const native=reader.byKey(key);if(!native)return null;
   const entries=(link.rom.events||[]).map(s=>/^(.+):warp-(\d+)$/.exec(s)).filter(Boolean).filter(m=>m[1]===key);
   const events=reader.events(native).warps;
+  // A one-way same-map link stores a departure ID, not an arrival ID.
+  if(end==='to'&&!link.twoWay&&link.rom.originalFrom?.mapId===original.mapId&&entries.length===1){
+    const departure=events.find(w=>w.index===+entries[0][2]&&w.target===key);
+    if(departure&&events.some(w=>w.index===departure.warp))return{key,index:departure.warp};
+  }
   const direct=entries.find(m=>events.some(w=>w.index===+m[2]&&w.x===original.x&&w.y===original.y));
   if(direct)return{key,index:+direct[2]};
+  // Coordinates are editable and may already differ in a re-exported source.
+  // A unique retained native index still identifies the same warp record.
+  const retained=entries.filter(m=>events.some(w=>w.index===+m[2]));
+  if(retained.length===1)return{key,index:+retained[0][2]};
+  if(retained.length>1)throw Error('Multiple native warp records match this endpoint; choose its binding explicitly.');
   // A one-way imported link stores only its departure event ID.
   const opposite=end==='from'?link.rom.originalTo:link.rom.originalFrom,other=project.maps.find(m=>m.id===opposite?.mapId)?.rom?.key,source=other&&reader.byKey(other);
-  const warp=source&&reader.events(source).warps.find(w=>w.x===opposite.x&&w.y===opposite.y&&w.target===key);
+  const candidates=source?reader.events(source).warps.filter(w=>w.target===key):[],oppositeIds=(link.rom.events||[]).map(s=>/^(.+):warp-(\d+)$/.exec(s)).filter(m=>m&&m[1]===other),bound=candidates.filter(w=>oppositeIds.some(m=>+m[2]===w.index));
+  const warp=bound.length===1?bound[0]:candidates.find(w=>w.x===opposite.x&&w.y===opposite.y);
   return warp?{key,index:warp.warp}:null;
 }
 export function shiftNativeEvents(map,events){
   const offset=map.rom?.cropOffset||{x:0,y:0};let changed=false;
   for(const [type,records]of Object.entries(events))for(const record of records){const off=type==='npcs'?4:0,v=new DataView(record.buffer,record.byteOffset,record.byteLength);if(offset.x||offset.y){v.setInt16(off,v.getInt16(off,true)-offset.x,true);v.setInt16(off+2,v.getInt16(off+2,true)-offset.y,true);changed=true;}}
-  for(const n of map.markers){if(!n.rom)continue;const type={npc:'npcs',sign:'signs',warp:'warps',trigger:'triggers'}[typeof n.rom.type==='number'?'sign':n.rom.type];if(!type)continue;const record=events[type]?.[n.rom.index];if(!record)throw Error('A source event is missing. Reimport this map.');const off=type==='npcs'?4:0,v=new DataView(record.buffer,record.byteOffset,record.byteLength);if(v.getInt16(off,true)!==n.x||v.getInt16(off+2,true)!==n.y){v.setInt16(off,n.x,true);v.setInt16(off+2,n.y,true);changed=true;}}
+  for(const n of map.markers){if(!n.rom)continue;const type={npc:'npcs',sign:'signs',warp:'warps',trigger:'triggers'}[typeof n.rom.type==='number'?'sign':n.rom.type];if(!type)continue;const record=events[type]?.[n.rom.index];if(!record)throw Error('A source event is missing. Reimport this map.');const off=type==='npcs'?4:0,v=new DataView(record.buffer,record.byteOffset,record.byteLength);for(const [key,at,size]of type==='npcs'?[['flag',20,2],['movement',9,1]]:type==='triggers'?[['variable',6,2],['value',8,2]]:type==='signs'&&record[5]>=5&&record[5]<=7?[['itemId',8,2],['hiddenItemId',10,1]]:[]){const value=n.rom[key];if(value===undefined)continue;if(!Number.isInteger(value)||value<0||value>(size===2?65535:255))throw Error('Invalid native '+key);const prior=size===2?v.getUint16(at,true):v.getUint8(at);if(prior!==value){size===2?v.setUint16(at,value,true):v.setUint8(at,value);changed=true;}}if(v.getInt16(off,true)!==n.x||v.getInt16(off+2,true)!==n.y){v.setInt16(off,n.x,true);v.setInt16(off+2,n.y,true);changed=true;}}
   return changed;
 }
 export function adjustNativeConnections(output,reader,entries){

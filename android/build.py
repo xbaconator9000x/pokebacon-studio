@@ -5,10 +5,13 @@ ANDROID_SDK_ROOT must contain platforms/android-35 and build-tools/35.0.0.
 Set MAP_STUDIO_KEYSTORE, MAP_STUDIO_KEY_ALIAS, and MAP_STUDIO_KEY_PASSWORD.
 No Gradle, Maven dependencies, internet connection, or framework is required.
 """
-import os, shutil, subprocess, zipfile
+import argparse, os, shutil, subprocess, zipfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--unsigned',action='store_true',help='Build an aligned QA APK without signing credentials')
+args=parser.parse_args()
 ROOT=Path(__file__).resolve().parent.parent
 SDK=Path(os.environ['ANDROID_SDK_ROOT'])
 BT=SDK/'build-tools/35.0.0'
@@ -44,6 +47,15 @@ else:
 run(BT/'d8','--lib',PLATFORM,'--min-api','26','--output',BUILD,*sorted((BUILD/'classes').rglob('*.class')))
 with zipfile.ZipFile(BUILD/'base.apk','a',compression=zipfile.ZIP_DEFLATED) as apk:apk.write(BUILD/'classes.dex','classes.dex')
 run(BT/'zipalign','-f','-p','4',BUILD/'base.apk',BUILD/'aligned.apk')
+if args.unsigned:
+    out=BUILD/f'PokeBacon_Studio_v{version_name}_unsigned.apk'
+    shutil.copy2(BUILD/'aligned.apk',out)
+    with zipfile.ZipFile(out) as apk:
+        assert apk.testzip() is None
+        for source in ASSETS.rglob('*'):
+            if source.is_file(): assert apk.read('assets/'+source.relative_to(ASSETS).as_posix())==source.read_bytes()
+    print(f'Unsigned QA APK: {out}; deployed assets verified')
+    raise SystemExit(0)
 out=ROOT/'dist'/f'PokeBacon_Studio_v{version_name}.apk'
 run(BT/'apksigner','sign','--ks',os.environ['MAP_STUDIO_KEYSTORE'],'--ks-key-alias',os.environ.get('MAP_STUDIO_KEY_ALIAS','mapstudio'),'--ks-pass','env:MAP_STUDIO_KEY_PASSWORD','--key-pass','env:MAP_STUDIO_KEY_PASSWORD','--v4-signing-enabled','false','--out',out,BUILD/'aligned.apk')
 run(BT/'apksigner','verify','--verbose',out)

@@ -67,3 +67,9 @@ dialog{overflow:hidden;max-height:calc(100dvh - 24px)}dialog form{display:flex;f
 
 .dialog-header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}.dialog-back{min-height:32px;padding:6px 10px;font-size:11px;background:#eaf0e3;border-color:#d5e0c9;color:#526b46}.dialog-back:hover{background:#dfead2}
 @media(max-width:700px){.dialog-header-actions{gap:5px}.dialog-back{min-height:44px;padding:7px 12px;font-size:12px}}
+/* Native events: readable mobile steps; raw graph is an advanced view. */
+.readable-story{overflow:auto!important;touch-action:pan-y!important;}
+.readable-story .story-plane{position:relative!important;width:auto!important;height:auto!important;min-height:100%;padding:16px;}
+.readable-story #nativeStoryCards{display:flex;flex-direction:column;gap:12px;max-width:780px;margin:auto;}
+.story-readable-step{background:var(--panel,#fafbef);border:1px solid #cbd2bb;border-radius:12px;padding:16px;scroll-margin:24px;}
+.story-readable-step h3{margin:6px 0;font-size:18px;}.story-readable-text{white-space:pre-wrap;line-height:1.5;}.story-readable-step nav{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;}.story-readable-step nav button{min-height:40px;font-size:13px;}.story-step-help{line-height:1.5;}

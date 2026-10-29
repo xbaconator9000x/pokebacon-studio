@@ -1,3 +1,4 @@
+import{removeNativeWarp}from'./warp-removal.js';
 import {addLink,inBounds,clamp} from './model.js';
 import {movementAt,setMovement} from './world-model.js';
 import {fieldAt,ledgeAt} from './field-model.js';
@@ -58,4 +59,4 @@ export function saveMapLink(project,draft,{walkable=true}={}){
   if(walkable&&link.runtime)for(const p of [link.from,link.to]){const map=project.maps.find(m=>m.id===p.mapId);setMovement(map,p.x,p.y,{mode:'walk',elevation:3});if(map.wallCells)map.wallCells[p.y*map.width+p.x]=null;}
   return link;
 }
-export function removeMapLink(project,id){const link=project.links.find(l=>l.id===id);if(link&&isSeamLink(link))disableNativeSeam(project,link);project.links=project.links.filter(l=>l.id!==id);for(const map of project.maps)map.objects=map.objects.filter(o=>o.portalId!==id);}
+export function removeMapLink(project,id){const link=project.links.find(l=>l.id===id);if(link&&isSeamLink(link))disableNativeSeam(project,link);if(isNativeWarp(link)){const removals=(link.rom.events||[]).filter(tag=>!project.links.some(l=>l.id!==id&&l.rom?.sourceId===link.rom.sourceId&&l.rom.events?.includes(tag))).map(tag=>{const match=/^(.+):warp-(\d+)$/.exec(tag);if(!match)return null;const map=project.maps.find(m=>m.rom?.sourceId===link.rom.sourceId&&m.rom.key===match[1]);if(!map||!map.rom.events?.warps?.some(w=>w.index===+match[2]))throw Error('The original warp map is missing from the project.');return{map,index:+match[2]};}).filter(Boolean);for(const{map,index}of removals)removeNativeWarp(map,index);}project.links=project.links.filter(l=>l.id!==id);for(const map of project.maps)map.objects=map.objects.filter(o=>o.portalId!==id);}
