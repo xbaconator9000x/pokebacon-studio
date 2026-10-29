@@ -45,6 +45,8 @@ to make legacy expectations pass.
 
 The offline cache now includes the recovered root modules. Version/fingerprint
 parity runs on pushes/PRs and daily. Android compilation is a separate CI job;
-physical-device update/install and private-ROM emulator acceptance remain
+the clean GitHub Android source build and all three QA jobs passed on the
+reconciliation commit. The screenshot launcher reads package/activity identity
+from the manifest. Physical-device update/install and private-ROM emulator acceptance remain
 unverified in this reconciliation run. No signed APK release is implied by
 source synchronization.
