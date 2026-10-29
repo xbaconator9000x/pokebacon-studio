@@ -16,3 +16,11 @@ jobs:
         with:
           node-version: 20
       - run: npm test
+      - name: Install isolated music UI test runtime
+        run: npm install --prefix "$RUNNER_TEMP/music-ui" --no-audit --no-fund jsdom@26
+      - name: Test source-song and multipart MIDI controls
+        env:
+          MAP_STUDIO_QA_RUNTIME: ${{ runner.temp }}/music-ui/node_modules
+        run: |
+          node scripts/test-music-track-style-ui.mjs
+          node scripts/test-music-midi-parts-ui.mjs

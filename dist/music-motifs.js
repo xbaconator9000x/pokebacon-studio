@@ -31,7 +31,7 @@ export function musicScore(asset){
   }
   if(held.length){close();warnings.add('Notes held at the structural end are clipped to that boundary.');}
   if(programs.size>1)warnings.add('This part changes instruments. The arranger uses one selected instrument per part.');
-  const clean=notes.map(({rawKey,...n})=>n);length=Math.max(length,tick,...clean.map(n=>n.tick+n.duration));tracks.push({name:'ROM part '+(tr+1),program:clean[0]?.program||0,notes:clean,automation:automationFor({automation:automation.filter(p=>p.tick<Math.max(1,tick,...clean.map(n=>n.tick+n.duration)))}),loopStart});
+  const clean=notes.map(({rawKey,...n})=>n);length=Math.max(length,tick,...clean.map(n=>n.tick+n.duration));tracks.push({name:'ROM part '+(tr+1),program:clean[0]?.program??program,notes:clean,automation:automationFor({automation:automation.filter(p=>p.tick<Math.max(1,tick,...clean.map(n=>n.tick+n.duration)))}),loopStart});
  }
  if(length>49152)throw Error('The editable score exceeds 512 bars.');if(!total)throw Error('There are no notes to analyse.');const score={ppq:24,length,tempos:[...tempos].filter(([t])=>t<length).sort((a,b)=>a[0]-b[0]).map(([tick,bpm])=>({tick,bpm})),tracks};
  score.tempos=score.tempos.filter((t,i,a)=>!i||t.bpm!==a[i-1].bpm);
