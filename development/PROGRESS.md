@@ -36,3 +36,9 @@ Implemented and tested locally:
 Validation: 342 checks passed, 2 external-fixture skips. Real editor DOM tests passed locally for the Pokémon data workflow/import and ability design template/save/error handling. Prior reference, script-tree, event-template and sprite-layer UI regressions also passed in this run. All 1,857 deployed fingerprints passed. No supplied real-ROM fixture was used for new battle runtime or native form gameplay assertions.
 
 The wider roadmap remains incomplete, including arbitrary custom move battle effects, additional evolution-method adapters, TM/tutor/egg compatibility editing, full event pages, in-game UI customisation and full Cartographer generation integration. These were not marked complete by the work above.
+
+## Sci-fi, Horror, Space and Technology vibes
+
+Added all four to Quick Track and the general composition mood list. Original recipes use distinct scales, contours, rhythms, progressions and sound palettes: cold whole-tone electronic signals; Phrygian mansion/corridor suspense; sparse Lydian space atmosphere without percussion; Dorian sequencer/machine rhythms. They support existing whole/selected source arrangements, key/scale overrides and the existing composition/Atmosphere controls. Electronic/chip voices now carry appropriate General MIDI program metadata rather than defaulting to piano.
+
+Local validation: 344 checks passed, 2 external-fixture skips. Full-editor source-song, multipart MIDI and mobile Quick Track UI checks passed. All four completed actual bundled contour + melody Hybrid inference, then compiled and rendered finite, non-silent PCM. New original arrangements and MIDI loop round trips were tested. No commercial API or GitHub execution was used. Inspirations describe mood/texture rather than copied melodies. The generic composition dependency test now allows percussion-free moods to omit unused drum samples.

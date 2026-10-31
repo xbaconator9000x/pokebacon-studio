@@ -29,3 +29,5 @@ Acceptance for every task: implementation commit + meaningful regression + UI/sa
 - [x] Pokémon-editor link to native ability workshop and safer ability design saves.
 
 These are development-branch features, with local validation recorded in PROGRESS.md; they do not imply a released APK or completion of their broader roadmap categories.
+
+- [x] Sci-fi, Horror, Space and Technology music vibes, locally validated through actual Hybrid inference and cartridge/MIDI output.
