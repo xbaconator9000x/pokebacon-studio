@@ -1,9 +1,9 @@
-import{describeTilesetStorage}from'./tileset-storage.js';
+import{describeTilesetStorage,packedStorageCount}from'./tileset-storage.js';
 import{applyNativeEventSuppressions}from'./native-event-suppression.js';
 import{applyWarpRemovals}from'./warp-removal.js';
 import{abilityDefinitions,installNativeAbilities}from'./ability-native.js';
 import{shatteredGateRepair,legacyGateTile,gateScriptBytes,gatePackMatches}from'./script-tile-bindings.js';
-import{nativeStoryEditCount,installNativeStoryEdits}from'./native-story.js';
+import{indexNativeStory,nativeStoryEditCount,installNativeStoryEdits}from'./native-story.js';
 import{auditNativeExits}from'./native-exit-review.js';
 import{assertProjectLayers,assertProjectPortals}from'./project-authority.js';
 import{compressGbaLZ}from'./gba-lz.js';
@@ -62,7 +62,7 @@ const unpack=a=>Array.from({length:64},(_,i)=>(a[i>>1]>>>(i%2*4))&15);
 const pack=a=>Uint8Array.from({length:32},(_,i)=>a[i*2]|a[i*2+1]<<4);
 const rgbaKey=a=>{let h=2166136261;for(let i=0;i<a.length;i++)h=Math.imul(h^a[i],16777619);return h>>>0;};
 export class RomOutput {
- constructor(source){this.bytes=new Uint8Array(source);let end=source.length;while(end>0x200&&source[end-1]===255)end--;this.cursor=Math.min(source.length,(end+4099)&~3);this.allocations=[];this.writes=[];this.source=source;}
+ constructor(source,{packedPointerSites=null}={}){this.packedPointerSites=packedPointerSites;this.bytes=new Uint8Array(source);let end=source.length;while(end>0x200&&source[end-1]===255)end--;this.cursor=Math.min(source.length,(end+4099)&~3);this.allocations=[];this.writes=[];this.source=source;}
  ensure(end){if(end>MAX)throw Error('The edited data exceeds the GBA’s 32 MB ROM limit. Export fewer maps at once.');if(end<=this.bytes.length)return;const next=new Uint8Array(Math.min(MAX,Math.max(end,this.bytes.length*2)));next.fill(255);next.set(this.bytes);this.bytes=next;}
  write(at,bytes){if(!Number.isInteger(at)||at<0||at+bytes.length>this.bytes.length)throw Error('A ROM edit points outside its data range.');this.bytes.set(bytes,at);this.writes.push({address:at,length:bytes.length});}
  int(at,value,width=4){const a=new Uint8Array(width),v=new DataView(a.buffer);width===2?v.setUint16(0,value,true):v.setUint32(0,value,true);this.write(at,a);}
@@ -71,6 +71,10 @@ export class RomOutput {
   this.immutablePools??=new Map();const key=reason+':'+bytes.length+':'+hash,prior=this.immutablePools.get(key)||[];
   for(const at of prior)if(bytes.every((b,i)=>this.bytes[at+i]===b))return at;
   const at=this.allocate(bytes,reason);prior.push(at);this.immutablePools.set(key,prior);return at;
+ }
+ reuseSource(bytes,at,reason){
+  if(Number.isInteger(at)&&at>=512&&at+bytes.length<=this.source.length&&bytes.every((v,i)=>this.source[at+i]===v&&this.bytes[at+i]===v)){this.reusedBytes=(this.reusedBytes||0)+bytes.length;return at;}
+  return this.allocate(bytes,reason);
  }
  mapBlocks(bytes,reader,native,{isNew=false}={}){
   const at=native.layout.blocks,capacity=native.layout.width*native.layout.height*2,end=at+capacity;
@@ -85,7 +89,7 @@ export class RomOutput {
   }
   return this.allocate(bytes,'Map blocks');
  }
- allocate(bytes,reason='Data'){bytes=asBytes(bytes);if(!bytes.length)throw Error('Cannot allocate empty data.');let at=(this.cursor+3)&~3;if(at+bytes.length+16>MAX){this.freeSpans??=erasedROMSpans(this.bytes);const span=this.freeSpans.filter(s=>s.end-s.start>=bytes.length+16).sort((a,b)=>(a.end-a.start)-(b.end-b.start)||a.start-b.start)[0];if(!span)throw Error('No verified erased ROM space remains for '+reason+'.');at=span.start;if(this.bytes.subarray(at,at+bytes.length).some(v=>v!==255))throw Error('Verified ROM free space was occupied before allocation.');span.start=(at+bytes.length+19)&~3;}else{this.ensure(at+bytes.length+16);this.cursor=at+bytes.length+16;}this.write(at,bytes);this.allocations.push({address:at,length:bytes.length,reason});return at;}
+ allocate(bytes,reason='Data'){bytes=asBytes(bytes);if(!bytes.length)throw Error('Cannot allocate empty data.');let at=(this.cursor+3)&~3;if(at+bytes.length+16>MAX){this.freeSpans??=erasedROMSpans(this.bytes,{packedPointerSites:this.packedPointerSites});const span=this.freeSpans.filter(s=>s.end-s.start>=bytes.length+16).sort((a,b)=>(a.end-a.start)-(b.end-b.start)||a.start-b.start)[0];if(!span){const remaining=this.freeSpans.reduce((n,s)=>n+Math.max(0,s.end-s.start),0),largest=Math.max(0,...this.freeSpans.map(s=>s.end-s.start));const error=Error('Insufficient verified ROM space for '+reason+': needs '+(bytes.length+16)+' contiguous bytes; '+remaining+' bytes remain, largest span '+largest+'.');error.allocationReport={reason,requested:bytes.length+16,remaining,largest,allocations:this.allocations.map(a=>({...a})),reusedBytes:this.reusedBytes||0};throw error;}at=span.start;if(this.bytes.subarray(at,at+bytes.length).some(v=>v!==255))throw Error('Verified ROM free space was occupied before allocation.');span.start=(at+bytes.length+19)&~3;}else{this.ensure(at+bytes.length+16);this.cursor=at+bytes.length+16;}this.write(at,bytes);this.allocations.push({address:at,length:bytes.length,reason});return at;}
 }
 export function discoverLayoutTable(reader){
  // Some expanded ROMs retain legacy aliases: different map headers share an
@@ -142,20 +146,20 @@ class MapCompiler {
   if(this.installed){const v=new DataView(layout.buffer);v.setUint32(16,BASE+this.installed[0],true);v.setUint32(20,BASE+this.installed[1],true);return this.installed;}
   const r=this.reader,parts=[];
   for(let role=0;role<2;role++){
-   const source=role?this.atlas.secondary:this.atlas.primary,begin=role?this.split:0,count=role?this.total-this.split:this.split,gBegin=role?this.gfxSplit:0,gCount=role?1024-this.gfxSplit:this.gfxSplit,attrs=new Uint8Array(count*this.attrSize),av=new DataView(attrs.buffer);
+   const source=role?this.atlas.secondary:this.atlas.primary,begin=role?this.split:0,logicalCount=role?this.total-this.split:this.split,trimmed=this.usesPreparedArtwork&&r.engine==='frlg'&&output.bytes.length===MAX,count=trimmed?packedStorageCount(this.meta,this.attrs,this.freeMetatiles,begin,logicalCount,this.stride,{primarySplit:role?null:this.split}):logicalCount,gBegin=role?this.gfxSplit:0,gCount=role?1024-this.gfxSplit:this.gfxSplit,attrs=new Uint8Array(count*this.attrSize),av=new DataView(attrs.buffer);
    for(let i=0;i<count;i++)this.attrSize===4?av.setUint32(i*4,this.atlas.unsupportedBlocks?.includes(begin+i)?r.u32(source.attrs+i*4):r.encodeAttribute(this.attrs[begin+i]),true):av.setUint16(i*2,this.attrs[begin+i],true);
    const meta=this.meta.subarray(begin*this.stride,(begin+count)*this.stride),attrsFirst=r.engine==='rse'&&this.attrSize===4,combined=new Uint8Array(meta.length+attrs.length);combined.set(meta,attrsFirst?attrs.length:0);combined.set(attrs,attrsFirst?0:meta.length);
-   const alloc=this.usesPreparedArtwork?output.allocateImmutable.bind(output):output.allocate.bind(output),fragmented=this.usesPreparedArtwork&&r.engine==='frlg'&&output.bytes.length===MAX&&output.cursor+combined.length+16>MAX;
-   let metaAt,attrsAt,separate=false;
-   try{if(fragmented){metaAt=alloc(meta,'Map metatile planes');attrsAt=alloc(attrs,'Map metatile attributes');separate=true;}else{const at=alloc(combined,'Map metatiles');metaAt=at+(attrsFirst?attrs.length:0);attrsAt=at+(attrsFirst?0:meta.length);}}
+   const alloc=this.usesPreparedArtwork?output.allocateImmutable.bind(output):output.allocate.bind(output),fragmented=trimmed||this.usesPreparedArtwork&&r.engine==='frlg'&&output.bytes.length===MAX&&output.cursor+combined.length+16>MAX;
+   const reuse=(bytes,at,reason)=>at>=512&&at+bytes.length<=output.source.length&&bytes.every((v,i)=>output.source[at+i]===v&&output.bytes[at+i]===v)?output.reuseSource(bytes,at,reason):alloc(bytes,reason);let metaAt,attrsAt,separate=false;
+   try{if(fragmented){metaAt=reuse(meta,source.metatiles,'Map metatile planes');attrsAt=reuse(attrs,source.attrs,'Map metatile attributes');separate=true;}else{const at=alloc(combined,'Map metatiles');metaAt=at+(attrsFirst?attrs.length:0);attrsAt=at+(attrsFirst?0:meta.length);}}
    catch(error){
-    if(!this.usesPreparedArtwork||r.engine!=='frlg'||!error.message.startsWith('No verified erased ROM space remains for Map metatiles.'))throw error;
-    metaAt=alloc(meta,'Map metatile planes');attrsAt=alloc(attrs,'Map metatile attributes');separate=true;
+    if(!this.usesPreparedArtwork||r.engine!=='frlg'||!(error.allocationReport?.reason==='Map metatiles'||error.message.startsWith('No verified erased ROM space remains for Map metatiles.')))throw error;
+    metaAt=reuse(meta,source.metatiles,'Map metatile planes');attrsAt=reuse(attrs,source.attrs,'Map metatile attributes');separate=true;
    }
-   const gfx=alloc(this.usesPreparedArtwork?compressGbaLZ(this.gfx.slice(gBegin*32,(gBegin+gCount)*32)):this.gfx.slice(gBegin*32,(gBegin+gCount)*32),'Map graphics'),pal=alloc(this.palettes,'Map palettes');
+   const graphicBytes=this.usesPreparedArtwork?compressGbaLZ(this.gfx.slice(gBegin*32,(gBegin+gCount)*32)):this.gfx.slice(gBegin*32,(gBegin+gCount)*32),gfx=reuse(graphicBytes,source.compressed===!!this.usesPreparedArtwork?source.graphics:-1,'Map graphics'),pal=reuse(this.palettes,source.palettes,'Map palettes');
    let header=r.bytes.slice(source.address,source.address+24);const hv=new DataView(header.buffer);hv.setUint8(0,this.usesPreparedArtwork?1:0);hv.setUint8(1,role);hv.setUint32(4,BASE+gfx,true);hv.setUint32(8,BASE+pal,true);hv.setUint32(12,BASE+metaAt,true);hv.setUint32(r.engine==='frlg'?20:16,BASE+attrsAt,true);if(this.staticArtwork)hv.setUint32(r.engine==='frlg'?16:20,0,true);
    if(separate)header=describeTilesetStorage(header,count,this.attrSize,this.stride,meta,attrs);
-   parts.push(output.allocate(header,'Map tileset'));
+   parts.push(reuse(header,source.address,'Map tileset'));
   }
   const v=new DataView(layout.buffer);v.setUint32(16,BASE+parts[0],true);v.setUint32(20,BASE+parts[1],true);this.installed=parts;return parts;
  }
@@ -178,7 +182,7 @@ function rawEvents(reader,map){const p=map.events,types=[['npcs',0,4,24],['warps
 function compiledDialogue(output,text,engine){const source='lockall\nmsgbox @text 4\nreleaseall\nend\n@text:\n= '+wrapDialogue(text)+'$';const checked=compileScript(source,0,engine),at=output.allocate(checked.bytes,'Interaction dialogue'),compiled=compileScript(source,at,engine);output.write(at,compiled.bytes);return at+compiled.entryOffset;}
 function sign(x,y,script,elevation=0){const a=new Uint8Array(12),v=new DataView(a.buffer);v.setUint16(0,x,true);v.setUint16(2,y,true);v.setUint8(4,elevation);v.setUint32(8,BASE+script,true);return a;}
 function warp(x,y,to,index,elevation=0){const a=new Uint8Array(8),v=new DataView(a.buffer);v.setUint16(0,x,true);v.setUint16(2,y,true);v.setUint8(4,elevation);v.setUint8(5,index);v.setUint8(6,to.index);v.setUint8(7,to.bank);return a;}
-function installEvents(output,native,events){const h=new Uint8Array(20),v=new DataView(h.buffer);for(const[name,countOff,ptrOff,size]of[['npcs',0,4,24],['warps',1,8,8],['triggers',2,12,16],['signs',3,16,12]]){const list=events[name];if(list.length>255)throw Error('A map event list exceeds 255 records.');v.setUint8(countOff,list.length);if(list.length){const data=new Uint8Array(size*list.length);list.forEach((a,i)=>data.set(a,i*size));const at=output.allocate(data,'Map '+name);v.setUint32(ptrOff,BASE+at,true);for(const [i,row]of list.entries())if(row.storyReference!==undefined){output.storyReferences??=new Map();output.storyReferences.set(row.storyReference,at+i*size+({npcs:16,signs:8,triggers:12}[name]));}}}output.int(native.address+4,BASE+output.allocate(h,'Map event header'));}
+export function installEvents(output,native,events){const h=native.events>=512&&native.events+20<=output.source.length?output.source.slice(native.events,native.events+20):new Uint8Array(20),v=new DataView(h.buffer);for(const[name,countOff,ptrOff,size]of[['npcs',0,4,24],['warps',1,8,8],['triggers',2,12,16],['signs',3,16,12]]){const list=events[name];if(list.length>255)throw Error('A map event list exceeds 255 records.');v.setUint8(countOff,list.length);if(list.length){const data=new Uint8Array(size*list.length);list.forEach((a,i)=>data.set(a,i*size));const p=native.events,view=new DataView(output.source.buffer,output.source.byteOffset,output.source.byteLength),old=p>=512&&p+20<=output.source.length?view.getUint32(p+ptrOff,true)-BASE:-1,at=output.reuseSource(data,old,'Map '+name);v.setUint32(ptrOff,BASE+at,true);for(const [i,row]of list.entries())if(row.storyReference!==undefined){output.storyReferences??=new Map();output.storyReferences.set(row.storyReference,at+i*size+({npcs:16,signs:8,triggers:12}[name]));}}}output.int(native.address+4,BASE+output.reuseSource(h,native.events,'Map event header'));}
 function compileEvent(output,n,engine,context){const source=eventSource(n,context),checked=compileScript(source,0,engine),at=output.allocate(checked.bytes,'Event sequence'),compiled=compileScript(source,at,engine);output.write(at,compiled.bytes);return at+compiled.entryOffset;}
 function coord(x,y,script){const a=new Uint8Array(16),v=new DataView(a.buffer);v.setUint16(0,x,true);v.setUint16(2,y,true);v.setUint16(6,1,true);v.setUint16(8,1,true);v.setUint32(12,BASE+script,true);return a;}
 export async function buildRom(project,reader,{sourceId,renderMap,wallStyles=[],staticArtwork=false,gateRedrawSpecial=null,rasterTimeline=null,allowUnboundMaps=false,progress=()=>{}}={}){
@@ -189,7 +193,12 @@ export async function buildRom(project,reader,{sourceId,renderMap,wallStyles=[],
  if(!sourceId||typeof renderMap!=='function')throw Error('Reopen the original ROM before exporting.');
  const omitted=project.maps.filter(m=>!m.rom||m.rom.isCopy||m.rom.sourceId!==sourceId&&!(m.rom.generated&&!m.rom.sourceId));if(omitted.length&&!allowUnboundMaps)throw Error(omitted.length+' project maps have no binding to this ROM. Bind/refresh them, or explicitly allow exporting only the linked maps. No map was silently omitted.');
  if(!project.developer?.enabled)project={...project,maps:project.maps.map(m=>({...m,markers:m.markers.filter(n=>!n.runtime?.debugOnly)}))};
- const output=new RomOutput(reader.bytes),bound=project.maps.filter(m=>m.rom&&!m.rom.isCopy&&(m.rom.sourceId===sourceId||m.rom.generated&&!m.rom.sourceId)),byId=new Map(),resolvedDoorBindings=new Map(),reports=[],warnings=[],verificationPlans=[],generated=bound.filter(m=>m.rom.generated),newSupport=generated.length?discoverNewMapSupport(reader):null;
+ const allocationGraph=await indexNativeStory(reader,{progress:n=>progress('Indexing packed script pointers: '+n+' commands…')}),packedPointerSites=new Set();
+ for(const root of allocationGraph.roots)if(Number.isInteger(root.reference))packedPointerSites.add(root.reference);
+ for(const node of Object.values(allocationGraph.nodes)){if(node.opaque){for(let at=node.at;at<Math.min(reader.size-3,node.at+256);at++)packedPointerSites.add(at);}else for(const arg of node.args||[])if(arg.width===4)packedPointerSites.add(arg.at);}
+ // Sappy pattern/loop addresses are unaligned bytecode operands as well.
+ for(let at=512;at+5<=reader.size;at++)if(reader.bytes[at]===0xb2||reader.bytes[at]===0xb3)packedPointerSites.add(at+1);
+ const limited=allocationGraph.notices.some(n=>/limit reached|cancelled/i.test(n.message)),output=new RomOutput(reader.bytes,{packedPointerSites:limited?null:packedPointerSites}),bound=project.maps.filter(m=>m.rom&&!m.rom.isCopy&&(m.rom.sourceId===sourceId||m.rom.generated&&!m.rom.sourceId)),byId=new Map(),resolvedDoorBindings=new Map(),reports=[],warnings=[],verificationPlans=[],generated=bound.filter(m=>m.rom.generated),newSupport=generated.length?discoverNewMapSupport(reader):null;
  const footer=reader.bytes.length-40,oldMetadata='PBCN-EDITOR-0001';if(footer>=512&&[...oldMetadata].every((c,i)=>reader.bytes[footer+i]===c.charCodeAt(0))){output.write(footer,new Uint8Array(40).fill(255));warnings.push('The old embedded editor footer was removed from the playable copy. Save its matching project or editable archive to retain the current editing data.');}
  const globalHM=hasHMRules(project);
  const nativeAbilityCount=abilityDefinitions(project).filter(a=>a.native?.enabled).length;const textChanges=nativeAbilityCount+nativeStoryEditCount(project,sourceId)+Object.keys(project.textEdits?.[sourceId]||{}).length+(project.regionMaps?.[sourceId]?1:0)+(project.travelEdits?.[sourceId]?1:0)+(project.tilesetAnimations?.[sourceId]?1:0)+(project.doorAnimations?.[sourceId]?1:0)+(Object.keys(project.cryEdits?.[sourceId]||{}).length)+(globalHM?1:0);

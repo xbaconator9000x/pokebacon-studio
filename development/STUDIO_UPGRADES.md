@@ -49,3 +49,6 @@ These are development-branch features, with local validation recorded in PROGRES
 - [x] Linked Supply run template: acceptance, one-time guarded cache, confirmed hand-in/payment, shared milestones and editable stage scenes.
 
 - [x] Guarded reuse of existing map-block storage to reduce full-ROM allocation pressure; full user-project export still pending conflict resolution.
+
+- [x] Reproduce and complete a full 23-map export from the recovered Shattered project before issuing the next APK (4.69.8); exact-data reuse, compact prepared tables, pointer-aware erased-space accounting and allocation diagnostics.
+- [ ] Emulator gameplay coverage and physical Android install/update check for the 4.69.8 export changes; broaden private fixture coverage, especially custom engine bytecode and repeated import/export cycles.

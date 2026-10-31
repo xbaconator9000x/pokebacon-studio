@@ -12,3 +12,11 @@ export function storedTilesetCount(reader,header,attributeSize,stride){
  if(meta<512||attrs<512||!reader.valid(meta,count*stride)||!reader.valid(attrs,count*attributeSize))return null;
  return hashParts([reader.bytes.subarray(meta,meta+count*stride),reader.bytes.subarray(attrs,attrs+count*attributeSize)])===reader.u32(header+36)?count:null;
 }
+
+// Omit only unused, empty trailing slots from verified prepared artwork.
+// Referenced blank tiles and reserved script IDs must keep their storage.
+export function packedStorageCount(meta,attrs,free,begin,count,stride,{primarySplit=null}={}){
+ const available=new Set(free);while(count>1){const id=begin+count-1;if(!available.has(id)||attrs[id]||meta.subarray(id*stride,(id+1)*stride).some(v=>v))break;count--;}
+ // 512 is a native split marker; do not reinterpret a 640-slot primary bank.
+ if(primarySplit===640&&count===512)count++;return count;
+}
