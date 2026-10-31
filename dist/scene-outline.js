@@ -1,0 +1,7 @@
+// Read-only navigation over the same action objects the compiler consumes.
+export function sceneOutline(runtime,{maxNodes=1024,maxDepth=8}={}){
+ const rows=[],active=new Set();
+ function add(row){if(rows.length>=maxNodes)throw Error('Scene outline exceeds its display limit.');rows.push(row);}
+ function walk(steps,path,depth){if(depth>maxDepth)throw Error('Scene outline is nested too deeply.');if(!Array.isArray(steps))return;for(let i=0;i<steps.length;i++){const action=steps[i];if(!action||typeof action!=='object')continue;if(active.has(action))throw Error('Scene outline contains a cycle.');const at=path+'.'+(i+1);add({kind:'action',action,path:at,depth,label:action.type});active.add(action);const branch=(label,list,key)=>{add({kind:'branch',path:at+'.'+key,depth:depth+1,label});walk(list,at+'.'+key,depth+1);};if(action.type==='if'){branch('Conditions met',action.then,'then');branch('Otherwise',action.else,'else');}else if(action.type==='choice'){branch('Yes',action.yes,'yes');branch('No / cancel',action.no,'no');}else if(action.type==='answers'){for(const[c,choice]of(action.choices||[]).entries())branch(choice.label||'Answer '+(c+1),choice.steps,'answer'+(c+1));if(action.allowCancel!==false)branch('Cancel',action.cancel,'cancel');}active.delete(action);}}
+ add({kind:'branch',path:'first',depth:0,label:runtime.repeat==='once'?'First interaction':'Actions'});walk(runtime.steps,'first',0);if(runtime.repeat==='once'){add({kind:'branch',path:'repeat',depth:0,label:'Subsequent interactions'});walk(runtime.repeatSteps,'repeat',0);}return rows;
+}

@@ -106,7 +106,7 @@ export function usedAssetIds(project) {
   for(const actor of project.authoring?.actors||[])if(actor.native?.assetId)ids.add(actor.native.assetId);
   for(const map of project.maps)for(const n of map.markers)if(n.rom?.npcAppearance?.assetId)ids.add(n.rom.npcAppearance.assetId);
   for(const scene of project.authoring?.presentation?.scenes||[])for(const step of scene.steps||[])if(step.assetId)ids.add(step.assetId);
-  for(const d of Object.values(project.spriteStudio?.drafts||{}))if(d.reference)ids.add(d.reference.assetId);
+  for(const d of Object.values(project.spriteStudio?.drafts||{}))if(d.reference)ids.add(d.reference.assetId);if(project.spriteStudio?.comparison)ids.add(project.spriteStudio.comparison.assetId);
   for(const terrain of project.terrainSets||[]){ids.add(terrain.assetId);if(terrain.eraseTile?.a)ids.add(terrain.eraseTile.a);for(const id of terrain.variants||[])ids.add(id);}
   for(const prefab of project.prefabs||[]){ids.add(prefab.assetId);if(prefab.sourceAssetId)ids.add(prefab.sourceAssetId);}
   for(const g of project.gateStyles||[]){ids.add(g.closedAssetId);if(g.openAssetId)ids.add(g.openAssetId);}
