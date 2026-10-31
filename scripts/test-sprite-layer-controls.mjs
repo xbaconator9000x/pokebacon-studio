@@ -14,4 +14,13 @@ const lock=$('[data-layer-locked="0"]');lock.checked=true;lock.onchange();const 
 $('#spriteFlipX').click();$('[data-sprite-nudge="-1,0"]').click();assert.deepEqual(g.views.front.frames[0],locked);assert.ok(notices.some(n=>n.includes('Unlock')));
 const saved=JSON.parse(JSON.stringify(project));validateProject(saved,[]);assert.equal(Object.values(saved.spriteStudio.drafts)[0].layers[0].locked,true);
 $('#spriteFrameDelay').value='1';$('#spriteFrameDelay').onchange();assert.equal(editor.state.frameDelay,40);$('#spriteFrameDelay').value='9999';$('#spriteFrameDelay').onchange();assert.equal(editor.state.frameDelay,2000);
+lock.checked=false;lock.onchange();
+const canvas=$('#spriteCanvas');canvas.getBoundingClientRect=()=>({left:0,top:0,width:64,height:64});$('[data-sprite-tool="select"]').click();const pointer=(type,x,y)=>{const e=new w.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{clientX:x,clientY:y,pointerId:1});canvas.dispatchEvent(e);};pointer('pointerdown',2,1);pointer('pointermove',2,1);pointer('pointerup',2,1);assert.deepEqual(editor.state.selection,{x:2,y:1,w:1,h:1});$('#spriteCopy').click();
+editor.state.selection={x:4,y:2,w:1,h:1};$('#spritePaste').click();assert.equal(g.views.front.frames[0][132],2);assert.equal(g.views.front.frames[0][66],2);
+$('#spriteUndo').click();assert.equal(g.views.front.frames[0][132],0);$('#spriteRedo').click();assert.equal(g.views.front.frames[0][132],2);
+$('[data-sprite-nudge="1,0"]').click();assert.equal(g.views.front.frames[0][133],2);assert.equal(g.views.front.frames[0][132],0);assert.equal(g.views.front.frames[0][66],2);
+$('#spriteUndo').click();assert.equal(editor.state.selection.x,4);assert.equal(g.views.front.frames[0][132],2);
+$('#spriteCut').click();assert.equal(g.views.front.frames[0][132],0);$('#spriteUndo').click();assert.equal(g.views.front.frames[0][132],2);
+$('#spriteClearSelection').click();assert.equal(g.views.front.frames[0][132],0);$('#spriteUndo').click();
+const persisted=JSON.parse(JSON.stringify(project));validateProject(persisted,[]);await editor.open({kind:'custom',id:g.id,side:'front'});assert.equal(editor.state.pixels[132],2);assert.equal(editor.state.selection,null);
 assert.deepEqual(errors,[]);await s.close();console.log('PASS real sprite editor nudge, undo/redo, locked flips/moves, lock save/reopen and animation delay bounds.');

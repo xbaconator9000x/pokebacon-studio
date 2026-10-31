@@ -54,3 +54,9 @@ Validation: all 350 tests completed (348 passed, 2 private/external-fixture skip
 Visible pickup recipes now carry a red Poké Ball editor marker. Hidden-item recipes and imported native hidden-item sign records use a dashed purple Poké Ball with a question mark. Legacy single-action tile pickups receive the visible marker; NPC gifts and quest rewards retain their normal markers. The event editor exposes an explicit marker override, preserved through JSON/save/reopen. Markers do not change native NPC graphics, hidden-item detector registration or gameplay visibility. Native visible item NPCs continue to use their imported sprite art.
 
 Validation: 351 tests passed, 2 skipped; editor pickup/hidden-item appearance controls and save/reopen passed. Rendering uses a shared canvas function for editor and annotated-map export. Source gate passed.
+
+### Sprite selection and clipboard
+
+Added drag rectangle selection, select-all/deselect, active-layer copy/cut/paste/clear. Existing flips and one-pixel arrows now target the selected area when present, preserving surrounding pixels. Movement clamps at sprite edges. Pixel changes use existing undo/redo and project drafts; selection itself is temporary and resets when opening a frame. Clipboard persists during the workshop session across frames and requires matching palettes, avoiding index-colour corruption. Locked layers reject destructive operations; paste respects clothing silhouette clipping. Transparent pixels are included in a rectangular paste.
+
+Validation: full suite 351 passed, 2 fixture skips. Local editor checks cover pointer selection, copy/paste, selected movement preserving outside pixels, cut/clear, undo/redo and saved-frame reopen. Existing locked-layer controls still pass. Source gate passed. No new ROM encoding format or native sprite-table changes.

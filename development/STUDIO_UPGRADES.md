@@ -35,3 +35,5 @@ These are development-branch features, with local validation recorded in PROGRES
 - [x] Hidden-item tile interaction, key-locked door and toll passage recipes with explicit destinations and guarded native scripts (runtime ROM validation pending).
 
 - [x] Poké Ball editor markers: red visible pickups, dashed purple hidden items; editable override and imported hidden-record detection.
+
+- [x] Sprite rectangle selection and active-layer clipboard; selected flips/nudges, cut/clear, lock/clip protection and undo/redo.
