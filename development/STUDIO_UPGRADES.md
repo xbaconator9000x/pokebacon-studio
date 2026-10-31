@@ -41,3 +41,5 @@ These are development-branch features, with local validation recorded in PROGRES
 - [x] Large object cleanup zoom/fit/pan and full-cell, complete south-edge repair for both bundled water brushes (native gameplay verification pending).
 
 - [x] Update saved object artwork/template in place from the selected map object, retaining IDs without duplicate library entries.
+
+- [x] Byte-verified already-applied native story reconciliation in refresh/export; fragmented erased-space discovery with packed-pointer protection. Full ROM end-to-end validation pending.
