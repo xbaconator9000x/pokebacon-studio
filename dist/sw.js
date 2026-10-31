@@ -41,3 +41,5 @@ CORE.push('./scene-outline.js');
 CORE.push('./learnset-tools.js');
 
 CORE.push('./item-markers.js');
+
+CORE.push('./water-atlas.js');

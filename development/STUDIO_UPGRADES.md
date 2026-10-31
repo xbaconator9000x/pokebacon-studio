@@ -37,3 +37,5 @@ These are development-branch features, with local validation recorded in PROGRES
 - [x] Poké Ball editor markers: red visible pickups, dashed purple hidden items; editable override and imported hidden-record detection.
 
 - [x] Sprite rectangle selection and active-layer clipboard; selected flips/nudges, cut/clear, lock/clip protection and undo/redo.
+
+- [x] Large object cleanup zoom/fit/pan and full-cell, complete south-edge repair for both bundled water brushes (native gameplay verification pending).
