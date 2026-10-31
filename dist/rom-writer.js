@@ -72,6 +72,19 @@ export class RomOutput {
   for(const at of prior)if(bytes.every((b,i)=>this.bytes[at+i]===b))return at;
   const at=this.allocate(bytes,reason);prior.push(at);this.immutablePools.set(key,prior);return at;
  }
+ mapBlocks(bytes,reader,native,{isNew=false}={}){
+  const at=native.layout.blocks,capacity=native.layout.width*native.layout.height*2,end=at+capacity;
+  if(!isNew&&reader.valid(at,bytes.length)&&bytes.length<=capacity){
+   if(bytes.every((v,i)=>reader.bytes[at+i]===v))return at;
+   const shared=reader.maps.some(m=>m.key!==native.key&&m.layout.blocks<end&&m.layout.blocks+m.layout.width*m.layout.height*2>at);
+   if(!shared){
+    if(!this.sourcePointerSites){this.sourcePointerSites=[];const v=new DataView(this.source.buffer,this.source.byteOffset,this.source.byteLength);for(let i=0;i+4<=this.source.length;i++){const target=v.getUint32(i,true)-BASE;if(target>=512&&target<this.source.length)this.sourcePointerSites.push({site:i,target});}}
+    const refs=this.sourcePointerSites.filter(p=>p.target>=at&&p.target<end),owner=native.layout.address+12;
+    if(refs.length===1&&refs[0].site===owner&&refs[0].target===at&&this.bytes.subarray(at,end).every((v,i)=>v===reader.bytes[at+i])){this.write(at,bytes);return at;}
+   }
+  }
+  return this.allocate(bytes,'Map blocks');
+ }
  allocate(bytes,reason='Data'){bytes=asBytes(bytes);if(!bytes.length)throw Error('Cannot allocate empty data.');let at=(this.cursor+3)&~3;if(at+bytes.length+16>MAX){this.freeSpans??=erasedROMSpans(this.bytes);const span=this.freeSpans.filter(s=>s.end-s.start>=bytes.length+16).sort((a,b)=>(a.end-a.start)-(b.end-b.start)||a.start-b.start)[0];if(!span)throw Error('No verified erased ROM space remains for '+reason+'.');at=span.start;if(this.bytes.subarray(at,at+bytes.length).some(v=>v!==255))throw Error('Verified ROM free space was occupied before allocation.');span.start=(at+bytes.length+19)&~3;}else{this.ensure(at+bytes.length+16);this.cursor=at+bytes.length+16;}this.write(at,bytes);this.allocations.push({address:at,length:bytes.length,reason});return at;}
 }
 export function discoverLayoutTable(reader){
@@ -276,7 +289,7 @@ export async function buildRom(project,reader,{sourceId,renderMap,wallStyles=[],
   else if(changed){
    if(!table&&reader.maps.filter(m=>m.layout.address===base.layout.address).length!==1)throw Error(map.name+': the layout is shared and its global layout table needs an adapter. Event-only edits remain available.');
    if(!table&&reader.metatileLayers===3)output.allocate(reader.bytes.slice(base.layout.address,base.layout.address+reader.layoutRecordSize),'Original verified three-plane layout baseline');
-   const layout=reader.bytes.slice(base.layout.address,base.layout.address+reader.layoutRecordSize),lv=new DataView(layout.buffer),blocks=new Uint8Array(words.length*2),bv=new DataView(blocks.buffer);words.forEach((word,i)=>bv.setUint16(i*2,word,true));lv.setUint32(0,map.width,true);lv.setUint32(4,map.height,true);lv.setUint32(12,BASE+output.allocate(blocks,'Map blocks'),true);const border=generatedBorder(map,words,reader.layoutRecordSize);if(border){lv.setUint32(8,BASE+output.allocate(border.bytes,'Generated map border'),true);layout[reader.layoutBorderOffset??24]=border.width;layout[(reader.layoutBorderOffset??24)+1]=border.height;}const at=table?output.allocate(layout,'Map layout'):base.layout.address,id=isNew?0:reader.u16(base.address+18);output.int(native.address,BASE+at);pendingLayouts.push({compiler,layout,at,pair});
+   const layout=reader.bytes.slice(base.layout.address,base.layout.address+reader.layoutRecordSize),lv=new DataView(layout.buffer),blocks=new Uint8Array(words.length*2),bv=new DataView(blocks.buffer);words.forEach((word,i)=>bv.setUint16(i*2,word,true));lv.setUint32(0,map.width,true);lv.setUint32(4,map.height,true);lv.setUint32(12,BASE+output.mapBlocks(blocks,reader,base,{isNew}),true);const border=generatedBorder(map,words,reader.layoutRecordSize);if(border){lv.setUint32(8,BASE+output.allocate(border.bytes,'Generated map border'),true);layout[reader.layoutBorderOffset??24]=border.width;layout[(reader.layoutBorderOffset??24)+1]=border.height;}const at=table?output.allocate(layout,'Map layout'):base.layout.address,id=isNew?0:reader.u16(base.address+18);output.int(native.address,BASE+at);pendingLayouts.push({compiler,layout,at,pair});
    if(!table){output.write(at,layout);}else if(!isNew&&id>0&&layoutUses.get(id)===1&&reader.ptr(table.address+(id-1)*4)===base.layout.address)tableView.setUint32((id-1)*4,BASE+at,true);else{const newId=table.count+newLayoutEntries.length+1;if(newId>65535)throw Error('No global map layout IDs remain.');newLayoutEntries.push(at);output.int(native.address+18,newId,2);}installEvents(output,native,events);
   }
   verificationPlans.push({key:native.key,name:map.name,width:map.width,height:map.height,words,compiler,extraIds:[...(entry.openMetatileIds||[]),...(compiler.pack?.reservedIds||[])]});reports.push({mapId:map.id,key:native.key,name:map.name,changed,isNew,newGraphics:compiler.newTiles,newMetatiles:compiler.newMetatiles,paletteMappedPixels:compiler.changedPixels,staticArtwork:changed&&staticArtwork});if(compiler.changedPixels)warnings.push(map.name+': '+compiler.changedPixels+' pixels use the nearest available GBA palette colour.');await new Promise(r=>setTimeout(r,0));

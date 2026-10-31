@@ -47,3 +47,5 @@ These are development-branch features, with local validation recorded in PROGRES
 - [x] Applied map-entry condition and verified Shattered native class/path/learnset/equipment reconciliation, with untouched-field conflict detection and export progress.
 
 - [x] Linked Supply run template: acceptance, one-time guarded cache, confirmed hand-in/payment, shared milestones and editable stage scenes.
+
+- [x] Guarded reuse of existing map-block storage to reduce full-ROM allocation pressure; full user-project export still pending conflict resolution.
