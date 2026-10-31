@@ -74,3 +74,9 @@ Validation: local large-object 512×768 fit/zoom/pan, bottom-right erase and und
 Prepared version 4.69.4/code 117 on request, using the original package and signing certificate. Recovered 4.69.2 native shell SHA-256 matches the reconciled source manifest's reference APK. Asset repack preserves native DEX/resources byte-for-byte, verifies the same signing certificate, zip alignment, version advance and all 1847 packaged web assets. Includes development changes through da492cab. Main, Pages and public releases remain unchanged. Physical device installation has not been tested.
 
 APK SHA-256: `7f211c73e3bb0ddc46564ef3d1bcae469bcedf6a7661ccf517f970bced8c719d`. Signing secrets remain external to repository/output.
+
+### Edit saved objects in place (private APK 4.69.5)
+
+Placed-object artwork editing now resolves its existing prefab ID and updates that saved template instead of creating another template. Saving updates the selected placement's artwork/name while retaining its object ID, map position and collision setup. Other placements retain their prior artwork. The Objects library editor also preserves project-owned saved IDs, even before device-library migration. The Duplicate action remains separate. New objects acquire their saved prefab link after the first save.
+
+Local actual SharedLibrary/editor checks: initial save, edit selected placement, edit saved template again, export/reopen; exactly one template and one placed object, stable IDs, position/collision retained. Large-item navigation checks still pass. Full suite 351 passed, 2 fixture skips. Private APK version 4.69.5/code 118; original Android package/certificate and native shell retained. Main/public release unchanged.

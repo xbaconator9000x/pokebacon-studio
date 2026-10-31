@@ -39,3 +39,5 @@ These are development-branch features, with local validation recorded in PROGRES
 - [x] Sprite rectangle selection and active-layer clipboard; selected flips/nudges, cut/clear, lock/clip protection and undo/redo.
 
 - [x] Large object cleanup zoom/fit/pan and full-cell, complete south-edge repair for both bundled water brushes (native gameplay verification pending).
+
+- [x] Update saved object artwork/template in place from the selected map object, retaining IDs without duplicate library entries.
