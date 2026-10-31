@@ -24,3 +24,15 @@ Implemented tracing background visibility, independent X/Y/width/height, aspect-
 Added a read-only script tree of the actual nested first/repeat actions, including Yes/No, conditions, multiple answers and cancel branches. Clicking an action opens its editor; nested edits persist through scene/project save. Cyclic/oversized drafts are bounded safely. This is a navigation improvement, not the full event-page overhaul.
 
 Local full-editor UI checks passed for reference import/size/visibility/removal/undo, comparison persistence, clean sprite PNG export, nested tree editing/save/reopen, and existing layer controls. 337 unit/regression checks passed, with 2 external-fixture skips. All 1,856 deployed source fingerprints passed locally. No release or main merge performed.
+
+## Pokémon data workflow follow-up
+
+Implemented and tested locally:
+- Learnset authoring now matches the native form writer: 0–255 levels, level-0 evolution entries, and up to 256 moves. Added strict named/ID paste, stable level sorting and a four-move initial-level preview; evolution-only entries are reported separately. Invalid paste preserves the previous draft. Saved edits update already-queued form data.
+- Dex-entry encoding status and an explicit text/unit preview (not a claim of native font/layout accuracy).
+- Native ability workshop reachable from the Pokémon editor. Standalone ability saves validate rules before changing the project. Existing native bindings opened without the matching ROM get a clear guard; users can explicitly disable compilation to keep a design. No silent rebind or broken null-context access.
+- Import the existing Pokémon data JSON format into a fresh sprite group. Stats, dex fields, learnset, evolution branches and rules are retained; native ability assignments are cleared and definition identities regenerated. Imported data is not automatically installed. Sprite pictures are not part of the data-only format.
+
+Validation: 342 checks passed, 2 external-fixture skips. Real editor DOM tests passed locally for the Pokémon data workflow/import and ability design template/save/error handling. Prior reference, script-tree, event-template and sprite-layer UI regressions also passed in this run. All 1,857 deployed fingerprints passed. No supplied real-ROM fixture was used for new battle runtime or native form gameplay assertions.
+
+The wider roadmap remains incomplete, including arbitrary custom move battle effects, additional evolution-method adapters, TM/tutor/egg compatibility editing, full event pages, in-game UI customisation and full Cartographer generation integration. These were not marked complete by the work above.

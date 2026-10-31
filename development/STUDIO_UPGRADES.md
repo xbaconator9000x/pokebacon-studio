@@ -18,3 +18,14 @@ Priority order:
 Known source evidence: event-model.js already emits receipt dialogue and engine-specific fanfare for item gifts; this requires exposing consistent templates rather than implementing a duplicate award path. Sprite workbench and creature-model already contain palette/frame tools, ability designs, learnsets and dex fields; audit native coverage before replacing them.
 
 Acceptance for every task: implementation commit + meaningful regression + UI/save round trip + native runtime proof where applicable. Unsupported engines must retain authored data and report limitations. No paid services without permission. Never publish ROMs, saves, projects or signing secrets.
+
+### Locally implemented development increments
+
+- [x] Item pickup recipe/editor integration and consistent scene receipt/fanfare handling.
+- [x] Sprite layer lock/movement controls and configurable animation speed.
+- [x] Trace reference sizing/position/opacity/visibility/removal and independent model comparison reference.
+- [x] Navigable nested script action tree (full event-page upgrade still pending).
+- [x] Pokémon data JSON import, native-aligned level-up authoring, moveset paste/level preview and dex text checks/preview.
+- [x] Pokémon-editor link to native ability workshop and safer ability design saves.
+
+These are development-branch features, with local validation recorded in PROGRESS.md; they do not imply a released APK or completion of their broader roadmap categories.

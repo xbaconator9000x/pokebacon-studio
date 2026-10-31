@@ -37,3 +37,5 @@ CORE.push('./ability-maker.js','./ability-native.js','./ability-runtime-data.js'
 CORE.push('./event-recipes.js');
 
 CORE.push('./scene-outline.js');
+
+CORE.push('./learnset-tools.js');

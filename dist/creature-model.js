@@ -1,4 +1,4 @@
-import{studioData,nearestPixels,indexRGBA}from'./sprite-workbench.js';
+import{studioData,spriteId,nearestPixels,indexRGBA}from'./sprite-workbench.js';
 export const ABILITY_TRIGGERS=['always','damage_calculation','switch_in','turn_start','hit_received','move_used','turn_end'];
 export const ABILITY_CONDITIONS=['contact','non_contact','contact_non_fire','fire','water','always','hp_below','move_type','weather','status'];
 export const ABILITY_EFFECTS=['pp_multiplier','critical_stage','damage_multiplier','heal_percent','stat_stage','status','weather'];
@@ -8,7 +8,7 @@ export function validateCreature(c){
  for(const[k,len,a,b]of[['stats',6,1,255],['types',2,0,19],['abilities',3,0,1023]]){const arr=c[k];if(!Array.isArray(arr)||arr.length!==len||arr.some(v=>!int(v,a,b)))throw Error(k+' needs '+len+' valid values.');}
  for(const[k,a,b]of[['catchRate',0,255],['baseExp',0,65535],['friendship',0,255],['height',0,65535],['weight',0,65535]])if(!int(c[k],a,b))throw Error('Invalid '+k+'.');
  if(typeof c.description!=='string'||c.description.length>2048||String(c.dexCategory||'').length>12||String(c.nativeName||'').length>12)throw Error('Check the creature name, category and Pokédex description lengths.');
- if(!Array.isArray(c.learnset)||c.learnset.length>127||c.learnset.some(e=>!int(e.level,1,255)||!int(e.move,1,65534)))throw Error('Level-up moves need a level from 1–255 and a move ID.');
+ if(!Array.isArray(c.learnset)||c.learnset.length>256||c.learnset.some(e=>!int(e.level,0,255)||!int(e.move,1,65534)))throw Error('Level-up moves need a level from 0–255 and a move ID.');
  if(!Array.isArray(c.evolutions)||c.evolutions.length>32||c.evolutions.some(e=>!['level','trade','item'].includes(e.method)||!int(e.target,1,8191)||!int(e.param,0,65535)||e.method==='level'&&!int(e.param,1,100)))throw Error('Check the evolution targets and requirements.');
  if(!Array.isArray(c.abilityDesigns)||c.abilityDesigns.length>32)throw Error('Use up to 32 custom ability designs.');
  for(const a of c.abilityDesigns){if(typeof a.id!=='string'||typeof a.name!=='string'||a.name.length>40||!a.name.trim()||String(a.description||'').length>1024||!Array.isArray(a.rules)||a.rules.length>32)throw Error('An ability design needs a name and up to 32 rules.');for(const r of a.rules)if(r.target!==undefined&&!['self','ally','enemy','field'].includes(r.target)||!ABILITY_TRIGGERS.includes(r.when)||!ABILITY_CONDITIONS.includes(r.condition)||!ABILITY_EFFECTS.includes(r.effect)||!Number.isFinite(r.value)||Math.abs(r.value)>10000||String(r.parameter||'').length>80)throw Error('An ability design rule is invalid.');}
@@ -37,4 +37,14 @@ export function formSpriteEdits(project,forms,readRecord){
   }
  }
  return edits;
+}
+
+/** Import editable data only; native bindings must be approved in the destination ROM. */
+export function importCreatureDesign(text){
+ if(typeof text!=='string'||text.length>2*1024*1024)throw Error('Choose a Pokémon data JSON under 2 MB.');
+ let file;try{file=JSON.parse(text);}catch{throw Error('The Pokémon data file is not valid JSON.');}
+ if(file?.format!=='pokebacon-creature-1'||typeof file.name!=='string'||!file.name.trim()||file.name.length>80)throw Error('Choose an exported PokéBacon Pokémon data file.');
+ const creature=validateCreature(structuredClone(file.creature));
+ for(const ability of creature.abilityDesigns){ability.id=spriteId();if(ability.native)ability.native={enabled:false,name:ability.native.name||ability.name.slice(0,16),species:ability.native.species??1,slot:ability.native.slot??0};}
+ return{name:file.name.trim(),creature};
 }
