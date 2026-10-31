@@ -122,3 +122,13 @@ Completed a full local export of the recovered 23-map Shattered project, using i
 - Added an environment-driven private full-project regression runner; ROMs, projects and prepared private packs are excluded from source control.
 
 Validation: 371 automated checks: 369 passed, 2 skipped. The private full-project compile/reopen passed separately. APK assets, version code 121, original package, unchanged native shell and signing certificate are verified during packaging. Physical Android installation and emulator gameplay have not been tested. This proves the recovered fixture exports; it does not promise unlimited space or compatibility with arbitrary custom packed engine formats. Development branch only; main/public release unchanged.
+
+### Artwork allocation order — private APK 4.69.9 (1 November 2026)
+
+A further device report needs a 12,220-byte graphics allocation while the largest remaining guarded span is 10,814 bytes, despite 1,287,508 bytes remaining overall. The previous end-to-end fixture was insufficient to establish this device case was solved. Source filenames are not byte identity: the app may resolve an exported ROM to its original embedded source.
+
+Prepared FRLG artwork at the 32 MB limit is now planned across all edited tileset pairs before headers are installed. Graphics, metatile planes, attributes and palettes reserve immutable storage together, largest first, preserving exact-source reuse and content deduplication. This prevents earlier small artwork allocations taking regions required by later large graphics. No pointer guards were relaxed in this increment. The progress label now identifies the shared-artwork stage.
+
+Validation: 373 automated checks (371 passed, 2 skipped). A fragmentation regression demonstrates sequential allocation failing and the complete batch fitting the identical bytes into the same guarded holes; a second regression covers source reuse and deduplication. Both recovered project versions completed full compile/reopen, and the newer one also passed in reversed map order: each checked 17,912 cells and 2,194 metatiles, with source preserved and no changes outside declared writes. The private runner supports explicit source selection, keys palette caches to source bytes as well as project bytes, and treats incomplete runs as failures.
+
+The recovered standalone Shattered_Updated ROM rejected the newer JSON's stale source bindings as intended; that mismatch was not bypassed. The exact current on-device project has not been captured in this chat. Physical Android and emulator gameplay remain untested. Original package/certificate retained; development branch only.

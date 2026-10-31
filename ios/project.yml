@@ -5,7 +5,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '4.69.8'
+    MARKETING_VERSION: '4.69.9'
     CURRENT_PROJECT_VERSION: '73'
     TARGETED_DEVICE_FAMILY: '1,2'
     PRODUCT_BUNDLE_IDENTIFIER: dev.pokebacon.studio
