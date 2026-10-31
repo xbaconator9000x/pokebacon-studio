@@ -90,3 +90,11 @@ Recovered the user's authoritative Field Fixes project and tested its embedded 3
 Erased-span discovery now considers runs from 4 KB rather than 64 KB, with edge padding and 256-byte pointer-target exclusion. Scans every pointer byte position, including unaligned native-script operands. The supplied expanded source yielded five guarded spans totalling 29,077 bytes. Allocation regression checks source immutability and pointer protection. Free bytes remain a conservative erased-byte heuristic, not a proof against all possible dynamic addressing.
 
 Local regression suite and native-stage fixture passed; full map compiler, emulator gameplay and physical-device installation remain unverified for this increment. Public main/release unchanged.
+
+### Further scripting reconciliation and native data continuity
+
+Already-applied map-entry conditions now require the full expected eight-byte record, retaining the original destination pointer; missing entries, changed destinations, wrong values and zero-variable terminators remain conflicts. Added native-data reconciliation for the verified Shattered adapter: classes, trial paths, learnsets and five equipment tables. Matching checks include every untouched record byte and all referenced strings. Only requested string fields may relocate. Pending edits keep the existing validator; already-applied edits are removed only from the temporary refreshed graph. Custom event flows still retain stricter source-binding requirements.
+
+Built a command-pointer lookup once per graph to avoid rescanning every command for each text/movement reference. Restored progress callbacks during direct story export verification.
+
+Validation: regression suite 358 passed, 2 fixture skips; targeted condition/script/data checks passed. On the recovered private ROM, eight actual pending → native install → readback/already-applied checks passed (classes, paths, learnsets, hands, body, feet, head, accessories), including allocated/relocated class-name text. No user ROM/project was changed. Emulator gameplay and full map export remain outstanding. No new APK issued for this source-only development increment.

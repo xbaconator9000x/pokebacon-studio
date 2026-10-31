@@ -1,5 +1,5 @@
 import{assertStoryFlowBindings,installStoryFlows}from'./story-flow.js';
-import{shatteredAdapter,describeShatteredCall,validateShatteredCallArgs,installShatteredDataEdits,validateShatteredDataPatch}from'./shattered-adapter.js';
+import{reconcileShatteredDataPatch,shatteredAdapter,describeShatteredCall,validateShatteredCallArgs,installShatteredDataEdits,validateShatteredDataPatch}from'./shattered-adapter.js';
 import{SCRIPT_DATA}from'./script-data.js';
 import{decodeScriptText,encodeScriptText}from'./script-engine.js';
 const BASE=0x08000000,hex=b=>Array.from(b,n=>n.toString(16).padStart(2,'0')).join(''),idle=()=>new Promise(r=>setTimeout(r,0));
@@ -45,7 +45,7 @@ export function nativeStoryEditCount(project,sourceId){const e=project.nativeSto
 export function encodeStoryText(text){if(typeof text!=='string')throw Error('Dialogue must be text.');return encodeScriptText(text.replace(/(?<!\\)\$/g,'\\$').replace(/\r?\n/g,'\\n'));}
 export function parseStoryNumber(text,width){const s=String(text).trim();if(!/^(0x[0-9a-f]+|\d+)$/i.test(s))throw Error('Enter a decimal number or 0x hexadecimal value.');const n=Number(s);if(!Number.isSafeInteger(n)||n<0||n>2**(width*8)-1)throw Error('The value does not fit this command field.');return n;}
 export function movementNames(){return Object.entries(SCRIPT_DATA.movements).map(([name,code])=>({name,code}));}
-export async function installNativeStoryEdits(project,reader,sourceId,output,{progress=()=>{}}={}){const saved=project.nativeStory?.[sourceId];if(!nativeStoryEditCount(project,sourceId))return[];if(saved.engine!==reader.engine)throw Error('Story edits require their original source ROM.');const graph=await refreshNativeStory(saved,reader),e=graph.edits,writes=[],used=new Map(),allocations=[];
+export async function installNativeStoryEdits(project,reader,sourceId,output,{progress=()=>{}}={}){const saved=project.nativeStory?.[sourceId];if(!nativeStoryEditCount(project,sourceId))return[];if(saved.engine!==reader.engine)throw Error('Story edits require their original source ROM.');const graph=await refreshNativeStory(saved,reader,{progress:n=>progress('Verifying story scripts: '+n+' commands…')}),e=graph.edits,writes=[],used=new Map(),allocations=[];
  assertStoryFlowBindings({...saved,edits:e},graph);const changed=new Set([...Object.keys(e.commands||{}).map(Number),...Object.values(e.flows||{}).map(f=>f.address)]),pointerOwners=new Map();for(const n of Object.values(graph.nodes))for(const a of n.args||[])pointerOwners.set(a.at,n.at);for(const kind of['texts','movements'])for(const key of Object.keys(e[kind]||{}))for(const ref of graph[kind][key]?.references||[]){const owner=pointerOwners.get(ref);if(owner!==undefined)changed.add(owner);}const incoming=new Map();for(const n of Object.values(graph.nodes))for(const edge of n.edges||[]){if(!incoming.has(edge.to))incoming.set(edge.to,[]);incoming.get(edge.to).push(n.at);}const affected=new Set(),work=[...changed];while(work.length){const at=work.shift();if(affected.has(at))continue;affected.add(at);work.push(...incoming.get(at)||[]);}for(const root of graph.roots){if(!affected.has(root.address)||!['npcs','signs','triggers'].includes(root.kind))continue;const type={npcs:'npc',signs:'sign',triggers:'trigger'}[root.kind],map=project.maps?.find(m=>!m.rom?.isCopy&&m.rom?.sourceId===sourceId&&m.rom.key===root.mapKey),marker=map?.markers.find(n=>n.rom?.type===type&&n.rom.index===root.index);if(marker?.runtime&&marker.runtime.enabled!==false)throw Error('This event also has an authored replacement scene. Keep one source of event edits: '+map.name+' / '+marker.title);}
  const add=(at,bytes)=>{if(!reader.valid(at,bytes.length)||bytes.some((v,i)=>output.bytes[at+i]!==reader.bytes[at+i]))throw Error('Story edits overlap another ROM edit.');for(let i=0;i<bytes.length;i++){if(used.has(at+i))throw Error('Overlapping story edits.');used.set(at+i,bytes[i]);}writes.push({at,bytes});};
  for(const[key,patch]of Object.entries(e.conditions||{})){const roots=graph.roots.filter(r=>r.kind==='map condition'&&r.reference===Number(key));if(!roots.length||roots[0].conditionOriginal!==patch.original)throw Error('The map-entry condition changed in the source ROM.');const variable=parseStoryNumber(patch.variable,2),value=parseStoryNumber(patch.value,2);if(!variable)throw Error('Map condition variable zero is a table terminator.');for(const root of roots){const map=reader.byKey(root.mapKey);if(new DataView(output.bytes.buffer).getUint32(map.address+8,true)!==reader.u32(map.address+8))throw Error('This map also has authored arrival logic. Keep one source of changes for its entry conditions.');}const b=new Uint8Array(4),v=new DataView(b.buffer);v.setUint16(0,variable,true);v.setUint16(2,value,true);add(Number(key)-4,b);}
@@ -58,7 +58,19 @@ export function validateNativeStory(project){if(project.nativeStory===undefined)
 // Drop only edits whose exact requested bytes are proven in the new graph.
 // Unrelated source changes remain conflicts; callers refresh a project copy.
 export function reconcileAppliedStory(previous,fresh){
- const edits=fresh.edits,applied=[];
+ const edits=fresh.edits,applied=[],owners=new Map();
+ for(const n of Object.values(previous.nodes))for(const arg of n.args||[])if(['text','movement'].includes(arg.kind))owners.set(arg.at,n);
+ for(const [key,patch]of Object.entries(previous.edits.conditions||{})){
+  const roots=fresh.roots.filter(r=>r.kind==='map condition'&&r.reference===Number(key));
+  if(roots.length&&roots.every(r=>r.conditionOriginal===patch.original))continue;
+  const before=previous.roots.filter(r=>r.kind==='map condition'&&r.reference===Number(key));
+  if(!before.length||before.some(r=>r.conditionOriginal!==patch.original)||!/^([a-f0-9]{2}){8}$/i.test(patch.original))throw Error('Invalid original map-entry condition.');
+  const variable=parseStoryNumber(patch.variable,2),value=parseStoryNumber(patch.value,2);if(!variable)throw Error('Map condition variable zero is a table terminator.');
+  const bytes=Uint8Array.from(patch.original.match(/../g),x=>parseInt(x,16)),view=new DataView(bytes.buffer);view.setUint16(0,variable,true);view.setUint16(2,value,true);
+  if(roots.length&&roots.every(r=>r.conditionOriginal===hex(bytes))){delete edits.conditions[key];applied.push('conditions:'+key);}
+  else throw Error('An authored map-entry condition changed; its variable, value or script target does not match the requested edit.');
+ }
+
  for(const kind of ['commands','texts','movements'])for(const [key,patch]of Object.entries(previous.edits[kind]||{})){
   const row=(kind==='commands'?fresh.nodes:fresh[kind])[key];if(row&&!row.opaque&&row.original===patch.original)continue;
   let expected;
@@ -69,13 +81,13 @@ export function reconcileAppliedStory(previous,fresh){
    expected=hex(bytes);if(row&&!row.opaque&&row.original===expected){delete edits[kind][key];applied.push(kind+':'+key);continue;}
   }else{
    expected=kind==='texts'?hex(encodeStoryText(patch.text)):hex(patch.bytes||[]);
-   const old=previous[kind][key],refs=old?.references||[];
+   const old=previous[kind][key],refs=old?.references||[];if(!old||old.original!==patch.original)throw Error('Invalid original linked story data.');
    // Follow the same decoded pointer fields, including relocated text/movement.
-   const targets=refs.map(ref=>{const owner=Object.values(previous.nodes).find(n=>n.args?.some(a=>a.at===ref&&a.kind===(kind==='texts'?'text':'movement'))),now=owner&&fresh.nodes[owner.at],arg=now?.args?.find(a=>a.at===ref);return now&&!now.opaque&&now.code===owner.code&&arg?.kind===(kind==='texts'?'text':'movement')?fresh[kind][arg.value-BASE]:null;});
+   const targets=refs.map(ref=>{const owner=owners.get(ref),now=owner&&fresh.nodes[owner.at],arg=now?.args?.find(a=>a.at===ref);return now&&!now.opaque&&now.code===owner.code&&arg?.kind===(kind==='texts'?'text':'movement')?fresh[kind][arg.value-BASE]:null;});
    if(refs.length&&targets.every(t=>t?.original===expected)){delete edits[kind][key];applied.push(kind+':'+key);continue;}
   }
   throw Error('An authored native story '+kind+' entry moved or changed at '+Number(key).toString(16)+'. Its current bytes do not match either the original or requested edit.');
  }
  if(applied.length)fresh.notices.push({message:applied.length+' story edits already present in this ROM were verified; they will not be replayed.'});return applied;
 }
-export async function refreshNativeStory(previous,reader){if(previous.engine!==reader.engine||previous.mapKeys.some(k=>!reader.byKey(k)))throw Error('Native story map bindings changed; the original event graph and edits were retained.');const fresh=await indexNativeStory(reader,{mapKeys:previous.mapKeys,previous});for(const patch of Object.values(previous.edits.nativeData||{}))validateShatteredDataPatch(reader,patch);for(const[key,patch]of Object.entries(previous.edits.conditions||{}))if(!fresh.roots.some(r=>r.reference===Number(key)&&r.conditionOriginal===patch.original))throw Error('An authored map-entry condition changed; the original story edits were retained.');reconcileAppliedStory(previous,fresh);assertStoryFlowBindings(previous,fresh);return fresh;}
+export async function refreshNativeStory(previous,reader,{progress=()=>{}}={}){if(previous.engine!==reader.engine||previous.mapKeys.some(k=>!reader.byKey(k)))throw Error('Native story map bindings changed; the original event graph and edits were retained.');const fresh=await indexNativeStory(reader,{mapKeys:previous.mapKeys,previous,progress});for(const [key,patch] of Object.entries(previous.edits.nativeData||{}))if(reconcileShatteredDataPatch(reader,patch)){delete fresh.edits.nativeData[key];fresh.notices.push({message:'Verified already-applied native data record: '+key});}reconcileAppliedStory(previous,fresh);assertStoryFlowBindings(previous,fresh);return fresh;}
