@@ -1,0 +1,21 @@
+name: Studio development checks
+on:
+  push:
+    branches: [development/studio-upgrades]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: studio-development
+  cancel-in-progress: true
+jobs:
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --check dist/event-ui.js
+      - run: node --test tests/*.test.js tests/*.mjs
