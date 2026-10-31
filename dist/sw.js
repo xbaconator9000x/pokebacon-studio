@@ -1,4 +1,4 @@
-const CACHE='pokebacon-map-studio-v4.69.3-region-3';
+const CACHE='pokebacon-map-studio-v4.69.4-region-3';
 // Continuous route boundaries and explicit portal arrival directions.
 // Original puddle artwork is bundled with the app and available offline.
 const cacheFresh=(cache,urls)=>cache.addAll([...new Set(urls)].map(url=>new Request(url,{cache:'reload'})));

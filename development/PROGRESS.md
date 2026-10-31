@@ -68,3 +68,9 @@ Object/background cleanup now offers Move/pan, zoom in/out and Fit whole item. T
 Both bundled water study sheets were incorrectly treated as complete XP autotiles: one lacks a south water boundary, while the other's lower rows are land. Their stable-ID connected atlases now use the source water centre plus narrow, complete water-coloured contours instead of sampling land/empty rows. All 47 variants are opaque over the surf cell, and picker previews were regenerated. Original source sheets remain intact. The standard asset builder uses the corrected generation; repair-water-atlases.mjs rebuilds just these assets/previews. This intentionally replaces the flawed broad stone/land bank with a narrow water contour. Existing embedded/custom copies of old image data are not rewritten.
 
 Validation: local large-object 512×768 fit/zoom/pan, bottom-right erase and undo passed. Both brush atlases checked for every pixel of all 47 masks, south-edge presence, reproducible output and water movement metadata. Full suite: 351 passed, 2 fixture skips. No running-ROM surf test or physical APK test. Main/release unchanged.
+
+### Private installable development build 4.69.4
+
+Prepared version 4.69.4/code 117 on request, using the original package and signing certificate. Recovered 4.69.2 native shell SHA-256 matches the reconciled source manifest's reference APK. Asset repack preserves native DEX/resources byte-for-byte, verifies the same signing certificate, zip alignment, version advance and all 1847 packaged web assets. Includes development changes through da492cab. Main, Pages and public releases remain unchanged. Physical device installation has not been tested.
+
+APK SHA-256: `7f211c73e3bb0ddc46564ef3d1bcae469bcedf6a7661ccf517f970bced8c719d`. Signing secrets remain external to repository/output.
