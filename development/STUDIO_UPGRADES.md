@@ -33,3 +33,5 @@ These are development-branch features, with local validation recorded in PROGRES
 - [x] Sci-fi, Horror, Space and Technology music vibes, locally validated through actual Hybrid inference and cartridge/MIDI output.
 
 - [x] Hidden-item tile interaction, key-locked door and toll passage recipes with explicit destinations and guarded native scripts (runtime ROM validation pending).
+
+- [x] Poké Ball editor markers: red visible pickups, dashed purple hidden items; editable override and imported hidden-record detection.

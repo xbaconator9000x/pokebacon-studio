@@ -48,3 +48,9 @@ Local validation: 344 checks passed, 2 external-fixture skips. Full-editor sourc
 Added a nonblocking, once-per-save hidden-item tile interaction with the shared native receipt/fanfare; a reusable key-locked door that checks but retains its chosen item; and a Yes/No toll passage that checks funds before charging and travelling. Door destinations start unset and must be explicitly selected. All fields remain editable. Missing ROM metadata for item requirements now produces a clear error instead of a null-reference failure. These are script templates, not native hidden-item detector registration, animated doors, or respawn checkpoints.
 
 Validation: all 350 tests completed (348 passed, 2 private/external-fixture skips); local editor placement, failed destination validation, destination picking, JSON/save and reopen passed for the new recipes. Key/toll scripts compiled for FRLG and RSE. Source fingerprint gate passed. No private ROM gameplay or physical APK test was performed. Main/release remain unchanged.
+
+### Item map markers
+
+Visible pickup recipes now carry a red Poké Ball editor marker. Hidden-item recipes and imported native hidden-item sign records use a dashed purple Poké Ball with a question mark. Legacy single-action tile pickups receive the visible marker; NPC gifts and quest rewards retain their normal markers. The event editor exposes an explicit marker override, preserved through JSON/save/reopen. Markers do not change native NPC graphics, hidden-item detector registration or gameplay visibility. Native visible item NPCs continue to use their imported sprite art.
+
+Validation: 351 tests passed, 2 skipped; editor pickup/hidden-item appearance controls and save/reopen passed. Rendering uses a shared canvas function for editor and annotated-map export. Source gate passed.

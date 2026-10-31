@@ -1,3 +1,4 @@
+import {itemMarkerStyle,drawItemMarker} from './item-markers.js';
 import{movementVisual,surfaceVisual}from'./movement-visuals.js';
 import{removeNativeWarp}from'./warp-removal.js';
 import{abilityMaker}from'./ability-maker.js';
@@ -239,7 +240,7 @@ const markerColors={note:'#e9a84a',npc:'#a980d4',encounter:'#e3746a',sign:'#649f
 function pin(c,x,y,label,color,size=8) {c.save();c.translate(x,y);c.fillStyle=color;c.strokeStyle='#fff';c.lineWidth=size*.16;c.beginPath();c.arc(0,0,size,0,Math.PI*2);c.fill();c.stroke();c.fillStyle='#fff';c.font=`700 ${Math.max(8,size*1.08)}px system-ui`;c.textAlign='center';c.textBaseline='middle';c.fillText(label,0,.3);c.restore();}
 function drawPins(c,map,scale=1) {
   for(const l of project.links){for(const [which,reverse]of[['from',false],['to',true]]){const end=gesture?.kind==='moveLink'&&gesture.linkId===l.id&&gesture.end===which&&gesture.linkCandidate?gesture.linkCandidate:l[which];if(end.mapId===map.id)pin(c,(end.x+.5)*TILE,(end.y+.5)*TILE,linkPinLabel(l,which),selection?.kind==='link'&&selection.id===l.id?'#bd7a26':'#578569',8/Math.min(1,scale));}}
-  map.markers.forEach((n,i)=>{if((n.npc||n.rom?.npcAppearance?.assetId)&&selection?.id!==n.id)return;pin(c,(n.x+.5)*TILE,(n.y+.5)*TILE,(n.npc||n.rom?.npcAppearance?.assetId)?'':n.rom?.type==='warp'?'↗':n.rom?.type==='trigger'?'!':n.rom?.type==='sign'?'S':String(i+1),markerColors[n.kind]||markerColors.note,8/Math.min(1,scale));});
+  map.markers.forEach((n,i)=>{const itemStyle=itemMarkerStyle(n);if(itemStyle){drawItemMarker(c,(n.x+.5)*TILE,(n.y+.5)*TILE,7/Math.min(1,scale),itemStyle);return;}if((n.npc||n.rom?.npcAppearance?.assetId)&&selection?.id!==n.id)return;pin(c,(n.x+.5)*TILE,(n.y+.5)*TILE,(n.npc||n.rom?.npcAppearance?.assetId)?'':n.rom?.type==='warp'?'↗':n.rom?.type==='trigger'?'!':n.rom?.type==='sign'?'S':String(i+1),markerColors[n.kind]||markerColors.note,8/Math.min(1,scale));});
 }
 function requestDraw(){if(disposed||renderQueued)return;renderQueued=true;renderFrame=requestAnimationFrame(()=>{renderQueued=false;if(!disposed)draw();});}
 function syncCanvas() {const dpr=Math.min(window.devicePixelRatio||1,3),w=viewport.clientWidth,h=viewport.clientHeight;if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}ctx.setTransform(dpr,0,0,dpr,0,0);return{w,h};}
