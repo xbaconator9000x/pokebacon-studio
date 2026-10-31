@@ -1,0 +1,17 @@
+import {session,assert} from './qa-harness.mjs';
+import {spriteWorkshop} from '../dist/sprite-ui.js';
+import {newProject,validateProject} from '../dist/model.js';
+import {makeSpriteGroup} from '../dist/sprite-workbench.js';
+const s=await session({},true),{$,w}=s;globalThis.document=w.document;
+const project=newProject('Sprite controls'),g=makeSpriteGroup('Layer test');g.views.front.frames[0][65]=2;
+project.spriteStudio={version:1,groups:[g],palettes:[],drafts:{}};
+const errors=[],notices=[],api={project:()=>project,session:()=>null,esc:String,modal(t,h){$('#dialogBody').innerHTML=h;},saveProject:fn=>fn(),change:fn=>fn(),toast:v=>notices.push(v),error:e=>errors.push(e),ensureImage:()=>{throw Error('Unexpected image request');}};
+const editor=spriteWorkshop(api);await editor.open({kind:'custom',id:g.id,side:'front'});assert.deepEqual(errors,[]);
+const before=[...g.views.front.frames[0]];
+$('[data-sprite-nudge="1,0"]').click();assert.equal(g.views.front.frames[0][66],2);assert.equal(g.views.front.frames[0][65],0);
+$('#spriteUndo').click();assert.deepEqual(g.views.front.frames[0],before);$('#spriteRedo').click();assert.equal(g.views.front.frames[0][66],2);
+const lock=$('[data-layer-locked="0"]');lock.checked=true;lock.onchange();const locked=[...g.views.front.frames[0]];
+$('#spriteFlipX').click();$('[data-sprite-nudge="-1,0"]').click();assert.deepEqual(g.views.front.frames[0],locked);assert.ok(notices.some(n=>n.includes('Unlock')));
+const saved=JSON.parse(JSON.stringify(project));validateProject(saved,[]);assert.equal(Object.values(saved.spriteStudio.drafts)[0].layers[0].locked,true);
+$('#spriteFrameDelay').value='1';$('#spriteFrameDelay').onchange();assert.equal(editor.state.frameDelay,40);$('#spriteFrameDelay').value='9999';$('#spriteFrameDelay').onchange();assert.equal(editor.state.frameDelay,2000);
+assert.deepEqual(errors,[]);await s.close();console.log('PASS real sprite editor nudge, undo/redo, locked flips/moves, lock save/reopen and animation delay bounds.');
