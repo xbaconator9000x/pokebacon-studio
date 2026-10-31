@@ -45,3 +45,5 @@ These are development-branch features, with local validation recorded in PROGRES
 - [x] Byte-verified already-applied native story reconciliation in refresh/export; fragmented erased-space discovery with packed-pointer protection. Full ROM end-to-end validation pending.
 
 - [x] Applied map-entry condition and verified Shattered native class/path/learnset/equipment reconciliation, with untouched-field conflict detection and export progress.
+
+- [x] Linked Supply run template: acceptance, one-time guarded cache, confirmed hand-in/payment, shared milestones and editable stage scenes.
