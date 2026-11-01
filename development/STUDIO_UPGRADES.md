@@ -55,3 +55,11 @@ These are development-branch features, with local validation recorded in PROGRES
 
 - [x] Plan prepared artwork across all tilesets and reserve larger blocks first; regression for fragmented allocation order and full 23-map compile/reopen in normal/reversed map order (4.69.9).
 - [ ] Capture the current on-device JSON if the latest device case still differs; validate against its exact restored source, rather than infer byte identity from the displayed filename.
+
+### Storage architecture priority after 4.69.9
+
+Analysis: [ROM_STORAGE_ANALYSIS_2026-11-01.md](ROM_STORAGE_ANALYSIS_2026-11-01.md). Measured authored export adds 111,674 bytes; small demo size is not the underlying capacity explanation.
+
+- [ ] Pass full no-edit native round trip: current 23-map control fails in automatic gate repair; single-map control uses zero new space.
+- [ ] Restrict palette repacking to actual changes and required shared dependencies; prepared-pack existence currently marks all maps changed.
+- [ ] Ownership-based source reuse/reclamation, complete relocation planning, repeated-export stability and visible campaign headroom budgets.
