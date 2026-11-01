@@ -52,3 +52,8 @@ These are development-branch features, with local validation recorded in PROGRES
 
 - [x] Reproduce and complete a full 23-map export from the recovered Shattered project before issuing the next APK (4.69.8); exact-data reuse, compact prepared tables, pointer-aware erased-space accounting and allocation diagnostics.
 - [ ] Emulator gameplay coverage and physical Android install/update check for the 4.69.8 export changes; broaden private fixture coverage, especially custom engine bytecode and repeated import/export cycles.
+
+- [x] Plan prepared artwork across all tilesets and reserve larger blocks first; regression for fragmented allocation order and full 23-map compile/reopen in normal/reversed map order (4.69.9).
+- [ ] Capture the current on-device JSON if the latest device case still differs; validate against its exact restored source, rather than infer byte identity from the displayed filename.
+
+- 4.69.10: reviewed palette conversion now handles native hint overflow; stable transaction rasters and remembered export options prevent repeat failures. Validated replacement banks and unchanged expanded-source NPC appearances are supported. Signed APK uses the existing application identity.
