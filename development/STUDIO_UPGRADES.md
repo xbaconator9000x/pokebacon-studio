@@ -73,3 +73,6 @@ Analysis: [ROM_STORAGE_ANALYSIS_2026-11-01.md](ROM_STORAGE_ANALYSIS_2026-11-01.m
 
 - [x] Video 153108 source-picker repair: contextual map/project/library scopes, searchable thumbnails, labelled component layers, conservative alias grouping, mobile collapse and retained asset IDs (4.70.1).
 - [ ] Broader automatic ROM object segmentation/semantic naming remains separate; the source picker no longer presents raw components as indistinguishable whole-object choices.
+
+- [x] Screenshot 153117: honour checked conversion for original-art overflow; reuse verified native palette layouts before quantising. Exact 18-palette failure reproduced and fixed for 15-map palette preparation; full matching 23-map project export passes (4.70.2).
+- [ ] Broaden raw compiled-ROM reimport support for separately stored metatile arrays with no verified count footer; retain the bound-check guard and prefer matching sidecars meanwhile.

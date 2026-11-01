@@ -116,7 +116,7 @@ function mapSource(reader,map,sourceId){if(!map.rom||map.rom.sourceId!==sourceId
 function cellPixels(image,x,y){const out=new Uint8ClampedArray(1024);for(let row=0;row<16;row++)out.set(image.data.subarray(((y*16+row)*image.width+x*16)*4,((y*16+row)*image.width+x*16+16)*4),row*64);return out;}
 function originalPlanes(atlas,id){const x=id%16*16,y=(id>>4)*16;return atlas.layers.map(data=>{const out=new Uint8ClampedArray(1024);for(let row=0;row<16;row++)out.set(data.subarray(((y+row)*atlas.width+x)*4,((y+row)*atlas.width+x+16)*4),row*64);return out;});}
 function equal(a,b){if(a.length!==b.length)return false;for(let i=0;i<a.length;i++)if(a[i]!==b[i])return false;return true;}
-export function secondaryBankCount(atlas,profile){const p=atlas.primary,s=atlas.secondary,split=profile.primaryCount,stride=profile.metatileBytes||16,attrs=profile.attributeSize;if(s.count===null)throw Error('The source secondary metatile count could not be verified for native export.');if(split+s.count<=1024)return s.count;
+export function secondaryBankCount(atlas,profile){const p=atlas.primary,s=atlas.secondary,split=profile.primaryCount,stride=profile.metatileBytes||16,attrs=profile.attributeSize;if(s.count===null)throw Error('The source secondary metatile count could not be verified. Open the matching project JSON to restore its build source before exporting.');if(split+s.count<=1024)return s.count;
  // Some sources store both metatile banks first, then both attribute banks.
  // Their pointer distance includes the primary attributes. Verify the whole
  // contiguous layout before using the 10-bit cell ID boundary as its end.
