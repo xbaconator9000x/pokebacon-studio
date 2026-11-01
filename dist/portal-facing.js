@@ -7,6 +7,7 @@ export function nativePortalBehavior(engine,style,artBehavior){
  if(Number.isInteger(artBehavior)&&artBehavior>=0x60&&artBehavior<=0x6f)return artBehavior;
  return 0x67;
 }
+export function portalBehaviorForEnd(runtime,end,engine,artBehavior){const explicit=runtime[end==='from'?'nativeBehavior':'nativeReturnBehavior'];if(explicit!==undefined){if(!Number.isInteger(explicit)||explicit<0x60||explicit>0x6f)throw Error('Invalid native portal transition.');return explicit;}return nativePortalBehavior(engine,end==='from'?runtime.style:runtime.nativeReturnDoorStyle!==undefined?'door':'step',artBehavior);}
 import{compileScript}from'./script-engine.js';
 import{FACINGS}from'./map-seams.js';
 const BASE=0x08000000,DIRECTIONS={south:1,north:2,west:3,east:4};
