@@ -63,3 +63,6 @@ Analysis: [ROM_STORAGE_ANALYSIS_2026-11-01.md](ROM_STORAGE_ANALYSIS_2026-11-01.m
 - [ ] Pass full no-edit native round trip: current 23-map control fails in automatic gate repair; single-map control uses zero new space.
 - [ ] Restrict palette repacking to actual changes and required shared dependencies; prepared-pack existence currently marks all maps changed.
 - [ ] Ownership-based source reuse/reclamation, complete relocation planning, repeated-export stability and visible campaign headroom budgets.
+
+- [ ] Repair historical export provenance: the older delivery's sidecar lists its input as compiled identity, so the delivered ROM is not recognised as an export. Reconcile current device JSON onto the verified source, retaining newer edits, then test that exact pair.
+- [ ] Audit the five graphics banks retired from map headers against all native references before considering reclamation; do not treat retired-from-header as globally unused.
