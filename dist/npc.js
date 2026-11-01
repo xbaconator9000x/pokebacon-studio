@@ -2,6 +2,7 @@
 // Native NPC templates and fresh object records for compatible FireRed-family engines.
 // Record layout, graphics info and stationary movement types: pret/pokefirered.
 import{discoverFieldGraphics}from'./field-profile.js';
+import{expandedFieldSprite}from'./expanded-field-graphics.js';
 
 import{decodeSprite4bpp,decodeSpritePalette,decompressSpriteLZ}from'./native-sprites.js';
 const NAMES={"16": "Little Boy", "17": "Little Girl", "18": "Youngster", "19": "Boy", "20": "Bug Catcher", "21": "Sitting Boy", "22": "Lass", "23": "Woman 1", "24": "Crush Girl", "25": "Man", "26": "Rocker", "27": "Fat Man", "28": "Woman 2", "29": "Beauty", "30": "Balding Man", "31": "Woman 3", "32": "Old Man 1", "33": "Old Man 2", "34": "Old Man Lying Down", "35": "Old Woman", "36": "Tuber male Water", "37": "Tuber F", "38": "Tuber male Land", "39": "Camper", "40": "Picnicker", "41": "Cooltrainer M", "42": "Cooltrainer F", "43": "Swimmer male Water", "44": "Swimmer female Water", "45": "Swimmer male Land", "46": "Swimmer female Land", "47": "Worker M", "48": "Worker F", "49": "Rocket M", "50": "Rocket F", "51": "Gba Kid", "52": "Poke Maniac", "53": "Biker", "54": "Black Belt", "55": "Scientist", "56": "Hiker", "57": "Fisher", "58": "Channeler", "59": "Chef", "60": "Policeman", "61": "Gentleman", "62": "Sailor", "63": "Captain", "64": "Nurse", "65": "Cable Club Receptionist", "66": "Union Room Receptionist", "67": "Unused Male Receptionist", "68": "Clerk", "69": "Mg Deliveryman", "70": "Trainer Tower Dude", "71": "Prof Oak", "72": "Blue", "73": "Bill", "74": "Lance", "75": "Agatha", "76": "Daisy", "77": "Lorelei", "78": "Mr Fuji", "79": "Bruno", "80": "Brock", "81": "Misty", "82": "Lt Surge", "83": "Erika", "84": "Koga", "85": "Sabrina", "86": "Blaine", "87": "Giovanni", "88": "Mom", "89": "Celio", "90": "Teachy Tv Host", "91": "Gym Guy"};
@@ -14,9 +15,9 @@ export function npcTemplates(reader){
  // An appearance need not already occur on an imported map. New records are
  // initialized independently; the example reference retains older project format.
  for(let graphics=0;graphics<Math.min(p.count||92,240);graphics++)try{
-  const info=reader.ptr(p.table+graphics*4),width=reader.u16(info+8),height=reader.u16(info+10),images=reader.ptr(info+28),pixels=reader.ptr(images),size=reader.u16(images+4),tag=reader.u16(info+2);
+  const expanded=expandedFieldSprite(reader,p,graphics),info=expanded?.info??reader.ptr(p.table+graphics*4),width=expanded?.width??reader.u16(info+8),height=expanded?.height??reader.u16(info+10),images=expanded?.images??reader.ptr(info+28),pixels=expanded?.pixels??reader.ptr(images),size=expanded?.size??reader.u16(images+4),tag=expanded?.paletteTag??reader.u16(info+2);
   if(width<8||height<8||width>64||height>64||width%8||height%8||size!==width*height/2||!reader.valid(pixels,size))continue;
-  let palette=-1;for(let i=0;i<(p.paletteCount||16);i++)if(reader.u16(p.paletteTable+i*8+4)===tag)palette=reader.ptr(p.paletteTable+i*8);if(!reader.valid(palette,32))continue;
+  let palette=expanded?.palette??-1;if(palette<0)for(let i=0;i<(p.paletteCount||16);i++)if(reader.u16(p.paletteTable+i*8+4)===tag)palette=reader.ptr(p.paletteTable+i*8);if(!reader.valid(palette,32))continue;
   out.push({graphics,name:(reader.engine==='frlg'&&p.count===undefined?NAMES[graphics]:null)||'Character '+graphics,...(examples.get(graphics)||donor),width,height,indices:decodeSprite4bpp((reader.u8(info+12)&128?decompressSpriteLZ(reader.bytes,pixels).slice(0,size):reader.bytes.slice(pixels,pixels+size)),width,height),colours:decodeSpritePalette(reader.bytes.slice(palette,palette+32))});
  }catch{}
  out.sort((a,b)=>a.name.localeCompare(b.name));cache.set(reader,out);return out;

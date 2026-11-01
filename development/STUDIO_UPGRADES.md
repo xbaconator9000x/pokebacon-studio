@@ -56,4 +56,23 @@ These are development-branch features, with local validation recorded in PROGRES
 - [x] Plan prepared artwork across all tilesets and reserve larger blocks first; regression for fragmented allocation order and full 23-map compile/reopen in normal/reversed map order (4.69.9).
 - [ ] Capture the current on-device JSON if the latest device case still differs; validate against its exact restored source, rather than infer byte identity from the displayed filename.
 
-- 4.69.10: reviewed palette conversion now handles native hint overflow; stable transaction rasters and remembered export options prevent repeat failures. Validated replacement banks and unchanged expanded-source NPC appearances are supported. Signed APK uses the existing application identity.
+### Storage architecture priority after 4.69.9
+
+Analysis: [ROM_STORAGE_ANALYSIS_2026-11-01.md](ROM_STORAGE_ANALYSIS_2026-11-01.md). Measured authored export adds 111,674 bytes; small demo size is not the underlying capacity explanation.
+
+- [ ] Pass full no-edit native round trip: current 23-map control fails in automatic gate repair; single-map control uses zero new space.
+- [ ] Restrict palette repacking to actual changes and required shared dependencies; prepared-pack existence currently marks all maps changed.
+- [ ] Ownership-based source reuse/reclamation, complete relocation planning, repeated-export stability and visible campaign headroom budgets.
+
+- [ ] Repair historical export provenance: the older delivery's sidecar lists its input as compiled identity, so the delivered ROM is not recognised as an export. Reconcile current device JSON onto the verified source, retaining newer edits, then test that exact pair.
+- [ ] Audit the five graphics banks retired from map headers against all native references before considering reclamation; do not treat retired-from-header as globally unused.
+
+- [x] Reproduce conflict-resolved current device JSON; reconcile its compiled-ROM bindings onto verified original source, preserve authored maps/events and archive 27 obsolete appended-event suppression bindings with byte/hash proof (4.70.0).
+- [x] Restore a project's verified embedded source when switching projects; import independently of an unrelated active ROM; retain stable source IDs on original/exported ROM reopen.
+- [x] Verify all 23 recovered maps' authored rendering/movement/event settings and identical binary output on repeat export. Reviewed palette conversion remains required for the test ROM.
+
+- [x] Video 153108 source-picker repair: contextual map/project/library scopes, searchable thumbnails, labelled component layers, conservative alias grouping, mobile collapse and retained asset IDs (4.70.1).
+- [ ] Broader automatic ROM object segmentation/semantic naming remains separate; the source picker no longer presents raw components as indistinguishable whole-object choices.
+
+- [x] Screenshot 153117: honour checked conversion for original-art overflow; reuse verified native palette layouts before quantising. Exact 18-palette failure reproduced and fixed for 15-map palette preparation; full matching 23-map project export passes (4.70.2).
+- [ ] Broaden raw compiled-ROM reimport support for separately stored metatile arrays with no verified count footer; retain the bound-check guard and prefer matching sidecars meanwhile.
