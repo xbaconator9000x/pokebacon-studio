@@ -11,5 +11,5 @@ const pokemon=(sprites.speciesIds||[]).map(id=>{
  // Top-level front fields retain compatibility with older APK picker code.
  return{...front,front,back,icon,iconIssue,shiny:readNativeSprite(bytes,sprites,{kind:'mon',id,side:'front',shiny:true}).palettes};
 });
-const people=npcTemplates(reader).map(t=>({id:t.graphics,name:t.name,width:t.width,height:t.height,palette:t.colours,frames:t.frames.map(encode),pixels:encode(t.frames[0])}));
+const people=npcTemplates(reader).map(t=>({id:t.graphics,name:t.name,player:!!t.player,width:t.width,height:t.height,palette:t.colours,frames:t.frames.map(encode),pixels:encode(t.frames[0])}));
 fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify({version:2,source:'Shattered template library',pokemon,people}));console.log('Bundled '+pokemon.length+' Pokémon (front, back and icons) and '+people.length+' animated field characters in '+out);
