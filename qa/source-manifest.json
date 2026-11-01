@@ -249,7 +249,7 @@
     "dist/field-rom.js": "2b45db9fe0ecdaf6dd06d3fb0c6af6260b84b74395fad30176d7cae8ff9aacfe",
     "dist/region-events.js": "e0e9b6643a0d00cc728c281cbe9a9e6467908fe375c777c1b93054e82ab2052b",
     "dist/expanded-field-graphics.js": "dedaf312e17d86d545410933af372bd4ed41f95c4d1af0a6d5ec5aa3f8489fe1",
-    "dist/rom-writer.js": "4b0e5d7a9849e7b63ffc87508d0427ef814ac1cdc76d7bf87bcd0292ba52c05f",
+    "dist/rom-writer.js": "69c7a46da4e33db8a96ccfd6fbdc11e2c8e8a37e83cc0df83270bddb709456ae",
     "dist/music-assets.js": "9680343bc1e4554e9b6537c893d3fd12d37410cb3c07419a888c0da8720d54f6",
     "dist/release-audit.js": "ebf0857baa2c050e3ffe94fe4d6fa29cd32d58bc41fdd8498050e145cceaf634",
     "dist/authoring-ui.js": "fb45097f4f8fe9d3f7a3ac79d30c3fc5f134f3513f237dd77b88e1a3b1d37ee8",
