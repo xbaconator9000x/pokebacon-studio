@@ -62,9 +62,9 @@ const unpack=a=>Array.from({length:64},(_,i)=>(a[i>>1]>>>(i%2*4))&15);
 const pack=a=>Uint8Array.from({length:32},(_,i)=>a[i*2]|a[i*2+1]<<4);
 const rgbaKey=a=>{let h=2166136261;for(let i=0;i<a.length;i++)h=Math.imul(h^a[i],16777619);return h>>>0;};
 export class RomOutput {
- constructor(source){this.bytes=new Uint8Array(source);let end=source.length;while(end>0x200&&source[end-1]===255)end--;this.cursor=Math.min(source.length,(end+4099)&~3);this.allocations=[];this.writes=[];this.source=source;}
+ constructor(source){this.bytes=new Uint8Array(source);let end=source.length;while(end>0x200&&source[end-1]===255)end--;this.cursor=Math.min(source.length,(end+4099)&~3);this.allocations=[];this.writes=[];this.source=source;this.freeSpans=source.length===MAX?erasedROMSpans(this.bytes):null;}
  ensure(end){if(end>MAX)throw Error('The edited data exceeds the GBA’s 32 MB ROM limit. Export fewer maps at once.');if(end<=this.bytes.length)return;const next=new Uint8Array(Math.min(MAX,Math.max(end,this.bytes.length*2)));next.fill(255);next.set(this.bytes);this.bytes=next;}
- write(at,bytes){if(!Number.isInteger(at)||at<0||at+bytes.length>this.bytes.length)throw Error('A ROM edit points outside its data range.');this.bytes.set(bytes,at);this.writes.push({address:at,length:bytes.length});}
+ write(at,bytes){if(!Number.isInteger(at)||at<0||at+bytes.length>this.bytes.length)throw Error('A ROM edit points outside its data range.');if(this.freeSpans){const end=at+bytes.length;this.freeSpans=this.freeSpans.flatMap(s=>end<=s.start||at>=s.end?[s]:[...(at>s.start?[{start:s.start,end:at&~3}]:[]),...(end<s.end?[{start:(end+3)&~3,end:s.end}]:[])]).filter(s=>s.end>s.start);}this.bytes.set(bytes,at);this.writes.push({address:at,length:bytes.length});}
  int(at,value,width=4){const a=new Uint8Array(width),v=new DataView(a.buffer);width===2?v.setUint16(0,value,true):v.setUint32(0,value,true);this.write(at,a);}
  allocateImmutable(bytes,reason){
   bytes=asBytes(bytes);let hash=2166136261;for(const b of bytes){hash^=b;hash=Math.imul(hash,16777619)>>>0;}

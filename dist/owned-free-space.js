@@ -1,0 +1,5 @@
+// The compactor emits this record only after proving every cleared byte's owner.
+// The whole-ROM CRC binds that proof to this exact image; changed ROMs fall back.
+const MAGIC=[80,66,70,82,69,69,57,51],table=Uint32Array.from({length:256},(_,n)=>{for(let k=0;k<8;k++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0;});
+function crc(bytes,zeroAt){let c=0xffffffff;for(let i=0;i<bytes.length;i++)c=table[(c^(i>=zeroAt&&i<zeroAt+4?0:bytes[i]))&255]^(c>>>8);return(c^0xffffffff)>>>0;}
+export function verifiedOwnedFreeSpans(bytes){const v=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);for(let a=512;a+32<=bytes.length;a+=4){if(bytes[a]!==MAGIC[0]||!MAGIC.every((n,i)=>bytes[a+i]===n))continue;const version=v.getUint32(a+8,true),start=v.getUint32(a+12,true),end=v.getUint32(a+16,true),expected=v.getUint32(a+20,true);if(version!==1||start<512||end>bytes.length||end<=start||a>=start&&a<end)continue;if(!bytes.subarray(start,end).every(n=>n===255)||crc(bytes,a+20)!==expected)continue;return[{start,end}];}return[];}

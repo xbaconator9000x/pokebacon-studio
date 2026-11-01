@@ -202,7 +202,7 @@
     "dist/shattered-adapter-data.js": "f022fc048a7abe1269904ed4a60cf8ba241afcb359f20d32c98a3d3a092fcd72",
     "dist/engine-install-ui.js": "ad1424132422fddf27430a891262846a77314bdda2b5dbb1da91257d3ae56fb9",
     "dist/npc-graphics-native.js": "e1cc0e488da9ecb78918e6f56ccc16465653d98ef531e0e7318affd76a1d8db0",
-    "dist/rom-free-space.js": "b65869797a93e27209aebeabe810bc66c4dbe20ee8102b634d4129dd8afa9568",
+    "dist/rom-free-space.js": "6101b50651b4af07531f0494c68753c426ee5836ed337b56a189d172225787a8",
     "dist/tileset-runtime-code.js": "c945ac9e0c24aa49037cc107487a1034cb1876db4ced0814cc73d5de41f6d239",
     "dist/hm-rules.js": "1dc28149acf5721824aac42d88de195ffbd768d50a8fc37cba51321e44ded069",
     "dist/foreground-split.js": "a8d1cd744ce08a0178f1754c62fa69f33f604b25940e74d1b68c019f2fff7ae5",
@@ -217,7 +217,7 @@
     "dist/department-store.js": "2e0b2ce3e80348da106d70d9764d2298aa363002a53137367f78a0eb97bceb09",
     "dist/project-store.js": "f8d488c09e24ebd103f0478a5ba6bb26992bb34ff1c431cd54c8489b8dc38b46",
     "dist/movement-ui.js": "ac05a867b222e95cb0de2973192c69c5a2f423a35c63dcc8a30524b2baef60fe",
-    "dist/sw.js": "f442d5e5442b873d9242a4d64cd666a116240422ed5caf90b06c52adc061a857",
+    "dist/sw.js": "2ee75a0846968d134f071acf7d6fc9ead49ec05148caf09819ee440f9ddac4ff",
     "dist/item-expansion.js": "a9931c2b7d622272349c26f6f9793e2bb6fec98a406fc99463654738ce9dbaff",
     "dist/music-pack-parts.js": "88681dd8e12f34b4bfdf2578be3c9eb32089bbff43366931bb9934b65ff650d6",
     "dist/native-event-suppression.js": "e7da81a2e7bfa0ee146b56b027de26ede41074c3f0942768dfbd9880d786a9f2",
@@ -249,7 +249,7 @@
     "dist/field-rom.js": "2b45db9fe0ecdaf6dd06d3fb0c6af6260b84b74395fad30176d7cae8ff9aacfe",
     "dist/region-events.js": "e0e9b6643a0d00cc728c281cbe9a9e6467908fe375c777c1b93054e82ab2052b",
     "dist/expanded-field-graphics.js": "dedaf312e17d86d545410933af372bd4ed41f95c4d1af0a6d5ec5aa3f8489fe1",
-    "dist/rom-writer.js": "4b0e5d7a9849e7b63ffc87508d0427ef814ac1cdc76d7bf87bcd0292ba52c05f",
+    "dist/rom-writer.js": "69c7a46da4e33db8a96ccfd6fbdc11e2c8e8a37e83cc0df83270bddb709456ae",
     "dist/music-assets.js": "9680343bc1e4554e9b6537c893d3fd12d37410cb3c07419a888c0da8720d54f6",
     "dist/release-audit.js": "ebf0857baa2c050e3ffe94fe4d6fa29cd32d58bc41fdd8498050e145cceaf634",
     "dist/authoring-ui.js": "fb45097f4f8fe9d3f7a3ac79d30c3fc5f134f3513f237dd77b88e1a3b1d37ee8",
@@ -1862,6 +1862,7 @@
     "dist/vendor/magenta/chord_pitches_improv/config.json": "d94dbaf436fddaea5648f79361fa8096b173444b76d1db12ee799b3be8806267",
     "dist/vendor/magenta/chord_pitches_improv/group1-shard1of2": "c360ed7ddd966979509852b79530027bc8de1805644286f556f6a8e7a4edcc44",
     "dist/vendor/magenta/chord_pitches_improv/group1-shard2of2": "0d92b23e3050a82521a8ed408ac6188d7a32d8ed61b095f80f5829a2d4872857",
-    "dist/vendor/magenta/chord_pitches_improv/weights_manifest.json": "c235ba9f70255d672cc2ce1b3f33196f40d7cb9ad52056a907712f5d6c6086c9"
+    "dist/vendor/magenta/chord_pitches_improv/weights_manifest.json": "c235ba9f70255d672cc2ce1b3f33196f40d7cb9ad52056a907712f5d6c6086c9",
+    "dist/owned-free-space.js": "a8c3c618c7be114d547fcd753e0a73a4f404469b1fd383de140b2c5b5ee613fc"
   }
 }
