@@ -12,13 +12,21 @@ export function npcTemplates(reader){
  const examples=new Map();let donor=null;
  for(const map of reader.maps)for(const [index,e]of reader.events(map).npcs.entries()){const ref={mapKey:map.key,index};donor??=ref;if(!examples.has(e.sprite))examples.set(e.sprite,ref);}
  if(!donor)return out;
+ // Object graphics store a run of image descriptors.  Earlier code read only
+ // the first descriptor, which made every bundled person a static cut-out.
+ // Bound each run by the next graphics descriptor so walking/turning frames
+ // stay with their original actor and never bleed into a neighbour.
+ const imageStarts=[];for(let graphics=0;graphics<Math.min(p.count||92,240);graphics++){const expanded=expandedFieldSprite(reader,p,graphics),info=expanded?.info??reader.ptr(p.table+graphics*4),images=expanded?.images??reader.ptr(info+28);if(reader.valid(images,8))imageStarts.push(images);}imageStarts.sort((a,b)=>a-b);
  // An appearance need not already occur on an imported map. New records are
  // initialized independently; the example reference retains older project format.
  for(let graphics=0;graphics<Math.min(p.count||92,240);graphics++)try{
   const expanded=expandedFieldSprite(reader,p,graphics),info=expanded?.info??reader.ptr(p.table+graphics*4),width=expanded?.width??reader.u16(info+8),height=expanded?.height??reader.u16(info+10),images=expanded?.images??reader.ptr(info+28),pixels=expanded?.pixels??reader.ptr(images),size=expanded?.size??reader.u16(images+4),tag=expanded?.paletteTag??reader.u16(info+2);
   if(width<8||height<8||width>64||height>64||width%8||height%8||size!==width*height/2||!reader.valid(pixels,size))continue;
   let palette=expanded?.palette??-1;if(palette<0)for(let i=0;i<(p.paletteCount||16);i++)if(reader.u16(p.paletteTable+i*8+4)===tag)palette=reader.ptr(p.paletteTable+i*8);if(!reader.valid(palette,32))continue;
-  out.push({graphics,name:(reader.engine==='frlg'&&p.count===undefined?NAMES[graphics]:null)||'Character '+graphics,...(examples.get(graphics)||donor),width,height,indices:decodeSprite4bpp((reader.u8(info+12)&128?decompressSpriteLZ(reader.bytes,pixels).slice(0,size):reader.bytes.slice(pixels,pixels+size)),width,height),colours:decodeSpritePalette(reader.bytes.slice(palette,palette+32))});
+  const next=imageStarts.find(at=>at>images)??reader.size,frames=[];
+  for(let at=images;at+8<=next&&frames.length<32;at+=8){const framePixels=reader.ptr(at),frameSize=reader.u16(at+4);if(frameSize!==size||reader.u16(at+6)!==0||!reader.valid(framePixels,size))break;const raw=reader.u8(info+12)&128?decompressSpriteLZ(reader.bytes,framePixels).slice(0,size):reader.bytes.slice(framePixels,framePixels+size);if(raw.length!==size)break;frames.push(Array.from(decodeSprite4bpp(raw,width,height)));}
+  if(!frames.length)continue;
+  out.push({graphics,name:(reader.engine==='frlg'&&p.count===undefined?NAMES[graphics]:null)||'Character '+graphics,...(examples.get(graphics)||donor),width,height,indices:frames[0],frames,colours:decodeSpritePalette(reader.bytes.slice(palette,palette+32))});
  }catch{}
  out.sort((a,b)=>a.name.localeCompare(b.name));cache.set(reader,out);return out;
 }
