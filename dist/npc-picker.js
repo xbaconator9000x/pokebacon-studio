@@ -1,4 +1,28 @@
 import {npcTemplates,npcImage} from './npc.js';
+import {makeSpriteGroup,nearestPixels,studioData} from './sprite-workbench.js';
+import {spriteContext} from './game-runtime.js';
+import {readNativeSprite} from './native-sprites.js';
+
+// Field templates are source art.  Copying one makes the edit explicit: the
+// original NPC/player graphic stays untouched and the new group can be placed
+// independently (including in an event).
+export function copyNPCToSpriteGroup(api,t){
+ const group=makeSpriteGroup(t.name,{human:true,palette:t.colours,shiny:t.colours});
+ group.kind='character';group.views.overworld={width:t.width,height:t.height,frames:[Array.from(t.indices)]};
+ api.change(()=>studioData(api.project()).groups.push(group));return group;
+}
+
+export async function pokemonNPCGroup(api,id){
+ const session=api.session();if(!session)throw Error('Open the source ROM first.');
+ const context=await spriteContext(session.reader),profile=context.sprites;if(!profile)throw Error('Pokémon sprites could not be verified for this ROM.');
+ const source=readNativeSprite(session.reader.bytes,profile,{kind:'mon',id,side:'front',shiny:false}),name=source.name||'Pokémon '+id;
+ // A 32 × 32 static field actor is supported by the native NPC installer.
+ // It is deliberately a copy, so artists can refine the field silhouette.
+ const group=makeSpriteGroup(name+' · field actor',{palette:source.palettes[0],shiny:source.palettes[0]});
+ group.kind='pokemon-npc';delete group.creature;
+ group.views={overworld:{width:32,height:32,frames:[nearestPixels(source.frames[source.defaultFrame||0],source.width,source.height,32,32)]}};
+ api.change(()=>studioData(api.project()).groups.push(group));return group;
+}
 
 export function spriteGroupImage(g){
  const v=g.views.overworld,c=document.createElement('canvas');c.width=v.width;c.height=v.height;
@@ -16,16 +40,17 @@ export function cacheNPCAppearance(api,t){
  return {graphics:t.graphics,mapKey:t.mapKey,index:t.index,sourceId:s.id,assetId:id};
 }
 
-export function chooseNPCAppearance(api,{onPick,onBack,onOpenROM,allowCustom=true}={}){
+export function chooseNPCAppearance(api,{onPick,onBack,onOpenROM,allowCustom=true,allowPokemon=false}={}){
  const $=s=>document.querySelector(s),esc=api.esc,s=api.session(),templates=s?npcTemplates(s.reader):[],groups=allowCustom?(api.project().spriteStudio?.groups||[]).filter(g=>g.views.overworld):[];
  const rows=[...templates.map(t=>({id:'native:'+t.graphics,name:t.name,detail:'ROM appearance #'+t.graphics,t})),...groups.map(g=>({id:'custom:'+g.id,name:g.name,detail:'My artwork · independent native slot',g}))],images=new Map();
- api.modal('Choose NPC appearance',`<p>Reuse an existing appearance for a new NPC. Dialogue and scenes belong to each placed NPC.</p>${!s?'<p class="studio-status needs-attention">Reopen your source GBA ROM to browse its NPC sprites. Your saved project does not include the ROM.</p>':!templates.length?'<p class="studio-status needs-attention">NPC appearance discovery is not supported for this ROM. Custom overworld artwork is available for previews.</p>':''}${onOpenROM?'<button id="npcPickerROM" type="button">'+(s?'Change source ROM':'Open source GBA ROM')+'</button>':''}<label>Search appearances<input id="npcPickerSearch" type="search" placeholder="Nurse, Rocket, scientist, name or number"></label><label>Source<select id="npcPickerSource"><option value="all">All appearances</option><option value="native">ROM sprites</option>${allowCustom?'<option value="custom">My sprite groups</option>':''}</select></label><div id="npcPickerRows" class="npc-appearance-grid"></div><p id="npcPickerCount" class="hint-line"></p><button id="npcPickerBack" type="button">Back</button>`,null,'Done');
+ api.modal('Choose NPC appearance',`<p>Reuse an existing appearance for a new NPC. Dialogue and scenes belong to each placed NPC.</p>${!s?'<p class="studio-status needs-attention">Reopen your source GBA ROM to browse its NPC sprites. Your saved project does not include the ROM.</p>':!templates.length?'<p class="studio-status needs-attention">NPC appearance discovery is not supported for this ROM. Custom overworld artwork is available for previews.</p>':''}<div class="smart-actions">${allowPokemon&&s?'<button id="npcPickerPokemon" type="button">＋ Pokémon as character</button>':''}${onOpenROM?'<button id="npcPickerROM" type="button">'+(s?'Change source ROM':'Open source GBA ROM')+'</button>':''}</div><label>Search appearances<input id="npcPickerSearch" type="search" placeholder="Player, Nurse, Rocket, scientist or number"></label><label>Source<select id="npcPickerSource"><option value="all">All appearances</option><option value="native">ROM sprites</option>${allowCustom?'<option value="custom">My sprite groups</option>':''}</select></label><div id="npcPickerRows" class="npc-appearance-grid"></div><p id="npcPickerCount" class="hint-line"></p><button id="npcPickerBack" type="button">Back</button>`,null,'Done');
  function draw(){const query=$('#npcPickerSearch').value.trim().toLowerCase(),source=$('#npcPickerSource').value,found=rows.filter(r=>(source==='all'||r.id.startsWith(source+':'))&&(r.name+' '+r.detail).toLowerCase().includes(query)),shown=found.slice(0,48);
   $('#npcPickerRows').innerHTML=shown.map(r=>{if(!images.has(r.id))images.set(r.id,r.t?npcImage(r.t):spriteGroupImage(r.g));return`<button type="button" data-npc-appearance="${esc(r.id)}"><img src="${images.get(r.id)}" width="32" height="64" alt=""><b>${esc(r.name)}</b><small>${esc(r.detail)}</small></button>`;}).join('')||'<p>No matching appearances. Try another search or source.</p>';
   $('#npcPickerCount').textContent=found.length>48?'Showing 48 of '+found.length+' · search to narrow the list.':found.length+' appearances';
   document.querySelectorAll('[data-npc-appearance]').forEach(b=>b.onclick=()=>{try{const row=rows.find(r=>r.id===b.dataset.npcAppearance);onPick(row.t?{native:cacheNPCAppearance(api,row.t),spriteGroupId:null}:{native:null,spriteGroupId:row.g.id});}catch(e){api.error(e);}});
  }
- $('#npcPickerSearch').oninput=draw;$('#npcPickerSource').onchange=draw;$('#npcPickerBack').onclick=onBack;if($('#npcPickerROM'))$('#npcPickerROM').onclick=onOpenROM;draw();
+ $('#npcPickerSearch').oninput=draw;$('#npcPickerSource').onchange=draw;$('#npcPickerBack').onclick=onBack;if($('#npcPickerROM'))$('#npcPickerROM').onclick=onOpenROM;if($('#npcPickerPokemon'))$('#npcPickerPokemon').onclick=()=>choosePokemon();draw();
+ function choosePokemon(query=''){const session=api.session();if(!session)return;api.modal('Pokémon as a field character',`<p>Creates an editable 32 × 32 field-actor copy. It does not alter the battle sprite. Refine it in Sprite workshop before compiling.</p><label>Find Pokémon<input id="npcPokemonSearch" value="${esc(query)}" placeholder="Staryu, Mewtwo or ID" autofocus></label><div id="npcPokemonRows" class="npc-appearance-grid"></div><button id="npcPokemonBack" type="button">Back</button>`);spriteContext(session.reader).then(context=>{const p=context.sprites,q=$('#npcPokemonSearch').value.trim().toLowerCase(),matches=(p.speciesIds||[]).map(id=>({id,name:p.names[id]||'Pokémon '+id})).filter(r=>!q||r.name.toLowerCase().includes(q)||String(r.id)===q).slice(0,48);$('#npcPokemonRows').innerHTML=matches.map(r=>`<button type="button" data-pokemon-npc="${r.id}"><b>${esc(r.name)}</b><small>Make editable field actor · #${r.id}</small></button>`).join('')||'<p>No Pokémon found.</p>';$('#npcPokemonSearch').oninput=()=>choosePokemon($('#npcPokemonSearch').value);document.querySelectorAll('[data-pokemon-npc]').forEach(b=>b.onclick=async()=>{try{const group=await pokemonNPCGroup(api,+b.dataset.pokemonNpc);onPick({native:null,spriteGroupId:group.id,pokemon:true});}catch(e){api.error(e);}});}).catch(api.error);$('#npcPokemonBack').onclick=()=>chooseNPCAppearance(api,{onPick,onBack,onOpenROM,allowCustom,allowPokemon});}
 }
 
 export function npcPlacementIssue(project,map,x,y,ignoreId=null){
