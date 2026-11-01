@@ -66,3 +66,7 @@ Analysis: [ROM_STORAGE_ANALYSIS_2026-11-01.md](ROM_STORAGE_ANALYSIS_2026-11-01.m
 
 - [ ] Repair historical export provenance: the older delivery's sidecar lists its input as compiled identity, so the delivered ROM is not recognised as an export. Reconcile current device JSON onto the verified source, retaining newer edits, then test that exact pair.
 - [ ] Audit the five graphics banks retired from map headers against all native references before considering reclamation; do not treat retired-from-header as globally unused.
+
+- [x] Reproduce conflict-resolved current device JSON; reconcile its compiled-ROM bindings onto verified original source, preserve authored maps/events and archive 27 obsolete appended-event suppression bindings with byte/hash proof (4.70.0).
+- [x] Restore a project's verified embedded source when switching projects; import independently of an unrelated active ROM; retain stable source IDs on original/exported ROM reopen.
+- [x] Verify all 23 recovered maps' authored rendering/movement/event settings and identical binary output on repeat export. Reviewed palette conversion remains required for the test ROM.
