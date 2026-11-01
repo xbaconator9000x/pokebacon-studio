@@ -8,11 +8,11 @@ Complete validated replacement banks no longer depend on guessing the old second
 
 ## Validation
 
-- `npm test`: 381 passed, 2 skipped, zero failures.
+- `npm test`: 382 passed, 2 skipped, zero failures.
 - Actual mobile-layout export dialog: a private unmodified fifteen-map project, conversion enabled, review shown and `.gba` saved. A second export remembered the setting and produced byte-identical ROM output. Original map data remained unchanged.
 - All fifteen exported maps reopened with matching dimensions; the compiler's native graphics, collision/elevation and declared-write checks passed.
-- Source deployment gate: 1,860 fingerprints and Android version/package parity passed.
-- APK 4.69.10, version code 123: 1,848 embedded web assets matched the tested source; native code/resources and existing signing certificate were preserved; signature and alignment passed.
+- Source deployment gate: 1,861 fingerprints and Android version/package parity passed.
+- APK 4.69.10, version code 123: 1,849 embedded web assets matched the tested source; native code/resources and existing signing certificate were preserved; signature and alignment passed.
 - The manifest repacker now handles a longer version string while retaining indexed XML strings and package identity.
 
 No physical Android installation test is claimed. The regression runs the actual app dialog in the existing DOM/canvas harness; signed-APK packaging is independently verified.

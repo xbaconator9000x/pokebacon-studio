@@ -43,3 +43,5 @@ CORE.push('./learnset-tools.js');
 CORE.push('./item-markers.js');
 
 CORE.push('./water-atlas.js');
+
+CORE.push('./owned-free-space.js');

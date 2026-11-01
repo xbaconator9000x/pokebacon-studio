@@ -135,4 +135,4 @@ The recovered standalone Shattered_Updated ROM rejected the newer JSON's stale s
 
 ## 4.69.10 — reviewed palette exports
 
-Fixed native hint palette overflow despite enabled conversion, complete replacement-bank initialization, and unchanged expanded-source NPC appearance handling. The export transaction now uses consistent raster snapshots and remembers successful conversion/static-art settings. Actual app-dialog export and repeat export passed with an unmodified fifteen-map private project; 381 tests passed, two skipped. The APK retains the existing package/signature and native shell. See `docs/EXPORT_PALETTE_REPAIR_4_69_10.md`.
+Fixed native hint palette overflow despite enabled conversion, complete replacement-bank initialization, and unchanged expanded-source NPC appearance handling. The export transaction now uses consistent raster snapshots and remembers successful conversion/static-art settings. Actual app-dialog export and repeat export passed with an unmodified fifteen-map private project; 382 tests passed, two skipped. The APK retains the existing package/signature and native shell. See `docs/EXPORT_PALETTE_REPAIR_4_69_10.md`.
