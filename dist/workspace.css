@@ -9,3 +9,5 @@
 .new-map-button{flex-shrink:0;gap:4px;min-height:40px;padding:5px 8px;font-size:11px;white-space:nowrap}.new-map-button svg{width:16px;height:16px}
 
 .source-sheet-list{max-height:240px;overflow:auto;overscroll-behavior:contain;align-content:start}.source-sheet-card img{width:100%;height:72px;object-fit:contain;image-rendering:pixelated}.source-sheet-card.active{border-color:var(--accent,#749349);box-shadow:inset 0 0 0 1px var(--accent,#749349)}
+/* Keep map-pin visibility reachable in the compact Android layout. */
+@media(max-width:700px){.statusbar{height:38px;min-height:38px;gap:8px}.statusbar #gestureHint{display:none}.statusbar #markersButton{display:inline-flex;min-height:32px;min-width:52px;margin-left:auto}}
