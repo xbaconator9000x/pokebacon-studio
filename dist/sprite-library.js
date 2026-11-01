@@ -6,3 +6,4 @@ export async function bundledSpriteLibrary(){
  return pending;
 }
 export function bundledPixels(row){return Array.from(Uint8Array.from(atob(row.pixels),c=>c.charCodeAt(0)));}
+export function bundledFrames(row){return(row.frames?.length?row.frames:[row.pixels]).map(p=>Array.from(Uint8Array.from(atob(p),c=>c.charCodeAt(0))));}
