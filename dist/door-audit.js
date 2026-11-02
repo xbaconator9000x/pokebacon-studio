@@ -12,7 +12,7 @@ export function auditDoorTransitions(reader,hash){
   // Native doors can deliberately be solid and activate from the facing tile.
   if(!disabled&&source?.collision&&source.behavior!==0x69)issues.push({severity:'review',message:'Departure has collision; inspect its approach or script'});
   if(destination?.collision&&destination.behavior!==0x69)issues.push({severity:'review',message:'Arrival has collision; inspect its exit step'});
-  rows.push({...w,map:m.key,name:m.name,dynamic,disabled,source,destination:arrival?{map:w.target,x:arrival.x,y:arrival.y,cell:destination}:null,animation:style?{id:style.id,name:style.name}:null,reciprocal:!!arrival&&arrival.target===m.key&&arrival.warp===w.index,issues});
+  rows.push({...w,map:m.key,name:m.name,dynamic,disabled,source,destination:arrival?{map:w.target,x:arrival.x,y:arrival.y,cell:destination}:null,transition:source?.behavior===0x6a?'escalator-up':source?.behavior===0x6b?'escalator-down':source?.behavior===0x69?'door':'other',animation:style?{id:style.id,name:style.name}:null,reciprocal:!!arrival&&arrival.target===m.key&&arrival.warp===w.index,issues});
  }
- return{maps:reader.maps.length,warps:rows.length,dynamic:rows.filter(r=>r.dynamic).length,disabled:rows.filter(r=>r.disabled).length,animatedDoors:rows.filter(r=>r.source?.behavior===0x69).length,errors:rows.filter(r=>r.issues.some(i=>i.severity==='error')).length,review:rows.filter(r=>r.issues.some(i=>i.severity==='review')).length,animationError,profile:native?.profile,rows};
+ return{maps:reader.maps.length,warps:rows.length,dynamic:rows.filter(r=>r.dynamic).length,disabled:rows.filter(r=>r.disabled).length,escalators:rows.filter(r=>[0x6a,0x6b].includes(r.source?.behavior)).length,animatedDoors:rows.filter(r=>r.source?.behavior===0x69).length,errors:rows.filter(r=>r.issues.some(i=>i.severity==='error')).length,review:rows.filter(r=>r.issues.some(i=>i.severity==='review')).length,animationError,profile:native?.profile,rows};
 }
