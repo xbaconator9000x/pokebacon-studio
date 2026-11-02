@@ -44,7 +44,33 @@ def manifest_version(data, version_name=None, version_code=None):
     old=(strings[name_index],struct.unpack_from('<I',data,code_at)[0])
     if version_name is not None:
         at,n=offsets[name_index];raw=version_name.encode('utf-8' if utf8 else 'utf-16le')
-        if len(raw)!=n:raise ValueError('This asset-only builder requires equal-length version names; use build.py otherwise')
+        if len(raw)!=n:
+            # Rebuild the indexed string pool without changing any string indices.
+            # Android binary XML references indices, so native/resource identities remain intact.
+            pool_at=8
+            while struct.unpack_from('<H',data,pool_at)[0]!=1:pool_at+=struct.unpack_from('<I',data,pool_at+4)[0]
+            _,head,pool_size=struct.unpack_from('<HHI',data,pool_at)
+            count,styles,flags,string_start,style_start=struct.unpack_from('<IIIII',data,pool_at+8)
+            strings[name_index]=version_name
+            def encoded_length(value,wide=False):
+                if wide:return struct.pack('<H',value) if value<0x8000 else struct.pack('<HH',0x8000|(value>>16),value&0xffff)
+                return bytes([value]) if value<128 else bytes([0x80|(value>>8),value&255])
+            block=bytearray();new_offsets=[]
+            for text in strings:
+                new_offsets.append(len(block));units=len(text.encode('utf-16le'))//2
+                if flags&256:
+                    encoded=text.encode('utf-8');block+=encoded_length(units)+encoded_length(len(encoded))+encoded+b'\0'
+                else:block+=encoded_length(units,True)+text.encode('utf-16le')+b'\0\0'
+            block+=b'\0'*(-len(block)%4)
+            chunk=bytearray(data[pool_at:pool_at+head]);offset_data=struct.pack('<'+'I'*count,*new_offsets)
+            style_offsets=data[pool_at+head+count*4:pool_at+head+(count+styles)*4]
+            style_data=data[pool_at+style_start:pool_at+pool_size] if style_start else b''
+            new_start=head+len(offset_data)+len(style_offsets)
+            struct.pack_into('<I',chunk,4,new_start+len(block)+len(style_data));struct.pack_into('<I',chunk,20,new_start);struct.pack_into('<I',chunk,24,new_start+len(block) if style_start else 0)
+            data[pool_at:pool_at+pool_size]=chunk+offset_data+style_offsets+block+style_data
+            struct.pack_into('<I',data,4,len(data))
+            updated,_=manifest_version(data,version_name,version_code)
+            return updated,old
         data[at:at+n]=raw;struct.pack_into('<I',data,code_at,version_code)
     return bytes(data),old
 

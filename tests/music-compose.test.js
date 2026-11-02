@@ -5,7 +5,8 @@ import {validateMusicAsset,unpackMusic,from64} from '../dist/music-assets.js';
 import {renderMusic} from '../dist/music-preview.js';
 
 test('every mood compiles a portable native song; generation is reproducible and bounded',()=>{
- for(const mood of Object.keys(MUSIC_MOODS)){const score=composeMusic({mood,seed:12,bars:4,complexity:100,adventure:100}),asset=compileMusic(score),checked=validateMusicAsset(asset);assert.deepEqual(score,composeMusic({mood,seed:12,bars:4,complexity:100,adventure:100}));assert.equal(checked.song.trackCount,4);assert.ok(checked.deps.samples.length>=4);assert.equal(asset.sourceHash,'');assert.ok(asset.sourceBytes<10000);assert.ok(checkScore(score).peak<=4);}
+ for(const mood of Object.keys(MUSIC_MOODS)){const score=composeMusic({mood,seed:12,bars:4,complexity:100,adventure:100}),asset=compileMusic(score),checked=validateMusicAsset(asset);assert.deepEqual(score,composeMusic({mood,seed:12,bars:4,complexity:100,adventure:100}));assert.equal(checked.song.trackCount,4);assert.ok(checked.deps.samples.length>=Math.min(4,score.tracks.filter(t=>t.notes.length).length)); // Percussion-free moods need no unused drum sample.
+assert.equal(asset.sourceHash,'');assert.ok(asset.sourceBytes<10000);assert.ok(checkScore(score).peak<=4);}
  assert.notDeepEqual(composeMusic({seed:1}),composeMusic({seed:2}));
 });
 test('MIDI round-trip preserves notes, velocities, sustain lengths and a changing tempo',()=>{

@@ -1,6 +1,10 @@
 export const MUSIC_SCALES={Major:[0,2,4,5,7,9,11],'Natural minor':[0,2,3,5,7,8,10],'Harmonic minor':[0,2,3,5,7,8,11],'Melodic minor':[0,2,3,5,7,9,11],Dorian:[0,2,3,5,7,9,10],Phrygian:[0,1,3,5,7,8,10],Lydian:[0,2,4,6,7,9,11],Mixolydian:[0,2,4,5,7,9,10],Locrian:[0,1,3,5,6,8,10],'Major pentatonic':[0,2,4,7,9],'Minor pentatonic':[0,3,5,7,10],'Major blues':[0,2,3,4,7,9],'Minor blues':[0,3,5,6,7,10],'Phrygian dominant':[0,1,4,5,7,8,10],'Double harmonic':[0,1,4,5,7,8,11],'Lydian dominant':[0,2,4,6,7,9,10],'Whole tone':[0,2,4,6,8,10],'Diminished half-whole':[0,1,3,4,6,7,9,10],Hirajoshi:[0,2,3,7,8],Insen:[0,1,5,7,10],'Hungarian minor':[0,2,3,6,7,8,11],Chromatic:[0,1,2,3,4,5,6,7,8,9,10,11]};
 const style=(tempo,scale,progression,rhythm,bass,harmony,contour,description,extra={})=>({tempo,scale,progression,rhythm,bass,harmony,contour,description,...extra});
 export const MUSIC_MOODS={
+ 'Sci-fi':style(96,'Whole tone',[0,1,3,2],'spacious','pedal','echo','turn','Cold electronic signals over unstable, floating harmony.',{drums:.25,register:64}),
+ Horror:style(76,'Phrygian',[0,1,0,4],'spacious','pedal','echo','falling','Half-step unease, isolated calls and long stretches of tension.',{drums:.15,register:60}),
+ Space:style(68,'Lydian',[0,1,3,0],'spacious','sustain','wave','arch','Weightless arcs, suspended light and distant replies.',{drums:0,register:72}),
+ Technology:style(132,'Dorian',[0,3,1,4],'syncopated','pulse','ostinato','turn','Interlocking machine rhythms and precise sequencer patterns.',{drums:.65,register:67}),
  Route:style(136,'Major',[0,3,1,4],'walking','walking','broken','arch','Bouncy two-bar hooks, walking bass and answering phrases.'),
  Gym:style(150,'Dorian',[0,3,5,4],'syncopated','octaves','pulse','rising','Anticipated accents, bass octaves, repeated challenges and firm cadences.'),
  Cave:style(80,'Harmonic minor',[0,5,1,4],'spacious','pedal','echo','falling','Long rests, a low pedal, delayed echoes and short descending calls.',{drums:.2,register:60}),

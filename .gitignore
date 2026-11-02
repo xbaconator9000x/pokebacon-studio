@@ -35,4 +35,5 @@ DerivedData/
 *.gba
 *.sav
 *.pokebacon.json
+dist/assets/private-sprite-library.json
 recovered/

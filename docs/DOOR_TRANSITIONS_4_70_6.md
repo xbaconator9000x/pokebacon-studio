@@ -1,0 +1,11 @@
+# Door transitions and Quick Play — 4.70.6
+
+Connections now exposes independent native behavior and opening-frame choices for each direction. Return exits retain their own step/door behavior instead of inheriting an animated entrance. Frame selectors are also available from Doors & portals. Authored animated entrances without matching opening frames produce a specific export error.
+
+Native door discovery supports the expanded FireRed caller layout only after verifying five caller instruction fingerprints, agreeing live table pointers, bounded records and terminator, frame/palette bounds, and the four timing sequences. The table can be relocated and contain more than the original 32 styles; new styles append after its actual length, and timing edits can be reopened. There is no unverified offset fallback. Unknown engines retain their guard.
+
+Doors & portals → Audit all ROM door transitions inspects every raw warp record, including out-of-bounds/disabled records which the ordinary import can omit. It reports missing targets, opening-frame registration, collision/activation review notes, dynamic returns and disabled side records. JSON export includes every record. This is a structural audit, not a claim that every warp was traversed in a running game.
+
+Quick Play draws a 16 × 32 character with a one-tile collision anchor outlined at its feet. Foreground from both overlapping tile rows is restored after drawing the player, so a canopy/overhead cell above the feet can occlude the head. Native locked render intent remains authoritative.
+
+Validation: 396 tests passed, 2 external fixture skips, zero failures. A real editor DOM/canvas session with the private supplied source verified all 43 native style options, independent direction settings, save/reopen, head-only foreground occlusion, and full audit UI. Native writeback tests append after a 43-style table, preserve its final original row, repoint all five callers and reopen modified timing. 1,866 deployed fingerprints pass. Signed APK version code 129 preserves the existing native shell and certificate; physical installation is not claimed. The separately managed sprite pack and signing keys remain outside Git. No private ROM is committed.

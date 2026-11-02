@@ -1,0 +1,18 @@
+import{readDoorAnimations}from'./door-animation.js';
+export function auditDoorTransitions(reader,hash){
+ let native=null,animationError=null;try{native=readDoorAnimations(reader,hash);}catch(e){animationError=e.message;}
+ const rows=[],cell=(m,x,y)=>{if(!m||x<0||y<0||x>=m.layout.width||y>=m.layout.height)return null;const word=reader.u16(m.layout.blocks+(y*m.layout.width+x)*2),id=word&1023,p=reader.profile(m),t=reader.tileset(id<p.primaryCount?m.layout.primary:m.layout.secondary,p.attributeSize),at=t.attrs+(id<p.primaryCount?id:id-p.primaryCount)*p.attributeSize;if(!reader.valid(at,p.attributeSize))return null;const attribute=p.attributeSize===4?reader.u32(at):reader.u16(at);return{id,behavior:attribute&(p.attributeSize===4?511:255),collision:word>>>10&3,elevation:word>>>12};};
+ const warps=new Map();for(const m of reader.maps){const list=[],p=m.events;if(reader.valid(p,20)){const base=reader.ptr(p+8),count=reader.u8(p+1);for(let i=0;i<count;i++){const at=base+i*8;if(base<0||!reader.valid(at,8)){list.push({index:i,error:'Warp record is outside the ROM'});continue;}list.push({index:i,address:at,x:reader.i16(at),y:reader.i16(at+2),elevation:reader.u8(at+4),warp:reader.u8(at+5),target:reader.u8(at+7)+'.'+reader.u8(at+6)});}}warps.set(m.key,list);}
+ for(const m of reader.maps)for(const w of warps.get(m.key)){const issues=[],disabled=w.elevation===255,dynamic=w.target==='127.127'||w.target==='255.255'||w.warp===255,target=reader.byKey(w.target),arrival=warps.get(w.target)?.[w.warp],source=cell(m,w.x,w.y),destination=arrival&&!arrival.error?cell(target,arrival.x,arrival.y):null;
+  if(w.error)issues.push({severity:'error',message:w.error});else if(!source)issues.push({severity:'error',message:'Departure is outside the map'});
+  if(!dynamic&&!target)issues.push({severity:'error',message:'Destination map is missing'});else if(!dynamic&&!arrival)issues.push({severity:'error',message:'Destination warp index is missing'});else if(!dynamic&&!destination)issues.push({severity:'error',message:'Arrival is outside the map'});
+  if(!disabled&&source&&!(source.behavior>=0x60&&source.behavior<=0x6f))issues.push({severity:'review',message:'Departure tile has no native warp behavior; it may be disabled or script controlled'});
+  const style=source?.behavior===0x69?native?.doors.find(d=>d.metatile===source.id):null;
+  if(source?.behavior===0x69&&native&&!style)issues.push({severity:'error',message:'Animated door metatile has no registered opening frames'});
+  // Native doors can deliberately be solid and activate from the facing tile.
+  if(!disabled&&source?.collision&&source.behavior!==0x69)issues.push({severity:'review',message:'Departure has collision; inspect its approach or script'});
+  if(destination?.collision&&destination.behavior!==0x69)issues.push({severity:'review',message:'Arrival has collision; inspect its exit step'});
+  rows.push({...w,map:m.key,name:m.name,dynamic,disabled,source,destination:arrival?{map:w.target,x:arrival.x,y:arrival.y,cell:destination}:null,transition:source?.behavior===0x6a?'escalator-up':source?.behavior===0x6b?'escalator-down':source?.behavior===0x69?'door':'other',animation:style?{id:style.id,name:style.name}:null,reciprocal:!!arrival&&arrival.target===m.key&&arrival.warp===w.index,issues});
+ }
+ return{maps:reader.maps.length,warps:rows.length,dynamic:rows.filter(r=>r.dynamic).length,disabled:rows.filter(r=>r.disabled).length,escalators:rows.filter(r=>[0x6a,0x6b].includes(r.source?.behavior)).length,animatedDoors:rows.filter(r=>r.source?.behavior===0x69).length,errors:rows.filter(r=>r.issues.some(i=>i.severity==='error')).length,review:rows.filter(r=>r.issues.some(i=>i.severity==='review')).length,animationError,profile:native?.profile,rows};
+}
