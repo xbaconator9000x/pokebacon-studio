@@ -1,0 +1,4686 @@
+{
+  "schemaVersion": 1,
+  "auditedDate": "2026-11-06",
+  "repository": "xbaconator9000x/pokebacon-studio",
+  "baseline": "57fde6d0b57c7c2acee8040b2b0182b0614d9af1",
+  "coverage": "Initial broad source audit across all requested categories; detailed specialist/runtime acceptance remains tracked, not asserted complete.",
+  "statusDefinitions": {
+    "fully_verified": "Entire applicable workflow verified on pinned engine and recorded artifact.",
+    "implemented_not_gameplay_verified": "Implementation and bounded tests located; game execution/device completion not proven.",
+    "partial": "Only part of the capability or workflow is implemented/verified.",
+    "ui_only_or_design": "Design, preview or project record without verified native behavior.",
+    "missing": "No complete relevant implementation located in audited branch.",
+    "engine_limited": "Implemented only for a guarded engine/profile.",
+    "outside_scope": "Optional or deliberately separate from GBA authoring milestone."
+  },
+  "features": [
+    {
+      "id": "REL01",
+      "category": "ROM and project reliability",
+      "name": "ROM identity and structural discovery",
+      "whatItDoes": [
+        "header",
+        "game revision",
+        "relocated tables",
+        "source hash",
+        "confidence"
+      ],
+      "references": [
+        "hma",
+        "porymap"
+      ],
+      "whyNeeded": "Expose a revision-specific compatibility report and reject misleading header-only matches.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/rom.js",
+        "dist/rom-project.js",
+        "dist/rom-writer.js",
+        "dist/rom-free-space.js",
+        "dist/project-store.js"
+      ],
+      "testEvidence": [
+        "tests/rom.test.js",
+        "tests/authority-guards.mjs",
+        "tests/platform-lifecycle.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate header with target-engine constraints.",
+        "Demonstrate game revision with target-engine constraints.",
+        "Expose a revision-specific compatibility report and reject misleading header-only matches.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "REL02",
+      "category": "ROM and project reliability",
+      "name": "Safe allocation and expansion",
+      "whatItDoes": [
+        "aligned spans",
+        "ownership",
+        "shared references",
+        "fragmentation",
+        "compressed size",
+        "32 MB ceiling"
+      ],
+      "references": [
+        "hma",
+        "porymap"
+      ],
+      "whyNeeded": "Expose the allocation plan and verify repeated exports do not grow duplicate resources.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/rom.js",
+        "dist/rom-project.js",
+        "dist/rom-writer.js",
+        "dist/rom-free-space.js",
+        "dist/project-store.js"
+      ],
+      "testEvidence": [
+        "tests/rom.test.js",
+        "tests/authority-guards.mjs",
+        "tests/platform-lifecycle.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate aligned spans with target-engine constraints.",
+        "Demonstrate ownership with target-engine constraints.",
+        "Expose the allocation plan and verify repeated exports do not grow duplicate resources.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "REL03",
+      "category": "ROM and project reliability",
+      "name": "Portable project save and reopen",
+      "whatItDoes": [
+        "embedded assets",
+        "linked ROM identity",
+        "missing archive recovery",
+        "version migration"
+      ],
+      "references": [
+        "hma",
+        "porymap"
+      ],
+      "whyNeeded": "Physical-device and complete transaction fault coverage remain outstanding.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/rom.js",
+        "dist/rom-project.js",
+        "dist/rom-writer.js",
+        "dist/rom-free-space.js",
+        "dist/project-store.js"
+      ],
+      "testEvidence": [
+        "tests/rom.test.js",
+        "tests/authority-guards.mjs",
+        "tests/platform-lifecycle.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "M",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate embedded assets with target-engine constraints.",
+        "Demonstrate linked ROM identity with target-engine constraints.",
+        "Physical-device and complete transaction fault coverage remain outstanding.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "REL04",
+      "category": "ROM and project reliability",
+      "name": "Undo/redo persistence for split sections",
+      "whatItDoes": [
+        "source settings",
+        "text",
+        "regions",
+        "sprites",
+        "HM rules",
+        "deletion"
+      ],
+      "references": [
+        "hma",
+        "porymap"
+      ],
+      "whyNeeded": "Save scope fix implemented this batch; direct mutation with an incorrectly map-only scope remains outside the API contract.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/rom.js",
+        "dist/rom-project.js",
+        "dist/rom-writer.js",
+        "dist/rom-free-space.js",
+        "dist/project-store.js"
+      ],
+      "testEvidence": [
+        "tests/rom.test.js",
+        "tests/authority-guards.mjs",
+        "tests/platform-lifecycle.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "M",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate source settings with target-engine constraints.",
+        "Demonstrate text with target-engine constraints.",
+        "Save scope fix implemented this batch; direct mutation with an incorrectly map-only scope remains outside the API contract.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "10 save-scope/unit regressions plus four-engine IndexedDB API shim, transaction-abort and worker-post fallback checks; no physical-device test.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "REL05",
+      "category": "ROM and project reliability",
+      "name": "Source ZIP import/export",
+      "whatItDoes": [
+        "normalised root",
+        "CRC",
+        "path validation",
+        "feature edits",
+        "original file retention"
+      ],
+      "references": [
+        "hma",
+        "porymap"
+      ],
+      "whyNeeded": "Compile exported engines and validate resulting games; source maps are not authored from Studio maps.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/rom.js",
+        "dist/rom-project.js",
+        "dist/rom-writer.js",
+        "dist/rom-free-space.js",
+        "dist/project-store.js"
+      ],
+      "testEvidence": [
+        "tests/rom.test.js",
+        "tests/authority-guards.mjs",
+        "tests/platform-lifecycle.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "M",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate normalised root with target-engine constraints.",
+        "Demonstrate CRC with target-engine constraints.",
+        "Compile exported engines and validate resulting games; source maps are not authored from Studio maps.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "REL06",
+      "category": "ROM and project reliability",
+      "name": "ROM/project reconciliation",
+      "whatItDoes": [
+        "stable IDs",
+        "relocated bindings",
+        "original/applied state",
+        "conflict review"
+      ],
+      "references": [
+        "hma",
+        "porymap"
+      ],
+      "whyNeeded": "Test repeated project→ROM→project on current Shattered and preserve unsupported records.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/rom.js",
+        "dist/rom-project.js",
+        "dist/rom-writer.js",
+        "dist/rom-free-space.js",
+        "dist/project-store.js"
+      ],
+      "testEvidence": [
+        "tests/rom.test.js",
+        "tests/authority-guards.mjs",
+        "tests/platform-lifecycle.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate stable IDs with target-engine constraints.",
+        "Demonstrate relocated bindings with target-engine constraints.",
+        "Test repeated project→ROM→project on current Shattered and preserve unsupported records.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "REL07",
+      "category": "ROM and project reliability",
+      "name": "Atomic writes and recovery",
+      "whatItDoes": [
+        "transaction abort",
+        "worker fallback",
+        "retry",
+        "backups",
+        "failed export"
+      ],
+      "references": [
+        "hma",
+        "porymap"
+      ],
+      "whyNeeded": "Added IndexedDB abort and worker-post failure tests; worker timeout, quota and interrupted export recovery need coverage.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/rom.js",
+        "dist/rom-project.js",
+        "dist/rom-writer.js",
+        "dist/rom-free-space.js",
+        "dist/project-store.js"
+      ],
+      "testEvidence": [
+        "tests/rom.test.js",
+        "tests/authority-guards.mjs",
+        "tests/platform-lifecycle.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "M",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate transaction abort with target-engine constraints.",
+        "Demonstrate worker fallback with target-engine constraints.",
+        "Added IndexedDB abort and worker-post failure tests; worker timeout, quota and interrupted export recovery need coverage.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "REL08",
+      "category": "ROM and project reliability",
+      "name": "Resource dependency and ownership graph",
+      "whatItDoes": [
+        "where-used",
+        "copy-on-write",
+        "orphan detection",
+        "aliases",
+        "export diff"
+      ],
+      "references": [
+        "hma",
+        "porymap"
+      ],
+      "whyNeeded": "Current guards exist but no unified inspectable resource ownership UI was verified.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/rom.js",
+        "dist/rom-project.js",
+        "dist/rom-writer.js",
+        "dist/rom-free-space.js",
+        "dist/project-store.js"
+      ],
+      "testEvidence": [
+        "tests/rom.test.js",
+        "tests/authority-guards.mjs",
+        "tests/platform-lifecycle.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate where-used with target-engine constraints.",
+        "Demonstrate copy-on-write with target-engine constraints.",
+        "Current guards exist but no unified inspectable resource ownership UI was verified.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MAP01",
+      "category": "Maps and world",
+      "name": "Terrain and layer painting",
+      "whatItDoes": [
+        "ground",
+        "details",
+        "object",
+        "overhead",
+        "fill",
+        "line",
+        "rectangle",
+        "selection"
+      ],
+      "references": [
+        "porymap",
+        "tiled",
+        "hma"
+      ],
+      "whyNeeded": "Verify native priorities and occlusion with representative exported maps.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/model.js",
+        "dist/map-seams.js",
+        "dist/world-model.js",
+        "dist/rom-import.js",
+        "dist/rom-writer.js",
+        "dist/crop-model.js"
+      ],
+      "testEvidence": [
+        "tests/map-seams.test.js",
+        "tests/model.test.js",
+        "tests/map-border.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "porymap",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate ground with target-engine constraints.",
+        "Demonstrate details with target-engine constraints.",
+        "Verify native priorities and occlusion with representative exported maps.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MAP02",
+      "category": "Maps and world",
+      "name": "Collision and elevation",
+      "whatItDoes": [
+        "walk",
+        "block",
+        "surf",
+        "ledge direction",
+        "elevation",
+        "manual overrides"
+      ],
+      "references": [
+        "porymap",
+        "tiled",
+        "hma"
+      ],
+      "whyNeeded": "Need an in-game route covering every engine-specific movement rule.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/model.js",
+        "dist/map-seams.js",
+        "dist/world-model.js",
+        "dist/rom-import.js",
+        "dist/rom-writer.js",
+        "dist/crop-model.js"
+      ],
+      "testEvidence": [
+        "tests/map-seams.test.js",
+        "tests/model.test.js",
+        "tests/map-border.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "porymap",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate walk with target-engine constraints.",
+        "Demonstrate block with target-engine constraints.",
+        "Need an in-game route covering every engine-specific movement rule.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MAP03",
+      "category": "Maps and world",
+      "name": "Connected-map canvas",
+      "whatItDoes": [
+        "zoom",
+        "pan",
+        "seam offset",
+        "reciprocal connection",
+        "warp navigation"
+      ],
+      "references": [
+        "porymap",
+        "tiled",
+        "hma"
+      ],
+      "whyNeeded": "Unify map browsing with editable connected-map previews on a phone.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/model.js",
+        "dist/map-seams.js",
+        "dist/world-model.js",
+        "dist/rom-import.js",
+        "dist/rom-writer.js",
+        "dist/crop-model.js"
+      ],
+      "testEvidence": [
+        "tests/map-seams.test.js",
+        "tests/model.test.js",
+        "tests/map-border.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "porymap",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate zoom with target-engine constraints.",
+        "Demonstrate pan with target-engine constraints.",
+        "Unify map browsing with editable connected-map previews on a phone.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MAP04",
+      "category": "Maps and world",
+      "name": "Map resizing and border rebuilding",
+      "whatItDoes": [
+        "crop origin",
+        "inbound warps",
+        "paths",
+        "preserved cells",
+        "border pattern"
+      ],
+      "references": [
+        "porymap",
+        "tiled",
+        "hma"
+      ],
+      "whyNeeded": "Validate intelligent room rebuilding and edge traversal in native exports.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/model.js",
+        "dist/map-seams.js",
+        "dist/world-model.js",
+        "dist/rom-import.js",
+        "dist/rom-writer.js",
+        "dist/crop-model.js"
+      ],
+      "testEvidence": [
+        "tests/map-seams.test.js",
+        "tests/model.test.js",
+        "tests/map-border.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "porymap",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate crop origin with target-engine constraints.",
+        "Demonstrate inbound warps with target-engine constraints.",
+        "Validate intelligent room rebuilding and edge traversal in native exports.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MAP05",
+      "category": "Maps and world",
+      "name": "Tileset editing and animation",
+      "whatItDoes": [
+        "metatiles",
+        "palette banks",
+        "flips",
+        "behavior",
+        "frame periods"
+      ],
+      "references": [
+        "porymap",
+        "tiled",
+        "hma"
+      ],
+      "whyNeeded": "Shared bank ownership, import budget and animation callback conflicts need one review flow.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/model.js",
+        "dist/map-seams.js",
+        "dist/world-model.js",
+        "dist/rom-import.js",
+        "dist/rom-writer.js",
+        "dist/crop-model.js"
+      ],
+      "testEvidence": [
+        "tests/map-seams.test.js",
+        "tests/model.test.js",
+        "tests/map-border.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "porymap",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate metatiles with target-engine constraints.",
+        "Demonstrate palette banks with target-engine constraints.",
+        "Shared bank ownership, import budget and animation callback conflicts need one review flow.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MAP06",
+      "category": "Maps and world",
+      "name": "Intelligent path and wall brushes",
+      "whatItDoes": [
+        "autojoin",
+        "concave corners",
+        "erasing",
+        "underlying floor",
+        "water edges"
+      ],
+      "references": [
+        "porymap",
+        "tiled",
+        "hma"
+      ],
+      "whyNeeded": "Prove southern water shoreline and half-tile surf behavior on supplied project data.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/model.js",
+        "dist/map-seams.js",
+        "dist/world-model.js",
+        "dist/rom-import.js",
+        "dist/rom-writer.js",
+        "dist/crop-model.js"
+      ],
+      "testEvidence": [
+        "tests/map-seams.test.js",
+        "tests/model.test.js",
+        "tests/map-border.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "porymap",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate autojoin with target-engine constraints.",
+        "Demonstrate concave corners with target-engine constraints.",
+        "Prove southern water shoreline and half-tile surf behavior on supplied project data.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MAP07",
+      "category": "Maps and world",
+      "name": "Reusable objects and interiors",
+      "whatItDoes": [
+        "footprint",
+        "collision mask",
+        "entrance",
+        "linked room",
+        "edit versus duplicate"
+      ],
+      "references": [
+        "porymap",
+        "tiled",
+        "hma"
+      ],
+      "whyNeeded": "Device library and native placement coverage need combined acceptance.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/model.js",
+        "dist/map-seams.js",
+        "dist/world-model.js",
+        "dist/rom-import.js",
+        "dist/rom-writer.js",
+        "dist/crop-model.js"
+      ],
+      "testEvidence": [
+        "tests/map-seams.test.js",
+        "tests/model.test.js",
+        "tests/map-border.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "porymap",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate footprint with target-engine constraints.",
+        "Demonstrate collision mask with target-engine constraints.",
+        "Device library and native placement coverage need combined acceptance.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MAP08",
+      "category": "Maps and world",
+      "name": "Generation and progression",
+      "whatItDoes": [
+        "seeds",
+        "biomes",
+        "towns",
+        "caves",
+        "facilities",
+        "encounters",
+        "reachable exits"
+      ],
+      "references": [
+        "porymap",
+        "tiled",
+        "hma"
+      ],
+      "whyNeeded": "Generation has tests; procedural output still needs whole-world playability validation.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/model.js",
+        "dist/map-seams.js",
+        "dist/world-model.js",
+        "dist/rom-import.js",
+        "dist/rom-writer.js",
+        "dist/crop-model.js"
+      ],
+      "testEvidence": [
+        "tests/map-seams.test.js",
+        "tests/model.test.js",
+        "tests/map-border.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "porymap",
+      "complexity": "L",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "Demonstrate seeds with target-engine constraints.",
+        "Demonstrate biomes with target-engine constraints.",
+        "Generation has tests; procedural output still needs whole-world playability validation.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MAP09",
+      "category": "Maps and world",
+      "name": "Source map authoring interchange",
+      "whatItDoes": [
+        "map.json",
+        "layout blocks",
+        "events",
+        "constants",
+        "connection files"
+      ],
+      "references": [
+        "porymap",
+        "tiled",
+        "hma"
+      ],
+      "whyNeeded": "Source export currently preserves maps instead of converting Studio map edits.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/model.js",
+        "dist/map-seams.js",
+        "dist/world-model.js",
+        "dist/rom-import.js",
+        "dist/rom-writer.js",
+        "dist/crop-model.js"
+      ],
+      "testEvidence": [
+        "tests/map-seams.test.js",
+        "tests/model.test.js",
+        "tests/map-border.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "porymap",
+      "complexity": "XL",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate map.json with target-engine constraints.",
+        "Demonstrate layout blocks with target-engine constraints.",
+        "Source export currently preserves maps instead of converting Studio map edits.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MAP10",
+      "category": "Maps and world",
+      "name": "Map metadata and search",
+      "whatItDoes": [
+        "weather",
+        "darkness",
+        "music",
+        "locations",
+        "heal spots",
+        "dive/emerge",
+        "labels"
+      ],
+      "references": [
+        "porymap",
+        "tiled",
+        "hma"
+      ],
+      "whyNeeded": "Inventory which fields have engine writers and expose unavailable ones honestly.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/model.js",
+        "dist/map-seams.js",
+        "dist/world-model.js",
+        "dist/rom-import.js",
+        "dist/rom-writer.js",
+        "dist/crop-model.js"
+      ],
+      "testEvidence": [
+        "tests/map-seams.test.js",
+        "tests/model.test.js",
+        "tests/map-border.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "porymap",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate weather with target-engine constraints.",
+        "Demonstrate darkness with target-engine constraints.",
+        "Inventory which fields have engine writers and expose unavailable ones honestly.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "EVT01",
+      "category": "Existing events and scripting",
+      "name": "Discover every native event root",
+      "whatItDoes": [
+        "NPC",
+        "sign",
+        "trigger",
+        "map entry",
+        "conditional header",
+        "off-map actor"
+      ],
+      "references": [
+        "hma",
+        "poryscript",
+        "essentials"
+      ],
+      "whyNeeded": "Discovery is bounded; show counts, skipped roots and reasons per map.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/native-story.js",
+        "dist/story-flow.js",
+        "dist/story-flow-ui.js",
+        "dist/script-engine.js",
+        "dist/script-data.js",
+        "dist/story-readable.js"
+      ],
+      "testEvidence": [
+        "tests/story.test.js",
+        "tests/story-reconcile.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate NPC with target-engine constraints.",
+        "Demonstrate sign with target-engine constraints.",
+        "Discovery is bounded; show counts, skipped roots and reasons per map.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "EVT02",
+      "category": "Existing events and scripting",
+      "name": "Edit imported event steps visually",
+      "whatItDoes": [
+        "text",
+        "args",
+        "branches",
+        "insert",
+        "delete",
+        "reorder",
+        "shared roots"
+      ],
+      "references": [
+        "hma",
+        "poryscript",
+        "essentials"
+      ],
+      "whyNeeded": "Flow editing exists; current Shattered end-to-end event benchmark is unexecuted.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/native-story.js",
+        "dist/story-flow.js",
+        "dist/story-flow-ui.js",
+        "dist/script-engine.js",
+        "dist/script-data.js",
+        "dist/story-readable.js"
+      ],
+      "testEvidence": [
+        "tests/story.test.js",
+        "tests/story-reconcile.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate text with target-engine constraints.",
+        "Demonstrate args with target-engine constraints.",
+        "Flow editing exists; current Shattered end-to-end event benchmark is unexecuted.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "EVT03",
+      "category": "Existing events and scripting",
+      "name": "Unknown script preservation",
+      "whatItDoes": [
+        "opaque node",
+        "original bytes",
+        "boundary",
+        "native call",
+        "read-only reason"
+      ],
+      "references": [
+        "hma",
+        "poryscript",
+        "essentials"
+      ],
+      "whyNeeded": "Opaque nodes are retained but unknown instruction length cannot be guessed; reject unsafe relocation and prove adjacent edits.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/native-story.js",
+        "dist/story-flow.js",
+        "dist/story-flow-ui.js",
+        "dist/script-engine.js",
+        "dist/script-data.js",
+        "dist/story-readable.js"
+      ],
+      "testEvidence": [
+        "tests/story.test.js",
+        "tests/story-reconcile.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate opaque node with target-engine constraints.",
+        "Demonstrate original bytes with target-engine constraints.",
+        "Opaque nodes are retained but unknown instruction length cannot be guessed; reject unsafe relocation and prove adjacent edits.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "EVT04",
+      "category": "Existing events and scripting",
+      "name": "Multiple event pages and precedence",
+      "whatItDoes": [
+        "ordered conditions",
+        "self switches",
+        "active appearance",
+        "trigger",
+        "page fallback"
+      ],
+      "references": [
+        "hma",
+        "poryscript",
+        "essentials"
+      ],
+      "whyNeeded": "Draft PR #11 needs reconciliation; a native flow graph does not provide full RPG Maker page semantics.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/native-story.js",
+        "dist/story-flow.js",
+        "dist/story-flow-ui.js",
+        "dist/script-engine.js",
+        "dist/script-data.js",
+        "dist/story-readable.js"
+      ],
+      "testEvidence": [
+        "tests/story.test.js",
+        "tests/story-reconcile.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate ordered conditions with target-engine constraints.",
+        "Demonstrate self switches with target-engine constraints.",
+        "Draft PR #11 needs reconciliation; a native flow graph does not provide full RPG Maker page semantics.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "EVT05",
+      "category": "Existing events and scripting",
+      "name": "Advanced script text and diagnostics",
+      "whatItDoes": [
+        "labels",
+        "raw directives",
+        "constants",
+        "line errors",
+        "assembly view"
+      ],
+      "references": [
+        "hma",
+        "poryscript",
+        "essentials"
+      ],
+      "whyNeeded": "Prove text/visual equivalence and source locations after structural editing.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/native-story.js",
+        "dist/story-flow.js",
+        "dist/story-flow-ui.js",
+        "dist/script-engine.js",
+        "dist/script-data.js",
+        "dist/story-readable.js"
+      ],
+      "testEvidence": [
+        "tests/story.test.js",
+        "tests/story-reconcile.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate labels with target-engine constraints.",
+        "Demonstrate raw directives with target-engine constraints.",
+        "Prove text/visual equivalence and source locations after structural editing.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "EVT06",
+      "category": "Existing events and scripting",
+      "name": "Symbolic flags and variables",
+      "whatItDoes": [
+        "names",
+        "ownership",
+        "range",
+        "defaults",
+        "reserved values",
+        "cross references"
+      ],
+      "references": [
+        "hma",
+        "poryscript",
+        "essentials"
+      ],
+      "whyNeeded": "Unify allocation and naming across quests, scenes, native scripts and engine extensions.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/native-story.js",
+        "dist/story-flow.js",
+        "dist/story-flow-ui.js",
+        "dist/script-engine.js",
+        "dist/script-data.js",
+        "dist/story-readable.js"
+      ],
+      "testEvidence": [
+        "tests/story.test.js",
+        "tests/story-reconcile.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate names with target-engine constraints.",
+        "Demonstrate ownership with target-engine constraints.",
+        "Unify allocation and naming across quests, scenes, native scripts and engine extensions.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "EVT07",
+      "category": "Existing events and scripting",
+      "name": "Reusable common routines",
+      "whatItDoes": [
+        "call",
+        "return",
+        "shared text",
+        "parameter inputs",
+        "recursion limits"
+      ],
+      "references": [
+        "hma",
+        "poryscript",
+        "essentials"
+      ],
+      "whyNeeded": "Add where-used and detach versus shared edit choices before changing a shared script.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/native-story.js",
+        "dist/story-flow.js",
+        "dist/story-flow-ui.js",
+        "dist/script-engine.js",
+        "dist/script-data.js",
+        "dist/story-readable.js"
+      ],
+      "testEvidence": [
+        "tests/story.test.js",
+        "tests/story-reconcile.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate call with target-engine constraints.",
+        "Demonstrate return with target-engine constraints.",
+        "Add where-used and detach versus shared edit choices before changing a shared script.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "EVT08",
+      "category": "Existing events and scripting",
+      "name": "Native event reimport equivalence",
+      "whatItDoes": [
+        "root identity",
+        "source signatures",
+        "relocated entry",
+        "unknown data"
+      ],
+      "references": [
+        "hma",
+        "poryscript",
+        "essentials"
+      ],
+      "whyNeeded": "Need semantic and byte-preservation checks against actual modified Shattered events.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/native-story.js",
+        "dist/story-flow.js",
+        "dist/story-flow-ui.js",
+        "dist/script-engine.js",
+        "dist/script-data.js",
+        "dist/story-readable.js"
+      ],
+      "testEvidence": [
+        "tests/story.test.js",
+        "tests/story-reconcile.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate root identity with target-engine constraints.",
+        "Demonstrate source signatures with target-engine constraints.",
+        "Need semantic and byte-preservation checks against actual modified Shattered events.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "SCN01",
+      "category": "Scenes and visual authoring",
+      "name": "Draw actor movement paths",
+      "whatItDoes": [
+        "map waypoints",
+        "directions",
+        "collision",
+        "facing",
+        "speed",
+        "wait"
+      ],
+      "references": [
+        "essentials",
+        "poryscript",
+        "hma"
+      ],
+      "whyNeeded": "Actor ownership and path interruption need native acceptance.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/authoring-model.js",
+        "dist/scene-compiler.js",
+        "dist/scene-ui.js",
+        "dist/scene-map-ui.js",
+        "dist/scene-outline.js",
+        "dist/native-timeline.js"
+      ],
+      "testEvidence": [
+        "tests/authoring.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "M",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate map waypoints with target-engine constraints.",
+        "Demonstrate directions with target-engine constraints.",
+        "Actor ownership and path interruption need native acceptance.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SCN02",
+      "category": "Scenes and visual authoring",
+      "name": "Concurrent actor/action tracks",
+      "whatItDoes": [
+        "movement start",
+        "join",
+        "wait",
+        "cancellation",
+        "dialogue timing",
+        "camera"
+      ],
+      "references": [
+        "essentials",
+        "poryscript",
+        "hma"
+      ],
+      "whyNeeded": "Sequential scene steps and image timelines do not prove a general scheduler for simultaneous NPC actions.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/authoring-model.js",
+        "dist/scene-compiler.js",
+        "dist/scene-ui.js",
+        "dist/scene-map-ui.js",
+        "dist/scene-outline.js",
+        "dist/native-timeline.js"
+      ],
+      "testEvidence": [
+        "tests/authoring.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate movement start with target-engine constraints.",
+        "Demonstrate join with target-engine constraints.",
+        "Sequential scene steps and image timelines do not prove a general scheduler for simultaneous NPC actions.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SCN03",
+      "category": "Scenes and visual authoring",
+      "name": "Branching and persistent consequences",
+      "whatItDoes": [
+        "choices",
+        "cancel",
+        "nested branch",
+        "counter",
+        "flag",
+        "gate",
+        "item requirement"
+      ],
+      "references": [
+        "essentials",
+        "poryscript",
+        "hma"
+      ],
+      "whyNeeded": "Verify all branches, re-entry and saved outcomes in a running game.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/authoring-model.js",
+        "dist/scene-compiler.js",
+        "dist/scene-ui.js",
+        "dist/scene-map-ui.js",
+        "dist/scene-outline.js",
+        "dist/native-timeline.js"
+      ],
+      "testEvidence": [
+        "tests/authoring.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate choices with target-engine constraints.",
+        "Demonstrate cancel with target-engine constraints.",
+        "Verify all branches, re-entry and saved outcomes in a running game.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SCN04",
+      "category": "Scenes and visual authoring",
+      "name": "Camera, screen and audio cues",
+      "whatItDoes": [
+        "pan",
+        "follow",
+        "shake",
+        "fade",
+        "wait",
+        "cry",
+        "fanfare",
+        "stop"
+      ],
+      "references": [
+        "essentials",
+        "poryscript",
+        "hma"
+      ],
+      "whyNeeded": "Provide per-engine command support and timing preview rather than treating UI preview as gameplay.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/authoring-model.js",
+        "dist/scene-compiler.js",
+        "dist/scene-ui.js",
+        "dist/scene-map-ui.js",
+        "dist/scene-outline.js",
+        "dist/native-timeline.js"
+      ],
+      "testEvidence": [
+        "tests/authoring.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate pan with target-engine constraints.",
+        "Demonstrate follow with target-engine constraints.",
+        "Provide per-engine command support and timing preview rather than treating UI preview as gameplay.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SCN05",
+      "category": "Scenes and visual authoring",
+      "name": "Dialogue editing and localisation",
+      "whatItDoes": [
+        "tokens",
+        "wrapping",
+        "pages",
+        "speaker context",
+        "search",
+        "character limits"
+      ],
+      "references": [
+        "essentials",
+        "poryscript",
+        "hma"
+      ],
+      "whyNeeded": "Native glyph/control support and translated expansion text need validation.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/authoring-model.js",
+        "dist/scene-compiler.js",
+        "dist/scene-ui.js",
+        "dist/scene-map-ui.js",
+        "dist/scene-outline.js",
+        "dist/native-timeline.js"
+      ],
+      "testEvidence": [
+        "tests/authoring.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate tokens with target-engine constraints.",
+        "Demonstrate wrapping with target-engine constraints.",
+        "Native glyph/control support and translated expansion text need validation.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SCN06",
+      "category": "Scenes and visual authoring",
+      "name": "Scene debugger",
+      "whatItDoes": [
+        "breakpoint",
+        "step",
+        "actor track",
+        "watch variable",
+        "simulated conditions",
+        "source origin"
+      ],
+      "references": [
+        "essentials",
+        "poryscript",
+        "hma"
+      ],
+      "whyNeeded": "Current previews are bounded simulations; implement trace-backed debugging for supported commands.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/authoring-model.js",
+        "dist/scene-compiler.js",
+        "dist/scene-ui.js",
+        "dist/scene-map-ui.js",
+        "dist/scene-outline.js",
+        "dist/native-timeline.js"
+      ],
+      "testEvidence": [
+        "tests/authoring.test.js",
+        "tests/scene-outline.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "XL",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate breakpoint with target-engine constraints.",
+        "Demonstrate step with target-engine constraints.",
+        "Current previews are bounded simulations; implement trace-backed debugging for supported commands.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "QST01",
+      "category": "Quests and reusable recipes",
+      "name": "Quest prerequisites and stages",
+      "whatItDoes": [
+        "named stages",
+        "acceptance",
+        "refusal",
+        "completion",
+        "dependencies",
+        "saved flags"
+      ],
+      "references": [
+        "essentials",
+        "hma"
+      ],
+      "whyNeeded": "Needs player-readable condition editor and runtime acceptance on current Shattered.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/quest-model.js",
+        "dist/quest-presets.js",
+        "dist/quest-runtime.js",
+        "dist/event-recipes.js",
+        "dist/event-model.js"
+      ],
+      "testEvidence": [
+        "tests/quest-presets.test.js",
+        "tests/event-recipes.test.js",
+        "tests/scene-item-award.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate named stages with target-engine constraints.",
+        "Demonstrate acceptance with target-engine constraints.",
+        "Needs player-readable condition editor and runtime acceptance on current Shattered.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "QST02",
+      "category": "Quests and reusable recipes",
+      "name": "Item reward recipe",
+      "whatItDoes": [
+        "correct fanfare",
+        "obtained dialogue",
+        "bag-full",
+        "one-time success flag",
+        "amount"
+      ],
+      "references": [
+        "essentials",
+        "hma"
+      ],
+      "whyNeeded": "Preserve engine-specific receipt behavior and test failure/retry paths in game.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/quest-model.js",
+        "dist/quest-presets.js",
+        "dist/quest-runtime.js",
+        "dist/event-recipes.js",
+        "dist/event-model.js"
+      ],
+      "testEvidence": [
+        "tests/quest-presets.test.js",
+        "tests/event-recipes.test.js",
+        "tests/scene-item-award.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "M",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate correct fanfare with target-engine constraints.",
+        "Demonstrate obtained dialogue with target-engine constraints.",
+        "Preserve engine-specific receipt behavior and test failure/retry paths in game.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "QST03",
+      "category": "Quests and reusable recipes",
+      "name": "Repeatable and timed quests",
+      "whatItDoes": [
+        "daily reset",
+        "timer",
+        "cooldown",
+        "revisit",
+        "item consumption",
+        "abandon"
+      ],
+      "references": [
+        "essentials",
+        "hma"
+      ],
+      "whyNeeded": "Native clock and persisted reset semantics are engine-specific and not generally verified.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/quest-model.js",
+        "dist/quest-presets.js",
+        "dist/quest-runtime.js",
+        "dist/event-recipes.js",
+        "dist/event-model.js"
+      ],
+      "testEvidence": [
+        "tests/quest-presets.test.js",
+        "tests/event-recipes.test.js",
+        "tests/scene-item-award.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "L",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "Demonstrate daily reset with target-engine constraints.",
+        "Demonstrate timer with target-engine constraints.",
+        "Native clock and persisted reset semantics are engine-specific and not generally verified.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "QST04",
+      "category": "Quests and reusable recipes",
+      "name": "Achievement and journal UI",
+      "whatItDoes": [
+        "progress",
+        "discoverability",
+        "description",
+        "HUD notification",
+        "claim reward"
+      ],
+      "references": [
+        "essentials",
+        "hma"
+      ],
+      "whyNeeded": "Quest data alone does not establish a native journal or achievement screen.",
+      "status": "ui_only_or_design",
+      "sourceEvidence": [
+        "dist/quest-model.js",
+        "dist/quest-presets.js",
+        "dist/quest-runtime.js",
+        "dist/event-recipes.js",
+        "dist/event-model.js"
+      ],
+      "testEvidence": [
+        "tests/quest-presets.test.js",
+        "tests/event-recipes.test.js",
+        "tests/scene-item-award.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "L",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "Demonstrate progress with target-engine constraints.",
+        "Demonstrate discoverability with target-engine constraints.",
+        "Quest data alone does not establish a native journal or achievement screen.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "QST05",
+      "category": "Quests and reusable recipes",
+      "name": "Recipe library composition",
+      "whatItDoes": [
+        "shop",
+        "heal",
+        "gift",
+        "lock",
+        "checkpoint",
+        "trainer",
+        "party-full"
+      ],
+      "references": [
+        "essentials",
+        "hma"
+      ],
+      "whyNeeded": "Each composed template needs dependencies and preflight diagnostics instead of duplicate script writers.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/quest-model.js",
+        "dist/quest-presets.js",
+        "dist/quest-runtime.js",
+        "dist/event-recipes.js",
+        "dist/event-model.js"
+      ],
+      "testEvidence": [
+        "tests/quest-presets.test.js",
+        "tests/event-recipes.test.js",
+        "tests/scene-item-award.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "essentials",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate shop with target-engine constraints.",
+        "Demonstrate heal with target-engine constraints.",
+        "Each composed template needs dependencies and preflight diagnostics instead of duplicate script writers.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "NPC01",
+      "category": "NPCs, trainers and encounters",
+      "name": "NPC appearance and placement",
+      "whatItDoes": [
+        "person",
+        "player",
+        "Pokémon",
+        "facing",
+        "sprite size",
+        "local ID",
+        "hidden flag"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "essentials"
+      ],
+      "whyNeeded": "Verify expanded Pokémon OW profiles and distinguish missing artwork from unsupported engine format.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-ui.js",
+        "dist/npc-picker.js",
+        "dist/rom-npc-profile.js",
+        "dist/event-model.js",
+        "dist/game-edits.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/rom-items.test.js",
+        "tests/field.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate person with target-engine constraints.",
+        "Demonstrate player with target-engine constraints.",
+        "Verify expanded Pokémon OW profiles and distinguish missing artwork from unsupported engine format.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "NPC02",
+      "category": "NPCs, trainers and encounters",
+      "name": "Trainer team authoring",
+      "whatItDoes": [
+        "species",
+        "levels",
+        "moves",
+        "held items",
+        "IVs",
+        "party format",
+        "double battles"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "essentials"
+      ],
+      "whyNeeded": "Some expanded teams are supported; need create/duplicate/rematch identity and legal engine bounds tests.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-ui.js",
+        "dist/npc-picker.js",
+        "dist/rom-npc-profile.js",
+        "dist/event-model.js",
+        "dist/game-edits.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/rom-items.test.js",
+        "tests/field.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate species with target-engine constraints.",
+        "Demonstrate levels with target-engine constraints.",
+        "Some expanded teams are supported; need create/duplicate/rematch identity and legal engine bounds tests.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "NPC03",
+      "category": "NPCs, trainers and encounters",
+      "name": "Trainer encounter behavior",
+      "whatItDoes": [
+        "line-of-sight",
+        "range",
+        "approach",
+        "facing",
+        "battle",
+        "defeat/rematch dialogue"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "essentials"
+      ],
+      "whyNeeded": "Expose behavior without manual script flags and validate victory/loss/re-entry.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-ui.js",
+        "dist/npc-picker.js",
+        "dist/rom-npc-profile.js",
+        "dist/event-model.js",
+        "dist/game-edits.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/rom-items.test.js",
+        "tests/field.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate line-of-sight with target-engine constraints.",
+        "Demonstrate range with target-engine constraints.",
+        "Expose behavior without manual script flags and validate victory/loss/re-entry.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "NPC04",
+      "category": "NPCs, trainers and encounters",
+      "name": "Encounters and habitats",
+      "whatItDoes": [
+        "slots",
+        "rates",
+        "day/night",
+        "water",
+        "fishing",
+        "repel",
+        "conditional tables"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "essentials"
+      ],
+      "whyNeeded": "Separate vanilla encounter records from expansion-specific formats and generated encounter plans.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-ui.js",
+        "dist/npc-picker.js",
+        "dist/rom-npc-profile.js",
+        "dist/event-model.js",
+        "dist/game-edits.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/rom-items.test.js",
+        "tests/field.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate slots with target-engine constraints.",
+        "Demonstrate rates with target-engine constraints.",
+        "Separate vanilla encounter records from expansion-specific formats and generated encounter plans.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "NPC05",
+      "category": "NPCs, trainers and encounters",
+      "name": "NPC identity/context search",
+      "whatItDoes": [
+        "sprite thumbnail",
+        "dialogue snippet",
+        "map",
+        "root",
+        "trainer reference"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "essentials"
+      ],
+      "whyNeeded": "Need a uniform selection workflow that avoids ambiguous unnamed Character N entries.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-ui.js",
+        "dist/npc-picker.js",
+        "dist/rom-npc-profile.js",
+        "dist/event-model.js",
+        "dist/game-edits.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/rom-items.test.js",
+        "tests/field.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "M",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate sprite thumbnail with target-engine constraints.",
+        "Demonstrate dialogue snippet with target-engine constraints.",
+        "Need a uniform selection workflow that avoids ambiguous unnamed Character N entries.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "MON01",
+      "category": "Pokémon and moves",
+      "name": "Species base data",
+      "whatItDoes": [
+        "types",
+        "six stats",
+        "catch",
+        "experience",
+        "growth",
+        "gender",
+        "egg",
+        "held items"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "emerald",
+        "cfru"
+      ],
+      "whyNeeded": "Table profiles vary; expose all supported fields and reject fields without a verified writer.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-edits.js",
+        "dist/creature-model.js",
+        "dist/expanded-form-native.js",
+        "dist/ability-native.js"
+      ],
+      "testEvidence": [
+        "tests/learnset-tools.test.js",
+        "tests/creature-import.test.js",
+        "tests/sprite-workbench.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate types with target-engine constraints.",
+        "Demonstrate six stats with target-engine constraints.",
+        "Table profiles vary; expose all supported fields and reject fields without a verified writer.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MON02",
+      "category": "Pokémon and moves",
+      "name": "Learnsets and teaching",
+      "whatItDoes": [
+        "level",
+        "TM/HM",
+        "tutor",
+        "egg",
+        "move order",
+        "duplicate handling"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "emerald",
+        "cfru"
+      ],
+      "whyNeeded": "Prove all teachability paths in each target engine and preserve unknown fields.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-edits.js",
+        "dist/creature-model.js",
+        "dist/expanded-form-native.js",
+        "dist/ability-native.js"
+      ],
+      "testEvidence": [
+        "tests/learnset-tools.test.js",
+        "tests/creature-import.test.js",
+        "tests/sprite-workbench.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate level with target-engine constraints.",
+        "Demonstrate TM/HM with target-engine constraints.",
+        "Prove all teachability paths in each target engine and preserve unknown fields.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MON03",
+      "category": "Pokémon and moves",
+      "name": "Evolutions and alternate forms",
+      "whatItDoes": [
+        "method",
+        "item",
+        "level",
+        "time",
+        "target",
+        "empty slot",
+        "art",
+        "palette"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "emerald",
+        "cfru"
+      ],
+      "whyNeeded": "Slot availability, save layout and evolution runtime need actual game validation.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-edits.js",
+        "dist/creature-model.js",
+        "dist/expanded-form-native.js",
+        "dist/ability-native.js"
+      ],
+      "testEvidence": [
+        "tests/learnset-tools.test.js",
+        "tests/creature-import.test.js",
+        "tests/sprite-workbench.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate method with target-engine constraints.",
+        "Demonstrate item with target-engine constraints.",
+        "Slot availability, save layout and evolution runtime need actual game validation.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MON04",
+      "category": "Pokémon and moves",
+      "name": "Pokédex entries and ordering",
+      "whatItDoes": [
+        "name",
+        "category",
+        "height",
+        "weight",
+        "text",
+        "seen/caught",
+        "regional order"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "emerald",
+        "cfru"
+      ],
+      "whyNeeded": "Editing a creature design is not proof of all native dex-table writers.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-edits.js",
+        "dist/creature-model.js",
+        "dist/expanded-form-native.js",
+        "dist/ability-native.js"
+      ],
+      "testEvidence": [
+        "tests/learnset-tools.test.js",
+        "tests/creature-import.test.js",
+        "tests/sprite-workbench.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate name with target-engine constraints.",
+        "Demonstrate category with target-engine constraints.",
+        "Editing a creature design is not proof of all native dex-table writers.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MON05",
+      "category": "Pokémon and moves",
+      "name": "Move properties",
+      "whatItDoes": [
+        "power",
+        "accuracy",
+        "PP",
+        "type",
+        "target",
+        "priority",
+        "flags",
+        "category"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "emerald",
+        "cfru"
+      ],
+      "whyNeeded": "Profiles must retain engine-specific stride and flags.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-edits.js",
+        "dist/creature-model.js",
+        "dist/expanded-form-native.js",
+        "dist/ability-native.js"
+      ],
+      "testEvidence": [
+        "tests/learnset-tools.test.js",
+        "tests/creature-import.test.js",
+        "tests/sprite-workbench.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate power with target-engine constraints.",
+        "Demonstrate accuracy with target-engine constraints.",
+        "Profiles must retain engine-specific stride and flags.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MON06",
+      "category": "Pokémon and moves",
+      "name": "Custom move effects and animations",
+      "whatItDoes": [
+        "effect scripts",
+        "native hook",
+        "animation script",
+        "hit timing",
+        "sound"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "emerald",
+        "cfru"
+      ],
+      "whyNeeded": "Numeric effect selection is not arbitrary effect authoring; isolate reviewed extension hooks.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-edits.js",
+        "dist/creature-model.js",
+        "dist/expanded-form-native.js",
+        "dist/ability-native.js"
+      ],
+      "testEvidence": [
+        "tests/learnset-tools.test.js",
+        "tests/creature-import.test.js",
+        "tests/sprite-workbench.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "Demonstrate effect scripts with target-engine constraints.",
+        "Demonstrate native hook with target-engine constraints.",
+        "Numeric effect selection is not arbitrary effect authoring; isolate reviewed extension hooks.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MON07",
+      "category": "Pokémon and moves",
+      "name": "Custom ability designs and native hooks",
+      "whatItDoes": [
+        "trigger",
+        "condition",
+        "multiplier",
+        "event alias",
+        "name",
+        "description"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "emerald",
+        "cfru"
+      ],
+      "whyNeeded": "Native compiler is guarded to a specific Shattered profile and excludes HUMAN binding; general engine parity absent.",
+      "status": "engine_limited",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-edits.js",
+        "dist/creature-model.js",
+        "dist/expanded-form-native.js",
+        "dist/ability-native.js"
+      ],
+      "testEvidence": [
+        "tests/learnset-tools.test.js",
+        "tests/creature-import.test.js",
+        "tests/sprite-workbench.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate trigger with target-engine constraints.",
+        "Demonstrate condition with target-engine constraints.",
+        "Native compiler is guarded to a specific Shattered profile and excludes HUMAN binding; general engine parity absent.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "MON08",
+      "category": "Pokémon and moves",
+      "name": "Rebalancing and data dependencies",
+      "whatItDoes": [
+        "bulk rules",
+        "where-used",
+        "evolution graph",
+        "compatibility",
+        "warnings",
+        "rollback"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "emerald",
+        "cfru"
+      ],
+      "whyNeeded": "Prefer data-level transforms with preview and one authoritative writer.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/game-edits.js",
+        "dist/creature-model.js",
+        "dist/expanded-form-native.js",
+        "dist/ability-native.js"
+      ],
+      "testEvidence": [
+        "tests/learnset-tools.test.js",
+        "tests/creature-import.test.js",
+        "tests/sprite-workbench.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "Demonstrate bulk rules with target-engine constraints.",
+        "Demonstrate where-used with target-engine constraints.",
+        "Prefer data-level transforms with preview and one authoritative writer.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ITM01",
+      "category": "Items, equipment and economy",
+      "name": "Native item data and icons",
+      "whatItDoes": [
+        "name",
+        "price",
+        "description",
+        "pocket",
+        "flags",
+        "held effect",
+        "icon"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru"
+      ],
+      "whyNeeded": "Verify expanded item records and actual field/battle use instead of only inventory insertion.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/item-maker.js",
+        "dist/authoring-native.js",
+        "dist/rom-items.js",
+        "dist/shattered-adapter.js",
+        "dist/event-recipes.js"
+      ],
+      "testEvidence": [
+        "tests/rom-items.test.js",
+        "tests/scene-item-award.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate name with target-engine constraints.",
+        "Demonstrate price with target-engine constraints.",
+        "Verify expanded item records and actual field/battle use instead of only inventory insertion.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ITM02",
+      "category": "Items, equipment and economy",
+      "name": "Shops and rewards",
+      "whatItDoes": [
+        "stock",
+        "quantities",
+        "money checks",
+        "unlock",
+        "bag-full",
+        "receipt"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru"
+      ],
+      "whyNeeded": "Need successful purchase, insufficient money and retry tests in a running game.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/item-maker.js",
+        "dist/authoring-native.js",
+        "dist/rom-items.js",
+        "dist/shattered-adapter.js",
+        "dist/event-recipes.js"
+      ],
+      "testEvidence": [
+        "tests/rom-items.test.js",
+        "tests/scene-item-award.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate stock with target-engine constraints.",
+        "Demonstrate quantities with target-engine constraints.",
+        "Need successful purchase, insufficient money and retry tests in a running game.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ITM03",
+      "category": "Items, equipment and economy",
+      "name": "Equipment-granted moves",
+      "whatItDoes": [
+        "slot",
+        "equip condition",
+        "technique",
+        "removal",
+        "battle refresh"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru"
+      ],
+      "whyNeeded": "Shattered tables require pinned metadata and native behavior tests; not a stock Pokémon item capability.",
+      "status": "engine_limited",
+      "sourceEvidence": [
+        "dist/item-maker.js",
+        "dist/authoring-native.js",
+        "dist/rom-items.js",
+        "dist/shattered-adapter.js",
+        "dist/event-recipes.js"
+      ],
+      "testEvidence": [
+        "tests/rom-items.test.js",
+        "tests/scene-item-award.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate slot with target-engine constraints.",
+        "Demonstrate equip condition with target-engine constraints.",
+        "Shattered tables require pinned metadata and native behavior tests; not a stock Pokémon item capability.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ITM04",
+      "category": "Items, equipment and economy",
+      "name": "Crafting and recipes",
+      "whatItDoes": [
+        "ingredients",
+        "output",
+        "stations",
+        "requirements",
+        "lossless failure",
+        "discovery"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru"
+      ],
+      "whyNeeded": "Optional engine extension after basic rewards/equipment acceptance.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/item-maker.js",
+        "dist/authoring-native.js",
+        "dist/rom-items.js",
+        "dist/shattered-adapter.js",
+        "dist/event-recipes.js"
+      ],
+      "testEvidence": [
+        "tests/rom-items.test.js",
+        "tests/scene-item-award.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P3",
+      "acceptanceCriteria": [
+        "Demonstrate ingredients with target-engine constraints.",
+        "Demonstrate output with target-engine constraints.",
+        "Optional engine extension after basic rewards/equipment acceptance.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ITM05",
+      "category": "Items, equipment and economy",
+      "name": "Economy balancing and ownership",
+      "whatItDoes": [
+        "prices",
+        "consumable",
+        "key item",
+        "reusable",
+        "stock progression"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru"
+      ],
+      "whyNeeded": "Add reference checks for deleted/changed items in scripts and shops.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/item-maker.js",
+        "dist/authoring-native.js",
+        "dist/rom-items.js",
+        "dist/shattered-adapter.js",
+        "dist/event-recipes.js"
+      ],
+      "testEvidence": [
+        "tests/rom-items.test.js",
+        "tests/scene-item-award.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "M",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "Demonstrate prices with target-engine constraints.",
+        "Demonstrate consumable with target-engine constraints.",
+        "Add reference checks for deleted/changed items in scripts and shops.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ART01",
+      "category": "Sprites, animation and palettes",
+      "name": "Touch pixel-edit workspace",
+      "whatItDoes": [
+        "pinch zoom",
+        "pan",
+        "anchored palette",
+        "collapsible tools",
+        "thumb reach",
+        "stylus"
+      ],
+      "references": [
+        "pixelorama",
+        "libresprite",
+        "hma"
+      ],
+      "whyNeeded": "Repeated user complaints require measured phone acceptance; branch UI is not proof of later APK behavior.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/sprite-workbench.js",
+        "dist/sprite-ui.js",
+        "dist/native-sprites.js",
+        "dist/native-palette-pair.js",
+        "dist/sprite-png.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-workbench.test.js",
+        "tests/sprite-reference-validation.test.js",
+        "tests/palette-conversion.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "pixelorama",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate pinch zoom with target-engine constraints.",
+        "Demonstrate pan with target-engine constraints.",
+        "Repeated user complaints require measured phone acceptance; branch UI is not proof of later APK behavior.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ART02",
+      "category": "Sprites, animation and palettes",
+      "name": "Painting and selection tools",
+      "whatItDoes": [
+        "pencil",
+        "erase",
+        "fill",
+        "pick",
+        "line",
+        "box",
+        "mirror",
+        "copy",
+        "nudge",
+        "flip"
+      ],
+      "references": [
+        "pixelorama",
+        "libresprite",
+        "hma"
+      ],
+      "whyNeeded": "Selection/gesture undo and viewport clipping need Android interaction tests.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/sprite-workbench.js",
+        "dist/sprite-ui.js",
+        "dist/native-sprites.js",
+        "dist/native-palette-pair.js",
+        "dist/sprite-png.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-workbench.test.js",
+        "tests/sprite-reference-validation.test.js",
+        "tests/palette-conversion.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "pixelorama",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate pencil with target-engine constraints.",
+        "Demonstrate erase with target-engine constraints.",
+        "Selection/gesture undo and viewport clipping need Android interaction tests.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ART03",
+      "category": "Sprites, animation and palettes",
+      "name": "Layers and clothing",
+      "whatItDoes": [
+        "base",
+        "top",
+        "bottom",
+        "clipping",
+        "visibility",
+        "linked walking frames"
+      ],
+      "references": [
+        "pixelorama",
+        "libresprite",
+        "hma"
+      ],
+      "whyNeeded": "Project layers exist; current player/outfit accessibility and native frame mapping need proof.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/sprite-workbench.js",
+        "dist/sprite-ui.js",
+        "dist/native-sprites.js",
+        "dist/native-palette-pair.js",
+        "dist/sprite-png.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-workbench.test.js",
+        "tests/sprite-reference-validation.test.js",
+        "tests/palette-conversion.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "pixelorama",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate base with target-engine constraints.",
+        "Demonstrate top with target-engine constraints.",
+        "Project layers exist; current player/outfit accessibility and native frame mapping need proof.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ART04",
+      "category": "Sprites, animation and palettes",
+      "name": "Tracing and comparison references",
+      "whatItDoes": [
+        "image import",
+        "opacity",
+        "scale",
+        "translate",
+        "lock",
+        "remove",
+        "comparison"
+      ],
+      "references": [
+        "pixelorama",
+        "libresprite",
+        "hma"
+      ],
+      "whyNeeded": "Reference must never be baked into exported pixels and must survive project reopen.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/sprite-workbench.js",
+        "dist/sprite-ui.js",
+        "dist/native-sprites.js",
+        "dist/native-palette-pair.js",
+        "dist/sprite-png.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-workbench.test.js",
+        "tests/sprite-reference-validation.test.js",
+        "tests/palette-conversion.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "pixelorama",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate image import with target-engine constraints.",
+        "Demonstrate opacity with target-engine constraints.",
+        "Reference must never be baked into exported pixels and must survive project reopen.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ART05",
+      "category": "Sprites, animation and palettes",
+      "name": "Animation timeline",
+      "whatItDoes": [
+        "frame order",
+        "duration",
+        "looping",
+        "onion skin",
+        "playback",
+        "direction groups"
+      ],
+      "references": [
+        "pixelorama",
+        "libresprite",
+        "hma"
+      ],
+      "whyNeeded": "Native engine frame limits, linked views and timing need an integrated workflow.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/sprite-workbench.js",
+        "dist/sprite-ui.js",
+        "dist/native-sprites.js",
+        "dist/native-palette-pair.js",
+        "dist/sprite-png.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-workbench.test.js",
+        "tests/sprite-reference-validation.test.js",
+        "tests/palette-conversion.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "pixelorama",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate frame order with target-engine constraints.",
+        "Demonstrate duration with target-engine constraints.",
+        "Native engine frame limits, linked views and timing need an integrated workflow.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ART06",
+      "category": "Sprites, animation and palettes",
+      "name": "Palette ownership and transparency",
+      "whatItDoes": [
+        "index zero",
+        "15 opaque colours",
+        "normal/shiny",
+        "RGB5",
+        "shared palette"
+      ],
+      "references": [
+        "pixelorama",
+        "libresprite",
+        "hma"
+      ],
+      "whyNeeded": "Preview propagation, duplicate/detach and budget warnings need touch/UI and native execution proof.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/sprite-workbench.js",
+        "dist/sprite-ui.js",
+        "dist/native-sprites.js",
+        "dist/native-palette-pair.js",
+        "dist/sprite-png.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-workbench.test.js",
+        "tests/sprite-reference-validation.test.js",
+        "tests/palette-conversion.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "pixelorama",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate index zero with target-engine constraints.",
+        "Demonstrate 15 opaque colours with target-engine constraints.",
+        "Preview propagation, duplicate/detach and budget warnings need touch/UI and native execution proof.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ART07",
+      "category": "Sprites, animation and palettes",
+      "name": "ROM sprite discovery and replacement",
+      "whatItDoes": [
+        "front",
+        "back",
+        "icon",
+        "person",
+        "player",
+        "species OW",
+        "frame tags"
+      ],
+      "references": [
+        "pixelorama",
+        "libresprite",
+        "hma"
+      ],
+      "whyNeeded": "Profiles are guarded; no universal arbitrary-ROM or riding-frame discovery is established.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/sprite-workbench.js",
+        "dist/sprite-ui.js",
+        "dist/native-sprites.js",
+        "dist/native-palette-pair.js",
+        "dist/sprite-png.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-workbench.test.js",
+        "tests/sprite-reference-validation.test.js",
+        "tests/palette-conversion.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "pixelorama",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate front with target-engine constraints.",
+        "Demonstrate back with target-engine constraints.",
+        "Profiles are guarded; no universal arbitrary-ROM or riding-frame discovery is established.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ART08",
+      "category": "Sprites, animation and palettes",
+      "name": "Asset interchange and capacity",
+      "whatItDoes": [
+        "PNG",
+        "palette",
+        "sheets",
+        "frames",
+        "compressed size",
+        "VRAM budget"
+      ],
+      "references": [
+        "pixelorama",
+        "libresprite",
+        "hma"
+      ],
+      "whyNeeded": "Add reviewable quantisation, offset-aware sheets and safe export against native constraints.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/sprite-workbench.js",
+        "dist/sprite-ui.js",
+        "dist/native-sprites.js",
+        "dist/native-palette-pair.js",
+        "dist/sprite-png.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-workbench.test.js",
+        "tests/sprite-reference-validation.test.js",
+        "tests/palette-conversion.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "pixelorama",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate PNG with target-engine constraints.",
+        "Demonstrate palette with target-engine constraints.",
+        "Add reviewable quantisation, offset-aware sheets and safe export against native constraints.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "AUD01",
+      "category": "Music and sound",
+      "name": "Native music discovery and preview",
+      "whatItDoes": [
+        "song IDs",
+        "loops",
+        "voicegroups",
+        "samples",
+        "playback",
+        "stop",
+        "tempo"
+      ],
+      "references": [
+        "vgmtrans",
+        "hma",
+        "essentials"
+      ],
+      "whyNeeded": "Validate mixer and sample dependencies against exact source engine.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/music-parser.js",
+        "dist/music-midi.js",
+        "dist/music-assets.js",
+        "dist/music-preview.js",
+        "dist/music-compose.js",
+        "dist/cry-editor.js",
+        "dist/source-assets.js"
+      ],
+      "testEvidence": [
+        "tests/music-existing-song.test.js",
+        "tests/music-track-development.test.js",
+        "tests/music-track-style.test.js",
+        "tests/cry-editor.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "vgmtrans",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate song IDs with target-engine constraints.",
+        "Demonstrate loops with target-engine constraints.",
+        "Validate mixer and sample dependencies against exact source engine.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "AUD02",
+      "category": "Music and sound",
+      "name": "MIDI import and arrangement",
+      "whatItDoes": [
+        "whole song",
+        "selected parts",
+        "sustain",
+        "bends",
+        "minor keys",
+        "section reorder"
+      ],
+      "references": [
+        "vgmtrans",
+        "hma",
+        "essentials"
+      ],
+      "whyNeeded": "Keep actual score authoritative and verify native output of edited imported tracks.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/music-parser.js",
+        "dist/music-midi.js",
+        "dist/music-assets.js",
+        "dist/music-preview.js",
+        "dist/music-compose.js",
+        "dist/cry-editor.js",
+        "dist/source-assets.js"
+      ],
+      "testEvidence": [
+        "tests/music-existing-song.test.js",
+        "tests/music-track-development.test.js",
+        "tests/music-track-style.test.js",
+        "tests/cry-editor.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "vgmtrans",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate whole song with target-engine constraints.",
+        "Demonstrate selected parts with target-engine constraints.",
+        "Keep actual score authoritative and verify native output of edited imported tracks.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "AUD03",
+      "category": "Music and sound",
+      "name": "Hybrid and atmosphere generation",
+      "whatItDoes": [
+        "seed",
+        "motif lock",
+        "source tracks",
+        "learned contour",
+        "styles",
+        "offline model"
+      ],
+      "references": [
+        "vgmtrans",
+        "hma",
+        "essentials"
+      ],
+      "whyNeeded": "Successful mocked inference/unit composition is not proof of on-phone neural execution.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/music-parser.js",
+        "dist/music-midi.js",
+        "dist/music-assets.js",
+        "dist/music-preview.js",
+        "dist/music-compose.js",
+        "dist/cry-editor.js",
+        "dist/source-assets.js"
+      ],
+      "testEvidence": [
+        "tests/music-existing-song.test.js",
+        "tests/music-track-development.test.js",
+        "tests/music-track-style.test.js",
+        "tests/cry-editor.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "vgmtrans",
+      "complexity": "L",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "Demonstrate seed with target-engine constraints.",
+        "Demonstrate motif lock with target-engine constraints.",
+        "Successful mocked inference/unit composition is not proof of on-phone neural execution.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "AUD04",
+      "category": "Music and sound",
+      "name": "Cry and sound-effect editing",
+      "whatItDoes": [
+        "PCM",
+        "loop",
+        "pitch",
+        "envelopes",
+        "compression",
+        "command playback"
+      ],
+      "references": [
+        "vgmtrans",
+        "hma",
+        "essentials"
+      ],
+      "whyNeeded": "Cries have native tests; general SFX bank/sequence editor still needs dedicated acceptance.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/music-parser.js",
+        "dist/music-midi.js",
+        "dist/music-assets.js",
+        "dist/music-preview.js",
+        "dist/music-compose.js",
+        "dist/cry-editor.js",
+        "dist/source-assets.js"
+      ],
+      "testEvidence": [
+        "tests/music-existing-song.test.js",
+        "tests/music-track-development.test.js",
+        "tests/music-track-style.test.js",
+        "tests/cry-editor.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "vgmtrans",
+      "complexity": "L",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "Demonstrate PCM with target-engine constraints.",
+        "Demonstrate loop with target-engine constraints.",
+        "Cries have native tests; general SFX bank/sequence editor still needs dedicated acceptance.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "AUD05",
+      "category": "Music and sound",
+      "name": "Source/native song installation",
+      "whatItDoes": [
+        "existing slot",
+        "relocation",
+        "sample closure",
+        "MP2K assembly",
+        "limits"
+      ],
+      "references": [
+        "vgmtrans",
+        "hma",
+        "essentials"
+      ],
+      "whyNeeded": "Source compilation and emulator audition remain required; no universal soundfont replacement claim.",
+      "status": "implemented_not_gameplay_verified",
+      "sourceEvidence": [
+        "dist/music-parser.js",
+        "dist/music-midi.js",
+        "dist/music-assets.js",
+        "dist/music-preview.js",
+        "dist/music-compose.js",
+        "dist/cry-editor.js",
+        "dist/source-assets.js"
+      ],
+      "testEvidence": [
+        "tests/music-existing-song.test.js",
+        "tests/music-track-development.test.js",
+        "tests/music-track-style.test.js",
+        "tests/cry-editor.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "vgmtrans",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate existing slot with target-engine constraints.",
+        "Demonstrate relocation with target-engine constraints.",
+        "Source compilation and emulator audition remain required; no universal soundfont replacement claim.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UI01",
+      "category": "UI, battle and engine extension",
+      "name": "Native menu labels and presentation text",
+      "whatItDoes": [
+        "opening",
+        "naming prompts",
+        "credits",
+        "menu labels",
+        "length",
+        "glyphs"
+      ],
+      "references": [
+        "hma",
+        "emerald",
+        "cfru",
+        "essentials"
+      ],
+      "whyNeeded": "Existing verified pointer slots are narrower than a complete interface designer.",
+      "status": "engine_limited",
+      "sourceEvidence": [
+        "dist/presentation-maker.js",
+        "dist/native-studio.js",
+        "dist/native-timeline.js",
+        "dist/source-features.js",
+        "dist/source-project.js",
+        "dist/game-data.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/source-project.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate opening with target-engine constraints.",
+        "Demonstrate naming prompts with target-engine constraints.",
+        "Existing verified pointer slots are narrower than a complete interface designer.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UI02",
+      "category": "UI, battle and engine extension",
+      "name": "Bag, trainer card, options and battle layouts",
+      "whatItDoes": [
+        "select",
+        "drag",
+        "resize",
+        "colours",
+        "fields",
+        "navigation",
+        "templates"
+      ],
+      "references": [
+        "hma",
+        "emerald",
+        "cfru",
+        "essentials"
+      ],
+      "whyNeeded": "4.72.5 later-source UI files are absent from this branch; reconcile before claiming completion.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/presentation-maker.js",
+        "dist/native-studio.js",
+        "dist/native-timeline.js",
+        "dist/source-features.js",
+        "dist/source-project.js",
+        "dist/game-data.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/source-project.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate select with target-engine constraints.",
+        "Demonstrate drag with target-engine constraints.",
+        "4.72.5 later-source UI files are absent from this branch; reconcile before claiming completion.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UI03",
+      "category": "UI, battle and engine extension",
+      "name": "Fonts, windows and title graphics",
+      "whatItDoes": [
+        "glyphs",
+        "tilemap",
+        "palettes",
+        "background",
+        "transitions",
+        "title logo"
+      ],
+      "references": [
+        "hma",
+        "emerald",
+        "cfru",
+        "essentials"
+      ],
+      "whyNeeded": "Visual presentation canvas does not establish safe native layout or font installation.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/presentation-maker.js",
+        "dist/native-studio.js",
+        "dist/native-timeline.js",
+        "dist/source-features.js",
+        "dist/source-project.js",
+        "dist/game-data.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/source-project.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate glyphs with target-engine constraints.",
+        "Demonstrate tilemap with target-engine constraints.",
+        "Visual presentation canvas does not establish safe native layout or font installation.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UI04",
+      "category": "UI, battle and engine extension",
+      "name": "Battle AI and effect scripts",
+      "whatItDoes": [
+        "conditions",
+        "scoring",
+        "targets",
+        "turn hooks",
+        "debug",
+        "custom opcodes"
+      ],
+      "references": [
+        "hma",
+        "emerald",
+        "cfru",
+        "essentials"
+      ],
+      "whyNeeded": "HMA supplies a useful reference, but PokéBacon needs a verified profile-specific authoring/compiler path.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/presentation-maker.js",
+        "dist/native-studio.js",
+        "dist/native-timeline.js",
+        "dist/source-features.js",
+        "dist/source-project.js",
+        "dist/game-data.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/source-project.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "Demonstrate conditions with target-engine constraints.",
+        "Demonstrate scoring with target-engine constraints.",
+        "HMA supplies a useful reference, but PokéBacon needs a verified profile-specific authoring/compiler path.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UI05",
+      "category": "UI, battle and engine extension",
+      "name": "Engine switches and prerequisites",
+      "whatItDoes": [
+        "compile-time define",
+        "runtime flag",
+        "conflict",
+        "locked structural macro"
+      ],
+      "references": [
+        "hma",
+        "emerald",
+        "cfru",
+        "essentials"
+      ],
+      "whyNeeded": "Current scanner covers literal configurations, not arbitrary plugin/source dependency resolution.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/presentation-maker.js",
+        "dist/native-studio.js",
+        "dist/native-timeline.js",
+        "dist/source-features.js",
+        "dist/source-project.js",
+        "dist/game-data.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/source-project.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate compile-time define with target-engine constraints.",
+        "Demonstrate runtime flag with target-engine constraints.",
+        "Current scanner covers literal configurations, not arbitrary plugin/source dependency resolution.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UI06",
+      "category": "UI, battle and engine extension",
+      "name": "Plugin and metadata interface",
+      "whatItDoes": [
+        "extension identity",
+        "symbols",
+        "codec",
+        "signature",
+        "version",
+        "validation"
+      ],
+      "references": [
+        "hma",
+        "emerald",
+        "cfru",
+        "essentials"
+      ],
+      "whyNeeded": "Bundled adapters exist; signed/trusted extension packaging and source metadata schema remain design work.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/presentation-maker.js",
+        "dist/native-studio.js",
+        "dist/native-timeline.js",
+        "dist/source-features.js",
+        "dist/source-project.js",
+        "dist/game-data.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/source-project.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate extension identity with target-engine constraints.",
+        "Demonstrate symbols with target-engine constraints.",
+        "Bundled adapters exist; signed/trusted extension packaging and source metadata schema remain design work.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UX01",
+      "category": "Testing, usability and product",
+      "name": "Emulator playtest and debug state",
+      "whatItDoes": [
+        "run edited ROM",
+        "reset",
+        "save/load",
+        "screenshot",
+        "controls",
+        "stop"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "pixelorama",
+        "tiled"
+      ],
+      "whyNeeded": "Each workflow needs game execution evidence; unit tests alone never complete it.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/playtest-core.js",
+        "dist/playtest-ui.js",
+        "dist/release-audit.js",
+        "dist/toolbar-ui.js",
+        "dist/engine-install.js",
+        "dist/sw.js"
+      ],
+      "testEvidence": [
+        "tests/release-audit.test.js",
+        "tests/modal-back.test.js",
+        "tests/offline-install.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate run edited ROM with target-engine constraints.",
+        "Demonstrate reset with target-engine constraints.",
+        "Each workflow needs game execution evidence; unit tests alone never complete it.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UX02",
+      "category": "Testing, usability and product",
+      "name": "Actionable preflight and help",
+      "whatItDoes": [
+        "field-specific errors",
+        "capacity explanation",
+        "repair action",
+        "source mismatch",
+        "help"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "pixelorama",
+        "tiled"
+      ],
+      "whyNeeded": "Unify export errors with safe alternatives and jump-to-offending-control.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/playtest-core.js",
+        "dist/playtest-ui.js",
+        "dist/release-audit.js",
+        "dist/toolbar-ui.js",
+        "dist/engine-install.js",
+        "dist/sw.js"
+      ],
+      "testEvidence": [
+        "tests/release-audit.test.js",
+        "tests/modal-back.test.js",
+        "tests/offline-install.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "M",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate field-specific errors with target-engine constraints.",
+        "Demonstrate capacity explanation with target-engine constraints.",
+        "Unify export errors with safe alternatives and jump-to-offending-control.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UX03",
+      "category": "Testing, usability and product",
+      "name": "Desktop/web/Android parity",
+      "whatItDoes": [
+        "offline modules",
+        "update",
+        "import permissions",
+        "large files",
+        "back",
+        "safe area"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "pixelorama",
+        "tiled"
+      ],
+      "whyNeeded": "Build success is not physical update/data-retention or phone usability acceptance.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/playtest-core.js",
+        "dist/playtest-ui.js",
+        "dist/release-audit.js",
+        "dist/toolbar-ui.js",
+        "dist/engine-install.js",
+        "dist/sw.js"
+      ],
+      "testEvidence": [
+        "tests/release-audit.test.js",
+        "tests/modal-back.test.js",
+        "tests/offline-install.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate offline modules with target-engine constraints.",
+        "Demonstrate update with target-engine constraints.",
+        "Build success is not physical update/data-retention or phone usability acceptance.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UX04",
+      "category": "Testing, usability and product",
+      "name": "Accessibility and input methods",
+      "whatItDoes": [
+        "screen reader",
+        "focus",
+        "contrast",
+        "scalable text",
+        "colour-independent cues",
+        "keyboard"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "pixelorama",
+        "tiled"
+      ],
+      "whyNeeded": "Perform an interaction audit; avoid shrinking controls merely to fit more buttons.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/playtest-core.js",
+        "dist/playtest-ui.js",
+        "dist/release-audit.js",
+        "dist/toolbar-ui.js",
+        "dist/engine-install.js",
+        "dist/sw.js"
+      ],
+      "testEvidence": [
+        "tests/release-audit.test.js",
+        "tests/modal-back.test.js",
+        "tests/offline-install.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate screen reader with target-engine constraints.",
+        "Demonstrate focus with target-engine constraints.",
+        "Perform an interaction audit; avoid shrinking controls merely to fit more buttons.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UX05",
+      "category": "Testing, usability and product",
+      "name": "Performance and memory budgets",
+      "whatItDoes": [
+        "bounded decode",
+        "workers",
+        "caches",
+        "undo caps",
+        "incremental saving",
+        "cancellation"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "pixelorama",
+        "tiled"
+      ],
+      "whyNeeded": "Benchmark representative large Shattered projects and low-memory Android devices.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/playtest-core.js",
+        "dist/playtest-ui.js",
+        "dist/release-audit.js",
+        "dist/toolbar-ui.js",
+        "dist/engine-install.js",
+        "dist/sw.js"
+      ],
+      "testEvidence": [
+        "tests/release-audit.test.js",
+        "tests/modal-back.test.js",
+        "tests/offline-install.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate bounded decode with target-engine constraints.",
+        "Demonstrate workers with target-engine constraints.",
+        "Benchmark representative large Shattered projects and low-memory Android devices.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "UX06",
+      "category": "Testing, usability and product",
+      "name": "Save editing integration",
+      "whatItDoes": [
+        "party",
+        "boxes",
+        "flags",
+        "legality",
+        "checksums",
+        "save revisions"
+      ],
+      "references": [
+        "hma",
+        "porymap",
+        "pixelorama",
+        "tiled"
+      ],
+      "whyNeeded": "PKHeX is optional save tooling; keep out of the native ROM authoring completion count.",
+      "status": "outside_scope",
+      "sourceEvidence": [
+        "dist/playtest-core.js",
+        "dist/playtest-ui.js",
+        "dist/release-audit.js",
+        "dist/toolbar-ui.js",
+        "dist/engine-install.js",
+        "dist/sw.js"
+      ],
+      "testEvidence": [
+        "tests/release-audit.test.js",
+        "tests/modal-back.test.js",
+        "tests/offline-install.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P3",
+      "acceptanceCriteria": [
+        "Demonstrate party with target-engine constraints.",
+        "Demonstrate boxes with target-engine constraints.",
+        "PKHeX is optional save tooling; keep out of the native ROM authoring completion count.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "SHA01",
+      "category": "Shattered compatibility benchmark",
+      "name": "HUMAN battle participant",
+      "whatItDoes": [
+        "species/class identity",
+        "stats",
+        "types",
+        "team role",
+        "backsprites",
+        "targeting"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru",
+        "emerald"
+      ],
+      "whyNeeded": "Verified profile exposes some data but HUMAN battle behavior needs source symbols and runtime tests.",
+      "status": "engine_limited",
+      "sourceEvidence": [
+        "dist/shattered-adapter.js",
+        "dist/shattered-adapter-data.js",
+        "dist/ability-native.js",
+        "dist/native-story.js",
+        "dist/story-flow.js"
+      ],
+      "testEvidence": [
+        "tests/story-reconcile.test.js",
+        "tests/story.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate species/class identity with target-engine constraints.",
+        "Demonstrate stats with target-engine constraints.",
+        "Verified profile exposes some data but HUMAN battle behavior needs source symbols and runtime tests.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SHA02",
+      "category": "Shattered compatibility benchmark",
+      "name": "Equipment and techniques",
+      "whatItDoes": [
+        "slots",
+        "grant/remove move",
+        "bag ownership",
+        "technique PP",
+        "UI refresh"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru",
+        "emerald"
+      ],
+      "whyNeeded": "Need exact equipment tables, function contracts and save fields for current Shattered.",
+      "status": "engine_limited",
+      "sourceEvidence": [
+        "dist/shattered-adapter.js",
+        "dist/shattered-adapter-data.js",
+        "dist/ability-native.js",
+        "dist/native-story.js",
+        "dist/story-flow.js"
+      ],
+      "testEvidence": [
+        "tests/story-reconcile.test.js",
+        "tests/story.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate slots with target-engine constraints.",
+        "Demonstrate grant/remove move with target-engine constraints.",
+        "Need exact equipment tables, function contracts and save fields for current Shattered.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SHA03",
+      "category": "Shattered compatibility benchmark",
+      "name": "Shared stamina system",
+      "whatItDoes": [
+        "shared pool",
+        "spending",
+        "restoration",
+        "out-of-battle cost",
+        "HUD",
+        "save"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru",
+        "emerald"
+      ],
+      "whyNeeded": "Stock per-move PP controls do not implement Shattered's stamina mechanic.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/shattered-adapter.js",
+        "dist/shattered-adapter-data.js",
+        "dist/ability-native.js",
+        "dist/native-story.js",
+        "dist/story-flow.js"
+      ],
+      "testEvidence": [
+        "tests/story-reconcile.test.js",
+        "tests/story.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate shared pool with target-engine constraints.",
+        "Demonstrate spending with target-engine constraints.",
+        "Stock per-move PP controls do not implement Shattered's stamina mechanic.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SHA04",
+      "category": "Shattered compatibility benchmark",
+      "name": "Specialisations and progression",
+      "whatItDoes": [
+        "class data",
+        "requirements",
+        "levels",
+        "mixed classes",
+        "learnsets",
+        "passive effects"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru",
+        "emerald"
+      ],
+      "whyNeeded": "Some class records are editable; do not claim arbitrary class logic is visually editable.",
+      "status": "engine_limited",
+      "sourceEvidence": [
+        "dist/shattered-adapter.js",
+        "dist/shattered-adapter-data.js",
+        "dist/ability-native.js",
+        "dist/native-story.js",
+        "dist/story-flow.js"
+      ],
+      "testEvidence": [
+        "tests/story-reconcile.test.js",
+        "tests/story.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate class data with target-engine constraints.",
+        "Demonstrate requirements with target-engine constraints.",
+        "Some class records are editable; do not claim arbitrary class logic is visually editable.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SHA05",
+      "category": "Shattered compatibility benchmark",
+      "name": "Befriending and party restrictions",
+      "whatItDoes": [
+        "partner eligibility",
+        "safe swap",
+        "HUMAN exclusion",
+        "party cap",
+        "failure dialogue"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru",
+        "emerald"
+      ],
+      "whyNeeded": "Needs current engine metadata/hooks and multi-session save tests.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/shattered-adapter.js",
+        "dist/shattered-adapter-data.js",
+        "dist/ability-native.js",
+        "dist/native-story.js",
+        "dist/story-flow.js"
+      ],
+      "testEvidence": [
+        "tests/story-reconcile.test.js",
+        "tests/story.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate partner eligibility with target-engine constraints.",
+        "Demonstrate safe swap with target-engine constraints.",
+        "Needs current engine metadata/hooks and multi-session save tests.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SHA06",
+      "category": "Shattered compatibility benchmark",
+      "name": "Followers and riding",
+      "whatItDoes": [
+        "species size",
+        "indoor rules",
+        "mounted layers",
+        "speed",
+        "transition",
+        "facing"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru",
+        "emerald"
+      ],
+      "whyNeeded": "Sprite extraction is not a general ride behavior editor; source/metadata adapter needed.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/shattered-adapter.js",
+        "dist/shattered-adapter-data.js",
+        "dist/ability-native.js",
+        "dist/native-story.js",
+        "dist/story-flow.js"
+      ],
+      "testEvidence": [
+        "tests/story-reconcile.test.js",
+        "tests/story.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Demonstrate species size with target-engine constraints.",
+        "Demonstrate indoor rules with target-engine constraints.",
+        "Sprite extraction is not a general ride behavior editor; source/metadata adapter needed.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SHA07",
+      "category": "Shattered compatibility benchmark",
+      "name": "Existing raid/cutscene round trip",
+      "whatItDoes": [
+        "Gate",
+        "Aipom",
+        "Route22",
+        "actors",
+        "queue",
+        "battle",
+        "consequences"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru",
+        "emerald"
+      ],
+      "whyNeeded": "Open an actual authored event, edit one branch visually, export, execute and reimport unchanged adjacent behavior.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/shattered-adapter.js",
+        "dist/shattered-adapter-data.js",
+        "dist/ability-native.js",
+        "dist/native-story.js",
+        "dist/story-flow.js"
+      ],
+      "testEvidence": [
+        "tests/story-reconcile.test.js",
+        "tests/story.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate Gate with target-engine constraints.",
+        "Demonstrate Aipom with target-engine constraints.",
+        "Open an actual authored event, edit one branch visually, export, execute and reimport unchanged adjacent behavior.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SHA08",
+      "category": "Shattered compatibility benchmark",
+      "name": "Custom native calls and unknown commands",
+      "whatItDoes": [
+        "call labels",
+        "input metadata",
+        "opaque blocks",
+        "source signatures",
+        "guards"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru",
+        "emerald"
+      ],
+      "whyNeeded": "Source integration must describe argument and side-effect contracts, never guess native code semantics.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/shattered-adapter.js",
+        "dist/shattered-adapter-data.js",
+        "dist/ability-native.js",
+        "dist/native-story.js",
+        "dist/story-flow.js"
+      ],
+      "testEvidence": [
+        "tests/story-reconcile.test.js",
+        "tests/story.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "XL",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate call labels with target-engine constraints.",
+        "Demonstrate input metadata with target-engine constraints.",
+        "Source integration must describe argument and side-effect contracts, never guess native code semantics.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": true,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    },
+    {
+      "id": "SHA09",
+      "category": "Shattered compatibility benchmark",
+      "name": "Separate Essentials remake boundary",
+      "whatItDoes": [
+        "RXDATA",
+        "Ruby",
+        "PBS",
+        "native GBA scripts",
+        "source adapters"
+      ],
+      "references": [
+        "hma",
+        "essentials",
+        "cfru",
+        "emerald"
+      ],
+      "whyNeeded": "Keep Shattered GBA and Essentials projects distinct; optional interchange requires explicit conversion contracts.",
+      "status": "outside_scope",
+      "sourceEvidence": [
+        "dist/shattered-adapter.js",
+        "dist/shattered-adapter-data.js",
+        "dist/ability-native.js",
+        "dist/native-story.js",
+        "dist/story-flow.js"
+      ],
+      "testEvidence": [
+        "tests/story-reconcile.test.js",
+        "tests/story.test.js"
+      ],
+      "dependencies": [
+        "EVT"
+      ],
+      "reuseRecommendation": "hma",
+      "complexity": "L",
+      "priority": "P0",
+      "acceptanceCriteria": [
+        "Demonstrate RXDATA with target-engine constraints.",
+        "Demonstrate Ruby with target-engine constraints.",
+        "Keep Shattered GBA and Essentials projects distinct; optional interchange requires explicit conversion contracts.",
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "EVT"
+    }
+  ]
+}

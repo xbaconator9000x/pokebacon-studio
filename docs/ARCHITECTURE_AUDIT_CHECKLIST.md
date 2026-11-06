@@ -30,7 +30,7 @@ Audited 6 November 2026 against code in [commit 402b020](https://github.com/xbac
 
 ## Partial or outstanding
 
-- [ ] **P1: preserve existing split sections across map-only save paths, including undo/redo.** Reproduced during this audit; see finding A below.
+- [x] **P1 implementation: correct undo/redo save scope for all split sections.** Added shared section registry, ten model regressions and four-engine IndexedDB API tests in the feature-audit batch. Integration, release and physical-device proof remain open.
 - [ ] Verify incremental saves, source-settings undo/redo, worker failure/retry and actual IndexedDB transaction round trips for each relevant project section. Current added tests cover pure reassembly/full saves.
 - [ ] Reconcile these changes with the separately delivered 4.72.5 source/APK before preparing a newer signed release.
 - [ ] Complete shared runtime ownership for binary ROM operations where useful during current GBA work. The binary guard uses descriptors; reader/writer implementation still contains FRLG/RSE branches.
@@ -43,7 +43,7 @@ Audited 6 November 2026 against code in [commit 402b020](https://github.com/xbac
 
 ## Finding A: existing section changes can be omitted on incremental save
 
-**Status:** reproduced; not repaired in this audit-only change.
+**Original audit status:** reproduced. **Subsequent feature-audit batch:** the undo/redo caller now requests a full save for every split-section change using shared saveScopeForEdit. Generic map-only saves still intentionally omit existing sections; callers must provide the proper scope. Ten model cases and four-engine IndexedDB API tests pass; physical-device acceptance is open.
 
 1. Save a project with an existing sourceEngine section using planSave(project).
 2. Persist copies of that plan's parts, as a storage transaction would.

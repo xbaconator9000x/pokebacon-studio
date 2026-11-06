@@ -21,6 +21,7 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/qa-source-gate.mjs
+      - run: node scripts/check-feature-audit.mjs
   android-source-build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -49,6 +50,7 @@ jobs:
           MAP_STUDIO_QA_RUNTIME: ${{ runner.temp }}/qa/node_modules
           MAP_STUDIO_BUILD_RUNTIME: ${{ runner.temp }}/qa/node_modules
         run: |
+          node scripts/test-project-storage.mjs
           node scripts/test-music-midi-parts-ui.mjs
           node scripts/test-music-track-style-ui.mjs
           node scripts/test-music-quick-ui.mjs

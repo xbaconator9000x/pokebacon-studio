@@ -36,7 +36,7 @@ import {captureEdit,finishEdit,applyEdit,rollbackEdit,editBytes,trimEditHistory}
 import {EXTRA_ASSETS,EXTRA_PREFABS,EXTRA_TERRAINS} from './asset-extras.js';
 import {gateAt,moveGate,removeGate} from './gate-placement.js';
 import {weatherFields,drawWeatherPreview} from './map-environment.js';
-import {ProjectStore,readProject} from './project-store.js';
+import {ProjectStore,readProject,saveScopeForEdit} from './project-store.js';
 import {MemoryCache} from './memory-cache.js';
 import {mapToolbox,toolPanel,BRUSH_TOOLS} from './map-toolbox.js';
 import {objectDefaults,nativeMovementDefaults,resizeObjectRules} from './movement-defaults.js';
@@ -171,7 +171,7 @@ function remember(before){
  protectMapImages();markDirty(before.mapId?{mapIds:edit.maps.map(m=>m.id)}:null);updateChrome();requestDraw();if(activePanel==='notes'||activePanel==='maps')renderPanel();
 }
 function change(fn){const before=captureEdit(project);try{fn();for(const o of m().objects)lockObjectRenderIntent(o);invalidateArt();}catch(error){rollbackEdit(project,before);throw error;}remember(before);}
-function dirtyEdit(edit){return edit.root.some(([key])=>['authoring','spriteStudio','romEdits','interiorTemplates'].includes(key))?null:{mapIds:edit.maps.map(m=>m.id)};}
+function dirtyEdit(edit){return saveScopeForEdit(edit);}
 function undo(){if(!history.length)return;const edit=history.pop();historyBytes-=edit.bytes;applyEdit(project,edit);future.push(edit);selection=null;invalidateArt();protectMapImages();markDirty(dirtyEdit(edit));refresh();}
 function redo(){if(!future.length)return;const edit=future.pop();applyEdit(project,edit,true);history.push(edit);historyBytes+=edit.bytes;selection=null;invalidateArt();protectMapImages();markDirty(dirtyEdit(edit));refresh();}
 function updateChrome() {renderToolButtons();

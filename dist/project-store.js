@@ -1,5 +1,9 @@
 // Local storage v2 splits maps and immutable library payloads. Project exports stay portable v1 JSON.
 export const PARTS_STORE='projectParts';
+export const SPLIT_PROJECT_SECTIONS=Object.freeze(['sourceEngine','spriteStudio','romEdits','interiorTemplates','textEdits','regionMaps','doorAnimations','cryEdits','hmRules']);
+// A map-only save intentionally omits existing split sections. History must
+// request a full save whenever it changes any of them, including deletion.
+export function saveScopeForEdit(edit){return edit.root.some(([key])=>key==='authoring'||SPLIT_PROJECT_SECTIONS.includes(key))?null:{mapIds:edit.maps.map(map=>map.id)};}
 const req=r=>new Promise((resolve,reject)=>{r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
 export function planSave(project,{all=true,mapIds=[]}={},known={assets:new Map(),music:new Map()}){
  const prefix=project.id+':',parts=[],key=(kind,id)=>prefix+kind+':'+id,put=(kind,id,value)=>{const idKey=key(kind,id);parts.push({id:idKey,projectId:project.id,value});return idKey;};
@@ -7,7 +11,7 @@ export function planSave(project,{all=true,mapIds=[]}={},known={assets:new Map()
  const mapKeys=project.maps.map(m=>{if(all||mapSet.has(m.id))put('map',m.id,m);return key('map',m.id);});header.maps=project.maps.map(m=>({id:m.id,name:m.name}));
  const assetKeys=project.assets.map(a=>{const signature={...a,rom:a.rom?{...a.rom}:undefined},old=known.assets.get(a.id);if(!old||Object.keys(signature).some(k=>signature[k]!==old[k]&&(k!=='rom'||JSON.stringify(signature[k])!==JSON.stringify(old[k]))))put('art',a.id,a);assets.set(a.id,signature);return key('art',a.id);});header.assets=[];
  if(project.authoring)header.authoring={...project.authoring,music:project.authoring.music.map(t=>{const {asset,...metadata}=t;if(!known.music.has(t.id)||known.music.get(t.id)!==asset)put('music',t.id,asset);music.set(t.id,asset);return{...metadata,storageAsset:key('music',t.id)};})};
- const sections={};for(const name of ['sourceEngine','spriteStudio','romEdits','interiorTemplates','textEdits','regionMaps','doorAnimations','cryEdits','hmRules'])if(project[name]!==undefined){sections[name]=key('section',name);if(all||!known.sections?.[name])put('section',name,project[name]);delete header[name];}
+ const sections={};for(const name of SPLIT_PROJECT_SECTIONS)if(project[name]!==undefined){sections[name]=key('section',name);if(all||!known.sections?.[name])put('section',name,project[name]);delete header[name];}
  header.storageParts={maps:mapKeys,assets:assetKeys,sections};return{header,parts,known:{assets,music,sections}};
 }
 export function commitSave(db,plan){return new Promise((resolve,reject)=>{const tx=db.transaction(['projects',PARTS_STORE],'readwrite'),store=tx.objectStore(PARTS_STORE);try{for(const part of plan.parts)store.put(part);tx.objectStore('projects').put(plan.header);}catch(error){tx.abort();reject(error);return;}tx.oncomplete=resolve;tx.onerror=tx.onabort=()=>reject(tx.error||Error('Local save was interrupted.'));});}
