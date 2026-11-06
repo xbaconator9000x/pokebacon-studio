@@ -320,15 +320,74 @@
       ],
       "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
       "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "cubhma",
+      "url": "https://github.com/kcradi/CUBHMA.git",
+      "commit": "ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9",
+      "date": "2026-10-30T18:54:11-04:00",
+      "subject": "CUBHMA 0.7.3",
+      "licenseFinding": "MIT retained from HMA; inspect dependencies, bundled patches and assets separately before reuse.",
+      "lineage": "GitHub repository metadata fork=true, parent/source haven1433/HexManiacAdvance. README identifies Cradi's Unofficial Build and CUBE specialization.",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/LICENSE"
+        },
+        {
+          "path": "README.md",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/README.md"
+        },
+        {
+          "path": "src/HexManiac.Core/ViewModels/Tools/OverworldSlotImport.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/ViewModels/Tools/OverworldSlotImport.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/ViewModels/ReflectionPaletteTab.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/ViewModels/ReflectionPaletteTab.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/CharacterCustomization.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/CharacterCustomization.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/Runs/ExpansionTrainerTeamRun.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/Runs/ExpansionTrainerTeamRun.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/IntroManager.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/IntroManager.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/PokemonAnimations/PokemonAnimationLayout.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/PokemonAnimations/PokemonAnimationLayout.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/PokemonAnimations/PokemonAnimationTimeline.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/PokemonAnimations/PokemonAnimationTimeline.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/Sound/MidiToAgb.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/Sound/MidiToAgb.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/CubeUpdate/CubeUpdateService.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/CubeUpdate/CubeUpdateService.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/ViewModels/QuickEditItems/ApplyCubeOptimization.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/ViewModels/QuickEditItems/ApplyCubeOptimization.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/ModelEditStamp.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/ModelEditStamp.cs"
+        }
+      ],
+      "inspection": "Selected source implementations and licence inspected; additional source/test files indexed. Tree comparison against pinned upstream HMA changes 365 files, including non-code content; not an ancestry attribution. Not compiled/run.",
+      "maintenance": "Pinned 0.7.3 commit; maintenance/compatibility not inferred from one commit."
     }
   ],
   "unresolved": [
-    {
-      "name": "CUBHMA (King Cradi)",
-      "status": "unverified_identity",
-      "finding": "Both web search engines checked exact name and King Cradi/HMA variants. No authoritative public source, fork relationship, licence or independently verified feature delta located. Do not substitute HMA Community Edition or unrelated CUBE projects.",
-      "next": "Locate creator-published release/source link; verify parent commit, licence and changed files before adopting any CUBHMA-only requirement."
-    },
     {
       "name": "Advance Map",
       "status": "official_documentation_only",

@@ -12,11 +12,22 @@ Reuse recommendation: first evaluate MIT metadata/schema and small pure core alg
 
 HMA does not confer compatibility with arbitrary Shattered native functions. Metadata must pin signatures, symbol meanings, argument contracts and resource ownership.
 
-## CUBHMA — identity remains unverified
+## CUBHMA — verified Cradi fork and additional requirements
 
-The exact requested name and King Cradi/HMA variants were searched through both search engines. No authoritative source repository, creator-published fork relationship, licence, commit or feature delta was established. HMA's community tutorial references to King Cradi establish tutorial involvement, not authorship of a fork called CUBHMA. HMA Community Edition and the separate CUBE project must not be substituted.
+Canonical source is [kcradi/CUBHMA](https://github.com/kcradi/CUBHMA), pinned at ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9 (CUBHMA 0.7.3, 2026-10-30). GitHub repository metadata identifies haven1433/HexManiacAdvance as its parent and source. The repository retains HMA's MIT licence. Its README identifies Cradi's Unofficial Build and explains its focus on Cradi's Ultimate Build of Emerald (CUBE). CUBHMA is an editor fork; CUBE is a game-engine distribution. They are not interchangeable names or evidence of Shattered compatibility.
 
-Next audit action: locate the creator's canonical source/release; inspect its parent commit, licence, changed files and workflows, then add only verified differences. This missing identification does not block HMA/GBA reliability work. A direct source/release URL would resolve this specific research gap.
+Selected actual implementations add concrete parity requirements:
+- OverworldSlotImport.Prepare detaches shared picture lists and can allocate a separate palette tag before editing. ReflectionPalette and CharacterCustomization handle additional palette contexts; colour-role metadata distinguishes skin, clothes and secondary channels. A generic pixel canvas does not supply these engine bindings.
+- ExpansionTrainerTeamRun describes expansion-specific party fields, including pointers, IV/EV data, ability, nature, gender, shiny, Tera and Dynamax fields. Its omission-preserving text updates illustrate why expanded teams cannot use a vanilla fixed record blindly.
+- PokemonAnimationLayout/Timeline reads engine-specific front-animation commands and frame images. The animation engine is distinct from merely previewing a sequence of PNGs.
+- MidiToAgb exposes priority, reverb, voicegroup, clock resolution, exact gate times and compression. Sound tooling includes M4A playback and voicegroup models. MIDI import without native instrument mapping is incomplete.
+- CubeUpdateService fingerprints known CUBE versions and uses a graph-based migration; it does not transplant arbitrary custom ASM. Its recursive worker uses a 512 MiB stack, unsuitable as-is for Android. Study provenance/ownership contracts rather than importing this desktop execution strategy.
+- ApplyCubeOptimization plans on a snapshot, retains only shorter compressed streams that decode identically, and gates its operation on CUBE identity. Unknown or SMOL streams are excluded. This is useful evidence for safe recompression, not a universal way to recover free ROM space.
+- ModelEditStamp invalidates stale model views without rebuilding all tabs. Intro/spawn and event-template source/tests also reveal missing engine-specific workflow controls; these require focused execution review before adoption.
+
+Comparison against the independently pinned HMA head changes 365 files, including metadata/binary/generated content; this is a point-in-time tree comparison, not an ancestry attribution or a count of unique features. Upstream source/tests were inspected but not compiled or executed here. Nine additional inventory records capture these requirements within the existing capability categories.
+
+Reuse recommendation: evaluate small MIT model algorithms, schemas and golden test vectors behind PokéBacon's existing adapter and single writer. Do not port WPF controls, ship upstream ROM patches/assets, bypass source hashes for speed, or assume CUBE hooks work in FireRed/Shattered. Review component dependencies and preserve attribution before copying anything. Begin with ownership-safe sprite editing, versioned expanded-party schemas and lossless compression fixtures; defer engine-update migration until provenance and rollback are proven.
 
 ## Porymap — source maps, event context and metadata
 

@@ -1,6 +1,6 @@
 # PokéBacon comprehensive feature audit
 
-This is the persistent entry point for subsequent development sessions. The first pass covers **89 capability records across 13 major categories**, with smaller controls and dependencies inside each record. It is a broad source review, not a claim that every editor has been exhaustively reverse-engineered.
+This is the persistent entry point for subsequent development sessions. The first pass covers **98 capability records across 13 major categories**, with smaller controls and dependencies inside each record. Twelve upstream source trees are pinned, including the independently verified Cradi CUBHMA fork. It is a broad source review, not a claim that every editor has been exhaustively reverse-engineered.
 
 Read in order:
 1. [Roadmap and delivery gates](ROADMAP.md)

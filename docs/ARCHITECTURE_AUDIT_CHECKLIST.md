@@ -31,7 +31,8 @@ Audited 6 November 2026 against code in [commit 402b020](https://github.com/xbac
 ## Partial or outstanding
 
 - [x] **P1 implementation: correct undo/redo save scope for all split sections.** Added shared section registry, ten model regressions and four-engine IndexedDB API tests in the feature-audit batch. Integration, release and physical-device proof remain open.
-- [ ] Verify incremental saves, source-settings undo/redo, worker failure/retry and actual IndexedDB transaction round trips for each relevant project section. Current added tests cover pure reassembly/full saves.
+- [x] Verify bounded source-settings undo/redo and transaction abort/fallback through IndexedDB APIs for all four source engines; cover all split sections in model save/reopen tests. See scripts/test-project-storage.mjs and tests/project-save-scope.test.js.
+- [ ] Extend physical-device, quota/process-death and worker timeout/race coverage. IndexedDB API shims and generic section fixtures do not establish those cases.
 - [ ] Reconcile these changes with the separately delivered 4.72.5 source/APK before preparing a newer signed release.
 - [ ] Complete shared runtime ownership for binary ROM operations where useful during current GBA work. The binary guard uses descriptors; reader/writer implementation still contains FRLG/RSE branches.
 - [ ] Add per-project/revision/extension capability refinement when implementing the corresponding GBA feature. Current descriptors are family-level; signature validation still supplies detailed checks.
@@ -53,7 +54,7 @@ Audited 6 November 2026 against code in [commit 402b020](https://github.com/xbac
 
 Observed: zero parts written; expected name “Changed”; reopened name “Original”.
 
-In dist/project-store.js, planSave writes an existing section only when all is true or known.sections lacks that section. It does not compare section changes. In dist/app.js, dirtyEdit classifies only authoring, spriteStudio, romEdits and interiorTemplates as requiring full saves. Undo/redo of sourceEngine and other omitted root sections can therefore request a map-only save and leave the previously stored section intact.
+In dist/project-store.js, planSave writes an existing section only when all is true or known.sections lacks that section. It intentionally does not compare section changes. Before the fix, app.js dirtyEdit classified only authoring, spriteStudio, romEdits and interiorTemplates as requiring full saves. Undo/redo of sourceEngine and other omitted root sections could therefore request a map-only save and leave the previously stored section intact. The corrected caller now uses saveScopeForEdit and the shared complete section registry.
 
 Ordinary edits through change() request full saves. The confirmed gap concerns the incremental path and its undo/redo caller; it does not show that every save fails.
 
@@ -65,7 +66,7 @@ Recommended coherent fix batch: define shared section-save ownership, ensure und
 - No visual controls changed in this batch. Existing iOS smoke-test artifacts show the existing editor; they are not evidence of a new mobile layout or an Android usability test.
 - The lifecycle test map note “Edited on Android” is fixture text, not proof that a test ran on an Android device.
 - Capabilities for source maps/events/trainers/UI-native editing are not registered. Their absence must not be confused with the separate binary/authoring workspace feature set.
-- All recorded CI evidence belongs to commit 402b020. Documentation-only audit updates do not expand its tested functionality.
+- Original architecture CI evidence belongs to commit 402b020. The save correction in 255759a also passed QA run 42229902586, including four-engine IndexedDB checks and unsigned Android build. Documentation additions do not expand gameplay acceptance.
 
 ## Evidence
 
@@ -77,4 +78,4 @@ Recommended coherent fix batch: define shared section-save ownership, ensure und
 - dist/project-store.js, dist/app.js (dirtyEdit/undo/redo)
 - tests/platform-lifecycle.test.js, tests/source-project.test.js, tests/stability.test.js
 
-The architecture phase is **implemented and CI-verified on its branch, but not ready to call fully complete or shipped** while the preservation finding and release reconciliation remain outstanding.
+The architecture phase is **implemented and CI-verified on its branch, but not ready to call fully complete or shipped** while physical/native workflow acceptance and release reconciliation remain outstanding. The identified history save-scope defect is fixed on the branch.

@@ -4681,6 +4681,429 @@
         "gameplayVerified": false
       },
       "backlogGroup": "EVT"
+    },
+    {
+      "id": "ART09",
+      "category": "Sprites, animation and palettes",
+      "name": "Shared overworld graphics isolation and reflection palettes",
+      "whatItDoes": [
+        "show aliases before editing",
+        "detach picture list",
+        "allocate palette tag",
+        "reflection/day-night contexts",
+        "capacity refusal"
+      ],
+      "references": [
+        "cubhma",
+        "hma"
+      ],
+      "whyNeeded": "Native sprite guards exist, but an accepted copy-on-write UI workflow for all shared overworld and reflection contexts is not established.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/native-sprites.js",
+        "dist/native-palette-pair.js",
+        "dist/sprite-ui.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-reference-validation.test.js"
+      ],
+      "dependencies": [
+        "REL",
+        "ART"
+      ],
+      "reuseRecommendation": "Adapt MIT OverworldSlotImport ownership/alias fixtures and ReflectionPalette semantics into the existing writer; pin engine-specific tag tables.",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Given two actors sharing pictures and a palette, edit one as an independent copy; the other's decoded bytes and colours remain identical after export/reimport.",
+        "Preview every affected reflection/context palette and refuse allocation without a free tag or verified span; cancellation changes nothing."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Existing evidence files cover related primitives only; this additional capability has not passed its acceptance criteria.",
+        "integrated": "Backlog on PR branch; later delivered source still needs reconciliation.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "ART"
+    },
+    {
+      "id": "ART10",
+      "category": "Sprites, animation and palettes",
+      "name": "Player outfit colour roles and activity bindings",
+      "whatItDoes": [
+        "skin/clothes/secondary roles",
+        "gender/appearance selection",
+        "walk/run/bike/surf frames",
+        "battle portrait",
+        "water reflection"
+      ],
+      "references": [
+        "cubhma",
+        "hma"
+      ],
+      "whyNeeded": "Pixel editing and player roles are insufficient for versioned runtime colour channels and consistent activity mappings.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/native-sprites.js",
+        "dist/sprite-workbench.js",
+        "dist/source-assets.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-workbench.test.js",
+        "tests/source-project.test.js"
+      ],
+      "dependencies": [
+        "REL",
+        "SHA"
+      ],
+      "reuseRecommendation": "Study MIT CharacterCustomization role/index schemas and tests. CUBE-specific anchors require an explicit adapter; no arbitrary FireRed hook assumptions.",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Select the actual player and edit skin/clothing independently through readable role bindings; save/reopen retains the same role selection.",
+        "Execute walk/run/surf and battle portrait on the selected revision; contexts use the intended colour channels without altering unrelated NPCs.",
+        "If runtime recolouring is absent, explain baked-palette editing rather than presenting nonfunctional outfit channels."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Existing evidence files cover related primitives only; this additional capability has not passed its acceptance criteria.",
+        "integrated": "Backlog on PR branch; later delivered source still needs reconciliation.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "ART"
+    },
+    {
+      "id": "UI07",
+      "category": "UI, battle and engine extension",
+      "name": "Intro sequence and new-game spawn controls",
+      "whatItDoes": [
+        "professor image",
+        "featured Pokemon",
+        "intro music/text",
+        "starting map and coordinates",
+        "camera/shake sequence"
+      ],
+      "references": [
+        "cubhma",
+        "hma"
+      ],
+      "whyNeeded": "Opening authoring records do not establish native control of each intro stage or a safe spawn patch on arbitrary ROMs.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/presentation-maker.js",
+        "dist/source-features.js",
+        "dist/rom-project.js"
+      ],
+      "testEvidence": [
+        "tests/source-project.test.js"
+      ],
+      "dependencies": [
+        "REL",
+        "EVT",
+        "SHA"
+      ],
+      "reuseRecommendation": "Study MIT IntroManager, IntroFinder and NewGameSpawn contracts/tests; prefer source symbols over hardcoded patch transplantation.",
+      "complexity": "L",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "Expose only supported controls after revision/symbol validation; preview start location and reject missing maps or out-of-bounds coordinates.",
+        "Start a genuinely new save in the exported game and verify intro art/text/music, initial actor coordinates and camera behavior.",
+        "Unknown intro code remains unchanged; unsupported patches are unavailable with an actionable explanation."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Existing evidence files cover related primitives only; this additional capability has not passed its acceptance criteria.",
+        "integrated": "Backlog on PR branch; later delivered source still needs reconciliation.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "UI"
+    },
+    {
+      "id": "NPC06",
+      "category": "NPCs, trainers and encounters",
+      "name": "Expanded trainer-party schemas and portable team import",
+      "whatItDoes": [
+        "Showdown/party text import",
+        "field-preserving updates",
+        "IVs/EVs/nature/ability",
+        "nickname/gender/shiny",
+        "Tera/Dynamax where supported"
+      ],
+      "references": [
+        "cubhma",
+        "hma"
+      ],
+      "whyNeeded": "Existing trainer editing must not serialize an expanded team with vanilla field sizes or erase omitted advanced fields.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/game-data.js",
+        "dist/shattered-adapter.js",
+        "dist/source-features.js"
+      ],
+      "testEvidence": [
+        "tests/game-tools.test.js",
+        "tests/story-reconcile.test.js"
+      ],
+      "dependencies": [
+        "REL",
+        "NPC",
+        "SHA"
+      ],
+      "reuseRecommendation": "Adapt MIT ExpansionTrainerTeamRun field-preserving grammar/test cases; derive record layouts from pinned engine metadata, not a universal 36-byte assumption.",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Import a team into a versioned expanded record schema, preview every changed field and preserve unspecified advanced values and pointer targets.",
+        "Reject unsupported gimmicks on vanilla engines; export/reimport retains all accepted fields.",
+        "Execute the imported trainer in battle and verify team, abilities/items and selected engine mechanics."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Existing evidence files cover related primitives only; this additional capability has not passed its acceptance criteria.",
+        "integrated": "Backlog on PR branch; later delivered source still needs reconciliation.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "NPC"
+    },
+    {
+      "id": "REL09",
+      "category": "ROM and project reliability",
+      "name": "Engine upgrade with provenance-aware edit migration",
+      "whatItDoes": [
+        "known base fingerprints",
+        "old/new schema mapping",
+        "ownership graph",
+        "conflict review",
+        "custom code refusal",
+        "rollback"
+      ],
+      "references": [
+        "cubhma",
+        "hma"
+      ],
+      "whyNeeded": "Source ZIP export and ROM refresh are not a verified engine-version upgrade carrying arbitrary authored data safely.",
+      "status": "missing",
+      "sourceEvidence": [
+        "dist/rom-refresh.js",
+        "dist/source-project.js",
+        "dist/native-story.js"
+      ],
+      "testEvidence": [
+        "tests/story-reconcile.test.js"
+      ],
+      "dependencies": [
+        "REL",
+        "SHA"
+      ],
+      "reuseRecommendation": "Use MIT CubeFingerprint/RomGraph migration concepts and scenario fixtures; do not port its large-stack desktop worker or CUBE patches. Implement after reliable single-version ownership.",
+      "complexity": "XL",
+      "priority": "P2",
+      "acceptanceCriteria": [
+        "For two known compatible engine revisions, compare an untouched base, edited source and target, producing reviewable field/resource conflicts.",
+        "Refuse unknown source versions and code changes that lack a migration contract; keep original files and project intact.",
+        "Validate all migrated pointers/resources and execute event/map/trainer workflows before offering the result as ready."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Existing evidence files cover related primitives only; this additional capability has not passed its acceptance criteria.",
+        "integrated": "Backlog on PR branch; later delivered source still needs reconciliation.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "REL10",
+      "category": "ROM and project reliability",
+      "name": "Lossless native graphics recompression planning",
+      "whatItDoes": [
+        "known compressed stream boundaries",
+        "SMOL exclusion",
+        "decoded equality",
+        "smaller-only writes",
+        "freed-range ownership",
+        "snapshot validation"
+      ],
+      "references": [
+        "cubhma",
+        "hma"
+      ],
+      "whyNeeded": "Allocation and codecs exist, but a user-reviewable lossless recompression/rollback workflow is not established.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/rom.js",
+        "dist/smol-sprites.js",
+        "dist/native-sprites.js"
+      ],
+      "testEvidence": [
+        "tests/rom.test.js"
+      ],
+      "dependencies": [
+        "REL",
+        "ART"
+      ],
+      "reuseRecommendation": "Evaluate MIT LzOptimalCompressor and ApplyCubeOptimization golden fixtures; use PokéBacon resource ownership and one writer rather than CUBE identity/patch logic.",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Plan only recognized streams on a snapshot; require byte-for-byte decoded equality and strictly smaller encoded data.",
+        "Do not touch unknown/SMOL streams using an LZ77 planner; prove no live alias reaches reclaimed bytes.",
+        "Show total and largest available spans before/after; abort on source changes and retain a recoverable original."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Existing evidence files cover related primitives only; this additional capability has not passed its acceptance criteria.",
+        "integrated": "Backlog on PR branch; later delivered source still needs reconciliation.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "REL"
+    },
+    {
+      "id": "ART11",
+      "category": "Sprites, animation and palettes",
+      "name": "Native species front-animation command timeline",
+      "whatItDoes": [
+        "engine animation layout discovery",
+        "frame commands",
+        "delay/loop/jump",
+        "affine motions",
+        "per-species binding",
+        "unsupported commands"
+      ],
+      "references": [
+        "cubhma",
+        "hma"
+      ],
+      "whyNeeded": "Project frame animation does not establish native species animation layout editing or affine behavior on all engines.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/sprite-workbench.js",
+        "dist/native-sprites.js",
+        "dist/smol-sprites.js"
+      ],
+      "testEvidence": [
+        "tests/sprite-workbench.test.js"
+      ],
+      "dependencies": [
+        "REL",
+        "ART",
+        "SHA"
+      ],
+      "reuseRecommendation": "Study MIT PokemonAnimationLayout/Timeline/Engine interfaces and fixtures; implement engine-specific codecs behind the existing sprite model.",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Read a supported species animation into frames and commands; changing a delay preserves loop/jump targets and palette order.",
+        "Export and execute entry animation, then reimport and compare semantics and untouched species.",
+        "Unknown animation opcodes/layouts remain opaque and cannot be silently rewritten."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Existing evidence files cover related primitives only; this additional capability has not passed its acceptance criteria.",
+        "integrated": "Backlog on PR branch; later delivered source still needs reconciliation.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "ART"
+    },
+    {
+      "id": "AUD06",
+      "category": "Music and sound",
+      "name": "Per-song native voicegroups and safe song-table extension",
+      "whatItDoes": [
+        "instrument/sample mapping",
+        "program defaults",
+        "priority/reverb",
+        "24/48 clock timing",
+        "loops",
+        "new song ID allocation"
+      ],
+      "references": [
+        "cubhma",
+        "hma"
+      ],
+      "whyNeeded": "MIDI composition/import exists; arbitrary new song slots and per-song bank ownership need native acceptance beyond preview audio.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/music-midi.js",
+        "dist/music-parser.js",
+        "dist/music-assets.js",
+        "dist/source-assets.js"
+      ],
+      "testEvidence": [
+        "tests/music-existing-song.test.js",
+        "tests/music-import-preview.test.js"
+      ],
+      "dependencies": [
+        "REL",
+        "AUD"
+      ],
+      "reuseRecommendation": "Compare MIT MidiToAgb options/models and zlib VGMTrans engine discovery; preserve existing composition code and single native writer.",
+      "complexity": "L",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "Import MIDI with explicit voicegroup, missing-program policy, timing and loop preview; report unsupported controllers/samples.",
+        "Add a supported new native song slot without replacing existing music, validating engine table bounds and sample references.",
+        "Execute in-game playback/loop/SFX interaction and compare reimported tracks, voices and priority/reverb."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Existing evidence files cover related primitives only; this additional capability has not passed its acceptance criteria.",
+        "integrated": "Backlog on PR branch; later delivered source still needs reconciliation.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "AUD"
+    },
+    {
+      "id": "UX07",
+      "category": "Testing, usability and product",
+      "name": "Revision-aware resource views and large-gallery performance",
+      "whatItDoes": [
+        "virtualized sprite/event lists",
+        "model revision invalidation",
+        "bounded caches",
+        "search context",
+        "undo/reload refresh"
+      ],
+      "references": [
+        "cubhma",
+        "hma"
+      ],
+      "whyNeeded": "Caching and galleries exist, but Android-scale stale-view and memory acceptance is not established.",
+      "status": "partial",
+      "sourceEvidence": [
+        "dist/memory-cache.js",
+        "dist/sprite-ui.js",
+        "dist/app.js"
+      ],
+      "testEvidence": [
+        "tests/stability.test.js"
+      ],
+      "dependencies": [
+        "REL"
+      ],
+      "reuseRecommendation": "Adapt MIT ModelEditStamp invalidation ideas to existing caches; measure before adding another global state system.",
+      "complexity": "M",
+      "priority": "P1",
+      "acceptanceCriteria": [
+        "On representative Android hardware, search a large sprite/event library and return to canvas without stale data after edit/undo/reload.",
+        "Record viewport/render/memory timings and budgets using a defined fixture; list virtualization retains selection and accessibility focus.",
+        "Keep source checksums and native identity validation authoritative; a UI cache stamp never authorizes a ROM write."
+      ],
+      "verification": {
+        "implemented": false,
+        "tested": "Existing evidence files cover related primitives only; this additional capability has not passed its acceptance criteria.",
+        "integrated": "Backlog on PR branch; later delivered source still needs reconciliation.",
+        "released": false,
+        "gameplayVerified": false
+      },
+      "backlogGroup": "UX"
     }
   ]
 }

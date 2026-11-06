@@ -23,6 +23,8 @@ Complexity is a relative planning label, not a duration promise: M is a bounded 
 
 Do not wait for every parity item before delivering REL → EVT plus NPC/ART. MAP and bounded ART work can proceed once REL contracts are stable. QST depends on actual event-state semantics; UI cannot bypass asset ownership. DS remains deferred.
 
+CUBHMA follow-through is assigned to these existing batches, without a second writer or duplicate issues: ART09/ART10 shared sprite and outfit bindings, ART11 native animation commands, NPC06 expanded party schemas, AUD06 per-song voicegroups, UI07 intro/spawn, UX07 revision-aware galleries, and REL09/REL10 guarded engine migration/recompression. REL09 is P2 and must not delay the single-version Shattered milestone. Their upstream implementations are evidence for requirements and reuse evaluation, not proof that PokéBacon already supports them.
+
 ## Highest-priority findings
 
 1. **Version/source drift:** architecture branch is based on 4.70.5; delivered 4.72.5 work is not reconciled here. Never label later UI/sprite work globally absent or release an older branch as an update.

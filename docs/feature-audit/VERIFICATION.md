@@ -4,7 +4,7 @@
 
 Editor code: PR #19 at 57fde6d, built on the existing 4.70.5 development shell. The preceding 402b020 implementation passed 385 tests (two optional skips), source parity, unsigned Android compilation, existing UI checks and iOS simulator/unsigned device builds. Those are historical results, not automatic acceptance of this batch.
 
-11 upstream trees were cloned read-only and pinned in upstream-evidence.json. Selected core source, interpreter/compiler/model files and licence files were inspected. No upstream application was compiled or interactively reviewed, and no upstream code/art was copied into the editor in this batch.
+12 upstream trees were cloned read-only and pinned in upstream-evidence.json. Selected core source, interpreter/compiler/model files and licence files were inspected. CUBHMA was subsequently identified through GitHub repository search: canonical kcradi/CUBHMA, fork parent/source HMA, retained MIT licence and selected implementation delta verified. No upstream application was compiled or interactively reviewed, and no upstream code/art was copied into the editor in this batch.
 
 ## Immediate implementation
 
@@ -19,15 +19,19 @@ Added verification:
 
 This batch's local results: npm test reports **395 passed, zero failed, two
 optional fixture skips (397 total)**. The four-engine IndexedDB script and
-89-record inventory/evidence validation also pass. CI results must be recorded
-against the actual new commit after publication; previous green runs do not
-certify it.
+98-record inventory/evidence validation also pass. Implementation commit
+255759a14d1cfa190d5ff641386b5ed5fa5c4b32 passed all three jobs in
+[QA run 42229902586](https://github.com/xbaconator9000x/pokebacon-studio/actions/runs/42229902586):
+source parity, portable/UI (including the new four-engine IndexedDB checks),
+and unsigned Android source build. That run validated the initial 89 records;
+the nine additional CUBHMA records are a documentation-only follow-up checked
+locally. iOS run 42229902583 was still running when recorded; no result assumed.
 
 Open tests: Android process death/quota/storage, actual browser-worker timeout/race, interrupted native export, private Shattered gameplay and later-source reconciliation. These remain open even if the automated suite passes.
 
 ## Research not yet complete
 
-- CUBHMA: canonical source/release identity, parent relationship, licence and delta unverified despite both search engines. Requesting a creator URL is appropriate if it cannot be independently located; do not invent compatibility or substitute HMA CE.
+- CUBHMA: identity/licence/fork and selected source comparison completed; interactive workflows, expanded-engine fixture execution and per-component dependency review remain outstanding. CUBE migration/recompression is not established as compatible with Shattered.
 - Advance Map: official workflow documentation reviewed; source reuse rights not established.
 - RPG Maker XP: proprietary editor not source-audited; command/page semantics compared through inspected Essentials code and official documentation.
 - HMA/Porymap/Pixelorama/LibreSprite/Tiled: source review completed for listed components, but interactive usability and full advanced feature coverage need targeted follow-ups.
