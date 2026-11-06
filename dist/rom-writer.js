@@ -1,4 +1,5 @@
 import{describeTilesetStorage,packedStorageCount}from'./tileset-storage.js';
+import{adapterForRomEngine,supportsCapability}from'./platform-adapters.js';
 import{applyNativeEventSuppressions}from'./native-event-suppression.js';
 import{applyWarpRemovals}from'./warp-removal.js';
 import{abilityDefinitions,installNativeAbilities}from'./ability-native.js';
@@ -202,7 +203,7 @@ export function installEvents(output,native,events){const h=native.events>=512&&
 function compileEvent(output,n,engine,context){const source=eventSource(n,context),checked=compileScript(source,0,engine),at=output.allocate(checked.bytes,'Event sequence'),compiled=compileScript(source,at,engine);output.write(at,compiled.bytes);return at+compiled.entryOffset;}
 function coord(x,y,script){const a=new Uint8Array(16),v=new DataView(a.buffer);v.setUint16(0,x,true);v.setUint16(2,y,true);v.setUint16(6,1,true);v.setUint16(8,1,true);v.setUint32(12,BASE+script,true);return a;}
 export async function buildRom(project,reader,{sourceId,renderMap,wallStyles=[],staticArtwork=false,gateRedrawSpecial=null,rasterTimeline=null,allowUnboundMaps=false,progress=()=>{}}={}){
- if(!['frlg','rse'].includes(reader.engine))throw Error('This ROM has no verified map adapter. JSON edits were retained; no ROM was written.');
+ if(!supportsCapability(adapterForRomEngine(reader.engine),'romExport'))throw Error('This ROM has no verified map adapter. JSON edits were retained; no ROM was written.');
  assertProjectLayers(project);assertProjectPortals(project);if(auditNativeExits(project,reader,sourceId).length)throw Error('Resolve JSON/native exit behavior differences in the export review before compiling.');
  if(project.romRefresh?.status==='blocked')throw Error('Resolve the ROM refresh conflicts before compiling. The authored project has not been overwritten.');
  for(const m of project.maps){const bad=assemblyFindings(m).find(f=>f.severity==='error');if(bad)throw Error(m.name+': '+bad.message);}

@@ -1,4 +1,4 @@
-const CACHE='pokebacon-map-studio-v4.70.2-region-3';
+const CACHE='pokebacon-map-studio-v4.70.5-adapters-1';
 // Continuous route boundaries and explicit portal arrival directions.
 // Original puddle artwork is bundled with the app and available offline.
 const cacheFresh=(cache,urls)=>cache.addAll([...new Set(urls)].map(url=>new Request(url,{cache:'reload'})));
@@ -7,6 +7,7 @@ CORE.push('./version-ui.js','./npc-picker.js','./npc-graphics-native.js','./nati
 CORE.push('./assets/objects/emerald-route120-puddle.png','./assets/objects/emerald-puddle-terrain.png','./assets/objects/emerald-puddle-preview.png');
 CORE.push('./gate-placement.js','./map-environment.js','./asset-browser.js','./asset-extras.js','./assets/objects/studio-puddle-blue.png','./assets/objects/studio-puddle-mud.png','./assets/objects/studio-puddle-small.png');
 CORE.push('./map-seams.js','./seam-native.js','./portal-facing.js');
+CORE.push('./platform-adapters.js','./platform-runtime.js','./gba-source-project.js');
 CORE.push('./verified-frlg.js','./movement-defaults.js','./movement-ui.js','./native-layers.js','./toolbar-ui.js','./footprint-ui.js','./event-overlay.js','./story-model.js','./story-ui.js','./editor-controls.css','./story.css');
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);await cacheFresh(cache,CORE);const response=await fetch('./assets/catalog.json',{cache:'reload'}),catalog=await response.json();await cacheFresh(cache,catalog.map(a=>'./'+a.src));const smart=await (await fetch('./assets/smart-catalog.json',{cache:'reload'})).json();await cacheFresh(cache,[...new Set([...smart.assets.map(a=>'./'+a.src),...(smart.interiors||[]).map(t=>t.preview?'./'+t.preview:null).filter(Boolean)])]);const organized=await(await fetch('./assets/organized-catalog.json',{cache:'reload'})).json();await cacheFresh(cache,organized.assets.map(a=>'./'+a.src));await self.skipWaiting();})()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if((key.startsWith('pokebacon-')||key.includes('map-studio-'))&&key!==CACHE)await caches.delete(key);await self.clients.claim();})()));
