@@ -14,7 +14,7 @@ Read in order:
 
 ## Baseline and status discipline
 
-Audited implementation starts at PR #19 commit 57fde6d. This branch derives from development/studio-upgrades and its 4.70.5 shell. It is **not reconciled with the delivered 4.72.5 APK/source**. Features present only in that later delivery must not be marked absent globally or shipped by this branch.
+Audited implementation starts at PR #19 commit 57fde6d. The original 4.70.5 branch has now been reconciled with the delivered 4.72.5 web assets for the **4.72.6 signed test update**. Both recovered work and later Git fixes are retained. The APK preserves the exact delivered native shell; physical update/gameplay acceptance remains open. See [delivery evidence and limitations](DELIVERY_4_72_6.md).
 
 Each inventory record carries controls, upstream references, code/test evidence, limitations, dependencies, reuse direction, complexity, priority and acceptance criteria. Stages are distinct: planned, implemented, tested, integrated and released. No native feature is labelled fully verified solely because a unit test or button exists. None of these records claims a complete Shattered gameplay round trip.
 

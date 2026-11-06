@@ -33,7 +33,7 @@ Audited 6 November 2026 against code in [commit 402b020](https://github.com/xbac
 - [x] **P1 implementation: correct undo/redo save scope for all split sections.** Added shared section registry, ten model regressions and four-engine IndexedDB API tests in the feature-audit batch. Integration, release and physical-device proof remain open.
 - [x] Verify bounded source-settings undo/redo and transaction abort/fallback through IndexedDB APIs for all four source engines; cover all split sections in model save/reopen tests. See scripts/test-project-storage.mjs and tests/project-save-scope.test.js.
 - [ ] Extend physical-device, quota/process-death and worker timeout/race coverage. IndexedDB API shims and generic section fixtures do not establish those cases.
-- [ ] Reconcile these changes with the separately delivered 4.72.5 source/APK before preparing a newer signed release.
+- [x] Reconcile delivered 4.72.5 web assets in the 4.72.6 signed test candidate; native shell and original certificate retained. Physical/gameplay acceptance remains open.
 - [ ] Complete shared runtime ownership for binary ROM operations where useful during current GBA work. The binary guard uses descriptors; reader/writer implementation still contains FRLG/RSE branches.
 - [ ] Add per-project/revision/extension capability refinement when implementing the corresponding GBA feature. Current descriptors are family-level; signature validation still supplies detailed checks.
 - [ ] Verify signed Android installation/update, retained local projects and physical touchscreen use.

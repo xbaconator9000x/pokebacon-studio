@@ -27,7 +27,7 @@ CUBHMA follow-through is assigned to these existing batches, without a second wr
 
 ## Highest-priority findings
 
-1. **Version/source drift:** architecture branch is based on 4.70.5; delivered 4.72.5 work is not reconciled here. Never label later UI/sprite work globally absent or release an older branch as an update.
+1. **Version/source drift:** recovered 4.72.5 web assets and Git improvements are reconciled in the 4.72.6 signed test candidate. Native code/resources are preserved from the delivered APK. Physical update and private gameplay acceptance remain open; do not restart this reconciliation or claim the branch is merged.
 2. **History persistence:** sourceEngine/text/region/cry/door/HM undo/redo could be saved with a map-only scope. Current batch fixes that caller using one shared section registry. Direct mutations must still use the documented scope contract.
 3. **Unknown scripts:** native graph preserves unresolved entries, while raw disassembly throws on unknown opcodes. There must be one clear read-only/unsafe-relocation policy across both views.
 4. **Two authoring models:** native story graphs and authored scene templates are not identical. Bridge them through stable typed actions or explicitly linked source nodes; do not discard advanced/native data when opening a simplified view.

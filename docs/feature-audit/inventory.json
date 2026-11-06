@@ -57,8 +57,8 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
+        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
         "released": false,
         "gameplayVerified": false
       },
@@ -972,7 +972,8 @@
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
-        "tests/scene-outline.test.js"
+        "tests/scene-outline.test.js",
+        "scripts/test-release-mobile-browser.mjs"
       ],
       "dependencies": [
         "REL"
@@ -988,8 +989,8 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
+        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
         "released": false,
         "gameplayVerified": false
       },
@@ -1026,7 +1027,8 @@
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
-        "tests/scene-outline.test.js"
+        "tests/scene-outline.test.js",
+        "tests/native-story-roundtrip.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1042,8 +1044,8 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
+        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
         "released": false,
         "gameplayVerified": false
       },
@@ -1078,7 +1080,8 @@
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
-        "tests/scene-outline.test.js"
+        "tests/scene-outline.test.js",
+        "tests/native-story-roundtrip.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1094,8 +1097,8 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
+        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
         "released": false,
         "gameplayVerified": false
       },
@@ -2910,7 +2913,8 @@
       "testEvidence": [
         "tests/sprite-workbench.test.js",
         "tests/sprite-reference-validation.test.js",
-        "tests/palette-conversion.test.js"
+        "tests/palette-conversion.test.js",
+        "scripts/test-release-mobile-browser.mjs"
       ],
       "dependencies": [
         "REL"
@@ -2926,8 +2930,8 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
+        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
         "released": false,
         "gameplayVerified": false
       },
@@ -2966,7 +2970,8 @@
       "testEvidence": [
         "tests/sprite-workbench.test.js",
         "tests/sprite-reference-validation.test.js",
-        "tests/palette-conversion.test.js"
+        "tests/palette-conversion.test.js",
+        "scripts/test-release-mobile-browser.mjs"
       ],
       "dependencies": [
         "REL"
@@ -2982,8 +2987,8 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
+        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
         "released": false,
         "gameplayVerified": false
       },
@@ -3018,7 +3023,8 @@
       "testEvidence": [
         "tests/sprite-workbench.test.js",
         "tests/sprite-reference-validation.test.js",
-        "tests/palette-conversion.test.js"
+        "tests/palette-conversion.test.js",
+        "scripts/test-release-mobile-browser.mjs"
       ],
       "dependencies": [
         "REL"
@@ -3034,8 +3040,8 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
+        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
         "released": false,
         "gameplayVerified": false
       },
@@ -3087,8 +3093,8 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
+        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
         "released": false,
         "gameplayVerified": false
       },
@@ -3659,7 +3665,10 @@
         "dist/source-project.js",
         "dist/game-data.js",
         "dist/gba-source-project.js",
-        "dist/ui-source-layouts.js"
+        "dist/ui-source-layouts.js",
+        "dist/ui-theme.js",
+        "dist/ui-native.js",
+        "dist/ui-source-editor.js"
       ],
       "testEvidence": [
         "tests/game-tools.test.js",
@@ -3680,8 +3689,8 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Four synthetic source-engine fixtures verify registered-runtime window export, unchanged source, reimport, stale-input rejection and original allocation bounds. No native build/gameplay or recovered UI controls acceptance.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
+        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
         "released": false,
         "gameplayVerified": false
       },
@@ -4750,11 +4759,13 @@
       "sourceEvidence": [
         "dist/native-sprites.js",
         "dist/sprite-workbench.js",
-        "dist/source-assets.js"
+        "dist/source-assets.js",
+        "dist/wardrobe-native.js"
       ],
       "testEvidence": [
         "tests/sprite-workbench.test.js",
-        "tests/source-project.test.js"
+        "tests/source-project.test.js",
+        "tests/wardrobe-native.test.js"
       ],
       "dependencies": [
         "REL",
@@ -4769,9 +4780,9 @@
         "If runtime recolouring is absent, explain baked-palette editing rather than presenting nonfunctional outfit channels."
       ],
       "verification": {
-        "implemented": false,
-        "tested": "Existing evidence files cover related primitives only; this additional capability has not passed its acceptance criteria.",
-        "integrated": "Backlog on PR branch; later delivered source still needs reconciliation.",
+        "implemented": true,
+        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
+        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
         "released": false,
         "gameplayVerified": false
       },
@@ -5108,5 +5119,6 @@
       },
       "backlogGroup": "UX"
     }
-  ]
+  ],
+  "currentCandidate": "4.72.6 / Android code 146. Recovered source is reconciled; device/emulator acceptance remains open. See DELIVERY_4_72_6.md."
 }

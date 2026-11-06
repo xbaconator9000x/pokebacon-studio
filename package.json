@@ -1,6 +1,6 @@
 {
   "name": "pokebacon-studio",
-  "version": "4.70.5",
+  "version": "4.72.6",
   "description": "A phone-friendly editor for Pok\u00e9mon-style Game Boy Advance projects.",
   "type": "module",
   "scripts": {

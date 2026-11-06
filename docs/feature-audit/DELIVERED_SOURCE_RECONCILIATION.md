@@ -1,5 +1,12 @@
 # Delivered 4.72.5 reconciliation preflight
 
+**Follow-through:** [4.72.6 delivery](DELIVERY_4_72_6.md) completes the recovered
+web-asset reconciliation, including the divergent sprite, allocator/artwork,
+source/runtime, CSS and app callers. Both Git-only fixes and delivered features
+are retained. The text below records the original preflight findings; it must
+not be read as the current candidate's unresolved merge status. Device and
+gameplay acceptance remain open.
+
 ## Recovered evidence
 
 The delivered APK is available and its binary Android manifest reports **4.72.5 / code 145**. Its 1,853 web assets were compared byte-for-byte with PR #19 at `630d1b7417a669a1399752e8b448f41ccabe9559`. The source archive labelled 4.72.3 is also available; its SHA-256 is `49b4f01eee95701dea623aad9c2d4d939a6dc7af9535d4d7f3eb1a3c53a3d67a`.

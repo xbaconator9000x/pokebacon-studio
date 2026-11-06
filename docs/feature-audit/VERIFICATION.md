@@ -1,5 +1,11 @@
 # Verification, scope and unfinished research
 
+Current candidate: [4.72.6 delivery evidence](DELIVERY_4_72_6.md). Source
+reconciliation, mobile browser workflow checks, native wardrobe/data fixtures
+and original-certificate packaging are completed for that test update. Earlier
+counts and open reconciliation findings below are historical evidence for
+their named commits. They do not override the newer candidate report.
+
 ## Inspected baseline
 
 Editor code: PR #19 at 57fde6d, built on the existing 4.70.5 development shell. The preceding 402b020 implementation passed 385 tests (two optional skips), source parity, unsigned Android compilation, existing UI checks and iOS simulator/unsigned device builds. Those are historical results, not automatic acceptance of this batch.
