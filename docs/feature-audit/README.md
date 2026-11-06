@@ -10,6 +10,7 @@ Read in order:
 5. [Shattered compatibility contract](SHATTERED_BENCHMARK.md)
 6. [Pinned upstream evidence](upstream-evidence.json)
 7. [Verification and unfinished audit](VERIFICATION.md)
+8. [Recovered delivered-source reconciliation](DELIVERED_SOURCE_RECONCILIATION.md)
 
 ## Baseline and status discipline
 

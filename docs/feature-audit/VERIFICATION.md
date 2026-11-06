@@ -31,6 +31,8 @@ Open tests: Android process death/quota/storage, actual browser-worker timeout/r
 
 ## Research not yet complete
 
+Delivered-source follow-up: recovered the 4.72.5/code-145 APK and 4.72.3 source archive. Byte comparison against 630d1b7 identifies 1,795 identical, 47 differing and 11 delivered-only assets; 21 Git-only dependencies also require preservation. The source archive retains stale 4.69.3 package/Android metadata. See DELIVERED_SOURCE_RECONCILIATION.md and its reproducible hash report. Recovery is no longer blocked on locating these artifacts; integration remains open. Application assets were not replaced by the trial comparison.
+
 - CUBHMA: identity/licence/fork and selected source comparison completed; interactive workflows, expanded-engine fixture execution and per-component dependency review remain outstanding. CUBE migration/recompression is not established as compatible with Shattered.
 - Advance Map: official workflow documentation reviewed; source reuse rights not established.
 - RPG Maker XP: proprietary editor not source-audited; command/page semantics compared through inspected Essentials code and official documentation.
@@ -41,3 +43,5 @@ Open tests: Android process death/quota/storage, actual browser-worker timeout/r
 ## What was not claimed
 
 No record is marked fully_verified for a complete native gameplay workflow. No Android physical test, current private Shattered ROM acceptance, arbitrary custom code editing, delivered APK integration, DS implementation or automatic development daemon is claimed. Future sessions follow the roadmap and existing GitHub tracking.
+
+Reconciliation slice validation: 399 tests passed, zero failed, two optional skips (401 total); 1,864 deployed fingerprints and all 98 inventory records/12 upstream pins validate. Four new source-layout runtime tests exercise synthetic fixtures only. Full recovered editor UI, native compilation, physical Android and Shattered gameplay remain open.

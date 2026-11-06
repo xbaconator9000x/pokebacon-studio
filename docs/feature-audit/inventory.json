@@ -53,7 +53,7 @@
         "Demonstrate header with target-engine constraints.",
         "Demonstrate game revision with target-engine constraints.",
         "Expose a revision-specific compatibility report and reject misleading header-only matches.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -104,7 +104,7 @@
         "Demonstrate aligned spans with target-engine constraints.",
         "Demonstrate ownership with target-engine constraints.",
         "Expose the allocation plan and verify repeated exports do not grow duplicate resources.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -153,7 +153,7 @@
         "Demonstrate embedded assets with target-engine constraints.",
         "Demonstrate linked ROM identity with target-engine constraints.",
         "Physical-device and complete transaction fault coverage remain outstanding.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -204,7 +204,7 @@
         "Demonstrate source settings with target-engine constraints.",
         "Demonstrate text with target-engine constraints.",
         "Save scope fix implemented this batch; direct mutation with an incorrectly map-only scope remains outside the API contract.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -254,7 +254,7 @@
         "Demonstrate normalised root with target-engine constraints.",
         "Demonstrate CRC with target-engine constraints.",
         "Compile exported engines and validate resulting games; source maps are not authored from Studio maps.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -279,7 +279,7 @@
         "hma",
         "porymap"
       ],
-      "whyNeeded": "Test repeated project→ROM→project on current Shattered and preserve unsupported records.",
+      "whyNeeded": "Test repeated project\u2192ROM\u2192project on current Shattered and preserve unsupported records.",
       "status": "partial",
       "sourceEvidence": [
         "dist/rom.js",
@@ -302,8 +302,8 @@
       "acceptanceCriteria": [
         "Demonstrate stable IDs with target-engine constraints.",
         "Demonstrate relocated bindings with target-engine constraints.",
-        "Test repeated project→ROM→project on current Shattered and preserve unsupported records.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Test repeated project\u2192ROM\u2192project on current Shattered and preserve unsupported records.",
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -353,7 +353,7 @@
         "Demonstrate transaction abort with target-engine constraints.",
         "Demonstrate worker fallback with target-engine constraints.",
         "Added IndexedDB abort and worker-post failure tests; worker timeout, quota and interrupted export recovery need coverage.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -403,7 +403,7 @@
         "Demonstrate where-used with target-engine constraints.",
         "Demonstrate copy-on-write with target-engine constraints.",
         "Current guards exist but no unified inspectable resource ownership UI was verified.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -458,7 +458,7 @@
         "Demonstrate ground with target-engine constraints.",
         "Demonstrate details with target-engine constraints.",
         "Verify native priorities and occlusion with representative exported maps.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -511,7 +511,7 @@
         "Demonstrate walk with target-engine constraints.",
         "Demonstrate block with target-engine constraints.",
         "Need an in-game route covering every engine-specific movement rule.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -563,7 +563,7 @@
         "Demonstrate zoom with target-engine constraints.",
         "Demonstrate pan with target-engine constraints.",
         "Unify map browsing with editable connected-map previews on a phone.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -615,7 +615,7 @@
         "Demonstrate crop origin with target-engine constraints.",
         "Demonstrate inbound warps with target-engine constraints.",
         "Validate intelligent room rebuilding and edge traversal in native exports.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -667,7 +667,7 @@
         "Demonstrate metatiles with target-engine constraints.",
         "Demonstrate palette banks with target-engine constraints.",
         "Shared bank ownership, import budget and animation callback conflicts need one review flow.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -719,7 +719,7 @@
         "Demonstrate autojoin with target-engine constraints.",
         "Demonstrate concave corners with target-engine constraints.",
         "Prove southern water shoreline and half-tile surf behavior on supplied project data.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -771,7 +771,7 @@
         "Demonstrate footprint with target-engine constraints.",
         "Demonstrate collision mask with target-engine constraints.",
         "Device library and native placement coverage need combined acceptance.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -825,7 +825,7 @@
         "Demonstrate seeds with target-engine constraints.",
         "Demonstrate biomes with target-engine constraints.",
         "Generation has tests; procedural output still needs whole-world playability validation.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -877,7 +877,7 @@
         "Demonstrate map.json with target-engine constraints.",
         "Demonstrate layout blocks with target-engine constraints.",
         "Source export currently preserves maps instead of converting Studio map edits.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -931,7 +931,7 @@
         "Demonstrate weather with target-engine constraints.",
         "Demonstrate darkness with target-engine constraints.",
         "Inventory which fields have engine writers and expose unavailable ones honestly.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -984,7 +984,7 @@
         "Demonstrate NPC with target-engine constraints.",
         "Demonstrate sign with target-engine constraints.",
         "Discovery is bounded; show counts, skipped roots and reasons per map.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1038,7 +1038,7 @@
         "Demonstrate text with target-engine constraints.",
         "Demonstrate args with target-engine constraints.",
         "Flow editing exists; current Shattered end-to-end event benchmark is unexecuted.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1090,7 +1090,7 @@
         "Demonstrate opaque node with target-engine constraints.",
         "Demonstrate original bytes with target-engine constraints.",
         "Opaque nodes are retained but unknown instruction length cannot be guessed; reject unsafe relocation and prove adjacent edits.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1142,7 +1142,7 @@
         "Demonstrate ordered conditions with target-engine constraints.",
         "Demonstrate self switches with target-engine constraints.",
         "Draft PR #11 needs reconciliation; a native flow graph does not provide full RPG Maker page semantics.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1194,7 +1194,7 @@
         "Demonstrate labels with target-engine constraints.",
         "Demonstrate raw directives with target-engine constraints.",
         "Prove text/visual equivalence and source locations after structural editing.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1247,7 +1247,7 @@
         "Demonstrate names with target-engine constraints.",
         "Demonstrate ownership with target-engine constraints.",
         "Unify allocation and naming across quests, scenes, native scripts and engine extensions.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1299,7 +1299,7 @@
         "Demonstrate call with target-engine constraints.",
         "Demonstrate return with target-engine constraints.",
         "Add where-used and detach versus shared edit choices before changing a shared script.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1350,7 +1350,7 @@
         "Demonstrate root identity with target-engine constraints.",
         "Demonstrate source signatures with target-engine constraints.",
         "Need semantic and byte-preservation checks against actual modified Shattered events.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1402,7 +1402,7 @@
         "Demonstrate map waypoints with target-engine constraints.",
         "Demonstrate directions with target-engine constraints.",
         "Actor ownership and path interruption need native acceptance.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1454,7 +1454,7 @@
         "Demonstrate movement start with target-engine constraints.",
         "Demonstrate join with target-engine constraints.",
         "Sequential scene steps and image timelines do not prove a general scheduler for simultaneous NPC actions.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1507,7 +1507,7 @@
         "Demonstrate choices with target-engine constraints.",
         "Demonstrate cancel with target-engine constraints.",
         "Verify all branches, re-entry and saved outcomes in a running game.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1561,7 +1561,7 @@
         "Demonstrate pan with target-engine constraints.",
         "Demonstrate follow with target-engine constraints.",
         "Provide per-engine command support and timing preview rather than treating UI preview as gameplay.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1613,7 +1613,7 @@
         "Demonstrate tokens with target-engine constraints.",
         "Demonstrate wrapping with target-engine constraints.",
         "Native glyph/control support and translated expansion text need validation.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1665,7 +1665,7 @@
         "Demonstrate breakpoint with target-engine constraints.",
         "Demonstrate step with target-engine constraints.",
         "Current previews are bounded simulations; implement trace-backed debugging for supported commands.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -1716,7 +1716,7 @@
         "Demonstrate named stages with target-engine constraints.",
         "Demonstrate acceptance with target-engine constraints.",
         "Needs player-readable condition editor and runtime acceptance on current Shattered.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1766,7 +1766,7 @@
         "Demonstrate correct fanfare with target-engine constraints.",
         "Demonstrate obtained dialogue with target-engine constraints.",
         "Preserve engine-specific receipt behavior and test failure/retry paths in game.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1817,7 +1817,7 @@
         "Demonstrate daily reset with target-engine constraints.",
         "Demonstrate timer with target-engine constraints.",
         "Native clock and persisted reset semantics are engine-specific and not generally verified.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1867,7 +1867,7 @@
         "Demonstrate progress with target-engine constraints.",
         "Demonstrate discoverability with target-engine constraints.",
         "Quest data alone does not establish a native journal or achievement screen.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1919,7 +1919,7 @@
         "Demonstrate shop with target-engine constraints.",
         "Demonstrate heal with target-engine constraints.",
         "Each composed template needs dependencies and preflight diagnostics instead of duplicate script writers.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -1937,7 +1937,7 @@
       "whatItDoes": [
         "person",
         "player",
-        "Pokémon",
+        "Pok\u00e9mon",
         "facing",
         "sprite size",
         "local ID",
@@ -1948,7 +1948,7 @@
         "porymap",
         "essentials"
       ],
-      "whyNeeded": "Verify expanded Pokémon OW profiles and distinguish missing artwork from unsupported engine format.",
+      "whyNeeded": "Verify expanded Pok\u00e9mon OW profiles and distinguish missing artwork from unsupported engine format.",
       "status": "partial",
       "sourceEvidence": [
         "dist/game-data.js",
@@ -1972,8 +1972,8 @@
       "acceptanceCriteria": [
         "Demonstrate person with target-engine constraints.",
         "Demonstrate player with target-engine constraints.",
-        "Verify expanded Pokémon OW profiles and distinguish missing artwork from unsupported engine format.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Verify expanded Pok\u00e9mon OW profiles and distinguish missing artwork from unsupported engine format.",
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2027,7 +2027,7 @@
         "Demonstrate species with target-engine constraints.",
         "Demonstrate levels with target-engine constraints.",
         "Some expanded teams are supported; need create/duplicate/rematch identity and legal engine bounds tests.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2080,7 +2080,7 @@
         "Demonstrate line-of-sight with target-engine constraints.",
         "Demonstrate range with target-engine constraints.",
         "Expose behavior without manual script flags and validate victory/loss/re-entry.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2134,7 +2134,7 @@
         "Demonstrate slots with target-engine constraints.",
         "Demonstrate rates with target-engine constraints.",
         "Separate vanilla encounter records from expansion-specific formats and generated encounter plans.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2186,7 +2186,7 @@
         "Demonstrate sprite thumbnail with target-engine constraints.",
         "Demonstrate dialogue snippet with target-engine constraints.",
         "Need a uniform selection workflow that avoids ambiguous unnamed Character N entries.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2199,7 +2199,7 @@
     },
     {
       "id": "MON01",
-      "category": "Pokémon and moves",
+      "category": "Pok\u00e9mon and moves",
       "name": "Species base data",
       "whatItDoes": [
         "types",
@@ -2241,7 +2241,7 @@
         "Demonstrate types with target-engine constraints.",
         "Demonstrate six stats with target-engine constraints.",
         "Table profiles vary; expose all supported fields and reject fields without a verified writer.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2254,7 +2254,7 @@
     },
     {
       "id": "MON02",
-      "category": "Pokémon and moves",
+      "category": "Pok\u00e9mon and moves",
       "name": "Learnsets and teaching",
       "whatItDoes": [
         "level",
@@ -2294,7 +2294,7 @@
         "Demonstrate level with target-engine constraints.",
         "Demonstrate TM/HM with target-engine constraints.",
         "Prove all teachability paths in each target engine and preserve unknown fields.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2307,7 +2307,7 @@
     },
     {
       "id": "MON03",
-      "category": "Pokémon and moves",
+      "category": "Pok\u00e9mon and moves",
       "name": "Evolutions and alternate forms",
       "whatItDoes": [
         "method",
@@ -2349,7 +2349,7 @@
         "Demonstrate method with target-engine constraints.",
         "Demonstrate item with target-engine constraints.",
         "Slot availability, save layout and evolution runtime need actual game validation.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2362,8 +2362,8 @@
     },
     {
       "id": "MON04",
-      "category": "Pokémon and moves",
-      "name": "Pokédex entries and ordering",
+      "category": "Pok\u00e9mon and moves",
+      "name": "Pok\u00e9dex entries and ordering",
       "whatItDoes": [
         "name",
         "category",
@@ -2403,7 +2403,7 @@
         "Demonstrate name with target-engine constraints.",
         "Demonstrate category with target-engine constraints.",
         "Editing a creature design is not proof of all native dex-table writers.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2416,7 +2416,7 @@
     },
     {
       "id": "MON05",
-      "category": "Pokémon and moves",
+      "category": "Pok\u00e9mon and moves",
       "name": "Move properties",
       "whatItDoes": [
         "power",
@@ -2458,7 +2458,7 @@
         "Demonstrate power with target-engine constraints.",
         "Demonstrate accuracy with target-engine constraints.",
         "Profiles must retain engine-specific stride and flags.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2471,7 +2471,7 @@
     },
     {
       "id": "MON06",
-      "category": "Pokémon and moves",
+      "category": "Pok\u00e9mon and moves",
       "name": "Custom move effects and animations",
       "whatItDoes": [
         "effect scripts",
@@ -2510,7 +2510,7 @@
         "Demonstrate effect scripts with target-engine constraints.",
         "Demonstrate native hook with target-engine constraints.",
         "Numeric effect selection is not arbitrary effect authoring; isolate reviewed extension hooks.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -2523,7 +2523,7 @@
     },
     {
       "id": "MON07",
-      "category": "Pokémon and moves",
+      "category": "Pok\u00e9mon and moves",
       "name": "Custom ability designs and native hooks",
       "whatItDoes": [
         "trigger",
@@ -2563,7 +2563,7 @@
         "Demonstrate trigger with target-engine constraints.",
         "Demonstrate condition with target-engine constraints.",
         "Native compiler is guarded to a specific Shattered profile and excludes HUMAN binding; general engine parity absent.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2576,7 +2576,7 @@
     },
     {
       "id": "MON08",
-      "category": "Pokémon and moves",
+      "category": "Pok\u00e9mon and moves",
       "name": "Rebalancing and data dependencies",
       "whatItDoes": [
         "bulk rules",
@@ -2616,7 +2616,7 @@
         "Demonstrate bulk rules with target-engine constraints.",
         "Demonstrate where-used with target-engine constraints.",
         "Prefer data-level transforms with preview and one authoritative writer.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -2668,7 +2668,7 @@
         "Demonstrate name with target-engine constraints.",
         "Demonstrate price with target-engine constraints.",
         "Verify expanded item records and actual field/battle use instead of only inventory insertion.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2719,7 +2719,7 @@
         "Demonstrate stock with target-engine constraints.",
         "Demonstrate quantities with target-engine constraints.",
         "Need successful purchase, insufficient money and retry tests in a running game.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2746,7 +2746,7 @@
         "essentials",
         "cfru"
       ],
-      "whyNeeded": "Shattered tables require pinned metadata and native behavior tests; not a stock Pokémon item capability.",
+      "whyNeeded": "Shattered tables require pinned metadata and native behavior tests; not a stock Pok\u00e9mon item capability.",
       "status": "engine_limited",
       "sourceEvidence": [
         "dist/item-maker.js",
@@ -2768,8 +2768,8 @@
       "acceptanceCriteria": [
         "Demonstrate slot with target-engine constraints.",
         "Demonstrate equip condition with target-engine constraints.",
-        "Shattered tables require pinned metadata and native behavior tests; not a stock Pokémon item capability.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Shattered tables require pinned metadata and native behavior tests; not a stock Pok\u00e9mon item capability.",
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2820,7 +2820,7 @@
         "Demonstrate ingredients with target-engine constraints.",
         "Demonstrate output with target-engine constraints.",
         "Optional engine extension after basic rewards/equipment acceptance.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -2870,7 +2870,7 @@
         "Demonstrate prices with target-engine constraints.",
         "Demonstrate consumable with target-engine constraints.",
         "Add reference checks for deleted/changed items in scripts and shops.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2922,7 +2922,7 @@
         "Demonstrate pinch zoom with target-engine constraints.",
         "Demonstrate pan with target-engine constraints.",
         "Repeated user complaints require measured phone acceptance; branch UI is not proof of later APK behavior.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -2978,7 +2978,7 @@
         "Demonstrate pencil with target-engine constraints.",
         "Demonstrate erase with target-engine constraints.",
         "Selection/gesture undo and viewport clipping need Android interaction tests.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3030,7 +3030,7 @@
         "Demonstrate base with target-engine constraints.",
         "Demonstrate top with target-engine constraints.",
         "Project layers exist; current player/outfit accessibility and native frame mapping need proof.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3083,7 +3083,7 @@
         "Demonstrate image import with target-engine constraints.",
         "Demonstrate opacity with target-engine constraints.",
         "Reference must never be baked into exported pixels and must survive project reopen.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3135,7 +3135,7 @@
         "Demonstrate frame order with target-engine constraints.",
         "Demonstrate duration with target-engine constraints.",
         "Native engine frame limits, linked views and timing need an integrated workflow.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3186,7 +3186,7 @@
         "Demonstrate index zero with target-engine constraints.",
         "Demonstrate 15 opaque colours with target-engine constraints.",
         "Preview propagation, duplicate/detach and budget warnings need touch/UI and native execution proof.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3239,7 +3239,7 @@
         "Demonstrate front with target-engine constraints.",
         "Demonstrate back with target-engine constraints.",
         "Profiles are guarded; no universal arbitrary-ROM or riding-frame discovery is established.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3291,7 +3291,7 @@
         "Demonstrate PNG with target-engine constraints.",
         "Demonstrate palette with target-engine constraints.",
         "Add reviewable quantisation, offset-aware sheets and safe export against native constraints.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3347,7 +3347,7 @@
         "Demonstrate song IDs with target-engine constraints.",
         "Demonstrate loops with target-engine constraints.",
         "Validate mixer and sample dependencies against exact source engine.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3402,7 +3402,7 @@
         "Demonstrate whole song with target-engine constraints.",
         "Demonstrate selected parts with target-engine constraints.",
         "Keep actual score authoritative and verify native output of edited imported tracks.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3457,7 +3457,7 @@
         "Demonstrate seed with target-engine constraints.",
         "Demonstrate motif lock with target-engine constraints.",
         "Successful mocked inference/unit composition is not proof of on-phone neural execution.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3512,7 +3512,7 @@
         "Demonstrate PCM with target-engine constraints.",
         "Demonstrate loop with target-engine constraints.",
         "Cries have native tests; general SFX bank/sequence editor still needs dedicated acceptance.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3566,7 +3566,7 @@
         "Demonstrate existing slot with target-engine constraints.",
         "Demonstrate relocation with target-engine constraints.",
         "Source compilation and emulator audition remain required; no universal soundfont replacement claim.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3619,7 +3619,7 @@
         "Demonstrate opening with target-engine constraints.",
         "Demonstrate naming prompts with target-engine constraints.",
         "Existing verified pointer slots are narrower than a complete interface designer.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3649,7 +3649,7 @@
         "cfru",
         "essentials"
       ],
-      "whyNeeded": "4.72.5 later-source UI files are absent from this branch; reconcile before claiming completion.",
+      "whyNeeded": "Recovered source-window export is wired through GBA runtimes; the complete 4.72.5 layout UI and native ROM controls still need reconciliation.",
       "status": "partial",
       "sourceEvidence": [
         "dist/presentation-maker.js",
@@ -3657,11 +3657,14 @@
         "dist/native-timeline.js",
         "dist/source-features.js",
         "dist/source-project.js",
-        "dist/game-data.js"
+        "dist/game-data.js",
+        "dist/gba-source-project.js",
+        "dist/ui-source-layouts.js"
       ],
       "testEvidence": [
         "tests/game-tools.test.js",
-        "tests/source-project.test.js"
+        "tests/source-project.test.js",
+        "tests/source-layout-runtime.test.js"
       ],
       "dependencies": [
         "REL"
@@ -3673,11 +3676,11 @@
         "Demonstrate select with target-engine constraints.",
         "Demonstrate drag with target-engine constraints.",
         "4.72.5 later-source UI files are absent from this branch; reconcile before claiming completion.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
-        "implemented": false,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "implemented": true,
+        "tested": "Four synthetic source-engine fixtures verify registered-runtime window export, unchanged source, reimport, stale-input rejection and original allocation bounds. No native build/gameplay or recovered UI controls acceptance.",
         "integrated": "PR branch only; latest delivered APK source not reconciled.",
         "released": false,
         "gameplayVerified": false
@@ -3726,7 +3729,7 @@
         "Demonstrate glyphs with target-engine constraints.",
         "Demonstrate tilemap with target-engine constraints.",
         "Visual presentation canvas does not establish safe native layout or font installation.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3755,7 +3758,7 @@
         "cfru",
         "essentials"
       ],
-      "whyNeeded": "HMA supplies a useful reference, but PokéBacon needs a verified profile-specific authoring/compiler path.",
+      "whyNeeded": "HMA supplies a useful reference, but Pok\u00e9Bacon needs a verified profile-specific authoring/compiler path.",
       "status": "missing",
       "sourceEvidence": [
         "dist/presentation-maker.js",
@@ -3778,8 +3781,8 @@
       "acceptanceCriteria": [
         "Demonstrate conditions with target-engine constraints.",
         "Demonstrate scoring with target-engine constraints.",
-        "HMA supplies a useful reference, but PokéBacon needs a verified profile-specific authoring/compiler path.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "HMA supplies a useful reference, but Pok\u00e9Bacon needs a verified profile-specific authoring/compiler path.",
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -3830,7 +3833,7 @@
         "Demonstrate compile-time define with target-engine constraints.",
         "Demonstrate runtime flag with target-engine constraints.",
         "Current scanner covers literal configurations, not arbitrary plugin/source dependency resolution.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3883,7 +3886,7 @@
         "Demonstrate extension identity with target-engine constraints.",
         "Demonstrate symbols with target-engine constraints.",
         "Bundled adapters exist; signed/trusted extension packaging and source metadata schema remain design work.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3937,7 +3940,7 @@
         "Demonstrate run edited ROM with target-engine constraints.",
         "Demonstrate reset with target-engine constraints.",
         "Each workflow needs game execution evidence; unit tests alone never complete it.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -3990,7 +3993,7 @@
         "Demonstrate field-specific errors with target-engine constraints.",
         "Demonstrate capacity explanation with target-engine constraints.",
         "Unify export errors with safe alternatives and jump-to-offending-control.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -4044,7 +4047,7 @@
         "Demonstrate offline modules with target-engine constraints.",
         "Demonstrate update with target-engine constraints.",
         "Build success is not physical update/data-retention or phone usability acceptance.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -4098,7 +4101,7 @@
         "Demonstrate screen reader with target-engine constraints.",
         "Demonstrate focus with target-engine constraints.",
         "Perform an interaction audit; avoid shrinking controls merely to fit more buttons.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -4152,7 +4155,7 @@
         "Demonstrate bounded decode with target-engine constraints.",
         "Demonstrate workers with target-engine constraints.",
         "Benchmark representative large Shattered projects and low-memory Android devices.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -4206,7 +4209,7 @@
         "Demonstrate party with target-engine constraints.",
         "Demonstrate boxes with target-engine constraints.",
         "PKHeX is optional save tooling; keep out of the native ROM authoring completion count.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -4258,7 +4261,7 @@
         "Demonstrate species/class identity with target-engine constraints.",
         "Demonstrate stats with target-engine constraints.",
         "Verified profile exposes some data but HUMAN battle behavior needs source symbols and runtime tests.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -4309,7 +4312,7 @@
         "Demonstrate slots with target-engine constraints.",
         "Demonstrate grant/remove move with target-engine constraints.",
         "Need exact equipment tables, function contracts and save fields for current Shattered.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -4361,7 +4364,7 @@
         "Demonstrate shared pool with target-engine constraints.",
         "Demonstrate spending with target-engine constraints.",
         "Stock per-move PP controls do not implement Shattered's stamina mechanic.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -4413,7 +4416,7 @@
         "Demonstrate class data with target-engine constraints.",
         "Demonstrate requirements with target-engine constraints.",
         "Some class records are editable; do not claim arbitrary class logic is visually editable.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -4464,7 +4467,7 @@
         "Demonstrate partner eligibility with target-engine constraints.",
         "Demonstrate safe swap with target-engine constraints.",
         "Needs current engine metadata/hooks and multi-session save tests.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -4516,7 +4519,7 @@
         "Demonstrate species size with target-engine constraints.",
         "Demonstrate indoor rules with target-engine constraints.",
         "Sprite extraction is not a general ride behavior editor; source/metadata adapter needed.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -4569,7 +4572,7 @@
         "Demonstrate Gate with target-engine constraints.",
         "Demonstrate Aipom with target-engine constraints.",
         "Open an actual authored event, edit one branch visually, export, execute and reimport unchanged adjacent behavior.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -4620,7 +4623,7 @@
         "Demonstrate call labels with target-engine constraints.",
         "Demonstrate input metadata with target-engine constraints.",
         "Source integration must describe argument and side-effect contracts, never guess native code semantics.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
@@ -4671,7 +4674,7 @@
         "Demonstrate RXDATA with target-engine constraints.",
         "Demonstrate Ruby with target-engine constraints.",
         "Keep Shattered GBA and Essentials projects distinct; optional interchange requires explicit conversion contracts.",
-        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": false,
@@ -4946,7 +4949,7 @@
         "REL",
         "ART"
       ],
-      "reuseRecommendation": "Evaluate MIT LzOptimalCompressor and ApplyCubeOptimization golden fixtures; use PokéBacon resource ownership and one writer rather than CUBE identity/patch logic.",
+      "reuseRecommendation": "Evaluate MIT LzOptimalCompressor and ApplyCubeOptimization golden fixtures; use Pok\u00e9Bacon resource ownership and one writer rather than CUBE identity/patch logic.",
       "complexity": "L",
       "priority": "P1",
       "acceptanceCriteria": [
