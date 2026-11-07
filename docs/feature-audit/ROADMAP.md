@@ -27,6 +27,11 @@ CUBHMA follow-through is assigned to these existing batches, without a second wr
 
 ## Highest-priority findings
 
+4.72.7 closes a bounded EVT06/EVT02 slice: existing-state names and guided native
+branch construction, with storage/native-byte/browser tests. See DELIVERY_4_72_7.md.
+Next unmet EVT dependencies include structural-flow refresh reconciliation,
+event-page draft reconciliation, native state allocation and actual gameplay.
+
 1. **Version/source drift:** recovered 4.72.5 web assets and Git improvements are reconciled in the 4.72.6 signed test candidate. Native code/resources are preserved from the delivered APK. Physical update and private gameplay acceptance remain open; do not restart this reconciliation or claim the branch is merged.
 2. **History persistence:** sourceEngine/text/region/cry/door/HM undo/redo could be saved with a map-only scope. Current batch fixes that caller using one shared section registry. Direct mutations must still use the documented scope contract.
 3. **Unknown scripts:** native graph preserves unresolved entries, while raw disassembly throws on unknown opcodes. There must be one clear read-only/unsafe-relocation policy across both views.

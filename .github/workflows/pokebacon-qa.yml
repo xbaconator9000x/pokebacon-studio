@@ -22,6 +22,7 @@ jobs:
           node-version: 22
       - run: node scripts/qa-source-gate.mjs
       - run: node scripts/check-feature-audit.mjs
+      - run: python3 scripts/test-capture-android.py
   android-source-build:
     runs-on: ubuntu-latest
     timeout-minutes: 15

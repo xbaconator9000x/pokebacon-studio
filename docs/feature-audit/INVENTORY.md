@@ -1,6 +1,6 @@
 # Capability inventory — audited source status
 
-98 records; detailed machine-readable fields and acceptance criteria are in [inventory.json](inventory.json). None is claimed to have completed the entire native gameplay workflow. Status meanings are defined in that file. Source reconciliation is included in the 4.72.6 test candidate; current bounded evidence is in DELIVERY_4_72_6.md. Physical update and target-game execution gates remain open.
+98 records; detailed machine-readable fields and acceptance criteria are in [inventory.json](inventory.json). None is claimed to have completed the entire native gameplay workflow. Status meanings are defined in that file. Source reconciliation is retained; current condition/name evidence is in DELIVERY_4_72_7.md, following DELIVERY_4_72_6.md. Physical update and target-game execution gates remain open.
 
 ## ROM and project reliability
 

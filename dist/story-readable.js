@@ -1,3 +1,4 @@
+import{storyStateLabel}from'./native-story-state.js';
 const hex=n=>'0x'+Number(n).toString(16).toUpperCase();
 // A catalogue searches indexed event identity and a bounded dialogue context.
 // It never modifies graph nodes, bindings or original native bytes.
@@ -18,9 +19,9 @@ export function readableStoryAction(graph,node){const values=node.args?.map((a,i
  if(text){title='Dialogue';detail=storyDisplayText(text);}
  else if(node.name==='applymovement'){title='Move '+actor(v(0));detail='Open Movement to see or change each action.';}
  else if(node.name==='delay'){title='Wait';detail=v(0)+' frames (about '+(v(0)/60).toFixed(1)+' seconds).';}
- else if(['setflag','clearflag','checkflag'].includes(node.name)){title=({setflag:'Mark progress complete',clearflag:'Clear progress marker',checkflag:'Check progress marker'})[node.name];detail='Flag '+hex(v(0))+(node.name==='checkflag'?' — the following condition uses this result.':'');}
- else if(node.name==='setvar'){title='Set a story value';detail='Variable '+hex(v(0))+' = '+v(1);technical=true;}
- else if(node.name.startsWith('compare_')){title='Compare story values';detail=hex(v(0))+' compared with '+hex(v(1))+'. The following condition uses this result.';}
+ else if(['setflag','clearflag','checkflag'].includes(node.name)){title=({setflag:'Mark progress complete',clearflag:'Clear progress marker',checkflag:'Check progress marker'})[node.name];detail=storyStateLabel(graph,'flag',v(0))+(node.name==='checkflag'?' — the following condition uses this result.':'');}
+ else if(node.name==='setvar'){title='Set a story value';detail=storyStateLabel(graph,'variable',v(0))+' = '+v(1);technical=!graph.symbols?.variables?.[v(0)];}
+ else if(node.name.startsWith('compare_')){title='Compare story values';detail=storyStateLabel(graph,'variable',v(0))+' compared with '+(node.name==='compare_var_to_var'?storyStateLabel(graph,'variable',v(1)):hex(v(1)))+'. The following condition uses this result.';}
  else if(['goto_if','call_if'].includes(node.name)){title='Choose a branch';detail='If the previous check is '+(['less than','equal','greater than','less than or equal','greater than or equal','not equal'][v(0)]||'condition '+v(0))+', '+(node.name==='call_if'?'run a sub-event and return.':'take the matching branch.')+' Otherwise continue.';}
  else if(['goto','call'].includes(node.name)){title=node.name==='call'?'Run a sub-event':'Continue at another step';detail=node.name==='call'?'Returns here when the sub-event finishes.':'Does not return to this step.';}
  else if(['addobject','removeobject','faceplayer','turnobject','setobjectxy'].includes(node.name)){title=({addobject:'Show ',removeobject:'Hide ',turnobject:'Turn ',setobjectxy:'Position '})[node.name]?({addobject:'Show ',removeobject:'Hide ',turnobject:'Turn ',setobjectxy:'Position '})[node.name]+actor(v(0)):title;detail=node.name==='setobjectxy'?'Tile '+v(1)+', '+v(2):'';}

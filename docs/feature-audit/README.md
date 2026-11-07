@@ -34,4 +34,9 @@ The immediate milestone is independently editing an existing Shattered event, NP
 
 ## Current useful improvement
 
+Current continuation: [4.72.7 guided native conditions and names](DELIVERY_4_72_7.md).
+The 4.72.6 source reconciliation is retained. Follow the remaining workflow
+gates rather than repeating that recovery or treating the condition builder
+as complete event-page/quest parity.
+
 The source-settings undo/redo persistence defect has a fix in this batch. A shared split-section registry now drives undo/redo save scope, covering text, region, cry, door and HM sections as well. Map-only strokes retain incremental saves. The raw planSave map-only API still intentionally omits unchanged section payloads: callers must supply the correct scope. Actual IndexedDB API tests use fake-indexeddb; they do not claim a physical Android test.

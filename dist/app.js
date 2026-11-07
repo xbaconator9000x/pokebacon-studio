@@ -918,7 +918,7 @@ window.mapStudioResume=()=>{protectMapImages();requestDraw();};
 function disposeEditor(){disposed=true;clearTimeout(saveTimer);clearTimeout(pointerTimer);cancelAnimationFrame(renderFrame);cancelImageJobs();imageCache.clear();tileChunks.clear();mapPreviews.clear();musicTools?.stop();projectStore?.close();}
 window.addEventListener("unload",disposeEditor);
 
-window.mapStudioHealth=()=>({version:'4.72.6',at:Date.now(),workspace,view,tool:activeTool,dialogOpen:$('#dialog').open,appInert:$('#app').hasAttribute('inert'),appHasClickHandler:typeof $('#app').onclick==='function',dialogGeneration,pointers:pointers.size,savePending:!!saveInFlight,maps:project?.maps.length||0,images:imageCache.stats(),recentActions,recentErrors});
+window.mapStudioHealth=()=>({version:'4.72.7',at:Date.now(),workspace,view,tool:activeTool,dialogOpen:$('#dialog').open,appInert:$('#app').hasAttribute('inert'),appHasClickHandler:typeof $('#app').onclick==='function',dialogGeneration,pointers:pointers.size,savePending:!!saveInFlight,maps:project?.maps.length||0,images:imageCache.stats(),recentActions,recentErrors});
 window.mapStudioRecover=()=>{noteAction('recovery','keep-project-open');dialogGeneration++;if(pointers.size)cancelGesture();const d=$('#dialog');if(d.open)d.close();$('#app').onclick=null;$('#app').inert=false;$('#app').removeAttribute('inert');workspaceSwitchPending=false;workspace='map';if(project){setView('map');syncNavigation();requestDraw();}return true;};
 
 async function makeNativeTerrain(){

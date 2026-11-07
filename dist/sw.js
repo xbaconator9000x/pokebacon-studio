@@ -1,4 +1,4 @@
-const CACHE='pokebacon-map-studio-v4.72.6-reconciled-1';
+const CACHE='pokebacon-map-studio-v4.72.7-reconciled-1';
 // Every recovered module remains available after an offline restart.
 const RECOVERED_CORE=['./wardrobe-native.js','./sha256.js','./ui-engine-source.js','./ui-native.js','./ui-screen-catalog.js','./ui-source-editor.js','./ui-theme.js','./sprite-mobile.js','./sprite-mobile.css'];
 // Continuous route boundaries and explicit portal arrival directions.
@@ -8,6 +8,7 @@ const CORE=['./music-track-style.js','./music-track-development.js','./region-pl
 CORE.push('./version-ui.js','./npc-picker.js','./npc-graphics-native.js','./native-studio.js','./native-studio-code.js','./native-timeline.js');
 CORE.push(...RECOVERED_CORE);
 CORE.push('./sprite-library.js');
+CORE.push('./native-story-state.js');
 CORE.push('./assets/objects/emerald-route120-puddle.png','./assets/objects/emerald-puddle-terrain.png','./assets/objects/emerald-puddle-preview.png');
 CORE.push('./gate-placement.js','./map-environment.js','./asset-browser.js','./asset-extras.js','./assets/objects/studio-puddle-blue.png','./assets/objects/studio-puddle-mud.png','./assets/objects/studio-puddle-small.png');
 CORE.push('./map-seams.js','./seam-native.js','./portal-facing.js');

@@ -1022,13 +1022,16 @@
         "dist/story-flow-ui.js",
         "dist/script-engine.js",
         "dist/script-data.js",
-        "dist/story-readable.js"
+        "dist/story-readable.js",
+        "dist/native-story-state.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
         "tests/scene-outline.test.js",
-        "tests/native-story-roundtrip.test.js"
+        "tests/native-story-roundtrip.test.js",
+        "tests/native-story-state.test.js",
+        "scripts/test-release-mobile-browser.mjs"
       ],
       "dependencies": [
         "REL"
@@ -1044,12 +1047,13 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "See DELIVERY_4_72_6.md for exact bounded fixture/browser/private-ROM claims.",
-        "integrated": "Included in signed 4.72.6 test candidate on PR #19; physical and gameplay acceptance remain open.",
+        "tested": "Native condition/name fixtures, mobile save/reload and private Shattered export/reindex; see DELIVERY_4_72_7.md. Not full gameplay.",
+        "integrated": "4.72.7 test candidate on PR #19; main/device/gameplay acceptance open.",
         "released": false,
         "gameplayVerified": false
       },
-      "backlogGroup": "REL"
+      "backlogGroup": "REL",
+      "implementationNotes": "Guided existing-ID flag/variable branches and project-local names implemented. New native state allocation and complete event pages remain open."
     },
     {
       "id": "EVT03",
@@ -1128,12 +1132,15 @@
         "dist/story-flow-ui.js",
         "dist/script-engine.js",
         "dist/script-data.js",
-        "dist/story-readable.js"
+        "dist/story-readable.js",
+        "dist/native-story-state.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
-        "tests/scene-outline.test.js"
+        "tests/scene-outline.test.js",
+        "tests/native-story-state.test.js",
+        "scripts/test-release-mobile-browser.mjs"
       ],
       "dependencies": [
         "REL"
@@ -1180,12 +1187,15 @@
         "dist/story-flow-ui.js",
         "dist/script-engine.js",
         "dist/script-data.js",
-        "dist/story-readable.js"
+        "dist/story-readable.js",
+        "dist/native-story-state.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
-        "tests/scene-outline.test.js"
+        "tests/scene-outline.test.js",
+        "tests/native-story-state.test.js",
+        "scripts/test-release-mobile-browser.mjs"
       ],
       "dependencies": [
         "REL"
@@ -1254,12 +1264,13 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "Native condition/name fixtures, mobile save/reload and private Shattered export/reindex; see DELIVERY_4_72_7.md. Not full gameplay.",
+        "integrated": "4.72.7 test candidate on PR #19; main/device/gameplay acceptance open.",
         "released": false,
         "gameplayVerified": false
       },
-      "backlogGroup": "REL"
+      "backlogGroup": "REL",
+      "implementationNotes": "Guided existing-ID flag/variable branches and project-local names implemented. New native state allocation and complete event pages remain open."
     },
     {
       "id": "EVT07",
@@ -5120,5 +5131,5 @@
       "backlogGroup": "UX"
     }
   ],
-  "currentCandidate": "4.72.6 / Android code 146. Recovered source is reconciled; device/emulator acceptance remains open. See DELIVERY_4_72_6.md."
+  "currentCandidate": "4.72.7 / Android code 147; existing native state names and guided conditions. See DELIVERY_4_72_7.md for bounded evidence and open gates."
 }

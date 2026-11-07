@@ -1,5 +1,10 @@
 # Verification, scope and unfinished research
 
+Latest continuation: [4.72.7 batch and exact limits](DELIVERY_4_72_7.md), including
+the actual 4.72.6 CI failures and their repairs. Those failures were not failures
+of the earlier locally reported unit/browser tests; neither result substitutes
+for the other environment.
+
 Current candidate: [4.72.6 delivery evidence](DELIVERY_4_72_6.md). Source
 reconciliation, mobile browser workflow checks, native wardrobe/data fixtures
 and original-certificate packaging are completed for that test update. Earlier

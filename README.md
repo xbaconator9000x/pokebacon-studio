@@ -5,7 +5,7 @@ Development tracking: [capability audit and current roadmap](docs/feature-audit/
 · [acceptance evidence](docs/feature-audit/VERIFICATION.md).
 The audit distinguishes implemented, tested, integrated and released features.
 
-Development candidate **4.72.6** reconciles the delivered APK with retained Git fixes, phone sprite tools and existing-event search. [Delivery and verification](docs/feature-audit/DELIVERY_4_72_6.md). The earlier [source provenance](docs/source-reconciliation.md) remains historical evidence.
+Development candidate **4.72.7** adds guided native event conditions and readable state names, retaining the recovered mobile sprite/UI work. [Delivery and verification](docs/feature-audit/DELIVERY_4_72_7.md). Earlier [source provenance](docs/source-reconciliation.md) remains historical evidence.
 
 **Build and export Pokémon ROM hacks on your phone or Android handheld.**
 

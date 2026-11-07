@@ -20,7 +20,10 @@ const server=http.createServer((req,res)=>{
  const bytes=fs.readFileSync(file);res.end(name==='app.js'?bytes.toString()+hook:bytes);
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-const browser=await chromium.launch({executablePath:process.env.MAP_STUDIO_CHROMIUM||'/tmp/chromium',headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--single-process']});
+// The local serverless Chromium needs a single process and bundled SwiftShader.
+// Desktop/CI Chrome must use its normal process/GPU configuration instead.
+const localBrowser=!process.env.MAP_STUDIO_CHROMIUM;
+const browser=await chromium.launch({executablePath:process.env.MAP_STUDIO_CHROMIUM||'/tmp/chromium',headless:true,args:localBrowser?['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--single-process']:['--disable-dev-shm-usage']});
 const context=await browser.newContext({viewport:{width:412,height:915},deviceScaleFactor:1,isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await context.newPage(),errors=[],pending=new Set();
 page.on('request',r=>pending.add(r.url()));page.on('requestfinished',r=>pending.delete(r.url()));page.on('requestfailed',r=>{pending.delete(r.url());errors.push(r.url()+': '+r.failure()?.errorText);});
 page.on('pageerror',e=>errors.push(e.message));
@@ -61,12 +64,25 @@ try{
  assert.deepEqual(await page.evaluate(()=>__releaseQA.project().spriteStudio.groups[0].views.front.frames[0]),painted);
  await page.evaluate(async()=>{
   document.querySelector('#dialog').close();const qa=__releaseQA,{syntheticROM}=await import('/__fixture.mjs'),{compileScript}=await import('/script-engine.js'),{GbaMaps}=await import('/rom.js'),{indexNativeStory}=await import('/native-story.js');
-  const bytes=syntheticROM(),compiled=compileScript('@start:\nmessage @text\nend\n@text:\n= Ren: Find the Aipom key.$\n',0x5000,'frlg');bytes.set(compiled.bytes,0x5000);new DataView(bytes.buffer).setUint32(0x3060,0x08005000,true);
+  const bytes=syntheticROM(),compiled=compileScript('@start:\ncheckflag 0x200\nmessage @text\nend\n@text:\n= Ren: Find the Aipom key.$\n',0x5000,'frlg');bytes.set(compiled.bytes,0x5000);new DataView(bytes.buffer).setUint32(0x3060,0x08005000,true);
   const reader=await new GbaMaps(bytes).discover(),graph=await indexNativeStory(reader,{mapKeys:['0.0']});qa.attachROM(reader,'synthetic-event');qa.change(()=>{qa.project().nativeStory={'synthetic-event':graph};});qa.story().open();
  });
  await page.locator('#nativeStoryFind').click();await page.locator('#storyEventQuery').fill('Aipom');
  assert.match(await page.locator('#storyEventResults').innerText(),/Ren/);await page.screenshot({path:path.join(screens,'event-finder-412.png')});
  await page.locator('[data-story-event-result]').first().click();await page.locator('#nativeStoryFind').waitFor({state:'visible'});
+ await page.locator('#nativeStoryArrange').click();await page.locator('#flowConditionQuick').click();
+ await page.locator('#flowConditionName').fill('Has the gate key');await page.locator('#flowConditionNameSave').click();
+ await page.locator('#flowConditionTrueText').fill('The gate is open.');await page.locator('#flowConditionFalseText').fill('Find the key first.');
+ await page.locator('#flowConditionPanel > summary').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(screens,'guided-condition-412.png')});
+ const footer=await page.locator('#dialogFooter').boundingBox();assert.ok(footer.y>=0&&footer.y+footer.height<=915,'Flow save controls stay inside the phone viewport');
+ await page.locator('#flowConditionInsert').click();assert.equal(await page.locator('#flowError').innerText(),'');
+ assert.match(await page.locator('#flowList').innerText(),/The gate is open/);assert.match(await page.locator('#flowList').innerText(),/Find the key first/);
+ await page.locator('#submitDialog').click();
+ const event=await page.evaluate(async()=>{await __releaseQA.persist();const g=__releaseQA.project().nativeStory['synthetic-event'];return{symbols:g.symbols,flowCount:Object.keys(g.edits.flows).length};});
+ assert.equal(event.symbols.flags[512],'Has the gate key');assert.equal(event.flowCount,1);
+ await page.reload();await page.waitForFunction(()=>globalThis.__releaseQA&&document.querySelector('#loading')?.hidden);
+ assert.equal(await page.evaluate(()=>__releaseQA.project().nativeStory['synthetic-event'].symbols.flags[512]),'Has the gate key');
+ assert.equal(await page.evaluate(()=>Object.keys(__releaseQA.project().nativeStory['synthetic-event'].edits.flows).length),1);
  assert.equal(errors.length,0,errors.join('\n'));
- console.log('PASS actual Chromium mobile layouts, touch paint/undo/redo, all six sheets, selection/comparison access, IndexedDB reload and existing-event search/navigation. Screenshots: '+screens);
+ console.log('PASS mobile sprite tools, IndexedDB reload, event search, named-state branch creation and saved structure after reload. Screenshots: '+screens);
 }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}
