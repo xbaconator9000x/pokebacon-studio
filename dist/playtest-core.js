@@ -1,6 +1,7 @@
 export const CORE_ID='mgba-wasm-0.1.1-c034660f';
 export const GBA_KEYS={a:1,b:2,select:4,start:8,right:16,left:32,up:64,down:128,r:256,l:512};
-export async function digestBytes(bytes){if(!globalThis.crypto?.subtle)throw Error('Secure file hashing is unavailable. Reopen the app to playtest.');return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(n=>n.toString(16).padStart(2,'0')).join('');}
+import{sha256}from'./sha256.js';
+export async function digestBytes(bytes){if(!globalThis.crypto?.subtle)return sha256(bytes);return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(n=>n.toString(16).padStart(2,'0')).join('');}
 let factory;
 export async function loadPlaytestCore(){
  if(!factory)factory=(async()=>{if(!globalThis.createMgbaModule)await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=new URL('./vendor/mgba/mgba.js',document.baseURI).href;s.onload=resolve;s.onerror=()=>reject(Error('The bundled GBA engine could not load. Reopen the app and try again.'));document.head.append(s);});const root=new URL('./vendor/mgba/',document.baseURI),module=await globalThis.createMgbaModule({locateFile:p=>new URL(p,root).href});return new PlaytestCore(module);})().catch(e=>{factory=null;throw e;});

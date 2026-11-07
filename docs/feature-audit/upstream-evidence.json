@@ -1,0 +1,408 @@
+{
+  "date": "2026-11-06",
+  "records": [
+    {
+      "id": "hma",
+      "url": "https://github.com/haven1433/HexManiacAdvance.git",
+      "commit": "c8de1e8acf753522af7feed810d6324ce52474a3",
+      "date": "2026-08-30T12:55:30-05:00",
+      "subject": "Merge pull request #289 from ShinyTillDawn/new_anchors",
+      "licenseFinding": "MIT",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE",
+          "url": "https://github.com/haven1433/HexManiacAdvance/blob/c8de1e8acf753522af7feed810d6324ce52474a3/LICENSE"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/PokemonModel.cs",
+          "url": "https://github.com/haven1433/HexManiacAdvance/blob/c8de1e8acf753522af7feed810d6324ce52474a3/src/HexManiac.Core/Models/PokemonModel.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/ModelDelta.cs",
+          "url": "https://github.com/haven1433/HexManiacAdvance/blob/c8de1e8acf753522af7feed810d6324ce52474a3/src/HexManiac.Core/Models/ModelDelta.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/Code/ScriptParser.cs",
+          "url": "https://github.com/haven1433/HexManiacAdvance/blob/c8de1e8acf753522af7feed810d6324ce52474a3/src/HexManiac.Core/Models/Code/ScriptParser.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/Code/battleAIScriptReference.txt",
+          "url": "https://github.com/haven1433/HexManiacAdvance/blob/c8de1e8acf753522af7feed810d6324ce52474a3/src/HexManiac.Core/Models/Code/battleAIScriptReference.txt"
+        },
+        {
+          "path": "src/HexManiac.Core/ViewModels/Map/MapEditorViewModel.cs",
+          "url": "https://github.com/haven1433/HexManiacAdvance/blob/c8de1e8acf753522af7feed810d6324ce52474a3/src/HexManiac.Core/ViewModels/Map/MapEditorViewModel.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/ViewModels/Tools/PaletteCollection.cs",
+          "url": "https://github.com/haven1433/HexManiacAdvance/blob/c8de1e8acf753522af7feed810d6324ce52474a3/src/HexManiac.Core/ViewModels/Tools/PaletteCollection.cs"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "porymap",
+      "url": "https://github.com/huderlem/porymap.git",
+      "commit": "26b919d7ff4b54152de010abd5bf344af2ebe116",
+      "date": "2026-04-12T20:31:47-04:00",
+      "subject": "Update manual",
+      "licenseFinding": "LGPL-3.0",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE.md",
+          "url": "https://github.com/huderlem/porymap/blob/26b919d7ff4b54152de010abd5bf344af2ebe116/LICENSE.md"
+        },
+        {
+          "path": "src/core/map.cpp",
+          "url": "https://github.com/huderlem/porymap/blob/26b919d7ff4b54152de010abd5bf344af2ebe116/src/core/map.cpp"
+        },
+        {
+          "path": "src/ui/eventframes.cpp",
+          "url": "https://github.com/huderlem/porymap/blob/26b919d7ff4b54152de010abd5bf344af2ebe116/src/ui/eventframes.cpp"
+        },
+        {
+          "path": "src/ui/paletteeditor.cpp",
+          "url": "https://github.com/huderlem/porymap/blob/26b919d7ff4b54152de010abd5bf344af2ebe116/src/ui/paletteeditor.cpp"
+        },
+        {
+          "path": "src/ui/mapheaderform.cpp",
+          "url": "https://github.com/huderlem/porymap/blob/26b919d7ff4b54152de010abd5bf344af2ebe116/src/ui/mapheaderform.cpp"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "poryscript",
+      "url": "https://github.com/huderlem/poryscript.git",
+      "commit": "c32481161c767b25a3425fa9f1f8729927ff3d55",
+      "date": "2026-10-04T09:27:02-05:00",
+      "subject": "Fix line-width warnings when Text Replacements are present",
+      "licenseFinding": "MIT",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE.md",
+          "url": "https://github.com/huderlem/poryscript/blob/c32481161c767b25a3425fa9f1f8729927ff3d55/LICENSE.md"
+        },
+        {
+          "path": "parser/parser.go",
+          "url": "https://github.com/huderlem/poryscript/blob/c32481161c767b25a3425fa9f1f8729927ff3d55/parser/parser.go"
+        },
+        {
+          "path": "emitter/emitter.go",
+          "url": "https://github.com/huderlem/poryscript/blob/c32481161c767b25a3425fa9f1f8729927ff3d55/emitter/emitter.go"
+        },
+        {
+          "path": "ast/ast.go",
+          "url": "https://github.com/huderlem/poryscript/blob/c32481161c767b25a3425fa9f1f8729927ff3d55/ast/ast.go"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "essentials",
+      "url": "https://github.com/Maruno17/pokemon-essentials.git",
+      "commit": "8c5911e4a4b07b07e832e4bb0d5d8859e88b4a9b",
+      "date": "2024-01-01T20:35:28Z",
+      "subject": "Fixed being able to bypass a caught mon being forced into the party, fixed Rotom Catalog, fixed incorrect writing of some enums to PBS files, fixed Jukebox's awareness of audio files, fixed bug when battle default weather is primordial, disabled path cache to add speed",
+      "licenseFinding": "CC-BY-NC-SA-4.0 in inspected repository; RPG Maker/runtime/assets separate",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE",
+          "url": "https://github.com/Maruno17/pokemon-essentials/blob/8c5911e4a4b07b07e832e4bb0d5d8859e88b4a9b/LICENSE"
+        },
+        {
+          "path": "Data/Scripts/003_Game processing/004_Interpreter_Commands.rb",
+          "url": "https://github.com/Maruno17/pokemon-essentials/blob/8c5911e4a4b07b07e832e4bb0d5d8859e88b4a9b/Data/Scripts/003_Game processing/004_Interpreter_Commands.rb"
+        },
+        {
+          "path": "Data/Scripts/004_Game classes/007_Game_Event.rb",
+          "url": "https://github.com/Maruno17/pokemon-essentials/blob/8c5911e4a4b07b07e832e4bb0d5d8859e88b4a9b/Data/Scripts/004_Game classes/007_Game_Event.rb"
+        },
+        {
+          "path": "Data/Scripts/021_Compiler/004_Compiler_MapsAndEvents.rb",
+          "url": "https://github.com/Maruno17/pokemon-essentials/blob/8c5911e4a4b07b07e832e4bb0d5d8859e88b4a9b/Data/Scripts/021_Compiler/004_Compiler_MapsAndEvents.rb"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "tiled",
+      "url": "https://github.com/mapeditor/tiled.git",
+      "commit": "83e4cfd9faa653e543e64d1af3b1010f8d5794da",
+      "date": "2026-10-24T10:41:50+02:00",
+      "subject": "AppVeyor: Do not build branches that have an open PR",
+      "licenseFinding": "BSD libtiled and GPL-2.0-or-later editor; inspect each copied file",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE.BSD",
+          "url": "https://github.com/mapeditor/tiled/blob/83e4cfd9faa653e543e64d1af3b1010f8d5794da/LICENSE.BSD"
+        },
+        {
+          "path": "LICENSE.GPL",
+          "url": "https://github.com/mapeditor/tiled/blob/83e4cfd9faa653e543e64d1af3b1010f8d5794da/LICENSE.GPL"
+        },
+        {
+          "path": "src/libtiled/world.cpp",
+          "url": "https://github.com/mapeditor/tiled/blob/83e4cfd9faa653e543e64d1af3b1010f8d5794da/src/libtiled/world.cpp"
+        },
+        {
+          "path": "src/libtiled/wangset.cpp",
+          "url": "https://github.com/mapeditor/tiled/blob/83e4cfd9faa653e543e64d1af3b1010f8d5794da/src/libtiled/wangset.cpp"
+        },
+        {
+          "path": "src/tiled/automappingmanager.cpp",
+          "url": "https://github.com/mapeditor/tiled/blob/83e4cfd9faa653e543e64d1af3b1010f8d5794da/src/tiled/automappingmanager.cpp"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "libresprite",
+      "url": "https://github.com/LibreSprite/LibreSprite.git",
+      "commit": "98f74431f5f523c747d278e3486625ccc7fc52cc",
+      "date": "2026-10-30T21:59:47Z",
+      "subject": "Remove unnecessary mime types from libresprite.thumbnailer",
+      "licenseFinding": "GPL-2.0",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE.txt",
+          "url": "https://github.com/LibreSprite/LibreSprite/blob/98f74431f5f523c747d278e3486625ccc7fc52cc/LICENSE.txt"
+        },
+        {
+          "path": "src/app/ui/timeline.cpp",
+          "url": "https://github.com/LibreSprite/LibreSprite/blob/98f74431f5f523c747d278e3486625ccc7fc52cc/src/app/ui/timeline.cpp"
+        },
+        {
+          "path": "src/app/commands/cmd_onionskin.cpp",
+          "url": "https://github.com/LibreSprite/LibreSprite/blob/98f74431f5f523c747d278e3486625ccc7fc52cc/src/app/commands/cmd_onionskin.cpp"
+        },
+        {
+          "path": "src/app/document_undo.cpp",
+          "url": "https://github.com/LibreSprite/LibreSprite/blob/98f74431f5f523c747d278e3486625ccc7fc52cc/src/app/document_undo.cpp"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "pixelorama",
+      "url": "https://github.com/Orama-Interactive/Pixelorama.git",
+      "commit": "e2529b4e21a63d56ce0b1c5c7e91da6bfbe00957",
+      "date": "2026-11-06T12:07:02+02:00",
+      "subject": "Fix attribution label tooltips (#1654)",
+      "licenseFinding": "MIT",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE",
+          "url": "https://github.com/Orama-Interactive/Pixelorama/blob/e2529b4e21a63d56ce0b1c5c7e91da6bfbe00957/LICENSE"
+        },
+        {
+          "path": "src/Classes/Layers/BaseLayer.gd",
+          "url": "https://github.com/Orama-Interactive/Pixelorama/blob/e2529b4e21a63d56ce0b1c5c7e91da6bfbe00957/src/Classes/Layers/BaseLayer.gd"
+        },
+        {
+          "path": "src/UI/ReferenceImages/ReferenceImage.gd",
+          "url": "https://github.com/Orama-Interactive/Pixelorama/blob/e2529b4e21a63d56ce0b1c5c7e91da6bfbe00957/src/UI/ReferenceImages/ReferenceImage.gd"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "emerald",
+      "url": "https://github.com/rh-hideout/pokeemerald-expansion.git",
+      "commit": "3ecef35381e321157c97c3aa0d064438026c7d68",
+      "date": "2026-11-05T14:24:09+01:00",
+      "subject": "Prevent fused mons from being released (#11036)",
+      "licenseFinding": "No root LICENSE located; do not infer blanket reuse rights",
+      "sourceEvidence": [
+        {
+          "path": "include/config/battle.h",
+          "url": "https://github.com/rh-hideout/pokeemerald-expansion/blob/3ecef35381e321157c97c3aa0d064438026c7d68/include/config/battle.h"
+        },
+        {
+          "path": "include/config/overworld.h",
+          "url": "https://github.com/rh-hideout/pokeemerald-expansion/blob/3ecef35381e321157c97c3aa0d064438026c7d68/include/config/overworld.h"
+        },
+        {
+          "path": "src/item_menu.c",
+          "url": "https://github.com/rh-hideout/pokeemerald-expansion/blob/3ecef35381e321157c97c3aa0d064438026c7d68/src/item_menu.c"
+        },
+        {
+          "path": "src/trainer_card.c",
+          "url": "https://github.com/rh-hideout/pokeemerald-expansion/blob/3ecef35381e321157c97c3aa0d064438026c7d68/src/trainer_card.c"
+        },
+        {
+          "path": "tools/mapjson/mapjson.cpp",
+          "url": "https://github.com/rh-hideout/pokeemerald-expansion/blob/3ecef35381e321157c97c3aa0d064438026c7d68/tools/mapjson/mapjson.cpp"
+        },
+        {
+          "path": "tools/gbagfx/gfx.c",
+          "url": "https://github.com/rh-hideout/pokeemerald-expansion/blob/3ecef35381e321157c97c3aa0d064438026c7d68/tools/gbagfx/gfx.c"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "cfru",
+      "url": "https://github.com/Skeli789/Complete-Fire-Red-Upgrade.git",
+      "commit": "b637a27898b14e25dd24d0f69a3e302f0069deb8",
+      "date": "2025-01-24T11:13:37-05:00",
+      "subject": "Fix bug with AI rechoosing partner move",
+      "licenseFinding": "Credits located, no root LICENSE located; component-specific review required",
+      "sourceEvidence": [
+        {
+          "path": "Credits.txt",
+          "url": "https://github.com/Skeli789/Complete-Fire-Red-Upgrade/blob/b637a27898b14e25dd24d0f69a3e302f0069deb8/Credits.txt"
+        },
+        {
+          "path": "src/config.h",
+          "url": "https://github.com/Skeli789/Complete-Fire-Red-Upgrade/blob/b637a27898b14e25dd24d0f69a3e302f0069deb8/src/config.h"
+        },
+        {
+          "path": "scripts/make.py",
+          "url": "https://github.com/Skeli789/Complete-Fire-Red-Upgrade/blob/b637a27898b14e25dd24d0f69a3e302f0069deb8/scripts/make.py"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "vgmtrans",
+      "url": "https://github.com/vgmtrans/vgmtrans.git",
+      "commit": "dc3f1edb8c63cdae5de37dfacf0e758a9875ef21",
+      "date": "2026-11-06T02:19:45+01:00",
+      "subject": "MainWindow: preserve title bar under Breeze (#948)",
+      "licenseFinding": "zlib",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE",
+          "url": "https://github.com/vgmtrans/vgmtrans/blob/dc3f1edb8c63cdae5de37dfacf0e758a9875ef21/LICENSE"
+        },
+        {
+          "path": "src/main/formats/MP2k/MP2kScanner.cpp",
+          "url": "https://github.com/vgmtrans/vgmtrans/blob/dc3f1edb8c63cdae5de37dfacf0e758a9875ef21/src/main/formats/MP2k/MP2kScanner.cpp"
+        },
+        {
+          "path": "src/main/formats/MP2k/MP2kSeq.cpp",
+          "url": "https://github.com/vgmtrans/vgmtrans/blob/dc3f1edb8c63cdae5de37dfacf0e758a9875ef21/src/main/formats/MP2k/MP2kSeq.cpp"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "pkhex",
+      "url": "https://github.com/kwsch/PKHeX.git",
+      "commit": "0660d1e1f4924b8478daec73281bb8071a82ad19",
+      "date": "2026-11-01T08:49:56-05:00",
+      "subject": "Update MoveInfoGO.cs",
+      "licenseFinding": "GPL-3.0",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE",
+          "url": "https://github.com/kwsch/PKHeX/blob/0660d1e1f4924b8478daec73281bb8071a82ad19/LICENSE"
+        },
+        {
+          "path": "PKHeX.Core/Saves/SaveFile.cs",
+          "url": "https://github.com/kwsch/PKHeX/blob/0660d1e1f4924b8478daec73281bb8071a82ad19/PKHeX.Core/Saves/SaveFile.cs"
+        },
+        {
+          "path": "PKHeX.Core/Legality/LegalityAnalysis.cs",
+          "url": "https://github.com/kwsch/PKHeX/blob/0660d1e1f4924b8478daec73281bb8071a82ad19/PKHeX.Core/Legality/LegalityAnalysis.cs"
+        }
+      ],
+      "inspection": "Selected source files and licence text reviewed; tool not compiled/run during audit.",
+      "maintenance": "Pinned commit date only; not a guarantee of release health or compatibility."
+    },
+    {
+      "id": "cubhma",
+      "url": "https://github.com/kcradi/CUBHMA.git",
+      "commit": "ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9",
+      "date": "2026-10-30T18:54:11-04:00",
+      "subject": "CUBHMA 0.7.3",
+      "licenseFinding": "MIT retained from HMA; inspect dependencies, bundled patches and assets separately before reuse.",
+      "lineage": "GitHub repository metadata fork=true, parent/source haven1433/HexManiacAdvance. README identifies Cradi's Unofficial Build and CUBE specialization.",
+      "sourceEvidence": [
+        {
+          "path": "LICENSE",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/LICENSE"
+        },
+        {
+          "path": "README.md",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/README.md"
+        },
+        {
+          "path": "src/HexManiac.Core/ViewModels/Tools/OverworldSlotImport.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/ViewModels/Tools/OverworldSlotImport.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/ViewModels/ReflectionPaletteTab.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/ViewModels/ReflectionPaletteTab.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/CharacterCustomization.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/CharacterCustomization.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/Runs/ExpansionTrainerTeamRun.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/Runs/ExpansionTrainerTeamRun.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/IntroManager.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/IntroManager.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/PokemonAnimations/PokemonAnimationLayout.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/PokemonAnimations/PokemonAnimationLayout.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/PokemonAnimations/PokemonAnimationTimeline.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/PokemonAnimations/PokemonAnimationTimeline.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/Sound/MidiToAgb.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/Sound/MidiToAgb.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/CubeUpdate/CubeUpdateService.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/CubeUpdate/CubeUpdateService.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/ViewModels/QuickEditItems/ApplyCubeOptimization.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/ViewModels/QuickEditItems/ApplyCubeOptimization.cs"
+        },
+        {
+          "path": "src/HexManiac.Core/Models/ModelEditStamp.cs",
+          "url": "https://github.com/kcradi/CUBHMA/blob/ac5a6405fd73e884ffd7ae0fdf4beba56f64cdb9/src/HexManiac.Core/Models/ModelEditStamp.cs"
+        }
+      ],
+      "inspection": "Selected source implementations and licence inspected; additional source/test files indexed. Tree comparison against pinned upstream HMA changes 365 files, including non-code content; not an ancestry attribution. Not compiled/run.",
+      "maintenance": "Pinned 0.7.3 commit; maintenance/compatibility not inferred from one commit."
+    }
+  ],
+  "unresolved": [
+    {
+      "name": "Advance Map",
+      "status": "official_documentation_only",
+      "url": "https://ampage.no-ip.info/index.php?seite=home",
+      "finding": "Official page describes Delphi/Lazarus versions and maintenance limitations. No reusable source/licence established; use workflow reference only."
+    },
+    {
+      "name": "RPG Maker XP",
+      "status": "proprietary_editor_documentation_and_interpreter_reference",
+      "finding": "Use licensed editor/help and inspected Essentials interpreter for page/command semantics; do not redistribute proprietary editor code."
+    },
+    {
+      "name": "LDtk/GDevelop/Godot visual scripting",
+      "status": "next_specialist_review",
+      "finding": "Relevant to entities and action-track UX; source-level deep comparison deferred and tracked, not counted as completed."
+    }
+  ]
+}
