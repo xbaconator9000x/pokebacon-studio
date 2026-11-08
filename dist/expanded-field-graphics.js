@@ -25,5 +25,14 @@ export function discoverExpandedFieldGraphics(r){
   if(matches.length!==1)return null;
   sprites[id]={id,info,width:16,height:16,size:128,paletteTag,palette:matches[0],images,pixels};
  }
- return{table,paletteSwitcher,sprites,signature:'verified-expanded-object-and-banked-palette-resolvers'};
+ return{table,paletteSwitcher,count:112,sprites,signature:'verified-expanded-object-and-banked-palette-resolvers'};
+}
+export function expandedFieldSprite(r,profile,id){
+ if(!profile?.paletteSwitcher||!Number.isInteger(id)||id<0||id>=(profile.count||0))return null;
+ const info=r.ptr(profile.table+id*4);if(!r.valid(info,36)||r.u16(info)!==65535)return null;
+ const width=r.u16(info+8),height=r.u16(info+10),size=width*height/2,images=r.ptr(info+28),pixels=r.ptr(images),tag=r.u16(info+2);
+ if(width<8||height<8||width>64||height>64||width%8||height%8||r.u16(info+6)!==size||!r.valid(images,8)||r.u16(images+4)!==size||!r.valid(pixels,size))return null;
+ let paletteTable=r.ptr(profile.paletteSwitcher+(tag>>>8)*4);if(paletteTable<0)paletteTable=r.ptr(profile.paletteSwitcher+11*4);if(paletteTable<0)return null;
+ const matches=[];for(let i=0;i<256;i++){const at=paletteTable+i*8;if(!r.valid(at,8))break;const palette=r.ptr(at);if(palette<0)break;if(r.u16(at+4)===tag&&r.u16(at+6)===0&&r.valid(palette,32)&&Array.from({length:16},(_,j)=>r.u16(palette+j*2)<0x8000).every(Boolean))matches.push(palette);}
+ return matches.length===1?{id,info,width,height,size,paletteTag:tag,palette:matches[0],images,pixels}:null;
 }

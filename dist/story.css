@@ -5,3 +5,17 @@
 .scene-story{touch-action:pan-x pan-y!important}
 
 .flow-editor{display:grid;grid-template-columns:minmax(210px,1fr) minmax(260px,1.5fr);gap:16px}.flow-list{max-height:60vh;overflow:auto;display:grid;gap:8px;align-content:start}.flow-list button{display:grid;gap:4px;text-align:left;padding:12px;overflow-wrap:anywhere}.flow-list button[aria-pressed="true"]{outline:3px solid #71609d;background:#ece5fa}.flow-list small{color:#556349}.flow-list span{font-weight:normal;font-size:.85em}.flow-editor select,.flow-editor input,.flow-editor textarea{max-width:100%;width:100%;box-sizing:border-box}.flow-editor section{min-width:0}.flow-editor h3{margin-top:8px}.flow-editor details p{overflow-wrap:anywhere}.flow-editor .scene-map-scroll{max-height:350px;overflow:auto}@media(max-width:700px){.flow-editor{grid-template-columns:1fr}.flow-list{max-height:30vh}.story-footer{flex-wrap:wrap}}
+.flow-mobile-tabs{display:none}
+@media(max-width:700px){
+ #dialog:has(.flow-editor){width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;padding:0;border-radius:0}
+ #dialog:has(.flow-editor) form{height:100%;max-height:none;display:flex;flex-direction:column}
+ #dialog:has(.flow-editor) form>header{flex:none;padding:10px 14px}
+ #dialog:has(.flow-editor) #dialogBody{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:10px 12px}
+ #dialog:has(.flow-editor) #dialogFooter{flex:none;padding:10px 12px}
+ .flow-mobile-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+ .flow-mobile-tabs button{min-height:44px}
+ .flow-mobile-tabs button[aria-pressed="true"]{background:#ddd5ee}
+ .flow-editor[data-mobile-pane="steps"]>#flowDetails,.flow-editor[data-mobile-pane="details"]>section:first-child{display:none}
+ .flow-editor[data-mobile-pane="steps"] .flow-list{max-height:none}
+ #flowConditionPanel fieldset{margin:10px 0;min-width:0}
+}

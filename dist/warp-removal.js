@@ -13,8 +13,8 @@ export function applyWarpRemovals(reader,entry){
  const removed=entry.map.rom?.removedWarps||[];
  for(const saved of removed){
   const native=reader.events(entry.base).warps.find(w=>w.index===saved.index),fields=['x','y','elevation','target','warp'];
-  if(!native||fields.some(k=>native[k]!==saved[k]))throw Error(entry.map.name+': deleted warp '+saved.index+' no longer matches its source. Refresh the project before exporting.');
-  const record=entry.events.warps[saved.index];if(!record)throw Error('Deleted warp index is missing.');record[4]=INACTIVE_WARP_ELEVATION;entry.changed=true;
+  if(!native||fields.some(k=>native[k]!==saved[k]&&!(k==='elevation'&&native[k]===INACTIVE_WARP_ELEVATION)))throw Error(entry.map.name+': deleted warp '+saved.index+' no longer matches its source. Refresh the project before exporting.');
+  const record=entry.events.warps[saved.index];if(!record)throw Error('Deleted warp index is missing.');if(record[4]!==INACTIVE_WARP_ELEVATION){record[4]=INACTIVE_WARP_ELEVATION;entry.changed=true;}
  }
  return removed.length;
 }
