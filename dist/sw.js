@@ -52,3 +52,4 @@ CORE.push('./water-atlas.js');
 CORE.push('./owned-free-space.js');
 // Transition controls and diagnostics must be available on first offline use.
 CORE.push('./door-transition-ui.js','./door-audit.js','./quick-player.js');
+CORE.push('./rom-render-snapshot.js');
