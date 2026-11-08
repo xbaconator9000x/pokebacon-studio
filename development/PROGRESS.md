@@ -1,0 +1,170 @@
+# Development checkpoint — 31 October 2026
+
+Development and testing were performed locally in ChatGPT. GitHub stores this branch; main/release remains unchanged. Removed the development-only Actions workflow because the requested role for GitHub is storage.
+
+Implemented and locally verified:
+- Events editor item pickup recipe, editable receipt/fanfare and persistent one-time flag; removed duplicate hard-coded gift receipt.
+- Visual scene item actions now check add/remove success and stop before later actions/completion on failure. Give actions emit engine-specific receipt fanfare and wait for completion. A checkbox permits silent awards. FireRed and Emerald generated scripts compile locally.
+- Sprite editor per-layer lock checkbox; move selected layer one pixel in four directions; flip/move respects locks and clothing silhouette clipping; undo/redo and save/reopen retain layer state. Animation delay is adjustable from 40 to 2000ms.
+- New event recipe module added to offline cache. Development source fingerprints refreshed without changing release metadata or app identity.
+
+Validation: 333 checks passed, 2 private/external-fixture checks skipped; local full-editor UI tests passed for event placement/save and sprite controls. These do not establish physical APK installation or emulator gameplay correctness. Test harness emits existing IIFE/import.meta warnings and an existing duplicate story label warning.
+
+Remaining roadmap: full story/event-page upgrade, richer templates, sprite selection/clipboard and animation authoring, ability/move/species native coverage, dex authoring audit, UI customisation and full Cartographer integration. See STUDIO_UPGRADES.md and issue #15. These are not marked complete by this checkpoint.
+
+Local test commands:
+- npm test
+- node scripts/qa-source-gate.mjs
+- With MAP_STUDIO_QA_RUNTIME and MAP_STUDIO_BUILD_RUNTIME pointing to node_modules containing jsdom@26, fake-indexeddb, esbuild and @napi-rs/canvas: node scripts/test-event-template-ui.mjs and node scripts/test-sprite-layer-controls.mjs
+
+## Reference and script-tree follow-up
+
+Implemented tracing background visibility, independent X/Y/width/height, aspect-preserving resize, existing opacity/scale/drag controls, fit, removal and undo image rehydration. Added an independent comparison pane with image upload, pin-original-ROM-sprite/current-custom-sprite, sizing, hide/remove, and project-wide persistence across groups/views. Referenced assets survive project asset collection. Tracing/comparison references remain separate from sprite PNG/native pixel output and can be packaged as editable references. Reference data receives bounds/asset validation.
+
+Added a read-only script tree of the actual nested first/repeat actions, including Yes/No, conditions, multiple answers and cancel branches. Clicking an action opens its editor; nested edits persist through scene/project save. Cyclic/oversized drafts are bounded safely. This is a navigation improvement, not the full event-page overhaul.
+
+Local full-editor UI checks passed for reference import/size/visibility/removal/undo, comparison persistence, clean sprite PNG export, nested tree editing/save/reopen, and existing layer controls. 337 unit/regression checks passed, with 2 external-fixture skips. All 1,856 deployed source fingerprints passed locally. No release or main merge performed.
+
+## Pokémon data workflow follow-up
+
+Implemented and tested locally:
+- Learnset authoring now matches the native form writer: 0–255 levels, level-0 evolution entries, and up to 256 moves. Added strict named/ID paste, stable level sorting and a four-move initial-level preview; evolution-only entries are reported separately. Invalid paste preserves the previous draft. Saved edits update already-queued form data.
+- Dex-entry encoding status and an explicit text/unit preview (not a claim of native font/layout accuracy).
+- Native ability workshop reachable from the Pokémon editor. Standalone ability saves validate rules before changing the project. Existing native bindings opened without the matching ROM get a clear guard; users can explicitly disable compilation to keep a design. No silent rebind or broken null-context access.
+- Import the existing Pokémon data JSON format into a fresh sprite group. Stats, dex fields, learnset, evolution branches and rules are retained; native ability assignments are cleared and definition identities regenerated. Imported data is not automatically installed. Sprite pictures are not part of the data-only format.
+
+Validation: 342 checks passed, 2 external-fixture skips. Real editor DOM tests passed locally for the Pokémon data workflow/import and ability design template/save/error handling. Prior reference, script-tree, event-template and sprite-layer UI regressions also passed in this run. All 1,857 deployed fingerprints passed. No supplied real-ROM fixture was used for new battle runtime or native form gameplay assertions.
+
+The wider roadmap remains incomplete, including arbitrary custom move battle effects, additional evolution-method adapters, TM/tutor/egg compatibility editing, full event pages, in-game UI customisation and full Cartographer generation integration. These were not marked complete by the work above.
+
+## Sci-fi, Horror, Space and Technology vibes
+
+Added all four to Quick Track and the general composition mood list. Original recipes use distinct scales, contours, rhythms, progressions and sound palettes: cold whole-tone electronic signals; Phrygian mansion/corridor suspense; sparse Lydian space atmosphere without percussion; Dorian sequencer/machine rhythms. They support existing whole/selected source arrangements, key/scale overrides and the existing composition/Atmosphere controls. Electronic/chip voices now carry appropriate General MIDI program metadata rather than defaulting to piano.
+
+Local validation: 344 checks passed, 2 external-fixture skips. Full-editor source-song, multipart MIDI and mobile Quick Track UI checks passed. All four completed actual bundled contour + melody Hybrid inference, then compiled and rendered finite, non-silent PCM. New original arrangements and MIDI loop round trips were tested. No commercial API or GitHub execution was used. Inspirations describe mood/texture rather than copied melodies. The generic composition dependency test now allows percussion-free moods to omit unused drum samples.
+
+### Hidden items and guarded passage templates
+
+Added a nonblocking, once-per-save hidden-item tile interaction with the shared native receipt/fanfare; a reusable key-locked door that checks but retains its chosen item; and a Yes/No toll passage that checks funds before charging and travelling. Door destinations start unset and must be explicitly selected. All fields remain editable. Missing ROM metadata for item requirements now produces a clear error instead of a null-reference failure. These are script templates, not native hidden-item detector registration, animated doors, or respawn checkpoints.
+
+Validation: all 350 tests completed (348 passed, 2 private/external-fixture skips); local editor placement, failed destination validation, destination picking, JSON/save and reopen passed for the new recipes. Key/toll scripts compiled for FRLG and RSE. Source fingerprint gate passed. No private ROM gameplay or physical APK test was performed. Main/release remain unchanged.
+
+### Item map markers
+
+Visible pickup recipes now carry a red Poké Ball editor marker. Hidden-item recipes and imported native hidden-item sign records use a dashed purple Poké Ball with a question mark. Legacy single-action tile pickups receive the visible marker; NPC gifts and quest rewards retain their normal markers. The event editor exposes an explicit marker override, preserved through JSON/save/reopen. Markers do not change native NPC graphics, hidden-item detector registration or gameplay visibility. Native visible item NPCs continue to use their imported sprite art.
+
+Validation: 351 tests passed, 2 skipped; editor pickup/hidden-item appearance controls and save/reopen passed. Rendering uses a shared canvas function for editor and annotated-map export. Source gate passed.
+
+### Sprite selection and clipboard
+
+Added drag rectangle selection, select-all/deselect, active-layer copy/cut/paste/clear. Existing flips and one-pixel arrows now target the selected area when present, preserving surrounding pixels. Movement clamps at sprite edges. Pixel changes use existing undo/redo and project drafts; selection itself is temporary and resets when opening a frame. Clipboard persists during the workshop session across frames and requires matching palettes, avoiding index-colour corruption. Locked layers reject destructive operations; paste respects clothing silhouette clipping. Transparent pixels are included in a rectangular paste.
+
+Validation: full suite 351 passed, 2 fixture skips. Local editor checks cover pointer selection, copy/paste, selected movement preserving outside pixels, cut/clear, undo/redo and saved-frame reopen. Existing locked-layer controls still pass. Source gate passed. No new ROM encoding format or native sprite-table changes.
+
+### Large item cleanup navigation and bundled water brushes
+
+Object/background cleanup now offers Move/pan, zoom in/out and Fit whole item. The initial view fits both dimensions; zoom preserves viewport centre. Pan drags scroll the viewport without touching the cleanup mask or history. Pixel hit testing continues to account for displayed scale.
+
+Both bundled water study sheets were incorrectly treated as complete XP autotiles: one lacks a south water boundary, while the other's lower rows are land. Their stable-ID connected atlases now use the source water centre plus narrow, complete water-coloured contours instead of sampling land/empty rows. All 47 variants are opaque over the surf cell, and picker previews were regenerated. Original source sheets remain intact. The standard asset builder uses the corrected generation; repair-water-atlases.mjs rebuilds just these assets/previews. This intentionally replaces the flawed broad stone/land bank with a narrow water contour. Existing embedded/custom copies of old image data are not rewritten.
+
+Validation: local large-object 512×768 fit/zoom/pan, bottom-right erase and undo passed. Both brush atlases checked for every pixel of all 47 masks, south-edge presence, reproducible output and water movement metadata. Full suite: 351 passed, 2 fixture skips. No running-ROM surf test or physical APK test. Main/release unchanged.
+
+### Private installable development build 4.69.4
+
+Prepared version 4.69.4/code 117 on request, using the original package and signing certificate. Recovered 4.69.2 native shell SHA-256 matches the reconciled source manifest's reference APK. Asset repack preserves native DEX/resources byte-for-byte, verifies the same signing certificate, zip alignment, version advance and all 1847 packaged web assets. Includes development changes through da492cab. Main, Pages and public releases remain unchanged. Physical device installation has not been tested.
+
+APK SHA-256: `7f211c73e3bb0ddc46564ef3d1bcae469bcedf6a7661ccf517f970bced8c719d`. Signing secrets remain external to repository/output.
+
+### Edit saved objects in place (private APK 4.69.5)
+
+Placed-object artwork editing now resolves its existing prefab ID and updates that saved template instead of creating another template. Saving updates the selected placement's artwork/name while retaining its object ID, map position and collision setup. Other placements retain their prior artwork. The Objects library editor also preserves project-owned saved IDs, even before device-library migration. The Duplicate action remains separate. New objects acquire their saved prefab link after the first save.
+
+Local actual SharedLibrary/editor checks: initial save, edit selected placement, edit saved template again, export/reopen; exactly one template and one placed object, stable IDs, position/collision retained. Large-item navigation checks still pass. Full suite 351 passed, 2 fixture skips. Private APK version 4.69.5/code 118; original Android package/certificate and native shell retained. Main/public release unchanged.
+
+### Fundamental story replay and fragmented ROM space repair — 4.69.6
+
+Refresh and direct native story export now reconcile exact requested command bytes and linked dialogue/movement bytes against the opened ROM. Verified already-applied edits are omitted from the pending working copy, preserving current ROM scripts and the authored input project. Relocated text/movement must resolve through every original decoded command pointer; mismatches remain conflicts. This is per-entry verification, not blanket disabling of story edits. Native flows, map conditions and custom native-data edits retain their existing stricter conflict checks.
+
+Recovered the user's authoritative Field Fixes project and tested its embedded 32 MB source: all 508 story edits (7 commands, 499 texts, 2 movements) verified already applied; refresh produced zero pending edits. The direct export story stage produced zero writes/allocations and unchanged ROM SHA-256. A first verification attempt exhausted Node memory while formatting a Buffer-vs-Uint8Array assertion; replaced that test-only structural assertion with SHA-256 comparison and reran successfully.
+
+Erased-span discovery now considers runs from 4 KB rather than 64 KB, with edge padding and 256-byte pointer-target exclusion. Scans every pointer byte position, including unaligned native-script operands. The supplied expanded source yielded five guarded spans totalling 29,077 bytes. Allocation regression checks source immutability and pointer protection. Free bytes remain a conservative erased-byte heuristic, not a proof against all possible dynamic addressing.
+
+Local regression suite and native-stage fixture passed; full map compiler, emulator gameplay and physical-device installation remain unverified for this increment. Public main/release unchanged.
+
+### Further scripting reconciliation and native data continuity
+
+Already-applied map-entry conditions now require the full expected eight-byte record, retaining the original destination pointer; missing entries, changed destinations, wrong values and zero-variable terminators remain conflicts. Added native-data reconciliation for the verified Shattered adapter: classes, trial paths, learnsets and five equipment tables. Matching checks include every untouched record byte and all referenced strings. Only requested string fields may relocate. Pending edits keep the existing validator; already-applied edits are removed only from the temporary refreshed graph. Custom event flows still retain stricter source-binding requirements.
+
+Built a command-pointer lookup once per graph to avoid rescanning every command for each text/movement reference. Restored progress callbacks during direct story export verification.
+
+Validation: regression suite 358 passed, 2 fixture skips; targeted condition/script/data checks passed. On the recovered private ROM, eight actual pending → native install → readback/already-applied checks passed (classes, paths, learnsets, hands, body, feet, head, accessories), including allocated/relocated class-name text. No user ROM/project was changed. Emulator gameplay and full map export remain outstanding. No new APK issued for this source-only development increment.
+
+### Linked supply-run story template
+
+Added a three-stage Supply run under Visual scenes → Linked quest templates: requester with acceptance/refusal, guarded one-time supply cache, and recipient with confirmation, item removal and payment. Three shared milestones track acceptance, actual cache collection and delivery. Six persistent flags total include each scene's one-time state. Payment requires accepting, collecting and carrying the supplies, so existing bag items cannot bypass the cache stage. Item receipt/fanfare and bag-full failure use the shared scene compiler. Cancel/refusal does not complete a stage; the cache marks collection only after successful award. All dialogue, items, quantities and rewards remain editable in the scene editor.
+
+Validation: all linked quest drafts/placeholders, flag allocation, cancellation and JSON reopen tests passed; native script compilation passed with prerequisite checks and removal before payment. Local full-editor UI check passed cross-map placement, redo/cancel, review, save, undo and reopened Supply run cache editing. No flags are allocated until the complete set is saved. Full suite: 359 passed, 2 fixture skips. Gameplay/emulator checks remain pending. Source-only development increment; existing APK/public build unchanged.
+
+### Map-block storage exhaustion — private APK 4.69.7
+
+Compiler now reuses unchanged native map-block bytes and updates changed arrays in the output copy only when the original allocation is large enough, no other native map overlaps it, and scanning every source byte finds exactly one pointer into the allocation: its owning layout field. Shared arrays, interior/unaligned references, already-modified output regions, new maps and grown allocations relocate normally. Original ROM bytes are never mutated. This avoids consuming fragmented free spans for safely reusable map arrays.
+
+Validation: unit cases for exclusive reuse, unchanged/shared data, unknown interior references, prior writes, growth and new maps. Diagnostic modified-block ownership checks passed on all 23 source maps in the supplied project, including 7,452-byte Viridian Forest. This is NOT a completed project export: the full editor attempt encountered preexisting native event-collision conflicts during refresh and correctly stopped before compilation. No guards were bypassed. Full map export/gameplay remains outstanding. Full regression suite passed; APK signature/assets/version/alignment verified at packaging. Main/public release unchanged.
+
+### Fragmented 32 MB ROM export — private APK 4.69.8
+
+Completed a full local export of the recovered 23-map Shattered project, using its embedded source verified against its recorded SHA-256. All 23 maps compiled and the completed 32 MB ROM reopened successfully. Production verification checked map dimensions/words, collision/elevation, metatile planes/attributes, indexed graphics, palettes and native format. Source bytes were preserved; the exporter also checked that output changes were confined to declared writes.
+
+- Unchanged event lists/headers and exact tileset data retain source storage; changed data relocates. Story-reference bindings remain intact. Already-applied warp deletions are recognized only when all other fields match.
+- Prepared FRLG banks omit only empty trailing slots known to be unused by packed maps and reserved script IDs. Referenced blank tiles remain stored and the 640/512 split remains explicit.
+- Free-space accounting retains smaller guarded fragments for small records. Format-aware indexing protects aligned native references, decoded packed script operands, opaque command neighborhoods and potential Sappy loop/pattern operands, instead of interpreting every unaligned artwork byte sequence as a pointer. Index-limit failures retain the conservative generic scan. Target guards remain 256 bytes.
+- Allocation errors now report required contiguous bytes, total remaining space and largest span, with allocation history available to diagnostics.
+- Added an environment-driven private full-project regression runner; ROMs, projects and prepared private packs are excluded from source control.
+
+Validation: 371 automated checks: 369 passed, 2 skipped. The private full-project compile/reopen passed separately. APK assets, version code 121, original package, unchanged native shell and signing certificate are verified during packaging. Physical Android installation and emulator gameplay have not been tested. This proves the recovered fixture exports; it does not promise unlimited space or compatibility with arbitrary custom packed engine formats. Development branch only; main/public release unchanged.
+
+### Artwork allocation order — private APK 4.69.9 (1 November 2026)
+
+A further device report needs a 12,220-byte graphics allocation while the largest remaining guarded span is 10,814 bytes, despite 1,287,508 bytes remaining overall. The previous end-to-end fixture was insufficient to establish this device case was solved. Source filenames are not byte identity: the app may resolve an exported ROM to its original embedded source.
+
+Prepared FRLG artwork at the 32 MB limit is now planned across all edited tileset pairs before headers are installed. Graphics, metatile planes, attributes and palettes reserve immutable storage together, largest first, preserving exact-source reuse and content deduplication. This prevents earlier small artwork allocations taking regions required by later large graphics. No pointer guards were relaxed in this increment. The progress label now identifies the shared-artwork stage.
+
+Validation: 373 automated checks (371 passed, 2 skipped). A fragmentation regression demonstrates sequential allocation failing and the complete batch fitting the identical bytes into the same guarded holes; a second regression covers source reuse and deduplication. Both recovered project versions completed full compile/reopen, and the newer one also passed in reversed map order: each checked 17,912 cells and 2,194 metatiles, with source preserved and no changes outside declared writes. The private runner supports explicit source selection, keys palette caches to source bytes as well as project bytes, and treats incomplete runs as failures.
+
+The recovered standalone Shattered_Updated ROM rejected the newer JSON's stale source bindings as intended; that mismatch was not bypassed. The exact current on-device project has not been captured in this chat. Physical Android and emulator gameplay remain untested. Original package/certificate retained; development branch only.
+
+### Storage root-cause analysis (1 November 2026)
+
+Measured rather than inferred capacity: source contains 437 native maps, project 23; 4,309,014 bytes of long erasure patterns versus 1,455,704 guarded allocatable bytes in 714 spans. Full authored export allocates only 111,674 bytes and passes 23-map verification. Preparing artwork marks all 23 maps changed. A fresh no-edit 23-map control fails in automatic gate repair's tile-budget path; a single-map control passes with zero allocations. See ROM_STORAGE_ANALYSIS_2026-11-01.md for evidence, limits and prioritized structural work. Added local audit/control scripts and optional allocation report output. No production behaviour or APK changed in this analysis increment; no private fixtures checked in.
+
+### Device-source fragmentation and graphics inventory follow-up
+
+Recovered standalone Shattered_Updated source has largest guarded gap 10,814 bytes before new allocations, matching the device; largest-first cannot fit its 12,220-byte request. Live graphics inventory finds only 1,457 bytes in one extra exact duplicate bank; five old graphics pointers are retired from map headers but not proven globally unreachable. Older delivery's sidecar omits its actual compiled ROM fingerprint. Need current authored project JSON to reconcile back to verified source without losing newer edits. Added read-only inventory and explicit-source audit support; no production change, deletion, bypass or new APK. See ROM_STORAGE_ANALYSIS_2026-11-01.md follow-up.
+
+### Current device-project source recovery — private APK 4.70.0
+
+Reproduced the latest conflict-resolved upload against its actual bound standalone source: Map graphics requires 12,220 contiguous bytes, largest span 10,814. Unlike earlier fixtures, this upload binds all 23 maps to the previously compiled ROM while retaining an older embedded original. Recovered a separate project copy through the normal refresh/rebinding API after verifying all 3,212 historical patch records, before-bytes and both complete ROM hashes. Archived 27 exact appended-event suppression bindings absent from the restored source; all evidence remains in project history. No arbitrary ROM data was reclaimed and no blocking conflict was bypassed. Reconciliation reported zero blocking conflicts.
+
+Production fixes: project switching restores a fingerprint-verified embedded source when all original map bindings belong to it. Importing a self-contained project no longer rejects it merely because another ROM is currently open. Opening original/recognised exported ROMs retains the project's stable source ID instead of replacing that identity with the restored bytes' hash. Mixed/stale source bindings are not silently rewritten.
+
+Validation: 375 automated checks (373 pass, 2 skips); UI regression passes for JSON import over another ROM, saved-project switching, original/exported source aliases and corrupt-source rejection. Private preservation test passes for all 23 maps: exact pre-export plane hashes, movement/collision/elevation/behaviour/priority, objects, gates, field objects, authored event actions/positions and link endpoints. Full compile/reopen verifies 17,912 cells and 2,194 metatiles. Exporting the recovered project twice produces identical ROM SHA-256. Source input remains unchanged.
+
+The recovery JSON has correct original/compiled fingerprints and retains the verified earlier exported fingerprint as history. The user's uploaded JSON remains unchanged. Original editable artwork is preserved; this static export still requires reviewed native palette conversion (94,626 visible pixels across four tileset groups in the local test). No playable ROM is issued as an unreviewed colour-final release. APK retains original package/certificate; physical Android installation and gameplay are not tested. Broader selective rebuilding/ownership reclamation work remains open.
+
+### Source-sheet picker from video 153108 — private APK 4.70.1
+
+Reviewed the actual 16-second video associated with “This isn’t intelligent mapping lol. Look at the list.” It shows Source tiles mixing ROM sheets, layer images, complete objects, terrain/preview images and repeated house names. Several apparent house duplicates are distinct lower/upper components; deleting them would damage assemblies.
+
+Replaced the user-facing sheet dropdown with a bounded, searchable thumbnail browser. Default scope is sheets referenced by the active map, with explicit project and whole-library scopes. Object pieces/component layers are opt-in; preview-only assets are excluded. Native addresses are removed from display names, individual lower/middle/upper and ground/foreground parts are labelled, and remaining same-name variants are distinguishable. Exact encoded-image aliases group only when dimensions/tile size/native metadata match; selected IDs remain stable and no asset is deleted or rewritten. Existing raw selection compatibility remains hidden from the phone picker. Choosing a sheet collapses the mobile chooser to preserve canvas space. Whole objects and connected terrain remain in their existing dedicated tabs.
+
+Validation: 378 automated checks (376 pass, 2 skips), source-browser UI regression and existing organizer/picker regression pass. UI checks cover current-map scope, full-library search, thumbnail selection, component labels, stable brush under filtering, mobile collapse and unchanged asset records. This is source-library presentation and classification, not a claim of complete automatic semantic object extraction. Original package/signature retained. Physical APK installation is untested; no native ROM code, project masks, collision or map IDs changed. Development branch only.
+
+### Checked palette conversion false overflow — private APK 4.70.2
+
+Reviewed screenshot 153117. Reproduced the exact “Artwork needs 18 palettes; GBA maps have 13. Enable reviewed palette conversion” failure from a fresh 15-map import of the delivered xx0.92 ROM, despite `allowColorChanges:true`. The original-art hint stage called the strict palette planner unconditionally; greedy packing also discarded a valid native palette arrangement.
+
+The planner now tries verified source palette coverage when greedy exact packing overflows. In the reproduced Viridian group, this uses nine original palettes and retains native colours exactly. If exact original-art preservation genuinely cannot fit, checked reviewed conversion covers those hints as well. Unchecked conversion still rejects lossy changes. Sets already covered by exact palettes no longer consume extra slots; additional artwork can trigger reviewed joint planning when the native budget is full. Invalid budgets and unrelated exceptions remain errors. Native tile/attribute/source bounds checks remain intact.
+
+Validation: 382 automated checks (380 passed, 2 skipped). Added regressions for 18-palette original-hint overflow with conversion on/off, a >15-colour hinted subtile, exact-palette exhaustion with additional art, and a seeded exact layout that defeats greedy packing. The old code reproduces the screenshot error on the actual 15-map native import; fixed palette preparation passes for all 15 maps/13 packs without changing authored JSON. Complete compile/reopen passes for the matching xx0.92 JSON: all 23 maps, 17,912 cells and 2,194 metatiles.
+
+The screenshot's 15 linked maps differ from the matching project's 23. Raw compiled-ROM reimport later encounters an independently unverified secondary metatile count in relocated tables. That later full native-import export is not claimed to pass and was not bypassed; its error now directs users to the matching JSON. Importing that sidecar restores its verified original build source via 4.70.0's recovery path. Original package/signature retained, no gameplay or physical install test. Development branch only.

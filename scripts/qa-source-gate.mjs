@@ -10,6 +10,8 @@ assert.ok(xml.includes(`android:versionCode="${manifest.versionCode}"`));
 assert.ok(xml.includes(`android:authorities="${manifest.package}.files"`));
 assert.ok(fs.readFileSync('dist/version-ui.js','utf8').includes(`newVersion='${manifest.version}'`));
 assert.ok(fs.readFileSync('dist/sw.js','utf8').includes(`v${manifest.version}`));
+assert.ok(fs.readFileSync('dist/index.html','utf8').includes(`STUDIO <span>${manifest.version}</span>`),'Visible build label must match APK version');
+assert.ok(fs.readFileSync('dist/app.js','utf8').includes(`version:'${manifest.version}'`),'Diagnostic build identity must match APK version');
 for(const [path,expected] of Object.entries(manifest.files)){
   assert.equal(createHash('sha256').update(fs.readFileSync(path)).digest('hex'),expected,path);
 }

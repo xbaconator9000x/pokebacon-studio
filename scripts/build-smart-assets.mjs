@@ -1,10 +1,11 @@
 import fs from 'node:fs';import {resolve} from 'node:path';import {pathToFileURL} from 'node:url';
 const runtime=process.env.MAP_STUDIO_QA_RUNTIME;if(!runtime)throw new Error('Set MAP_STUDIO_QA_RUNTIME to the directory containing @napi-rs/canvas.');
 const{createCanvas,loadImage}=await import(pathToFileURL(resolve(runtime,'@napi-rs/canvas/index.js')));
+import {waterStudyAtlas} from '../dist/water-atlas.js';
 import{xpAtlas}from'../dist/smart-canvas.js';
 const catalog=JSON.parse(fs.readFileSync('dist/assets/catalog.json')),output='dist/assets/smart';fs.mkdirSync(output,{recursive:true});const added=[],terrains=[];
 for(const source of catalog.filter(a=>a.category==='Autotiles (raw)'&&a.height===128&&a.width===96)){
- const im=await loadImage('dist/'+source.src),canvas=xpAtlas(im,()=>createCanvas(1,1)),id='smart-'+source.id,file=output+'/'+id+'.png';fs.writeFileSync(file,canvas.toBuffer('image/png'));
+ const im=await loadImage('dist/'+source.src),canvas=(/0-(water|mt-moon)-test$/.test(source.id)?waterStudyAtlas:xpAtlas)(im,()=>createCanvas(1,1)),id='smart-'+source.id,file=output+'/'+id+'.png';fs.writeFileSync(file,canvas.toBuffer('image/png'));
  const category=/water|sea|coral/i.test(source.name)?'Water':/snow|ice/i.test(source.name)?'Snow & ice':/grass|harvest|jonquil/i.test(source.name)?'Grass & paths':/moon|volcano|desert/i.test(source.name)?'Rock & sand':'Paths & ruins';
  added.push({id,name:source.name+' · connected terrain',src:file.slice(5),width:128,height:96,tileSize:16,category:'Smart terrain',sourceId:source.id});terrains.push({id,assetId:id,name:source.name,category});
 }
