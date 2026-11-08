@@ -1,6 +1,6 @@
-const CACHE='pokebacon-map-studio-v4.72.7-transitions-2';
+const CACHE='pokebacon-map-studio-v4.72.7-wardrobe-3';
 // Every recovered module remains available after an offline restart.
-const RECOVERED_CORE=['./wardrobe-native.js','./sha256.js','./ui-engine-source.js','./ui-native.js','./ui-screen-catalog.js','./ui-source-editor.js','./ui-theme.js','./sprite-mobile.js','./sprite-mobile.css'];
+const RECOVERED_CORE=['./wardrobe-native.js','./wardrobe-palette.js','./sha256.js','./ui-engine-source.js','./ui-native.js','./ui-screen-catalog.js','./ui-source-editor.js','./ui-theme.js','./sprite-mobile.js','./sprite-mobile.css'];
 // Continuous route boundaries and explicit portal arrival directions.
 // Original puddle artwork is bundled with the app and available offline.
 const cacheFresh=(cache,urls)=>cache.addAll([...new Set(urls)].map(url=>new Request(url,{cache:'reload'})));

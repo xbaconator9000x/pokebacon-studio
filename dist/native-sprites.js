@@ -2,7 +2,7 @@ import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 /* Native GBA sprite adapters. Original art only; no stock offsets are substituted.
  * Tables and expansion layouts are verified in full before editing. */
 import {decompressSmol,smolInfo} from './smol-sprites.js';
-import {discoverWardrobe} from './wardrobe-native.js';
+import {discoverWardrobe} from './wardrobe-palette.js';
 const BASE=0x08000000;
 const bounds=(b,a,n)=>Number.isInteger(a)&&a>=0&&a+n<=b.length;
 const u16=(b,a)=>bounds(b,a,2)?b[a]|b[a+1]<<8:-1;
