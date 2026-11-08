@@ -1,4 +1,4 @@
-const CACHE='pokebacon-map-studio-v4.72.7-reconciled-1';
+const CACHE='pokebacon-map-studio-v4.72.7-transitions-2';
 // Every recovered module remains available after an offline restart.
 const RECOVERED_CORE=['./wardrobe-native.js','./sha256.js','./ui-engine-source.js','./ui-native.js','./ui-screen-catalog.js','./ui-source-editor.js','./ui-theme.js','./sprite-mobile.js','./sprite-mobile.css'];
 // Continuous route boundaries and explicit portal arrival directions.
@@ -50,3 +50,5 @@ CORE.push('./item-markers.js');
 
 CORE.push('./water-atlas.js');
 CORE.push('./owned-free-space.js');
+// Transition controls and diagnostics must be available on first offline use.
+CORE.push('./door-transition-ui.js','./door-audit.js','./quick-player.js');
