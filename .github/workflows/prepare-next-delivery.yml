@@ -1,0 +1,31 @@
+name: Prepare next delivery
+on:
+  workflow_run:
+    workflows: [PokéBacon QA]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: prepare-next-delivery-main
+  cancel-in-progress: true
+jobs:
+  prepare:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/prepare-next-delivery.mjs
+        env:
+          DELIVERY_SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: next-delivery
+          path: delivery-preparation/next-delivery.json
+          retention-days: 7
