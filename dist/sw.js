@@ -1,4 +1,4 @@
-const CACHE='pokebacon-map-studio-v4.72.7-wardrobe-3';
+const CACHE='pokebacon-map-studio-v4.72.7-wardrobe-4';
 // Every recovered module remains available after an offline restart.
 const RECOVERED_CORE=['./wardrobe-native.js','./wardrobe-palette.js','./sha256.js','./ui-engine-source.js','./ui-native.js','./ui-screen-catalog.js','./ui-source-editor.js','./ui-theme.js','./sprite-mobile.js','./sprite-mobile.css'];
 // Continuous route boundaries and explicit portal arrival directions.
