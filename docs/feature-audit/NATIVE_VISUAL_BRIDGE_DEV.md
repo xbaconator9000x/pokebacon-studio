@@ -15,14 +15,15 @@ This is a conservative **one-entry replacement**, not a rewrite of other origina
 - Delays (1–36,000 frames), sound effect + optional `waitse`, background music with default continuation mode, and supported fade-screen modes.
 - `nop` and standard global lock/release wrappers are handled as wrappers; the visual compiler supplies its own.
 - Original NPC, sign and coordinate trigger entries; triggers become step scenes.
+- Subsequent development batch: reversible native walking/facing/visibility movement sequences and narrowly verified original-ROM `checkflag / goto_if 1` if/else diamonds, with editable branches and native flag IDs. See `NATIVE_MOVEMENT_BRANCH_DEV.md`.
 
 ## Strict non-conversion cases
 
-Native branching, calls, trainer battles, flag/variable writes, engine-native routines, unindexed or unresolved commands, unverified message styles, script loops, over-limit events, map entries, missing original map pin, already-authored event or a native structural flow are **refused** with a concrete reason. No script bytes or project data are changed by preview or rejected conversion. The original ROM remains the source for edit/export. A simple event with unsupported syntax stays in ROM Story instead of silently losing behaviour.
+Arbitrary/unstructured native branching, calls, trainer battles, native flag/variable writes, engine-native routines, unindexed or unresolved commands, unverified message styles, script loops, over-limit events, map entries, missing original map pin, already-authored event or a native structural flow are **refused** with a concrete reason. No script bytes or project data are changed by preview or rejected conversion. The original ROM remains the source for edit/export. A simple event with unsupported syntax stays in ROM Story instead of silently losing behaviour.
 
 ## Quest-state usage explorer
 
-The Authoring **Flags & Counters** screen now shows reference counts and a per-state **Uses** button. It indexes project-scoped save flags/counters in scene prerequisites, event page priorities, nested yes/no/if/multichoice actions, repeat paths, one-time completion flags, arrival latches, linked event completion, visited maps, field object persistence and reserved counter storage bits. Each reference carries its map/event identity and can open the original scene for editing. The scanner is read-only and bounded; source ROM-native flags remain a separate namespace and are not rewritten or silently mapped into project quest slots.
+The Authoring **Flags & Counters** screen now shows reference counts and a per-state **Uses** button. It indexes project-scoped save flags/counters in scene prerequisites, event page priorities, nested yes/no/if/multichoice actions, repeat paths, one-time completion flags, arrival latches, linked event completion, visited maps, field object persistence and reserved counter storage bits. Each reference carries its map/event identity and can open the original scene for editing. The scanner is read-only and bounded; source ROM-native flags remain a separate namespace and are not rewritten or silently mapped into project quest slots. A later batch adds their own read-only reference explorer and explicit preview-only toggles.
 
 ## Verification and caveats
 
