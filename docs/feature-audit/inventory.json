@@ -1031,7 +1031,8 @@
         "tests/scene-outline.test.js",
         "tests/native-story-roundtrip.test.js",
         "tests/native-story-state.test.js",
-        "scripts/test-release-mobile-browser.mjs"
+        "scripts/test-release-mobile-browser.mjs",
+        "tests/native-story-coexistence.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1047,13 +1048,13 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Native condition/name fixtures, mobile save/reload and private Shattered export/reindex; see DELIVERY_4_72_7.md. Not full gameplay.",
-        "integrated": "4.72.7 event editor is on main; PR #29 reservation extensions remain on development branch, with device/gameplay acceptance still open.",
+        "tested": "Previous v4.72.7 native-byte and phone UI evidence remains valid; PR #29 adds source-sharing and authored visual-scene coexistence fixtures exercising project save/reopen, native edits, export/reindex and explicit same-root conflict guards. Exact new QA pending; real gameplay unverified.",
+        "integrated": "Visual event pages and the prior native editor are on main; newer shared-script ownership/reimport fixes are on development PR #29 only, with actual ROM/Android gameplay not accepted.",
         "released": false,
         "gameplayVerified": false
       },
       "backlogGroup": "REL",
-      "implementationNotes": "Current main contains guided native conditions and names. PR #29 adds explicit source-verified bounded flag/variable reservations and flow/map-condition collision checks, NOT automatic engine-safe allocation; complete imported-event/gameplay parity remains open."
+      "implementationNotes": "Current main contains guided native conditions and names. PR #29 adds explicit source-verified bounded flag/variable reservations and flow/map-condition collision checks, NOT automatic engine-safe allocation; complete imported-event/gameplay parity remains open. Native root-pointer ownership now separates direct same-entry authored scene conflicts from legitimate edits to shared original dialogue/commands used by other NPCs. See SHARED_SCRIPT_COEXISTENCE_DEV.md."
     },
     {
       "id": "EVT03",
@@ -1360,7 +1361,8 @@
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
-        "tests/scene-outline.test.js"
+        "tests/scene-outline.test.js",
+        "tests/native-story-coexistence.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1372,16 +1374,17 @@
         "Demonstrate root identity with target-engine constraints.",
         "Demonstrate source signatures with target-engine constraints.",
         "Need semantic and byte-preservation checks against actual modified Shattered events.",
-        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "Previous v4.72.7 native-byte and phone UI evidence remains valid; PR #29 adds source-sharing and authored visual-scene coexistence fixtures exercising project save/reopen, native edits, export/reindex and explicit same-root conflict guards. Exact new QA pending; real gameplay unverified.",
+        "integrated": "Visual event pages and the prior native editor are on main; newer shared-script ownership/reimport fixes are on development PR #29 only, with actual ROM/Android gameplay not accepted.",
         "released": false,
         "gameplayVerified": false
       },
-      "backlogGroup": "REL"
+      "backlogGroup": "REL",
+      "implementationNotes": "Production native-byte script export/reindex and existing-source shared text relocation fixtures are covered. Explicit source-root ownership prevents accidental double-authoring while allowing different original roots to be edited independently. Real Shattered runtime, cross-version map refresh and complete quest-save reimport equivalence remain open."
     },
     {
       "id": "SCN01",
