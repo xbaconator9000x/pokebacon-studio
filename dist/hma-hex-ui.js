@@ -1,12 +1,12 @@
 import {parseROMOffset,hexInput,formatHex,hexRows,findROMHex,hexDiffSummary,hexState,stageROMHex,installROMHexEdits} from './native-hex-workspace.js';
-import {hmaMetadata,importHMAToml,tableDefinitions,saveTableDefinition,tableRecord,editTableField,fixedNumericHMATable} from './hma-table-workspace.js';
+import {hmaMetadata,importHMAToml,tableDefinitions,saveTableDefinition,tableRecord,editTableField,fixedNumericHMATable,copyTableRecord,swapTableRecords,fillTableColumn,findTableRows} from './hma-table-workspace.js';
 import {pointerAt,findROMReferences,planSafeTableRepoint,installSafeTableRepoints} from './hma-pointer-navigation.js';
 import {createIPS} from './ips.js';
 import {RomOutput} from './rom-writer.js';
 const TYPES=['u8','s8','u16','s16','u32','s32','ptr','ascii'];
 export function hmaHexWorkshop(api){
  const $=s=>document.querySelector(s),esc=api.esc;
- const state={tab:'hex',offset:0,query:'',tableId:'',row:0,anchorQuery:'',anchorPage:0,editing:null,pointerSite:0x200,pointerTarget:0x200};
+ const state={tab:'hex',offset:0,query:'',tableId:'',row:0,anchorQuery:'',anchorPage:0,tableSearchField:'',tableSearchValue:'',editing:null,pointerSite:0x200,pointerTarget:0x200};
  const session=()=>api.session(),data=()=>session().reader.bytes,id=()=>session().id,source=()=>api.project();
  const safe=f=>{try{const result=f();if(result&&typeof result.then==='function')result.catch(api.error);return result;}catch(error){api.error(error);return null;}};
  const nbytes=()=>hexState(source(),id())?.patches?.length||0;
@@ -69,13 +69,41 @@ export function hmaHexWorkshop(api){
  function tablesScreen(){
   const tables=tableDefinitions(source(),id(),data());
   if(!tables.some(t=>t.id===state.tableId))state.tableId=tables[0]?.id||'';
-  const table=tables.find(t=>t.id===state.tableId),rows=table?Array.from({length:Math.min(16,Math.max(0,table.count-state.row))},(_,i)=>tableRecord(source(),id(),data(),table,state.row+i)):[];
-  shell('<p>Define reusable typed layouts for source ROM records. Named HMA anchors can prefill the address; unknown HMA format strings are never guessed or written.</p><div class="studio-actions"><label>Tables<select id="hmaTablePick">'+tables.map(t=>'<option value="'+esc(t.id)+'" '+(t.id===state.tableId?'selected':'')+'>'+esc(t.name)+'</option>').join('')+'</select></label><button id="hmaCreateTable" type="button">＋ New layout</button>'+(table?'<button id="hmaEditTable" type="button">Edit layout</button><button id="hmaRepointTable" type="button">Review table repoint</button>':'')+'</div>'+(table?'<div class="studio-actions"><button id="hmaTablePrev" type="button">◀</button><span>Rows '+(state.row+1)+'–'+(state.row+rows.length)+' / '+table.count+'</span><button id="hmaTableNext" type="button">▶</button></div><div style="overflow:auto"><table><thead><tr><th>Row / ROM offset</th>'+table.fields.map(f=>'<th>'+esc(f.name)+' <small>'+esc(f.type)+'</small></th>').join('')+'</tr></thead><tbody>'+rows.map(record=>'<tr><td>'+record.index+' / 0x'+record.at.toString(16).toUpperCase()+'</td>'+table.fields.map((f,i)=>'<td><button type="button" data-table-row="'+record.index+'" data-table-field="'+i+'">'+esc(f.type==='ptr'?'0x'+record.values[f.name].toString(16).toUpperCase():record.values[f.name])+'</button>'+(f.type==='ptr'?'<button type="button" data-table-ptr="'+record.index+'" data-table-ptr-field="'+i+'">Follow</button>':'')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div><p class="hint-line">Tap a cell to stage a typed edit. Numeric values use little-endian ROM encoding; pointers are range checked.</p>':'<p>No typed layouts yet. Create one for a verified native table and reuse it for all its records.</p>'));
-  if($('#hmaTablePick'))$('#hmaTablePick').onchange=()=>{state.tableId=$('#hmaTablePick').value;state.row=0;render();};
+  const table=tables.find(t=>t.id===state.tableId);
+  const searching=!!(table&&state.tableSearchValue);
+  const field=table?.fields.some(f=>f.name===state.tableSearchField)?state.tableSearchField:table?.fields[0]?.name;
+  const matches=searching?findTableRows(source(),id(),data(),table,field,state.tableSearchValue,{limit:32}):[];
+  const rows=table?(searching?matches.map(x=>tableRecord(source(),id(),data(),table,x.index)):Array.from({length:Math.min(16,Math.max(0,table.count-state.row))},(_,i)=>tableRecord(source(),id(),data(),table,state.row+i))):[];
+  shell('<p>Define reusable typed layouts for source ROM records. Named HMA anchors can prefill the address; unknown HMA format strings are never guessed or written.</p><div class="studio-actions"><label>Tables<select id="hmaTablePick">'+tables.map(t=>'<option value="'+esc(t.id)+'" '+(t.id===state.tableId?'selected':'')+'>'+esc(t.name)+'</option>').join('')+'</select></label><button id="hmaCreateTable" type="button">＋ New layout</button>'+(table?'<button id="hmaEditTable" type="button">Edit layout</button><button id="hmaRepointTable" type="button">Review table repoint</button>':'')+'</div>'+(table?'<div class="studio-actions"><button id="hmaTablePrev" type="button" '+(searching?'disabled':'')+'>◀</button><span>'+(searching?'First '+rows.length+' matching rows':('Rows '+(state.row+1)+'–'+(state.row+rows.length)+' / '+table.count))+'</span><button id="hmaTableNext" type="button" '+(searching?'disabled':'')+'>▶</button><button id="hmaBulkFill" type="button">Fill a column…</button></div><div class="studio-actions"><label>Find in column<select id="hmaTableFindField">'+table.fields.map(f=>'<option value="'+esc(f.name)+'" '+(field===f.name?'selected':'')+'>'+esc(f.name)+'</option>').join('')+'</select></label><label>Value<input id="hmaTableFindValue" value="'+esc(state.tableSearchValue)+'" placeholder="Number or text"></label><button id="hmaTableSearch" type="button">Find rows</button><button id="hmaTableClearSearch" type="button">All rows</button></div><div style="overflow:auto"><table><thead><tr><th>Row / ROM offset</th>'+table.fields.map(f=>'<th>'+esc(f.name)+' <small>'+esc(f.type)+'</small></th>').join('')+'</tr></thead><tbody>'+rows.map(record=>'<tr><td>'+record.index+' / 0x'+record.at.toString(16).toUpperCase()+' <button type="button" data-table-rowtool="'+record.index+'">Copy/swap</button></td>'+table.fields.map((f,i)=>'<td><button type="button" data-table-row="'+record.index+'" data-table-field="'+i+'">'+esc(f.type==='ptr'?'0x'+record.values[f.name].toString(16).toUpperCase():record.values[f.name])+'</button>'+(f.type==='ptr'?'<button type="button" data-table-ptr="'+record.index+'" data-table-ptr-field="'+i+'">Follow</button>':'')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div><p class="hint-line">Tap a cell to stage a typed edit. Numeric values use little-endian ROM encoding; pointers are range checked.</p>':'<p>No typed layouts yet. Create one for a verified native table and reuse it for all its records.</p>'));
+  if($('#hmaTablePick'))$('#hmaTablePick').onchange=()=>{state.tableId=$('#hmaTablePick').value;state.row=0;state.tableSearchValue='';state.tableSearchField='';render();};
   $('#hmaCreateTable').onclick=()=>tableEditor(null);
-  if(table){$('#hmaEditTable').onclick=()=>tableEditor(table);$('#hmaRepointTable').onclick=()=>reviewTableRepoint(table);$('#hmaTablePrev').onclick=()=>{state.row=Math.max(0,state.row-16);render();};$('#hmaTableNext').onclick=()=>{state.row=Math.min(table.count-1,state.row+16);render();};}
+  if(table){
+   $('#hmaEditTable').onclick=()=>tableEditor(table);
+   $('#hmaRepointTable').onclick=()=>reviewTableRepoint(table);
+   $('#hmaTablePrev').onclick=()=>{state.row=Math.max(0,state.row-16);render();};
+   $('#hmaTableNext').onclick=()=>{state.row=Math.min(table.count-1,state.row+16);render();};
+   $('#hmaBulkFill').onclick=()=>bulkFillTable(table);
+   $('#hmaTableSearch').onclick=()=>safe(()=>{state.tableSearchField=$('#hmaTableFindField').value;state.tableSearchValue=$('#hmaTableFindValue').value.trim();if(!state.tableSearchValue)throw Error('Enter a value to search.');render();});
+   $('#hmaTableClearSearch').onclick=()=>{state.tableSearchValue='';render();};
+  }
   document.querySelectorAll('[data-table-row]').forEach(b=>b.onclick=()=>editCell(table,+b.dataset.tableRow,table.fields[+b.dataset.tableField]));
+  document.querySelectorAll('[data-table-rowtool]').forEach(b=>b.onclick=()=>tableRowTool(table,+b.dataset.tableRowtool));
   document.querySelectorAll('[data-table-ptr]').forEach(b=>b.onclick=()=>{const field=table.fields[+b.dataset.tablePtrField],row=+b.dataset.tablePtr;state.pointerSite=table.address+row*table.stride+field.offset;open('pointers');});
+ }
+ function tableRowTool(table,row){
+  api.modal('Copy or swap a native table row','<p>Source row '+row+' of '+esc(table.name)+'. Copy replaces the entire destination row, including uninterpreted padding bytes; swap exchanges both complete existing rows. No new engine table entries are created.</p><label>Operation<select id="hmaRowOperation"><option value="copy">Copy source row into destination</option><option value="swap">Swap the two rows</option></select></label><label>Destination row (0–'+(table.count-1)+')<input id="hmaRowDestination" type="number" inputmode="numeric" min="0" max="'+(table.count-1)+'" value="'+Math.min(table.count-1,row+1)+'"></label>',()=>{
+   const target=Number($('#hmaRowDestination').value),operation=$('#hmaRowOperation').value;
+   api.change(()=>operation==='swap'?swapTableRecords(source(),id(),data(),table,row,target):copyTableRecord(source(),id(),data(),table,row,target));
+   state.row=Math.floor(target/16)*16;state.tableSearchValue='';render();return false;
+  },'Stage row operation');
+ }
+ function bulkFillTable(table){
+  const start=Math.min(state.row,table.count-1),end=Math.min(table.count-1,start+15);
+  api.modal('Fill an existing table column','<p>Stages the same typed value in up to 256 existing rows. This never enlarges the ROM table, and native writer collisions still block export.</p><label>Column<select id="hmaFillField">'+table.fields.map(f=>'<option value="'+esc(f.name)+'">'+esc(f.name)+' ('+f.type+')</option>').join('')+'</select></label><div class="studio-actions"><label>First row<input id="hmaFillStart" type="number" inputmode="numeric" min="0" max="'+(table.count-1)+'" value="'+start+'"></label><label>Last row (inclusive)<input id="hmaFillEnd" type="number" inputmode="numeric" min="0" max="'+(table.count-1)+'" value="'+end+'"></label></div><label>New typed value<input id="hmaFillValue" placeholder="Decimal, 0x pointer or ASCII"></label><p class="hint-line">Review the selected range before applying. All values are validated before committing; undo restores the previous staged changes.</p>',()=>{
+   const field=$('#hmaFillField').value,first=Number($('#hmaFillStart').value),last=Number($('#hmaFillEnd').value),value=$('#hmaFillValue').value;
+   api.change(()=>fillTableColumn(source(),id(),data(),table,field,first,last,value));
+   state.row=Math.floor(first/16)*16;state.tableSearchValue='';render();return false;
+  },'Stage column fill');
  }
  function tableEditor(previous,{anchor=null}={}){
   const sourceBytes=data(),model=previous?structuredClone(previous):{id:'table-'+Date.now().toString(36),name:anchor?.name||'New ROM table',address:anchor?.at??0,stride:4,count:1,fields:[{name:'value',type:'u32',offset:0}]};

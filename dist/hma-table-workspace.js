@@ -158,3 +158,82 @@ export function fixedNumericHMATable(anchor,sourceLength){
  try{validateTable(table,sourceLength);}catch{return null;}
  return table;
 }
+
+
+// All row tools operate only within a verified source-bound table layout.
+// A row copy intentionally copies opaque padding as well as described fields;
+// never guess a new engine table size or silently append native records.
+function tableRowStart(table, index) {
+ if(!Number.isInteger(index)||index<0||index>=table.count)throw Error('Table row is out of range.');
+ return table.address+index*table.stride;
+}
+function stagedTableRow(project, sourceId, source, table, index) {
+ const at=tableRowStart(table,index);
+ return Uint8Array.from({length:table.stride},(_,i)=>stagedROMByte(project,sourceId,source,at+i));
+}
+function stageTableTransaction(project,sourceId,source,writes) {
+ // Stage against an isolated patch list. Failure on any later row, the
+ // 65,536-byte budget or a stale original source leaves the project untouched.
+ const existing=hexState(project,sourceId),draft={hexStudio:{version:1,sources:{
+  [sourceId]:{...(existing||{}),patches:(existing?.patches||[]).map(p=>({...p}))}
+ }}};
+ let changed=0;
+ for(const [at,bytes] of writes)changed+=stageROMHex(draft,sourceId,source,at,bytes).changed;
+ if(!changed)return {changed:0,total:existing?.patches?.length||0,rows:writes.length};
+ project.hexStudio??={version:1,sources:{}};
+ project.hexStudio.sources??={};
+ project.hexStudio.sources[sourceId]??={patches:[],tables:[],hmaToml:''};
+ project.hexStudio.sources[sourceId].patches=draft.hexStudio.sources[sourceId].patches;
+ return {changed,total:project.hexStudio.sources[sourceId].patches.length,rows:writes.length};
+}
+export function copyTableRecord(project,sourceId,source,table,from,to){
+ validateTable(table,source.length);
+ if(from===to)throw Error('Choose two different table rows.');
+ const bytes=stagedTableRow(project,sourceId,source,table,from);
+ return stageTableTransaction(project,sourceId,source,[[tableRowStart(table,to),bytes]]);
+}
+export function swapTableRecords(project,sourceId,source,table,left,right){
+ validateTable(table,source.length);
+ if(left===right)throw Error('Choose two different table rows.');
+ const beforeLeft=stagedTableRow(project,sourceId,source,table,left);
+ const beforeRight=stagedTableRow(project,sourceId,source,table,right);
+ return stageTableTransaction(project,sourceId,source,[
+  [tableRowStart(table,left),beforeRight],[tableRowStart(table,right),beforeLeft]
+ ]);
+}
+export function fillTableColumn(project,sourceId,source,table,fieldName,start,end,value){
+ validateTable(table,source.length);
+ const field=table.fields.find(f=>f.name===fieldName);
+ if(!field)throw Error('Choose a recognized table column.');
+ if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<start||end>=table.count||end-start>=256)
+  throw Error('Choose an inclusive range of 1–256 existing table rows.');
+ const bytes=bytesFor(field.type,value,field.length,source.length);
+ const writes=[];
+ for(let row=start;row<=end;row++)writes.push([tableRowStart(table,row)+field.offset,bytes]);
+ return stageTableTransaction(project,sourceId,source,writes);
+}
+export function findTableRows(project,sourceId,source,table,fieldName,query,{from=0,limit=32}={}){
+ validateTable(table,source.length);
+ const field=table.fields.find(f=>f.name===fieldName);
+ if(!field)throw Error('Choose a recognized table column.');
+ if(!Number.isInteger(from)||from<0||from>=table.count||!Number.isInteger(limit)||limit<1||limit>64)
+  throw Error('Table search range is outside the existing rows.');
+ const input=String(query??'').trim();
+ if(!input||input.length>120)throw Error('Enter a table value to search (maximum 120 characters).');
+ const ascii=field.type==='ascii',target=ascii?input.toLowerCase():number(input);
+ if(!ascii||typeof target!=='string'){
+  if(!ascii&&!Number.isInteger(target))throw Error('Search for a valid decimal or 0x-prefixed numeric value.');
+ }
+ const staged=new Map((hexState(project,sourceId)?.patches||[]).map(p=>[p.at,p.after]));
+ const result=[];
+ for(let row=from;row<table.count;row++){
+  const at=table.address+row*table.stride+field.offset;
+  const bytes=Uint8Array.from({length:width(field)},(_,i)=>staged.get(at+i)??source[at+i]);
+  const value=ascii?String.fromCharCode(...bytes).replace(/\0.*$/,''):readInteger(bytes,0,field.type);
+  if(ascii?value.toLowerCase().includes(target):value===target){
+   result.push({index:row,at:table.address+row*table.stride,value});
+   if(result.length===limit)break;
+  }
+ }
+ return result;
+}
