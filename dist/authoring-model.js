@@ -62,10 +62,16 @@ export function sceneIssues(n,p,map,{native=false}={}){
   if(native&&(r.trigger==='portal'||r.trigger==='enter'&&!map.rom?.generated))add('Trigger','Native '+r.trigger+' hooks are not verified for this map. Use a step or drawn area at the arrival tile. Map-enter scenes are supported on newly generated maps.');
   if(native&&['area','radius'].includes(r.trigger)&&sceneCells(n,map).length>200)add('Trigger','Use an area of at most 200 tiles for native coordinate events.');
   for(const [i,c]of (r.conditions||[]).entries())issues.push(...conditionIssues(c,p,'Requirement '+(i+1)));
-  for(const message of pageStructureIssues(r))add('Pages',message);
-  for(const [i,page]of (scenePages(r)||[]).entries())for(const [j,c]of (page.conditions||[]).entries())issues.push(...conditionIssues(c,p,'Page '+(i+1)+' / prerequisite '+(j+1)));
+  const pageErrors=pageStructureIssues(r);
+  for(const message of pageErrors)add('Pages',message);
+  // Imported / recovered project JSON may contain partially authored pages.
+  // Show a repairable diagnostic rather than crashing the scene inspector.
+  if(pageErrors.length)return issues;
+  for(const [i,page]of (scenePages(r)||[]).entries())for(const [j,c]of page.conditions.entries())issues.push(...conditionIssues(c,p,'Page '+(i+1)+' / prerequisite '+(j+1)));
   if(!scenePages(r)&&!r.steps?.length)add('Actions','Add at least one action.');
-  const actions=sceneActions(n);if(actions.length>256)add('Actions','Keep one scene within 256 actions.');
+  let actions;
+  try{actions=sceneActions(n);}catch(e){add('Actions',e.message);return issues;}
+  if(actions.length>256)add('Actions','Keep one scene within 256 actions.');
   for(const [i,s]of actions.entries()){
     const at='Action '+(i+1);for(const message of effectIssues(s,map))add(at,message);if(s.type==='completeField'&&!map.fieldObjects?.some(o=>o.id===s.targetId&&o.permanent))add(at,'Choose a permanent HM object.');
     if(['say','choice','answers'].includes(s.type)){const value=s.dialogueId?a.dialogues.find(d=>d.id===s.dialogueId)?.text:s.text;if(!value?.trim())add(at,s.dialogueId?'The linked dialogue is missing.':'Write the dialogue / question.');else try{wrapDialogue(value);}catch(e){add(at,e.message);}}
