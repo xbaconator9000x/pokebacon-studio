@@ -397,6 +397,54 @@ export function exportTableCSV(project,sourceId,source,table,{start=0,end=table.
  }
  return lines.join('\r\n')+'\r\n';
 }
+/** Preview validated CSV data in an isolated, never-committed project.
+ * Reuse the production parser and staging pipeline to prevent preview/apply drift. */
+export function previewTableCSV(project,sourceId,source,table,text){
+ validateTable(table,source.length);
+ const existing=hexState(project,sourceId),shadow={hexStudio:{version:1,sources:{
+  [sourceId]:{...(existing||{}),patches:(existing?.patches||[]).map(p=>({...p}))}
+ }}};
+ const result=importTableCSV(shadow,sourceId,source,table,text);
+ // The actual changed-byte count is the difference in resulting staged state.
+ const oldPatches=new Map((existing?.patches||[]).map(p=>[p.at,p.after]));
+ const newPatches=shadow.hexStudio.sources[sourceId].patches||[];
+ const combined=new Set([...oldPatches.keys(),...newPatches.map(p=>p.at)]);
+ const newest=new Map(newPatches.map(p=>[p.at,p.after]));
+ let changedBytes=0;for(const at of combined)if((newest.get(at)??source[at])!==(oldPatches.get(at)??source[at]))changedBytes++;
+ // CSV imports at most 256 row IDs. Summarise only the first eight changed
+ // records to keep the Android preview compact even for very wide tables.
+ const affected=new Set();
+ for(const at of combined)if((newest.get(at)??source[at])!==(oldPatches.get(at)??source[at])){
+  const row=Math.floor((at-table.address)/table.stride);
+  if(row>=0&&row<table.count)affected.add(row);
+ }
+ const rows=[...affected].sort((a,b)=>a-b);
+ const samples=rows.slice(0,8).map(row=>({row,before:tableRecord(project,sourceId,source,table,row).values,after:tableRecord(shadow,sourceId,source,table,row).values}));
+ return {...result,changedBytes,changedRows:rows.length,samples,moreRows:Math.max(0,rows.length-samples.length)};
+}
+/** Add a signed delta to an existing numeric field in up to 256 native rows.
+ * Every target is encoded and validated before a single atomic commit. */
+export function adjustTableColumn(project,sourceId,source,table,fieldName,start,end,delta){
+ validateTable(table,source.length);
+ const field=table.fields.find(f=>f.name===fieldName);
+ if(!field||!['u8','s8','u16','s16','u32','s32'].includes(field.type))
+  throw Error('Choose an integer field; arithmetic on raw pointers is unsafe.');
+ if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<start||end>=table.count||end-start>=256)
+  throw Error('Adjust between 1 and 256 original table rows.');
+ const amount=typeof delta==='string'?number(delta):delta;
+ if(!Number.isSafeInteger(amount)||typeof delta==='string'&&!delta.trim())
+  throw Error('Enter a valid integer delta.');
+ const writes=[];
+ for(let row=start;row<=end;row++){
+  const at=tableRowStart(table,row)+field.offset;
+  const current=Uint8Array.from({length:width(field)},(_,i)=>stagedROMByte(project,sourceId,source,at+i));
+  const next=readInteger(current,0,field.type)+amount;
+  if(!Number.isSafeInteger(next))throw Error('Adjusted table value is outside safe numeric bounds.');
+  writes.push([at,bytesFor(field.type,next,field.length,source.length)]);
+ }
+ return {...stageTableTransaction(project,sourceId,source,writes),rows:end-start+1,delta:amount};
+}
+
 export function importTableCSV(project,sourceId,source,table,text){
  validateTable(table,source.length);
  const rows=parseFixedTableCSV(text);
