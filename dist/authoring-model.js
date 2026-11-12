@@ -1,3 +1,4 @@
+import {nativeMovementIssues} from './native-movement-bridge.js';
 import {hmAllowed} from './hm-rules.js';
 // Shared authoring data. References are stable IDs; drafts may contain unresolved IDs.
 import {effectIssues} from './scene-effects.js';
@@ -77,18 +78,20 @@ export function sceneIssues(n,p,map,{native=false}={}){
     if(s.type==='say'&&s.messageType!==undefined&&![4,6].includes(+s.messageType))add(at,'Choose a supported native dialogue box style.');
     if(['say','choice','answers'].includes(s.type)){const value=s.dialogueId?a.dialogues.find(d=>d.id===s.dialogueId)?.text:s.text;if(!value?.trim())add(at,s.dialogueId?'The linked dialogue is missing.':'Write the dialogue / question.');else try{wrapDialogue(value);}catch(e){add(at,e.message);}}
     if(s.type==='answers'&&(!s.id||!Array.isArray(s.choices)||s.choices.length<2||s.choices.length>4||s.choices.some(c=>!c.label?.trim()||c.label.length>24)))add(at,'Add two to four labelled answers (up to 24 characters each).');
-    if(!['say','choice','answers','if','path','face','emote','visible','wait','flag','set','add','item','money','cry','music','sound','fade','warp','heal','gate','hm','stop','abort','shop','battle','giveMon','portrait','shake','weather','rockfall','completeField','respawn'].includes(s.type))add(at,'This action type is not supported.');
+    if(!['say','choice','answers','if','nativeFlagIf','nativeMovement','path','face','emote','visible','wait','flag','set','add','item','money','cry','music','sound','fade','warp','heal','gate','hm','stop','abort','shop','battle','giveMon','portrait','shake','weather','rockfall','completeField','respawn'].includes(s.type))add(at,'This action type is not supported.');
     if(['set','add'].includes(s.type)&&(!Number.isInteger(+s.value)||Math.abs(+s.value)>65535))add(at,'Use a whole number between -65,535 and 65,535.');
     if(['cry','portrait','giveMon'].includes(s.type)&&(!Number.isInteger(+s.species)||+s.species<1))add(at,'Choose a native Pokémon.');
     if(s.type==='giveMon'&&(!Number.isInteger(+s.level)||+s.level<1||+s.level>100))add(at,'Use a level from 1 to 100.');
     if(s.type==='battle'&&(!Number.isInteger(+s.trainerId)||+s.trainerId<1))add(at,'Choose a native trainer.');
     if(s.type==='shop'&&(!s.items?.length||s.items.length>50||s.items.some(i=>typeof i==='string'?!a.items.some(v=>v.id===i):!Number.isInteger(i)||i<1)))add(at,'Choose 1–50 shop items.');
     if(s.type==='if'){if(!s.conditions?.length)add(at,'Add a branch condition.');for(const c of s.conditions||[])issues.push(...conditionIssues(c,p,at));}
+    if(s.type==='nativeFlagIf'&&(!Number.isInteger(+s.nativeFlagId)||+s.nativeFlagId<0||+s.nativeFlagId>65535))add(at,'Choose a source-ROM flag ID between 0 and 65,535. It is not a project quest flag.');
+    if(s.type==='nativeMovement')for(const message of nativeMovementIssues(s.moves))add(at,message);
     if(['set','add'].includes(s.type)&&!a.variables.some(v=>v.id===s.variableId))add(at,'Choose a saved counter.');
     if(s.type==='respawn'&&(!Number.isInteger(s.healId)||s.healId<1||s.healId>20))add(at,'Use a healing checkpoint from 1 to 20.');
     if(s.type==='flag'&&!p.questFlags?.some(q=>q.id===s.flagId))add(at,'Choose a saved flag.');
-    if(['path','face','emote','visible'].includes(s.type)&&s.actorId!=='player'&&s.actorId!=='self'&&!map.markers.some(m=>m.id===s.actorId&&(m.npc||m.rom?.type==='npc')))add(at,'Choose a character placed on this map.');
-    if(s.actorId==='self'&&['path','face','emote','visible'].includes(s.type)&&!n.npc&&n.rom?.type!=='npc')add(at,'This event has no character appearance. Choose Player or another NPC.');
+    if(['path','face','emote','visible','nativeMovement'].includes(s.type)&&s.actorId!=='player'&&s.actorId!=='self'&&!map.markers.some(m=>m.id===s.actorId&&(m.npc||m.rom?.type==='npc')))add(at,'Choose a character placed on this map.');
+    if(s.actorId==='self'&&['path','face','emote','visible','nativeMovement'].includes(s.type)&&!n.npc&&n.rom?.type!=='npc')add(at,'This event has no character appearance. Choose Player or another NPC.');
     if(s.type==='path'){if(!s.points?.length||s.points.length<2)add(at,'Draw the movement path.');else{try{const dirs=pathDirections(s.points);let{x,y}=s.points[0];for(const d of dirs){x+=DIRECTIONS[d][0];y+=DIRECTIONS[d][1];if(!inBounds(map,x,y)||movementAt(map,x,y,{ignoreFieldObjects:true}).collision){add(at,'The path crosses blocked or out-of-bounds ground.');break;}}}catch(e){add(at,e.message);}}}
     if(s.type==='gate'&&!map.gates?.some(g=>g.id===s.gateId))add(at,'Choose a gate on this map.');
     if(s.type==='warp'){const m=p.maps.find(m=>m.id===s.to?.mapId);if(!m||!inBounds(m,s.to.x,s.to.y))add(at,'Choose a destination tile.');}
