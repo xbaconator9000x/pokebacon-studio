@@ -26,4 +26,6 @@ This is the **first native HMA parity implementation**, not merely another check
 
 `tests/hma-table-workspace.test.js`: HMA `[[NamedAnchors]]` and `[[OffsetPointer]]` parsing, complete unsupported metadata retention, typed table read/edit/export/reparse, numeric/pointer/ASCII field bounds, schema overlap refusal and full project persistence.
 
+Update: [HMA pointer and IPS development evidence](HMA_POINTER_IPS_DEV.md) implements the next same-source integration batch: packed/unaligned direct pointer where-used, reviewable same-count table repoint, simple HMA numeric format import and verified IPS create/apply. Complex table growth and general engine-native relocation remain unverified.
+
 Next integration work: indexed native table discovery/labels using actual HMA `Format` expressions; saveable pointer-follow navigation and source cross-reference graph; linked-table expansion and relocation, byte-level diff/IPS/UPS, verified THUMB assembler, and end-to-end original-ROM game/emulator behavior across FRLG/RSE revisions.
