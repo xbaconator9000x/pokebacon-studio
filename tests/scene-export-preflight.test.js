@@ -69,7 +69,7 @@ test('deeply nested imported scene structures reject boundedly and leave the pro
 });
 test('native preflight checks only included enabled scenes, with accurate visual page counts',()=>{
  const {project,map,event}=fixture();
- assert.equal(scenePageSummary(event.runtime),'1 actions · 1 page');
+ assert.equal(scenePageSummary(event.runtime),'1 action · 1 page');
  const page=addScenePage(event.runtime,uid);page.steps=[{id:uid(),type:'say',text:'Aipom has the key'}];
  assert.equal(scenePageSummary(event.runtime),'2 actions · 2 pages');
  assert.deepEqual(assertNativeSceneExportReady(project,[map]),{scenes:1,maps:1});
@@ -79,7 +79,7 @@ test('native preflight checks only included enabled scenes, with accurate visual
  other.markers[0].runtime.enabled=false;
  assert.deepEqual(assertNativeSceneExportReady(project,[other]),{scenes:0,maps:1});
  assert.equal(scenePageSummary({steps:[{},{}]}),'2 actions');
- assert.equal(scenePageSummary({pages:[null,{steps:[{}]}]}),'1 actions · 2 pages');
+ assert.equal(scenePageSummary({pages:[null,{steps:[{}]}]}),'1 action · 2 pages');
 });
 test('page candidates with corrupted conditions cannot win preview priority',()=>{
  const {event}=fixture();
