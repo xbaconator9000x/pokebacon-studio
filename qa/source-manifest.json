@@ -1574,7 +1574,7 @@
     "dist/engine-install.js": "223f7bdbfc03c2c96edbff1c5fbc5d0879d35ca9b407567f99ce50e40d1a50d4",
     "dist/engine-profiles.js": "de02ca933714301321c83389960e26b7cacb5db5f212e7122ea67c72b34c55e4",
     "dist/engine-text.js": "8a52875a458549006a2f4b6e26f6a28180fb5c3ef0ae18b29736ad12aada6759",
-    "dist/event-model.js": "b23ae62156a04da942c3245284bde80c106f3de8cbc2fc9d7e3958c8ff2111d0",
+    "dist/event-model.js": "361817e58360c3c8a8c58562d497e754786548f5ff01aff0a839c19fc04dda6e",
     "dist/event-overlay.js": "0d24a4cfd8e204417ebd331927b8d2cc16e8a651c6d7e5d94dc1c37fbdf5e5d2",
     "dist/event-presets.js": "819aae18bcd841f5ad6c3e4161ef257db76a8746572c0ef57c2dea25cfb25d57",
     "dist/event-recipes.js": "a94b95a1402634d8cd4a946c62eaa9d6ead62fbfeae4d9aa6336e8ae48be8354",
