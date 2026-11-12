@@ -1,3 +1,4 @@
+import {sha256} from './sha256.js';
 import {erasedROMSpans} from './rom-free-space.js';
 import {crc32} from './zip.js';
 const MAX=32*1024*1024,MAGIC=new TextEncoder().encode('PBCN-EDITOR-0001'),FOOT=40;
@@ -25,7 +26,10 @@ export async function recoverROMProject(bytes){
  const project=JSON.parse(new TextDecoder().decode(raw.subarray(8+size)));return{source:raw.slice(8,8+size),project};
 }
 
-export async function romFingerprint(bytes){if(!globalThis.crypto?.subtle)throw Error('Secure file verification is unavailable. Use the ROM + project archive with its original source.');return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(n=>n.toString(16).padStart(2,'0')).join('');}
+export async function romFingerprint(bytes){
+ if(!globalThis.crypto?.subtle)return sha256(bytes);
+ return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(n=>n.toString(16).padStart(2,'0')).join('');
+}
 export async function createROMRoundTrip(compiled,source,{sourceId=null,reports=[],previous=null}={}){
  const sourceFingerprint=await romFingerprint(source),compiledFingerprint=await romFingerprint(compiled),reuse=previous?.version===1&&previous.sourceFingerprint===sourceFingerprint&&previous.sourceLength===source.length;
  const sourceGzip=reuse?previous.sourceGzip:base64(await transform(source,'pack',MAX+1048576));
