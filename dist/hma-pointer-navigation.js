@@ -31,16 +31,19 @@ export function findROMReferences(project,id,source,target,{limit=128,from=0,sca
  // Exact normal pointers plus explicit HMA offset-pointer locations. The
  // discovery scan never authorizes mutation: only a matching all-users
  // allowlist may approve a subsequent copy-on-write relink.
- const start=scanUnaligned?from:Math.ceil(from/4)*4,step=scanUnaligned?1:4;
+ const start=scanUnaligned?from:Math.ceil(from/4)*4,step=scanUnaligned?1:4,pattern=Uint8Array.of(baseTarget&255,baseTarget>>>8&255,baseTarget>>>16&255,baseTarget>>>24&255);
  for(let at=start;at+4<=source.length;at+=step){
-  const value=u32(source,at,edit),owner=known.get(at);
+  // Full-width packed-pointer discovery is fast when using a fixed native
+  // little-endian byte pattern; do not parse millions of unrelated words.
+  if(scanUnaligned&&(edit.get(at)??source[at])!==pattern[0]||scanUnaligned&&(edit.get(at+1)??source[at+1])!==pattern[1]||scanUnaligned&&(edit.get(at+2)??source[at+2])!==pattern[2]||scanUnaligned&&(edit.get(at+3)??source[at+3])!==pattern[3])continue;
+  const value=scanUnaligned?baseTarget:u32(source,at,edit),owner=known.get(at);
   const adjusted=value-BASE+(owner?.kind==='hma-offset-pointer'?owner.offset:0);
   if(adjusted!==target)continue;
   const anchors=meta.anchors.filter(a=>a.at===target).slice(0,5).map(a=>a.name);
   out.push({at,raw:value,kind:owner?.kind||'candidate',owner:owner||null,anchors});
   if(out.length>=limit)break;
  }
- if(!scanUnaligned)for(const [at,owner]of known)if(at%4&&at>=from&&at+4<=source.length&&!out.some(r=>r.at===at)){
+ for(const [at,owner]of known)if((scanUnaligned||at%4)&&at>=from&&at+4<=source.length&&!out.some(r=>r.at===at)){
   const value=u32(source,at,edit);
   if(value-BASE+(owner.kind==='hma-offset-pointer'?owner.offset:0)===target){
    out.push({at,raw:value,kind:owner.kind,owner,anchors:meta.anchors.filter(a=>a.at===target).slice(0,5).map(a=>a.name)});
@@ -58,12 +61,12 @@ export function validatedRepointSites(project,id,source,target,sites){
  }
  // Scan every aligned original source word and all manually documented
  // unaligned pointers. Missing ANY known direct user blocks repointing.
- const actual=findROMReferences(project,id,source,target,{limit:65});
+ const actual=findROMReferences(project,id,source,target,{limit:65,scanUnaligned:true});
  if(actual.length>64||actual.some(x=>x.kind==='hma-offset-pointer'||!sites.includes(x.at)))
   throw Error('Unreviewed/offset pointer users exist for this table. Include all verified direct users or keep the original address.');
  // The raw scan cannot prove unaligned bytecode pointers are absent. Never
  // report this as generalized automatic HMA pointer ownership.
- return{sites:sites.slice().sort((a,b)=>a-b),candidates:actual,limitation:'Scans all aligned values plus explicitly declared HMA offset/typed sites; arbitrary packed code pointers remain unverified.'};
+ return{sites:sites.slice().sort((a,b)=>a-b),candidates:actual,limitation:'Scans raw packed/direct little-endian pointer bytes at every address plus HMA offset/typed sites; computed pointers and semantic engine ownership remain unverified.'};
 }
 export function planSafeTableRepoint(project,id,source,table,sites){
  validateTable(table,source.length);
