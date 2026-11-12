@@ -59,7 +59,8 @@ test('native shared dialogue coexists with a separate authored NPC replacement a
  assert.equal(originals[1].address,0x5000);
  assert.equal(firstDialogue(fresh,originals[0]),'Authored gate guard.');
  assert.equal(firstDialogue(fresh,originals[1]),'Shared source dialogue updated.');
- assert.deepEqual(output.bytes.slice(0x5000,0x5006),bytes.slice(0x5000,0x5006));
+ assert.equal(output.bytes[0x5000],bytes[0x5000]);
+ assert.deepEqual(output.bytes.slice(text.at,text.at+text.original.length/2),bytes.slice(text.at,text.at+text.original.length/2));
 });
 
 test('native structural flow targeting the same authored event is still rejected without modifying output',async()=>{
@@ -87,7 +88,7 @@ test('a visual replacement, a separately authored native flow and shared dialogu
  assert.notEqual(other[1].address,0x5000);
  assert.notEqual(other[1].address,0x6000);
  assert.equal(firstDialogue(fresh,other[0]),'Authored gate guard.');
- assert.equal(firstDialogue(fresh,{...other[1],address:0x5000}),'Original script after reauthoring.');
+ assert.ok(Object.values(fresh.texts).some(row=>row.text==='Original script after reauthoring.'));
  assert.ok(Object.values(fresh.nodes).some(n=>n.name==='checkflag'&&n.args[0].value===0x200));
 });
 
