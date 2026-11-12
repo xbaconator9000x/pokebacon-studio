@@ -274,12 +274,16 @@
       "implementationEvidence": {
         "status": "partial_source_verified",
         "source": [
-          "dist/hma-table-workspace.js"
+          "dist/hma-table-workspace.js",
+          "dist/hma-hex-ui.js",
+          "dist/native-hex-workspace.js"
         ],
         "tests": [
-          "tests/hma-table-workspace.test.js"
+          "tests/hma-table-workspace.test.js",
+          "tests/hma-table-bulk.test.js",
+          "tests/hma-table-csv.test.js"
         ],
-        "limitations": "Manually defined fields and strict numeric HMA formats; not full row add/delete/reindex."
+        "limitations": "Fixed-capacity typed records support individual edits, full-row copy/swap, bounded typed column fill and transactional CSV import/export. No true row creation/deletion, engine table length patching, linked-table expansion or live ROM gameplay acceptance."
       }
     },
     {
@@ -341,7 +345,21 @@
       "upstream": [
         "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
         "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
-      ]
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-table-workspace.js",
+          "dist/hma-hex-ui.js",
+          "dist/hma-pointer-navigation.js"
+        ],
+        "tests": [
+          "tests/hma-table-bulk.test.js",
+          "tests/hma-table-csv.test.js",
+          "tests/hma-pointer-repoint.test.js"
+        ],
+        "limitations": "Source-bound typed field search and bounded CSV selection/column import, pointer-follow for fixed pointers; no generalized join/filter expression engine, dynamic child-row resolution or native gameplay acceptance."
+      }
     },
     {
       "id": "HMA-TBL-05",

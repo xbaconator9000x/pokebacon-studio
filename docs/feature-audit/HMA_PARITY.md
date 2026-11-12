@@ -2,6 +2,8 @@
 
 **Objective: functional parity with all applicable [Hex Maniac Advance](https://github.com/haven1433/HexManiacAdvance) capabilities**, with a mobile-first Android/web implementation, safe original-ROM handling, and additional PokéBacon capabilities retained. This is an engineering target, **not** a statement that the editor already has parity.
 
+**Third HMA integration batch:** [existing-row copy/swap, bounded column fill and typed search](HMA_TABLE_ROW_TOOLS_DEV.md) plus [transactional CSV import/export](HMA_TABLE_CSV_DEV.md) are integrated into the existing source-bound Android/web table UI. These remain fixed-capacity operations; no inferred source-engine table growth or full parity is claimed.
+
 **Second HMA integration batch:** [pointer-navigation, guarded copy-on-write repointing and IPS patching](HMA_POINTER_IPS_DEV.md) adds real source pointer lookup, read-only show-uses, strict fixed numeric HMA table formats, inspected same-size relocations and standard IPS create/apply. Each remains **partial**, not verified full HMA parity.
 
 **Latest partial implementation:** [HMA hex, typed table and TOML foundation](HMA_HEX_TABLE_FOUNDATION_DEV.md) adds genuinely editable original ROM byte spans, manually described native typed records and losslessly imported HMA metadata, with export ownership conflicts blocked. This does **not** establish general HMA parity, linked-table expansion or broad metadata-format decoding.
