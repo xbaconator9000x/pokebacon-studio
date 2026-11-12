@@ -3,7 +3,7 @@ export const MAX_SCENE_PAGES=16;
 export function scenePages(runtime){return Array.isArray(runtime?.pages)&&runtime.pages.length?runtime.pages:null;}
 // Keep the mobile scene list accurate even when the original flat action queue
 // was moved into event pages; imported broken pages remain visible for repair.
-export function scenePageSummary(runtime){const pages=scenePages(runtime);if(!pages)return (Array.isArray(runtime?.steps)?runtime.steps.length:0)+' actions';const actions=pages.reduce((count,page)=>count+(Array.isArray(page?.steps)?page.steps.length:0),0);return actions+' actions · '+pages.length+' page'+(pages.length===1?'':'s');}
+export function scenePageSummary(runtime){const pages=scenePages(runtime);if(!pages){const actions=Array.isArray(runtime?.steps)?runtime.steps.length:0;return actions+' action'+(actions===1?'':'s');}const actions=pages.reduce((count,page)=>count+(Array.isArray(page?.steps)?page.steps.length:0),0);return actions+' action'+(actions===1?'':'s')+' · '+pages.length+' page'+(pages.length===1?'':'s');}
 export function enableScenePages(runtime,newId){
  if(!runtime||runtime.action!=='scene')throw Error('Only visual scenes can have event pages.');
  if(runtime.pages!==undefined&&!scenePages(runtime))throw Error('Invalid existing event pages. Repair the saved page list before editing.');
