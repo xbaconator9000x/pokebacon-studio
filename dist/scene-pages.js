@@ -1,6 +1,9 @@
 // Project-side event pages. Later matching pages have priority.
 export const MAX_SCENE_PAGES=16;
 export function scenePages(runtime){return Array.isArray(runtime?.pages)&&runtime.pages.length?runtime.pages:null;}
+// Keep the mobile scene list accurate even when the original flat action queue
+// was moved into event pages; imported broken pages remain visible for repair.
+export function scenePageSummary(runtime){const pages=scenePages(runtime);if(!pages)return (Array.isArray(runtime?.steps)?runtime.steps.length:0)+' actions';const actions=pages.reduce((count,page)=>count+(Array.isArray(page?.steps)?page.steps.length:0),0);return actions+' actions · '+pages.length+' page'+(pages.length===1?'':'s');}
 export function enableScenePages(runtime,newId){
  if(!runtime||runtime.action!=='scene')throw Error('Only visual scenes can have event pages.');
  if(runtime.pages!==undefined&&!scenePages(runtime))throw Error('Invalid existing event pages. Repair the saved page list before editing.');
@@ -76,8 +79,7 @@ function nestedActionIssues(steps,path,ids,stats,depth=0){
    if(!Array.isArray(action.choices)||action.choices.length>16)errors.push(at+' has an invalid answer list.');
    else action.choices.forEach((choice,j)=>{
     if(!choice||typeof choice!=='object'||Array.isArray(choice)){errors.push(at+' / answer '+(j+1)+' is invalid.');return;}
-    if(!Array.isArray(choice.steps))errors.push(at+' / answer '+(j+1)+' needs an action list.');
-    else errors.push(...nestedActionIssues(choice.steps,at+' / answer '+(j+1),ids,stats,depth+1));
+    if(choice.steps!==undefined)errors.push(...nestedActionIssues(choice.steps,at+' / answer '+(j+1),ids,stats,depth+1));
    });
   }
  }
