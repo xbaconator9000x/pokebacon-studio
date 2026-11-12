@@ -3,7 +3,7 @@
 const LIMIT=32*1024*1024,MAX_EDITS=65536,MAX_BATCH=4096;
 const validAt=(at,length)=>Number.isInteger(at)&&at>=0&&at<length;
 const store=(project,sourceId,create=false)=>{
- if(typeof sourceId!=='string'||!sourceId||sourceId.length>128)throw Error('Attach a source ROM with a stable identity.');
+ if(typeof sourceId!=='string'||!sourceId||sourceId.length>128||['__proto__','constructor','prototype'].includes(sourceId))throw Error('Attach a source ROM with a stable identity.');
  if(create){project.hexStudio??={version:1,sources:{}};project.hexStudio.sources??={};project.hexStudio.sources[sourceId]??={patches:[],tables:[],hmaToml:''};}
  const root=project.hexStudio;
  if(!root)return null;
@@ -40,6 +40,27 @@ function checked(state,source){
  }
  return rows;
 }
+export function validateHexStudio(model){
+ if(model===undefined||model===null)return true;
+ if(!model||model.version!==1||!model.sources||Array.isArray(model.sources)||typeof model.sources!=='object')throw Error('Invalid ROM hex workspace settings.');
+ const ids=Object.keys(model.sources);
+ if(ids.length>8)throw Error('A project may refer to at most eight original hex source ROMs.');
+ for(const id of ids){
+  if(id.length<1||id.length>128||['__proto__','constructor','prototype'].includes(id))throw Error('Invalid original ROM source identity.');
+  const state=model.sources[id],patches=state?.patches||[],tables=state?.tables||[];
+  if(!state||!Array.isArray(patches)||patches.length>MAX_EDITS||!Array.isArray(tables)||tables.length>64||typeof (state.hmaToml??'')!=='string'||(state.hmaToml??'').length>2*1024*1024)throw Error('Saved ROM hex workspace exceeds safe size limits.');
+  const seen=new Set();
+  for(const p of patches){
+   if(!Number.isInteger(p.at)||p.at<0||p.at>=LIMIT||!Number.isInteger(p.before)||p.before<0||p.before>255||!Number.isInteger(p.after)||p.after<0||p.after>255||p.before===p.after||seen.has(p.at))throw Error('Invalid, duplicated or unchanged staged native ROM patch.');
+   seen.add(p.at);
+  }
+  for(const table of tables){
+   if(!table||typeof table.id!=='string'||!/^[A-Za-z0-9-]{1,80}$/.test(table.id)||typeof table.name!=='string'||!Array.isArray(table.fields)||table.fields.length>32||table.fields.length<1||!Number.isInteger(table.address)||table.address<0||table.address>=LIMIT||!Number.isInteger(table.stride)||table.stride<1||table.stride>4096||!Number.isInteger(table.count)||table.count<1||table.count>4096||table.address+table.stride*table.count>LIMIT)throw Error('Invalid saved typed-ROM-table layout.');
+   for(const field of table.fields)if(!field||typeof field.name!=='string'||!Number.isInteger(field.offset)||field.offset<0||field.offset>4095||!['u8','s8','u16','s16','u32','s32','ptr','ascii'].includes(field.type))throw Error('Invalid saved typed-ROM-table field.');
+  }
+ }
+ return true;
+}
 export function stagedROMByte(project,sourceId,source,at){
  if(!validAt(at,source.length))throw Error('ROM byte offset is outside the source.');
  const row=store(project,sourceId)?.patches?.find(row=>row.at===at);
@@ -50,7 +71,7 @@ export function stageROMHex(project,sourceId,source,at,bytes){
  const previous=store(project,sourceId),old=checked(previous,source),byAt=new Map(old.map(row=>[row.at,{...row}]));
  if(byAt.size+bytes.length>MAX_EDITS)throw Error('The project is at the 65,536 edited-byte safety limit. Export a ROM copy before making more changes.');
  let changed=0;
- for(let i=0;i<bytes.length;i++){const where=at+i,before=source[where],after=bytes[i],existing=byAt.get(where);if(existing?.after!==after&&(!existing||existing.after!==after))changed++;
+ for(let i=0;i<bytes.length;i++){const where=at+i,before=source[where],after=bytes[i],existing=byAt.get(where);if((existing?.after??before)!==after)changed++;
   if(after===before)byAt.delete(where);else byAt.set(where,{at:where,before,after});
  }
  // Commit the complete valid draft only after every range check; undo/redo
