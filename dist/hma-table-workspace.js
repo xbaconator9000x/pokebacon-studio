@@ -237,3 +237,76 @@ export function findTableRows(project,sourceId,source,table,fieldName,query,{fro
  }
  return result;
 }
+
+
+function parseFixedTableCSV(text){
+ if(typeof text!=='string'||text.length>2*1024*1024)throw Error('Table CSV must be UTF-8 text under 2 MiB.');
+ const rows=[],row=[];let cell='',quoted=false,closed=false;
+ text=text.replace(/^\uFEFF/,'');
+ function finish(){row.push(cell);if(row.length>1||row[0]!=='')rows.push(row.slice());row.length=0;cell='';closed=false;if(rows.length>257)throw Error('A table CSV may contain at most 256 records.');}
+ for(let i=0;i<text.length;i++){
+  const c=text[i];
+  if(quoted){
+   if(c==='"'){if(text[i+1]==='"'){cell+='"';i++;}else{quoted=false;closed=true;}}
+   else cell+=c;
+  }else if(c===','){row.push(cell);cell='';closed=false;}
+  else if(c==='\r'||c==='\n'){if(c==='\r'&&text[i+1]==='\n')i++;finish();}
+  else if(c==='"'&&!cell&&!closed)quoted=true;
+  else if(c==='"'||closed)throw Error('Malformed CSV quoting at character '+(i+1)+'.');
+  else cell+=c;
+ }
+ if(quoted)throw Error('CSV has an unterminated quoted value.');
+ if(cell||row.length||closed)finish();
+ return rows;
+}
+const encodeCSVCell=value=>{
+ const str=String(value??'');
+ return /[",\r\n]/.test(str)?'"'+str.replace(/"/g,'""')+'"':str;
+};
+export function exportTableCSV(project,sourceId,source,table,{start=0,end=table.count-1}={}){
+ validateTable(table,source.length);
+ if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<start||end>=table.count)
+  throw Error('CSV export range must be within existing source table rows.');
+ const edit=new Map((hexState(project,sourceId)?.patches||[]).map(p=>[p.at,p.after]));
+ const lines=[['row',...table.fields.map(f=>f.name)].map(encodeCSVCell).join(',')];
+ for(let row=start;row<=end;row++){
+  const values=[row];
+  for(const field of table.fields){
+   const at=tableRowStart(table,row)+field.offset;
+   const bytes=Uint8Array.from({length:width(field)},(_,i)=>edit.get(at+i)??source[at+i]);
+   const raw=field.type==='ascii'?String.fromCharCode(...bytes).replace(/\0.*$/,''):readInteger(bytes,0,field.type);
+   values.push(field.type==='ptr'?'0x'+raw.toString(16).toUpperCase().padStart(8,'0'):raw);
+  }
+  lines.push(values.map(encodeCSVCell).join(','));
+ }
+ return lines.join('\r\n')+'\r\n';
+}
+export function importTableCSV(project,sourceId,source,table,text){
+ validateTable(table,source.length);
+ const rows=parseFixedTableCSV(text);
+ if(rows.length<2)throw Error('CSV must include a header and at least one existing table record.');
+ const header=rows[0];
+ if(header[0]!=='row'||header.length<2||header.length>table.fields.length+1)
+  throw Error('CSV header must begin with row and list one or more existing columns.');
+ const known=new Map(table.fields.map(f=>[f.name,f]));
+ const selected=header.slice(1).map(name=>{
+  if(!known.has(name))throw Error('Unknown CSV table column: '+name);
+  return known.get(name);
+ });
+ if(new Set(header).size!==header.length)throw Error('CSV contains duplicated column names.');
+ const writes=[],used=new Set();
+ for(const cells of rows.slice(1)){
+  if(cells.length!==header.length)throw Error('CSV record width differs from its header.');
+  if(!/^\d+$/.test(cells[0]))throw Error('CSV row must use an existing zero-based row number.');
+  const row=Number(cells[0]);
+  if(!Number.isSafeInteger(row)||row>=table.count||used.has(row))throw Error('CSV row is duplicated or outside this original table.');
+  used.add(row);
+  selected.forEach((field,i)=>{
+   const value=cells[i+1],bytes=bytesFor(field.type,value,field.length,source.length);
+   writes.push([tableRowStart(table,row)+field.offset,bytes]);
+  });
+  if(writes.length>2048)throw Error('Import at most 2,048 individual typed CSV cells per batch.');
+ }
+ const result=stageTableTransaction(project,sourceId,source,writes);
+ return {...result,records:used.size,cells:writes.length};
+}
