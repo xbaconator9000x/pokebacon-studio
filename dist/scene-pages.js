@@ -68,3 +68,13 @@ export function pageStructureIssues(runtime){
  });
  return errors;
 }
+
+/** Repair an imported page list explicitly without discarding the original on failure. */
+export function replaceScenePagesFromJson(runtime,text){
+ if(!runtime||runtime.action!=='scene'||typeof text!=='string'||text.length>2_000_000)throw Error('A scene page repair must be JSON of up to 2 MB.');
+ let pages;try{pages=JSON.parse(text);}catch{throw Error('Page repair JSON is not valid. The original pages are untouched.');}
+ const issues=pageStructureIssues({pages});
+ if(issues.length)throw Error(issues[0]+' The original pages are untouched.');
+ runtime.pages=structuredClone(pages);
+ return runtime.pages;
+}
