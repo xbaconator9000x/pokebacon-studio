@@ -1785,7 +1785,7 @@
     "dist/rom.js": "a8682db61298729478ca9075319bc44575e1ed2c306b7c7bacdabcb9d968efc7",
     "dist/save-profiles.js": "832d32d22f994d56162644d42980fe6acfcbc796cf5d1c52c01ea23df510dc29",
     "dist/save-worker.js": "af6ca816ee483ff37da6b2db825ba54daa9bf3e87ec3ee394f171c4d9e7af0dc",
-    "dist/scene-compiler.js": "7dd6f8fd0f940f8b9a7929e3c7a5dbe63fe43223c62d2f27ec957304b2684f42",
+    "dist/scene-compiler.js": "d63b86aa04fd3bdc110cb2ca6e54c4a600f3d8aaff062e9aa2208a5027396df3",
     "dist/scene-effects.js": "f2fbf00b016d78e781b2dcb5d8aad5c451916c952182a9ab9cb02604dba30487",
     "dist/scene-map-model.js": "d456327d71a9ff2ce00967edc905a7b024745345d578bd9de32e1843807b08d3",
     "dist/scene-map-ui.js": "a372ae9d637fc0fc0d27e33f73d6cc98414702c78664c50bef2309c7d1034bc7",
