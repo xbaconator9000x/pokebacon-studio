@@ -73,7 +73,7 @@ test('native conversion refuses branches, trainer battles, unknown commands, cus
   '@start:\nsetflag 0x200\nend\n',
   '@start:\ncall @extra\nend\n@extra:\nend\n',
   '@start:\ncheckflag 0x200\nend\n',
-  '@start:\ntrainerbattle 0 1 @text @text\nend\n@text:\n= Hello.$\n'
+  '@start:\ntrainerbattle 0 1 1 @text @text\nend\n@text:\n= Hello.$\n'
  ];
  for(const script of scripts){
   const {project,graph,roots}=await fixture({script}),before=JSON.stringify(project);
