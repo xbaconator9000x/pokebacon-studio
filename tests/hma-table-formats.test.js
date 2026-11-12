@@ -37,10 +37,11 @@ test('HMA numeric hex/signed modifiers, pointer fields and matched literal row c
 });
 test('unsupported or ambiguous HMA formats cannot silently become editable layouts',()=>{
  const source=syntheticROM();
- const formats=['[x.]missing.anchor','[x.]data.pokemon.names+99','[x.]data.pokemon.names-99','[x.]data.pokemon.names+4000','[x.]data.pokemon.names+abc','[x.]other.dynamic','[description<"">]4','[sprite<\`lzs4x8x8\`>]4','[flags.|t|on:|off:]4','[flags:|foo]4','[script<\`xse\`>]4','[flags:|h flags::]4','[value.]!0000'];
+ const formats=['[x.]missing.anchor','[x.]data.pokemon.names-99','[x.]data.pokemon.names+4000','[x.]data.pokemon.names+abc','[x.]other.dynamic','[description<"">]4','[sprite<\`lzs4x8x8\`>]4','[flags.|t|on:|off:]4','[flags:|foo]4','[script<\`xse\`>]4','[flags:|h flags::]4','[value.]!0000'];
  for(const fmt of formats)assert.equal(fixedNumericHMATable({...anchor,format:fmt},source.length,{anchors:[original,anchor]}),null,fmt);
  assert.equal(fixedNumericHMATable({...anchor,format:'[value.]data.pokemon.names'},source.length,{anchors:[original,{...original}]}),null,'ambiguous length anchor');
  assert.equal(fixedNumericHMATable({...anchor,format:'[value.]data.pokemon.names'},source.length,{anchors:[{...original,format:'[name<>]other.dynamic'}]}),null);
+ assert.equal(fixedNumericHMATable({...anchor,format:'[x.]data.pokemon.names+99'},source.length,{anchors:[original,anchor]})?.count,103);
  assert.equal(fixedNumericHMATable({...anchor,format:'[script<>]4'},source.length)?.fields[0].type,'ptr');
  assert.equal(fixedNumericHMATable({...anchor,format:'[offset:|z]4'},source.length)?.fields[0].type,'s16');
 });

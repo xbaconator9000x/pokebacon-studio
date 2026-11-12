@@ -1,13 +1,13 @@
 # HMA typed table format and exact replacement integration (12 Nov 2026)
 
-Implemented in \`dist/hma-table-workspace.js\` and exposed through the existing Android/web \`dist/hma-hex-ui.js\`, not a stand-alone demo.
+Implemented in `dist/hma-table-workspace.js` and exposed through the existing Android/web `dist/hma-hex-ui.js`, not a stand-alone demo.
 
 ## Supported HMA fixed-width expressions
 
-- \`[level. stats: total::]6\`: exact inline unsigned 8/16/32-bit columns and literal row counts.
-- \`[script<> level.]\` followed by an integer count: direct, *untyped* four-byte pointer column, navigable by the source-pointer inspector. Pointed-to text/scripts/tables remain outside this decoder.
-- \`[offset:|z flags::|h]6\`: signed integer semantics and a hexadecimal display hint. The underlying write path validates integer boundaries.
-- \`[value. reference<>]data.pokemon.names+2\`: resolves count only where exactly one metadata NamedAnchor called \`data.pokemon.names\` exists and its own format has a literal final row count (such as \`[name""11]412\`). Saves an immutable count provenance annotation alongside the imported table.
+- `[level. stats: total::]6`: exact inline unsigned 8/16/32-bit columns and literal row counts.
+- `[script<> level.]` followed by an integer count: direct, *untyped* four-byte pointer column, navigable by the source-pointer inspector. Pointed-to text/scripts/tables remain outside this decoder.
+- `[offset:|z flags::|h]6`: signed integer semantics and a hexadecimal display hint. The underlying write path validates integer boundaries.
+- `[value. reference<>]data.pokemon.names+2`: resolves count only where exactly one metadata NamedAnchor called `data.pokemon.names` exists and its own format has a literal final row count (such as `[name""11]412`). Saves an immutable count provenance annotation alongside the imported table.
 
 Unsupported formats (dynamic/stream length, compressed graphics, inline text payloads, nested pointers, enum/tuple/bitfield modifiers, ambiguous/count-cyclic links) remain HMA metadata, not interpreted editable records. The matched-count provenance does not rewire engine code, automatically resize tables, or guarantee safe linked expansion.
 

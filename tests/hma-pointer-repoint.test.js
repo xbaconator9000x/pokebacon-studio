@@ -93,8 +93,9 @@ test('supported inline fixed HMA numeric table formats become editable layouts; 
  assert.equal(parsed.count,4);
  assert.equal(parsed.stride,7);
  assert.deepEqual(parsed.fields.map(x=>[x.name,x.type,x.offset]),[['level','u8',0],['attack','u16',1],['experience','u32',3]]);
- for(const unsafe of ['[name""11]412','[name<"">]4','[flags|a:]3','[value.]data.count','[A. A:]4','[value.]99999','[value<>]3','[value.]0'])
+ for(const unsafe of ['[name""11]412','[name<"">]4','[flags|a:]3','[value.]data.count','[A. A:]4','[value.]99999','[value.]0'])
   assert.equal(fixedNumericHMATable({...anchor,format:unsafe},0x20000),null,unsafe);
+ assert.equal(fixedNumericHMATable({...anchor,format:'[value<>]3'},0x20000)?.fields[0].type,'ptr');
  const {project,source}=scenario();
  saveTableDefinition(project,ID,source,{...parsed,id:'hma-different',name:'Verified numeric table'});
  assert.equal(tableRecord(project,ID,source,{...parsed,id:'hma-different',name:'Verified numeric table'},0).at,TABLE);
