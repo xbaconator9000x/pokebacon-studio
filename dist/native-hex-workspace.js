@@ -116,6 +116,51 @@ export function findROMHex(project,sourceId,source,needle,{from=0,limit=32}={}){
  }
  return results;
 }
+/** Parse byte/nibble wildcard search: AA ?? 1? ?F. Wildcards are
+ * read-only; raw ROM edits still require fully specified bytes. */
+export function parseMaskedHexSearch(text){
+ const compact=String(text??'').trim().replace(/[\s,;:_-]+/g,'').replace(/0x/gi,'');
+ if(!compact||compact.length%2||compact.length>512||!/^[0-9a-f?]+$/i.test(compact))
+  throw Error('Search for 1–256 hex byte pairs; ? may replace one or both nibbles.');
+ const bytes=new Uint8Array(compact.length/2),masks=new Uint8Array(bytes.length);
+ for(let i=0;i<bytes.length;i++){
+  const pair=compact.slice(2*i,2*i+2);
+  for(let n=0;n<2;n++)if(pair[n]!=='?'){
+   const shift=n===0?4:0;
+   bytes[i]|=parseInt(pair[n],16)<<shift;
+   masks[i]|=15<<shift;
+  }
+ }
+ if(!masks.some(Boolean))throw Error('Include at least one hexadecimal nibble; an all-wildcard pattern cannot identify data.');
+ return {bytes,masks};
+}
+/** Bounded, staged-value-aware hex search. A returned resume offset lets the
+ * phone scan the next small chunk without freezing the whole GBA view. */
+export function findMaskedROMHex(project,sourceId,source,pattern,{from=0,limit=16,maxScan=262144}={}){
+ if(!pattern||!(pattern.bytes instanceof Uint8Array)||!(pattern.masks instanceof Uint8Array)||
+  !pattern.bytes.length||pattern.bytes.length>256||pattern.masks.length!==pattern.bytes.length||
+  !pattern.masks.some(Boolean)||pattern.masks.some(mask=>![0,15,240,255].includes(mask)))
+  throw Error('Choose a valid bounded masked hex search pattern.');
+ if(!Number.isInteger(from)||from<0||from>=source.length||!Number.isInteger(limit)||limit<1||limit>32||
+  !Number.isInteger(maxScan)||maxScan<1||maxScan>1048576)
+  throw Error('Masked hex search bounds are invalid.');
+ const latest=source.length-pattern.bytes.length+1;
+ if(from>=latest)return {hits:[],nextFrom:null,scanned:0};
+ const edits=new Map(checked(store(project,sourceId),source).map(p=>[p.at,p.after]));
+ const end=Math.min(latest,from+maxScan),hits=[];
+ for(let at=from;at<end;at++){
+  let equal=true;
+  for(let i=0;i<pattern.bytes.length;i++)
+   if(((edits.get(at+i)??source[at+i])&pattern.masks[i])!==pattern.bytes[i]){
+    equal=false;break;
+   }
+  if(!equal)continue;
+  hits.push(at);
+  if(hits.length===limit)return {hits,nextFrom:at+1<latest?at+1:null,scanned:at-from+1};
+ }
+ return {hits,nextFrom:end<latest?end:null,scanned:end-from};
+}
+
 export function hexDiffSummary(project,sourceId,source,{limit=100}={}){
  const patches=checked(store(project,sourceId),source),spans=[];
  for(const patch of patches){const last=spans.at(-1);
