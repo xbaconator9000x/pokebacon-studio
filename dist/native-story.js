@@ -62,7 +62,7 @@ function authoredNativeRoot(project,sourceId,root){
  // explicit ROM index binding. Treat it as a replacement for ownership review.
  // NPCs/coordinate triggers are not claimed by same-tile visual signs.
  if(type==='sign'){
-  const implicit=map.markers?.find(n=>n.runtime&&n.runtime.enabled!==false&&(n.runtime.trigger||'interact')==='interact'&&!n.rom?.type&&n.x===root.x&&n.y===root.y);
+  const implicit=map.markers?.find(n=>n.runtime&&n.runtime.enabled!==false&&(n.runtime.trigger||'interact')==='interact'&&(n.rom===undefined||n.rom?.type===undefined)&&n.x===root.x&&n.y===root.y);
   if(implicit)return{map,marker:implicit,implicit:true};
  }
  return null;
