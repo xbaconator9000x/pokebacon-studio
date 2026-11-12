@@ -10,9 +10,9 @@ import {captureEdit,finishEdit,applyEdit} from '../dist/edit-history.js';
 import {saveTableDefinition,tableRecord,setTableBitRange} from '../dist/hma-table-workspace.js';
 const ID='b'.repeat(64),AT=0x7900;
 function fixture(){
- const source=syntheticROM(),project=newProject(),table={id:'flags',name:'Verified flag rows',address:AT,stride:10,count:6,fields:[{name:'flags',type:'u32',offset:0},{name:'small',type:'u8',offset:4},{name:'signed',type:'s16',offset:5},{name:'next',type:'ptr',offset:7}]};
+ const source=syntheticROM(),project=newProject(),table={id:'flags',name:'Verified flag rows',address:AT,stride:11,count:6,fields:[{name:'flags',type:'u32',offset:0},{name:'small',type:'u8',offset:4},{name:'signed',type:'s16',offset:5},{name:'next',type:'ptr',offset:7}]};
  saveTableDefinition(project,ID,source,table);
- for(let r=0;r<6;r++){source.set([0x12,0x34,0x56,0x78,0xa0+r,0xff,0xff,0,0,0],AT+r*10);}
+ for(let r=0;r<6;r++){source.set([0x12,0x34,0x56,0x78,0xa0+r,0xff,0xff,0,0,0,0],AT+r*11);}
  return{source,project,table};
 }
 test('native 32-bit top flag and cross-byte ranges preserve unrelated bits',()=>{
@@ -30,7 +30,7 @@ test('native 32-bit top flag and cross-byte ranges preserve unrelated bits',()=>
 });
 test('batch flag edit compares staged values and remains reversible across split project saves',()=>{
  const {source,project,table}=fixture(),previous=captureEdit(project),original=source.slice();
- stageROMHex(project,ID,source,AT+10,Uint8Array.of(0xFF));
+ stageROMHex(project,ID,source,AT+11,Uint8Array.of(0xFF));
  const report=setTableBitRange(project,ID,source,table,'flags',0,5,1,2,0);
  assert.equal(report.rows,6);
  assert.equal(tableRecord(project,ID,source,table,1).values.flags&0x07,0x01);
