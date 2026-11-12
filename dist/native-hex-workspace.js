@@ -69,11 +69,12 @@ export function stagedROMByte(project,sourceId,source,at){
 export function stageROMHex(project,sourceId,source,at,bytes){
  if(!validAt(at,source.length)||!(bytes instanceof Uint8Array)||!bytes.length||bytes.length>MAX_BATCH||at+bytes.length>source.length)throw Error('Choose 1–4,096 bytes within the original ROM.');
  const previous=store(project,sourceId),old=checked(previous,source),byAt=new Map(old.map(row=>[row.at,{...row}]));
- if(byAt.size+bytes.length>MAX_EDITS)throw Error('The project is at the 65,536 edited-byte safety limit. Export a ROM copy before making more changes.');
+
  let changed=0;
  for(let i=0;i<bytes.length;i++){const where=at+i,before=source[where],after=bytes[i],existing=byAt.get(where);if((existing?.after??before)!==after)changed++;
   if(after===before)byAt.delete(where);else byAt.set(where,{at:where,before,after});
  }
+ if(byAt.size>MAX_EDITS)throw Error('The project is at the 65,536 edited-byte safety limit. Export a ROM copy before making more changes.');
  // Commit the complete valid draft only after every range check; undo/redo
  // uses the same outer project history as other studio edits.
  if(!changed)return {changed:0,total:old.length};
