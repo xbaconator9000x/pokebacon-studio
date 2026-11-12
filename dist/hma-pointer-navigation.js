@@ -75,6 +75,7 @@ function firstInteriorPointer(project,id,source,start,length){
 }
 export function validatedRepointSites(project,id,source,target,sites,{length=1}={}){
  if(!Array.isArray(sites)||!sites.length||sites.length>64||new Set(sites).size!==sites.length)throw Error('Select 1–64 distinct pointer source addresses.');
+ if(sites.some(site=>!Number.isInteger(site)||site<512))throw Error('Automatic pointer relocation does not write into the GBA header. Review this pointer manually.');
  for(const at of sites){
   if(!check(source,at))throw Error('Pointer source is outside ROM.');
   const p=pointerAt(project,id,source,at);
