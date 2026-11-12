@@ -15,17 +15,18 @@ export function enableScenePages(runtime,newId){
 // Duplicating an event page must allocate new identities for *all* nested
 // actions. Keeping the original action IDs causes collisions when two pages
 // are subsequently edited, linked or copied through the project editor.
-function copyActions(steps,newId){
- if(!Array.isArray(steps))throw Error('Cannot duplicate a page with invalid actions.');
+function copyActions(steps,newId,depth=0){
+ if(depth>8)throw Error('Cannot duplicate a page nested more than eight levels.');
+ if(!Array.isArray(steps)||steps.length>256)throw Error('Cannot duplicate a page with invalid actions.');
  return steps.map(step=>{
   if(!step||typeof step!=='object'||Array.isArray(step))throw Error('Cannot duplicate an invalid event action.');
   const copy=structuredClone(step),id=newId();
   if(typeof id!=='string'||!id.trim())throw Error('A copied event action needs a stable ID.');
   copy.id=id;
-  for(const key of ['yes','no','then','else','cancel'])if(copy[key]!==undefined)copy[key]=copyActions(copy[key],newId);
+  for(const key of ['yes','no','then','else','cancel'])if(copy[key]!==undefined)copy[key]=copyActions(copy[key],newId,depth+1);
   if(copy.choices!==undefined){
    if(!Array.isArray(copy.choices))throw Error('Cannot duplicate an invalid choice list.');
-   copy.choices=copy.choices.map(choice=>({...choice,steps:copyActions(choice.steps||[],newId)}));
+   copy.choices=copy.choices.map(choice=>({...choice,steps:copyActions(choice.steps||[],newId,depth+1)}));
   }
   return copy;
  });
@@ -48,23 +49,55 @@ export function chooseScenePage(runtime,satisfies){
  const pages=scenePages(runtime);if(!pages)return null;
  for(let i=pages.length-1;i>=0;i--){
   const page=pages[i];
-  if(!page||!Array.isArray(page.conditions))continue;
+  if(!page||!Array.isArray(page.conditions)||page.conditions.some(c=>!c||typeof c!=='object'||typeof c.kind!=='string')||!Array.isArray(page.steps))continue;
   if(page.enabled!==false&&page.conditions.every(satisfies))return page;
  }
  return null;
 }
+// Validate the shape of imported/recovered page actions before the editor tries
+// to render, duplicate or export them. Detailed action *meaning* is validated by
+// sceneIssues; structural corruption belongs to the explicit repair flow.
+function nestedActionIssues(steps,path,ids,stats,depth=0){
+ const errors=[];
+ if(depth>8)return[path+' is nested too deeply (maximum 8 levels).'];
+ if(!Array.isArray(steps))return[path+' must be an action list.'];
+ if(steps.length>256)return[path+' has more than 256 actions.'];
+ for(let i=0;i<steps.length;i++){
+  if(++stats.total>1024){errors.push('The event page list has too many actions to inspect.');break;}
+  const at=path+' / action '+(i+1),action=steps[i];
+  if(!action||typeof action!=='object'||Array.isArray(action)){errors.push(at+' is not a valid action.');continue;}
+  if(typeof action.type!=='string'||!action.type.trim())errors.push(at+' needs an action type.');
+  if(action.id!==undefined){
+   if(typeof action.id!=='string'||!action.id.trim()||ids.has(action.id))errors.push(at+' has a missing or duplicate stable action ID.');
+   else ids.add(action.id);
+  }
+  for(const key of ['then','else','yes','no','cancel'])if(action[key]!==undefined)errors.push(...nestedActionIssues(action[key],at+' / '+key,ids,stats,depth+1));
+  if(action.choices!==undefined){
+   if(!Array.isArray(action.choices)||action.choices.length>16)errors.push(at+' has an invalid answer list.');
+   else action.choices.forEach((choice,j)=>{
+    if(!choice||typeof choice!=='object'||Array.isArray(choice)){errors.push(at+' / answer '+(j+1)+' is invalid.');return;}
+    if(!Array.isArray(choice.steps))errors.push(at+' / answer '+(j+1)+' needs an action list.');
+    else errors.push(...nestedActionIssues(choice.steps,at+' / answer '+(j+1),ids,stats,depth+1));
+   });
+  }
+ }
+ return errors;
+}
 export function pageStructureIssues(runtime){
  if(runtime?.pages===undefined)return[];
  if(!Array.isArray(runtime.pages)||!runtime.pages.length||runtime.pages.length>MAX_SCENE_PAGES)return['An event needs 1–16 pages.'];
- const ids=new Set(),errors=[];
+ const ids=new Set(),actionIds=new Set(),stats={total:0},errors=[];
  runtime.pages.forEach((page,i)=>{
   const at='Page '+(i+1);
   if(!page||typeof page!=='object'||Array.isArray(page)){errors.push(at+' is not a valid event page.');return;}
   if(typeof page.id!=='string'||!page.id.trim()||ids.has(page.id))errors.push(at+' has a missing or duplicate stable ID.');
   if(page.id)ids.add(page.id);
   if(typeof page.name!=='string'||!page.name.trim()||page.name.length>120)errors.push(at+' needs a name of 1–120 characters.');
+  if(page.enabled!==undefined&&typeof page.enabled!=='boolean')errors.push(at+' has an invalid enabled setting.');
   if(!Array.isArray(page.conditions)||page.conditions.length>32)errors.push(at+' has an invalid prerequisite list.');
+  else page.conditions.forEach((condition,j)=>{if(!condition||typeof condition!=='object'||Array.isArray(condition)||typeof condition.kind!=='string')errors.push(at+' / prerequisite '+(j+1)+' is invalid.');});
   if(!Array.isArray(page.steps)||!page.steps.length||page.steps.length>256)errors.push(at+' needs 1–256 actions.');
+  else errors.push(...nestedActionIssues(page.steps,at,actionIds,stats));
  });
  return errors;
 }
