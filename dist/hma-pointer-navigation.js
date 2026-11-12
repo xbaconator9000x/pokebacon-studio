@@ -52,13 +52,36 @@ export function findROMReferences(project,id,source,target,{limit=128,from=0,sca
  }
  return out.sort((a,b)=>a.at-b.at);
 }
-export function validatedRepointSites(project,id,source,target,sites){
+function firstInteriorPointer(project,id,source,start,length){
+ if(length<=1)return null;
+ const edits=patches(project,id),end=start+length,known=ownership(project,id,source);
+ const read=at=>edits.get(at)??source[at];
+ // Reject any direct pointer to a byte inside the block, even one at an
+ // unaligned native script-command offset. Such pointers would remain aimed
+ // at the old block after a naive start-only copy/repoint.
+ for(let at=0;at+4<=source.length;at++){
+  const hi=read(at+3);if(hi!==0x08&&hi!==0x09)continue;
+  const value=(read(at)|(read(at+1)<<8)|(read(at+2)<<16)|(hi<<24))>>>0;
+  const target=value-BASE;
+  if(target>start&&target<end)return{site:at,target};
+ }
+ // HMA's OffsetPointer can target an interior value despite its stored word
+ // being outside the direct original range.
+ for(const [at,owner]of known)if(owner.kind==='hma-offset-pointer'){
+  const target=u32(source,at,edits)-BASE+owner.offset;
+  if(target>start&&target<end)return{site:at,target};
+ }
+ return null;
+}
+export function validatedRepointSites(project,id,source,target,sites,{length=1}={}){
  if(!Array.isArray(sites)||!sites.length||sites.length>64||new Set(sites).size!==sites.length)throw Error('Select 1–64 distinct pointer source addresses.');
  for(const at of sites){
   if(!check(source,at))throw Error('Pointer source is outside ROM.');
   const p=pointerAt(project,id,source,at);
   if(!p.valid||p.at!==target||p.kind==='hma-offset-pointer')throw Error('Repoint requires an unoffset direct pointer to the table at 0x'+target.toString(16).toUpperCase()+'.');
  }
+ const interior=firstInteriorPointer(project,id,source,target,length);
+ if(interior)throw Error('An interior table pointer at 0x'+interior.site.toString(16).toUpperCase()+' targets original offset 0x'+interior.target.toString(16).toUpperCase()+'. Relocation is blocked until interior pointers are explicitly supported.');
  // Scan every aligned original source word and all manually documented
  // unaligned pointers. Missing ANY known direct user blocks repointing.
  const actual=findROMReferences(project,id,source,target,{limit:65,scanUnaligned:true});
@@ -73,7 +96,7 @@ export function planSafeTableRepoint(project,id,source,table,sites){
  const state=hexState(project,id),pending=state?.repoints||[];
  if(pending.length>=32)throw Error('At most 32 table copy-on-write repoints per ROM.');
  if(pending.some(p=>p.tableId===table.id||p.sites.some(site=>sites.includes(site))))throw Error('Another queued relink uses this table or pointer source.');
- const reviewed=validatedRepointSites(project,id,source,table.address,sites);
+ const reviewed=validatedRepointSites(project,id,source,table.address,sites,{length:table.stride*table.count});
  const plan={tableId:table.id,address:table.address,length:table.stride*table.count,sites:reviewed.sites};
  project.hexStudio??={version:1,sources:{}};project.hexStudio.sources??={};project.hexStudio.sources[id]??={patches:[],tables:[],hmaToml:''};
  project.hexStudio.sources[id].repoints??=[];
@@ -90,7 +113,7 @@ export function installSafeTableRepoints(project,id,source,output){
  for(const p of queued){
   const table=definitions.find(t=>t.id===p.tableId);
   if(!table||table.address!==p.address||table.stride*table.count!==p.length)throw Error('Source table definition changed after repoint planning.');
-  validatedRepointSites(project,id,source,p.address,p.sites);
+  validatedRepointSites(project,id,source,p.address,p.sites,{length:p.length});
   if(p.address<512||p.length<1||p.address+p.length>source.length)throw Error('Repoint copy exceeds the original ROM.');
   for(const at of p.sites){
    if(output.writes.some(w=>at<w.address+w.length&&at+4>w.address)||u32(output.bytes,at,new Map())!==BASE+p.address)
