@@ -1775,7 +1775,7 @@
     "dist/rom-items.js": "9560ca6f62c5c4f6215b764915fb76c63e062dc0628d401a64f78b1713ede7ab",
     "dist/rom-npc-profile.js": "783bed1dc9d920c7803706a5bb8dc8feb553818289b19ca1a6c834e03732b190",
     "dist/rom-objects.js": "fdf8aa2eae9618a05a3c4f60627fce8f5269decb793c0e2d3778bea106755baf",
-    "dist/rom-project.js": "09d75771bd8dc1e77188bb53f64cc2baca8d7a9156a85566815446d5babda57b",
+    "dist/rom-project.js": "59bdf799e4a1fb1a2b2379368ec990dfad43a38a42435cd434efc1d02198d5ef",
     "dist/rom-refresh.js": "06ad5959e078225c552fc32e5d87ea8c24ab30020295868c04b7c5a43590afad",
     "dist/rom-render-snapshot.js": "e505fb374e4f64bc0e73f7c25d7ccf8aa7aeba903ce83842286ebee4696a1b42",
     "dist/rom-terrain.js": "cbb0b0d7bb1b5ed44b2b61f8dfd87835b76ec35590d234de96fbb5bf0e27f48c",
