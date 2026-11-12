@@ -107,3 +107,14 @@ test('new event pages cannot reuse page or nested action IDs, even during first-
  assert.equal(plain.steps.length,0);
  assert.deepEqual(pageStructureIssues(plain),[]);
 });
+
+test('production ROM export stops at malformed visual scene preflight before any source write',async()=>{
+ const {GbaMaps}=await import('../dist/rom.js');
+ const {syntheticROM}=await import('../scripts/synthetic-map-rom.mjs');
+ const {buildRom}=await import('../dist/rom-writer.js');
+ const {project,event}=fixture();
+ event.runtime.pages=[{id:'invalid',name:'Bad import',conditions:[],steps:[{id:'action',type:'choice',yes:'broken'}]}];
+ const bytes=syntheticROM(),reader=await new GbaMaps(bytes).discover(),snapshot=bytes.slice();
+ await assert.rejects(buildRom(project,reader,{sourceId:'shattered-fixture',renderMap:async()=>({})}),/Victory Road gate \/ Aipom key cutscene \/ Pages/);
+ assert.deepEqual(reader.bytes,snapshot);
+});
