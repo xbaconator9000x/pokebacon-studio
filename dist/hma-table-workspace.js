@@ -138,27 +138,48 @@ export function editTableField(project,sourceId,source,table,index,fieldName,val
 // Dynamic counts, pointers, enums, strings, bitfields and compressed data
 // are NOT inferred; preserving unsupported metadata is preferable to
 // silently misinterpreting engine-native memory.
-export function fixedNumericHMATable(anchor,sourceLength){
+// Decode only fixed-width inline HMA columns. Named source-length links
+// resolve strictly against another anchor's *literal* count. This does not
+// infer ROM expansion, follow dynamic lengths or decode pointed-to payloads.
+export function fixedNumericHMATable(anchor,sourceLength,{anchors=[]}={}){
  if(!anchor||typeof anchor.format!=='string'||typeof anchor.name!=='string'||!Number.isInteger(anchor.at))return null;
- const match=anchor.format.trim().match(/^\[([^\]\[\r\n]+)\]([1-9]\d{0,3})$/);
+ const match=anchor.format.trim().match(/^\[([^\]\[\r\n]+)\]([^\s\[\]\r\n]+)$/);
  if(!match)return null;
- const cells=match[1].trim().split(/\s+/),count=Number(match[2]),fields=[];
- if(!cells.length||cells.length>32||count>4096)return null;
+ const suffix=match[2],fields=[],cells=match[1].trim().split(/\s+/);
+ let count,linkedLength;
+ if(/^[1-9]\d{0,3}$/.test(suffix))count=Number(suffix);
+ else {
+  const link=suffix.match(/^([A-Za-z_][A-Za-z0-9_.-]*)([+-]\d{1,3})?$/);
+  if(!link||!Array.isArray(anchors))return null;
+  const candidates=anchors.filter(a=>a.name===link[1]);
+  if(candidates.length!==1||candidates[0]===anchor)return null;
+  const fixed=String(candidates[0].format||'').trim().match(/^\[[^\[\]\r\n]+\]([1-9]\d{0,3})$/);
+  if(!fixed)return null;
+  const baseCount=Number(fixed[1]),delta=Number(link[2]||0);
+  count=baseCount+delta;
+  linkedLength={anchor:link[1],delta,verifiedBaseCount:baseCount};
+ }
+ if(!cells.length||cells.length>32||!Number.isInteger(count)||count<1||count>4096)return null;
  let stride=0;
  for(const token of cells){
-  const parsed=token.match(/^([A-Za-z_][A-Za-z0-9_-]*)(::|:|\.)$/);
-  if(!parsed||fields.some(f=>f.name===parsed[1]))return null;
-  const type=parsed[2]==='.'?'u8':parsed[2]===':'?'u16':'u32';
-  fields.push({name:parsed[1],type,offset:stride});
-  stride+=types[type];
+  const pointer=token.match(/^([A-Za-z_][A-Za-z0-9_-]*)<>$/);
+  const numeric=token.match(/^([A-Za-z_][A-Za-z0-9_-]*)(::|:|\.)(?:\|([hz]))?$/);
+  if(!pointer&&!numeric)return null;
+  const name=(pointer||numeric)[1];
+  if(fields.some(f=>f.name===name))return null;
+  const type=pointer?'ptr':(numeric[2]==='.'?'u8':numeric[2]===':'?'u16':'u32');
+  const field={name,type:pointer?'ptr':numeric[3]==='z'?'s'+type.slice(1):type,offset:stride};
+  if(numeric?.[3]==='h')field.display='hex';
+  fields.push(field);
+  stride+=types[field.type];
  }
  if(stride<1||stride>4096||anchor.at<0||anchor.at+stride*count>sourceLength)return null;
  const id='hma-'+anchor.name.replace(/[^A-Za-z0-9-]/g,'-').replace(/-+/g,'-').slice(0,67);
  const table={id,name:anchor.name,address:anchor.at,stride,count,fields};
+ if(linkedLength)table.linkedLength=linkedLength;
  try{validateTable(table,sourceLength);}catch{return null;}
  return table;
 }
-
 
 // All row tools operate only within a verified source-bound table layout.
 // A row copy intentionally copies opaque padding as well as described fields;
@@ -212,6 +233,31 @@ export function fillTableColumn(project,sourceId,source,table,fieldName,start,en
  for(let row=start;row<=end;row++)writes.push([tableRowStart(table,row)+field.offset,bytes]);
  return stageTableTransaction(project,sourceId,source,writes);
 }
+// Exact typed find-and-replace over existing records. Scan the complete
+// requested range before staging; never silently truncate a >256-row match
+// set or partially apply writes when the source/patch budget rejects them.
+export function replaceTableColumnMatches(project,sourceId,source,table,fieldName,oldValue,newValue,{start=0,end=table.count-1}={}){
+ validateTable(table,source.length);
+ const field=table.fields.find(f=>f.name===fieldName);
+ if(!field)throw Error('Choose a recognized table column.');
+ if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<start||end>=table.count)
+  throw Error('Replacement range must be inside the source table.');
+ const before=bytesFor(field.type,oldValue,field.length,source.length);
+ const after=bytesFor(field.type,newValue,field.length,source.length);
+ const pending=new Map((hexState(project,sourceId)?.patches||[]).map(p=>[p.at,p.after]));
+ const writes=[];
+ for(let row=start;row<=end;row++){
+  const at=tableRowStart(table,row)+field.offset;
+  let equal=true;
+  for(let i=0;i<before.length;i++)if((pending.get(at+i)??source[at+i])!==before[i]){equal=false;break;}
+  if(!equal)continue;
+  if(writes.length>=256)throw Error('More than 256 records match; narrow the range before replacing.');
+  writes.push([at,after]);
+ }
+ const result=stageTableTransaction(project,sourceId,source,writes);
+ return {...result,matches:writes.length};
+}
+
 export function findTableRows(project,sourceId,source,table,fieldName,query,{from=0,limit=32}={}){
  validateTable(table,source.length);
  const field=table.fields.find(f=>f.name===fieldName);
