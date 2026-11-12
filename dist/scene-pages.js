@@ -56,7 +56,6 @@ export function addScenePage(runtime,newId,from=null){
  const candidate=[...pages,page],issues=pageStructureIssues({pages:candidate});
  if(issues.length)throw Error('Cannot add event page: '+issues[0]);
  runtime.pages=candidate;
- if(!scenePages(runtime)?.length)throw Error('The event pages could not be saved.');
  runtime.steps=[];
  return page;
 }
