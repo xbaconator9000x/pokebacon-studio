@@ -14,7 +14,7 @@
     "dist/ability-runtime-data.js": "e86863ce25a8a40402b4aca33292dfbc70ce912efecbe5fc01c7a8d5cda0c02f",
     "dist/ability-runtime-profile.js": "8bd8af6bb3f294175480e5d10808018feeebd29b3c6a55b3c1720ab3638ad377",
     "dist/ability-studio-model.js": "bded3f182c6e28534ac50ab5f05cc570f3c3bed2c720eb123329157d2ee2a6a6",
-    "dist/app.js": "2539fb5c3087c43c0ff340f02f876620e6762dd8ba40c409e9e8dcddd8c38d54",
+    "dist/app.js": "041a343159653c65d83c9dd4c9761d199b709f709ef813453d63ca17f383daf8",
     "dist/asset-browser.js": "261d7bfa03991621406f1bde99b0d30d19387593d78fdda226f034e60289e1d7",
     "dist/asset-extras.js": "b5ec338dd23c6cf3538dde70240b72ae0627e328559b2a646016919b0a2eeb21",
     "dist/asset-organizer.js": "7c9d82c0d5f7e8cfbc3dae44eee0949a594eadf16c2ca3ae2aee223240cdaf19",
@@ -1567,7 +1567,7 @@
     "dist/door-audit.js": "3b7c37349a640efca69d32214051f95be9adbb671845dc28f47795cd45570223",
     "dist/door-transition-ui.js": "d8be903dcd815ee53d6b60260dc69b4587dab8da15f18c5db4f52813b9532840",
     "dist/door-ui.js": "67987dd8d913f15d2362cada768a5769d1fe6976855f276722d4da460054cfbe",
-    "dist/edit-history.js": "cfcdeb3cc3894971dcb7d0e279320755f8612e4dbc78b45f8d0c439fe0e18080",
+    "dist/edit-history.js": "421acbcb0a863a0b08ff455d35acb68bb2dda9f32c57de6fd06ab4a4cd44b22d",
     "dist/editor-controls.css": "e465e36e4c5d288325ffd4387c2439fbb3f1160b4b22e1de6ef440ee15c94158",
     "dist/effect-recipes.js": "3319e0355703f0f7854c1caab28e537a22484129c40dc3aa1d8ce84d62e09213",
     "dist/engine-install-ui.js": "ad1424132422fddf27430a891262846a77314bdda2b5dbb1da91257d3ae56fb9",
@@ -1898,7 +1898,8 @@
     "dist/hma-table-workspace.js": "df01a62df08a3571ab817f5658abd6b3fe67f38cb5cfb2caefc482edd7eef18f",
     "dist/hma-hex-ui.js": "0104c1b3463132a1e095c2612e54f36057b74b2ed3c328f670ce5d14c277fa98",
     "dist/hma-pointer-navigation.js": "17d09c4f8061a702930c0b6b554dacd1b383e2660148df2db21e842692dad17b",
-    "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f"
+    "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f",
+    "dist/rom-source-identity.js": "ba9b7e8941f8e7d8c78d4515497e86b76b8db975a150ba444ebdc340ea248da2"
   },
   "developmentBranch": "development/studio-upgrades",
   "releaseBaseAPK_SHA256": "2eec5f5a67603b1738932e57657d769cdc2d19d2f4f171dd6394adeea2e11381",
