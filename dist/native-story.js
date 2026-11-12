@@ -1,5 +1,5 @@
 import{assertStoryFlowBindings,installStoryFlows}from'./story-flow.js';
-import{validateStorySymbols}from'./native-story-state.js';
+import{validateStorySymbols,validateStoryReservations}from'./native-story-state.js';
 import{reconcileShatteredDataPatch,shatteredAdapter,describeShatteredCall,validateShatteredCallArgs,installShatteredDataEdits,validateShatteredDataPatch}from'./shattered-adapter.js';
 import{SCRIPT_DATA}from'./script-data.js';
 import{decodeScriptText,encodeScriptText}from'./script-engine.js';
@@ -23,8 +23,8 @@ export function storyRoots(reader,map){const roots=[],notices=[],add=(address,re
  if(!ended)notices.push('Map-script table stopped at its decoding boundary.');return{roots,notices};
 }
 export async function indexNativeStory(reader,{mapKeys=null,previous=null,progress=()=>{},shouldContinue=()=>true,maxNodes=180000}={}){
- validateStorySymbols(previous?.symbols);
- const graph={version:1,engine:reader.engine,sourceSize:reader.size,mapKeys:[],roots:[],nodes:{},texts:{},movements:{},notices:[],symbols:structuredClone(previous?.symbols||{flags:{},variables:{}}),edits:structuredClone(previous?.edits||{commands:{},texts:{},movements:{}})},queue=[],queued=new Set();
+ validateStorySymbols(previous?.symbols);validateStoryReservations(previous?.stateReservations);
+ const graph={version:1,engine:reader.engine,sourceSize:reader.size,mapKeys:[],roots:[],nodes:{},texts:{},movements:{},notices:[],symbols:structuredClone(previous?.symbols||{flags:{},variables:{}}),stateReservations:structuredClone(previous?.stateReservations||{}),edits:structuredClone(previous?.edits||{commands:{},texts:{},movements:{}})},queue=[],queued=new Set();
  const push=at=>{if(at>=512&&reader.valid(at)&&!queued.has(at)){queued.add(at);queue.push(at);}};const check=()=>{if(!shouldContinue()){const e=Error('Event import cancelled.');e.name='AbortError';throw e;}};
  for(const map of reader.maps){if(mapKeys&&!mapKeys.includes(map.key))continue;const r=storyRoots(reader,map);graph.mapKeys.push(map.key);graph.roots.push(...r.roots);graph.notices.push(...r.notices.map(message=>({mapKey:map.key,message})));for(const root of r.roots)push(root.address);}
  const adapter=shatteredAdapter(reader);if(adapter)graph.adapter={id:adapter.id,standardEntries:adapter.standardNames.map((_,i)=>reader.ptr(adapter.standardTable+i*4))};
