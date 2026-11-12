@@ -74,6 +74,7 @@ export function sceneIssues(n,p,map,{native=false}={}){
   if(actions.length>256)add('Actions','Keep one scene within 256 actions.');
   for(const [i,s]of actions.entries()){
     const at='Action '+(i+1);for(const message of effectIssues(s,map))add(at,message);if(s.type==='completeField'&&!map.fieldObjects?.some(o=>o.id===s.targetId&&o.permanent))add(at,'Choose a permanent HM object.');
+    if(s.type==='say'&&s.messageType!==undefined&&![4,6].includes(+s.messageType))add(at,'Choose a supported native dialogue box style.');
     if(['say','choice','answers'].includes(s.type)){const value=s.dialogueId?a.dialogues.find(d=>d.id===s.dialogueId)?.text:s.text;if(!value?.trim())add(at,s.dialogueId?'The linked dialogue is missing.':'Write the dialogue / question.');else try{wrapDialogue(value);}catch(e){add(at,e.message);}}
     if(s.type==='answers'&&(!s.id||!Array.isArray(s.choices)||s.choices.length<2||s.choices.length>4||s.choices.some(c=>!c.label?.trim()||c.label.length>24)))add(at,'Add two to four labelled answers (up to 24 characters each).');
     if(!['say','choice','answers','if','path','face','emote','visible','wait','flag','set','add','item','money','cry','music','sound','fade','warp','heal','gate','hm','stop','abort','shop','battle','giveMon','portrait','shake','weather','rockfall','completeField','respawn'].includes(s.type))add(at,'This action type is not supported.');
