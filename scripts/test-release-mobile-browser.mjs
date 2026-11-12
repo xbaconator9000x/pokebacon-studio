@@ -88,7 +88,8 @@ try{
  await page.evaluate(async()=>{
   document.querySelector('#dialog')?.close();
   const {syntheticROM}=await import('/__fixture.mjs'),{GbaMaps}=await import('/rom.js');
-  const reader=await new GbaMaps(syntheticROM()).discover();
+  const rom=syntheticROM();new DataView(rom.buffer).setUint32(0x550,0x08000680,true);
+  const reader=await new GbaMaps(rom).discover();
   __releaseQA.attachROM(reader,'hma-fixture');
   await __releaseQA.openWorkspace('source');
  });
@@ -114,6 +115,20 @@ try{
  await page.locator('#hmaTomlInput').setInputFiles({name:'user-hma.toml',mimeType:'text/plain',buffer:Buffer.from(metadataText)});
  await page.waitForFunction(()=>document.querySelectorAll('[data-hma-anchor]').length===1);
  assert.match(await page.locator('#hmaHexBody').innerText(),/test.original.records/);
+ await page.locator('[data-hma-refs]').first().click();
+ assert.match(await page.locator('#hmaPointerReport').innerText(),/0x550/i);
+ await page.locator('#hmaPointerSite').fill('0x550');
+ await page.locator('#hmaInspectPtr').click();
+ await page.locator('#hmaJumpPtr').click();
+ assert.equal(await page.locator('#hmaEditAt').inputValue(),'0x680');
+ await page.locator('[data-hex-tab="metadata"]').click();
+ await page.locator('[data-hma-auto]').first().click();
+ assert.match(await page.locator('#hmaHexBody').innerText(),/test.original.records/);
+ await page.locator('#hmaRepointTable').click();
+ assert.match(await page.locator('#dialog').innerText(),/0x550/i);
+ await page.locator('#submitDialog').click();
+ assert.equal(await page.evaluate(()=>__releaseQA.project().hexStudio.sources['hma-fixture'].repoints?.[0]?.sites[0]),0x550);
+ await page.locator('[data-hex-tab="metadata"]').click();
  await page.locator('[data-hma-anchor]').first().click();
  assert.equal(await page.locator('#hmaEditAt').inputValue(),'0x680');
  await page.locator('[data-hex-tab="changes"]').click();
@@ -123,11 +138,13 @@ try{
  await page.reload();await page.waitForFunction(()=>__releaseQA&&document.querySelector('#loading')?.hidden);
  const restored=await page.evaluate(()=>{
   const state=__releaseQA.project().hexStudio?.sources?.['hma-fixture'];
-  return {writes:state?.patches?.length,hex:state?.patches?.find(p=>p.at===0xa0)?.after,value:state?.patches?.find(p=>p.at===0x680)?.after,table:state?.tables?.[0]?.name,toml:state?.hmaToml};
+  return {writes:state?.patches?.length,hex:state?.patches?.find(p=>p.at===0xa0)?.after,value:state?.patches?.find(p=>p.at===0x680)?.after,table:state?.tables?.[0]?.name,toml:state?.hmaToml,repoint:state?.repoints?.[0]?.sites[0],autoTable:state?.tables?.length};
  });
  assert.equal(restored.hex,90);assert.equal(restored.value,25);
  assert.equal(restored.table,'Imported original table');
  assert.equal(restored.toml,metadataText);
+ assert.equal(restored.repoint,0x550);
+ assert.equal(restored.autoTable,2);
 
  assert.equal(errors.length,0,errors.join('\n'));
  console.log('PASS mobile sprite tools, IndexedDB reload, event search, named-state branch creation and saved structure after reload. Screenshots: '+screens);
