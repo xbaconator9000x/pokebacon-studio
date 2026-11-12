@@ -30,7 +30,7 @@ async function fixture(script=DIAMOND,{copies=2}={}){
  const roots=graph.roots.filter(r=>r.kind==='npcs'&&r.mapKey==='0.0').sort((a,b)=>a.index-b.index);
  const project=newProject('Movement and source-flag conversion'),map=project.maps[0];
  map.name='Viridian gate';map.rom={sourceId:'native-test',key:'0.0',engine:'frlg'};
- map.markers=roots.map((root,i)=>({id:'original-'+i,title:'Gate keeper '+(i+1),x:i+2,y:2,kind:'npc',rom:{type:'npc',index:i,localId:i+1}}));
+ map.markers=roots.map((root,i)=>({id:'original-'+i,title:'Gate keeper '+(i+1),x:i+2,y:2,kind:'npc',text:'Imported original ROM character.',rom:{type:'npc',index:i,localId:i+1}}));
  project.nativeStory={'native-test':graph};
  return{project,map,reader,graph,roots,source};
 }
