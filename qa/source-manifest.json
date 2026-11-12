@@ -1828,7 +1828,7 @@
     "dist/story-readable.js": "ac4001f79ca1acee1f5070408071ebd699463e6db0446f0e1247955bdd035a0f",
     "dist/story-ui.js": "2af16218661fe0a5c6d8f0934a9624575ec665d7f4c903e5bb04c9255e533529",
     "dist/story.css": "4876e58a0523d3a6e602668875ab671351ca08bd5a7c659db2e7fe57e16753c0",
-    "dist/style.css": "000d0cc4709d860c42d1a5606d47ac1609d8a50eb8c3970da11fdc1271271361",
+    "dist/style.css": "29da48e3213a8ebe0c2079a30f02d70efe7593ec345555966173c7e236d923e1",
     "dist/sw.js": "aee553538e49a36a1b33c90459525f3759476ead34f06a510be690796abb2251",
     "dist/team-import.js": "ed2becdb414dc2d19919e42115bd31c318d8c494b0606397fff9e370c4a30df6",
     "dist/tile-grammar.js": "1b1b4f249c305f4f0f9e03a51928473a2069f37d4533bd4ca95809aba304a188",
@@ -1896,7 +1896,7 @@
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
     "dist/native-hex-workspace.js": "8063a62b5e4d687133980e54983eba3d8c9ed38ed229e1d0b610718a8b486e1e",
     "dist/hma-table-workspace.js": "df01a62df08a3571ab817f5658abd6b3fe67f38cb5cfb2caefc482edd7eef18f",
-    "dist/hma-hex-ui.js": "14584e10eeea6040eb21930da31917e13d3ce4205a9d76202334c37c506e7a23",
+    "dist/hma-hex-ui.js": "0104c1b3463132a1e095c2612e54f36057b74b2ed3c328f670ce5d14c277fa98",
     "dist/hma-pointer-navigation.js": "17d09c4f8061a702930c0b6b554dacd1b383e2660148df2db21e842692dad17b",
     "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f"
   },
