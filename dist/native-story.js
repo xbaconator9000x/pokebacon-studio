@@ -54,8 +54,18 @@ export function movementNames(){return Object.entries(SCRIPT_DATA.movements).map
 function authoredNativeRoot(project,sourceId,root){
  const type={npcs:'npc',signs:'sign',triggers:'trigger'}[root.kind];if(!type)return null;
  const map=project.maps?.find(m=>!m.rom?.isCopy&&m.rom?.sourceId===sourceId&&m.rom.key===root.mapKey);
- const marker=map?.markers?.find(n=>n.rom?.type===type&&n.rom?.index===root.index);
- return marker?.runtime&&marker.runtime.enabled!==false?{map,marker}:null;
+ if(!map)return null;
+ const bound=map.markers?.find(n=>n.rom?.index===root.index&&(n.rom?.type===type||type==='sign'&&typeof n.rom?.type==='number'));
+ if(bound?.runtime&&bound.runtime.enabled!==false)return{map,marker:bound,implicit:false};
+ // A new interact scene at the coordinates of an existing native sign is
+ // emitted into that sign's original record by installEvents, even without an
+ // explicit ROM index binding. Treat it as a replacement for ownership review.
+ // NPCs/coordinate triggers are not claimed by same-tile visual signs.
+ if(type==='sign'){
+  const implicit=map.markers?.find(n=>n.runtime&&n.runtime.enabled!==false&&(n.runtime.trigger||'interact')==='interact'&&!n.rom?.type&&n.x===root.x&&n.y===root.y);
+  if(implicit)return{map,marker:implicit,implicit:true};
+ }
+ return null;
 }
 // Report reachable source entries and their *current* authored/native ownership.
 // This report intentionally does not imply original bytes are still executed
@@ -79,7 +89,7 @@ export function reviewNativeStoryOwnership(project,sourceId,graph,edits=graph.ed
  const replaced=[],flows=new Set(Object.keys(edits.flows||{}));
  for(const root of graph.roots||[]){
   const owner=authoredNativeRoot(project,sourceId,root);if(!owner)continue;
-  if(flows.has(root.id))throw Error('This event also has an authored replacement scene. Keep one source of event edits: '+owner.map.name+' / '+owner.marker.title);
+  if(flows.has(root.id))throw Error((owner.implicit?'An unbound visual scene already replaces this original sign. Bind or move it before editing the native flow: ':'This event also has an authored replacement scene. Keep one source of event edits: ')+owner.map.name+' / '+owner.marker.title);
   replaced.push(root);
  }
  return{replaced,reports:replaced.length?['Native script coexistence: '+replaced.length+' authored event entr'+(replaced.length===1?'y retains its replacement':'ies retain their replacements')+'; shared source scripts remain available to other native events.']:[]};
