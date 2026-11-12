@@ -1895,8 +1895,8 @@
     "dist/quest-reference-index.js": "aa71e6112f9f673ff50c8ee16e7e5b8d5d33799f3458e701ac19333856a2c922",
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
     "dist/native-hex-workspace.js": "8063a62b5e4d687133980e54983eba3d8c9ed38ed229e1d0b610718a8b486e1e",
-    "dist/hma-table-workspace.js": "df01a62df08a3571ab817f5658abd6b3fe67f38cb5cfb2caefc482edd7eef18f",
-    "dist/hma-hex-ui.js": "0104c1b3463132a1e095c2612e54f36057b74b2ed3c328f670ce5d14c277fa98",
+    "dist/hma-table-workspace.js": "ad0675ebcfef8a22ef14721d6cf253030b1bedab6987a6fb2c3fd1e794bf1762",
+    "dist/hma-hex-ui.js": "495a31307f7b3c49387713a462b64c05b30e1e9940696a580090d77aec05af24",
     "dist/hma-pointer-navigation.js": "17d09c4f8061a702930c0b6b554dacd1b383e2660148df2db21e842692dad17b",
     "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f",
     "dist/rom-source-identity.js": "ba9b7e8941f8e7d8c78d4515497e86b76b8db975a150ba444ebdc340ea248da2"
