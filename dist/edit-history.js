@@ -1,5 +1,5 @@
 // Sparse reversible edits. Imported audio and image payloads are immutable and shared.
-const ROOT_KEYS=['hexStudio','nativeStory','sourceEngine','romObjects','name','activeMapId','links','authoring','story','terrainSets','prefabs','roomStyles','wallStyles','gateStyles','buildingTemplates','interiorTemplates','romEdits','regionMaps','travelEdits','tilesetAnimations','doorAnimations','cryEdits','hmRules','textEdits','developer','questFlags','questToken','spriteStudio','abilityStudio'];
+const ROOT_KEYS=['romSources','hexStudio','nativeStory','sourceEngine','romObjects','name','activeMapId','links','authoring','story','terrainSets','prefabs','roomStyles','wallStyles','gateStyles','buildingTemplates','interiorTemplates','romEdits','regionMaps','travelEdits','tilesetAnimations','doorAnimations','cryEdits','hmRules','textEdits','developer','questFlags','questToken','spriteStudio','abilityStudio'];
 const GRID_KEYS=['ground','details','objects','overhead','movement','wallCells'];
 const copy=v=>v===undefined?undefined:structuredClone(v);
 function nativeStoryCopy(story){if(!story)return story;return Object.fromEntries(Object.entries(story).map(([id,g])=>[id,{...g,edits:copy(g.edits)}]));}
