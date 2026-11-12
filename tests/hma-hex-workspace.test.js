@@ -76,3 +76,19 @@ test('untrusted project ROM edit metadata is validated, not silently accepted',(
   assert.throws(()=>validateProject(p),/Invalid|duplicated|unchanged/);
  }
 });
+
+test('edited original GBA copy reindexes as a native Pokémon ROM and leaves every other byte identical',async()=>{
+ const {GbaMaps}=await import('../dist/rom.js');
+ const source=original(),project=newProject(),originalHeader=source[0xa0];
+ const reader=await new GbaMaps(source).discover(),beforeMap=reader.byKey('0.0');
+ stageROMHex(project,sourceId,source,0xa0,Uint8Array.of(90)); // original title first byte C => Z
+ const output=new RomOutput(source),result=installROMHexEdits(project,sourceId,source,output);
+ assert.equal(result.bytes,1);
+ const game=await new GbaMaps(output.bytes,'Native byte edit.gba').discover();
+ assert.ok(game.title.startsWith('Z'),game.title);
+ assert.equal(game.maps.length,reader.maps.length);
+ assert.equal(game.byKey('0.0').layout.address,beforeMap.layout.address);
+ assert.deepEqual(output.bytes.slice(0,0xa0),source.slice(0,0xa0));
+ assert.deepEqual(output.bytes.slice(0xa1),source.slice(0xa1));
+ assert.equal(source[0xa0],originalHeader);
+});
