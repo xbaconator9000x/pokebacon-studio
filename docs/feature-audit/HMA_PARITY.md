@@ -2,6 +2,8 @@
 
 **Objective: functional parity with all applicable [Hex Maniac Advance](https://github.com/haven1433/HexManiacAdvance) capabilities**, with a mobile-first Android/web implementation, safe original-ROM handling, and additional PokéBacon capabilities retained. This is an engineering target, **not** a statement that the editor already has parity.
 
+**Eighth HMA integration batch:** [Wildcard byte/nibble search and selective staged-range reversion](HMA_HEX_MASK_RECOVERY_DEV.md) extend the actual Android hex UI with bounded scanning and reversible edit cleanup; this is not a complete HMA assembly or code-repoint implementation.
+
 **Seventh HMA integration batch:** [CSV preview and atomic numeric arithmetic](HMA_CSV_REVIEW_ARITHMETIC_DEV.md) adds an explicit review/confirm step for source-bound CSV imports and bounded signed numeric adjustments, without resizing engine tables.
 
 **Fifth HMA integration batch:** Add atomic, bounded bit-range updates over verified native u8/u16/u32 fields, including the most significant bit of a 32-bit word, without overwriting unrelated flags. The existing touch-oriented cell editor exposes the bit editor, with optional batch edits across 256 rows. This is manual bit editing, **not inferred HMA bitfield/enum decoding**. [Implementation details](HMA_TABLE_BITS_DEV.md).
