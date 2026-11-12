@@ -43,6 +43,7 @@ import {customNPCGraphicsPlan,installCustomNPCGraphics} from './npc-graphics-nat
 import {nativeStudioPlan,installNativeStudio} from './native-studio.js';
 import{installQuest}from'./quest-runtime.js';
 import{needsQuest,ADVANCED_EVENT_TYPES,sequenceOf}from'./event-model.js';
+import {assertNativeSceneExportReady} from './native-scene-preflight.js';
 import{gameContext}from'./game-runtime.js';
 import{editsFor,editCount}from'./game-edits.js';
 import{applyGameDataEdits}from'./game-data.js';
@@ -212,6 +213,8 @@ export async function buildRom(project,reader,{sourceId,renderMap,wallStyles=[],
  if(!sourceId||typeof renderMap!=='function')throw Error('Reopen the original ROM before exporting.');
  const omitted=project.maps.filter(m=>!m.rom||m.rom.isCopy||m.rom.sourceId!==sourceId&&!(m.rom.generated&&!m.rom.sourceId));if(omitted.length&&!allowUnboundMaps)throw Error(omitted.length+' project maps have no binding to this ROM. Bind/refresh them, or explicitly allow exporting only the linked maps. No map was silently omitted.');
  if(!project.developer?.enabled)project={...project,maps:project.maps.map(m=>({...m,markers:m.markers.filter(n=>!n.runtime?.debugOnly)}))};
+ assertNativeSceneExportReady(project,project.maps.filter(m=>m.rom&&!m.rom.isCopy&&(m.rom.sourceId===sourceId||m.rom.generated&&!m.rom.sourceId)));
+
  const allocationGraph=await indexNativeStory(reader,{progress:n=>progress('Indexing packed script pointers: '+n+' commands…')}),packedPointerSites=new Set();
  for(const root of allocationGraph.roots)if(Number.isInteger(root.reference))packedPointerSites.add(root.reference);
  for(const node of Object.values(allocationGraph.nodes)){if(node.opaque){for(let at=node.at;at<Math.min(reader.size-3,node.at+256);at++)packedPointerSites.add(at);}else for(const arg of node.args||[])if(arg.width===4)packedPointerSites.add(arg.at);}
