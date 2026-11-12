@@ -12,7 +12,8 @@ import{upgradeReviewedFloorPatches}from'./background-repair-upgrade.js';
 import{readSettlementLibrary}from'./settlement-library.js';
 import{cellRenderIntent,setCellRenderRoles,objectRenderRoleAt,lockObjectRenderIntent,nativePlaneRoles,lockMapRenderIntent,createRenderIntentQuery,gateRenderRoleAt}from'./render-intent.js';
 import {recoverPlacedObjects} from './object-recovery.js';
-import {embedROMProject,recoverROMProject,createROMProjectSidecar,restoreROMProjectSidecar,createROMRoundTrip,resolveROMExportSource} from './rom-project.js';
+import {embedROMProject,recoverROMProject,createROMProjectSidecar,restoreROMProjectSidecar,createROMRoundTrip,resolveROMExportSource,romFingerprint} from './rom-project.js';
+import {inspectROMSourceBinding,approveLegacyROMBinding} from './rom-source-identity.js';
 import {refreshProjectFromROM} from './rom-refresh.js';
 import {regionBuilder} from './region-builder-ui.js';
 import {cartographerDialog} from './cartographer-ui.js';
@@ -602,6 +603,12 @@ async function switchProject(next){
   tileBrush=clone(brush);visible={ground:true,details:true,objects:true,overhead:true,reference:true};useROMTiles(m(),true);markDirty();await persist();await loadMapImages(m());fit();refresh();
 }
 
+// Complete ROM opening only after a source identifier has been verified or
+// the user deliberately chose a separate canonical source.
+async function finishOpenedROM(reader,id,{refreshRequested=false,matchedExport=null,restored=null,recovered=null,previousSession=null}={}){
+ identifyEngineProfile(reader.bytes,id);if(refreshRequested&&!matchedExport){romPurpose=null;await reviewROMRefresh(reader,id,previousSession);return;}if(matchedExport&&refreshRequested)romPurpose=null;romSession={reader,id};if(restored)await switchProject(restored);await hydrateROMInfo();updateChrome();if(romPurpose==='projectTool'){romPurpose=null;const open=pendingROMTool;pendingROMTool=null;if(modalHistory.length)restoreModal();else closeModal();await open?.();}else if(romPurpose==='hex'){romPurpose=null;hexTools.open();}else if(romPurpose==='actors'){romPurpose=null;authorTools.resume();}else if(romPurpose==='eventAppearance'){romPurpose=null;eventsUI.resumeAppearance();}else if(romPurpose==='source'){romPurpose=null;sourceTools.open('music');}else if(romPurpose==='export'){romPurpose=null;exportRomDialog();}else if(romPurpose==='patch'){romPurpose=null;applyPatchDialog();}else if(romPurpose==='play'){romPurpose=null;playROMDialog();}else if(romPurpose==='game'||romPurpose==='sprites'){const purpose=romPurpose;romPurpose=null;if(purpose==='game')gameTools.open();else spriteTools.open({kind:'mon',id:1,side:'front',shiny:false});}else if(recovered){$('#dialog').close();toast('Editable ROM restored: objects, layers, events and original source.');}else if(matchedExport){$('#dialog').close();toast('Recognised your exported ROM. Current edits retained; verified original source restored for the next export.');}else romBrowser();
+}
+
 function pickROM(){ $('#romInput').value='';$('#romInput').click(); }
 function openROM(){if(romSession)romBrowser();else pickROM();}
 $('#romInput').onchange=async e=>{
@@ -610,9 +617,37 @@ $('#romInput').onchange=async e=>{
   try{
     if(file.size>32*1024*1024||file.size<0x200)throw new Error('Choose an unzipped .gba file up to 32 MB.');
     const previousSession=romSession,refreshRequested=romPurpose==='refresh';let buffer=await file.arrayBuffer();const matchedExport=await resolveROMExportSource(project,new Uint8Array(buffer));if(matchedExport)buffer=matchedExport.source.buffer;const recovered=matchedExport?null:await recoverROMProject(new Uint8Array(buffer));let restored=null;if(recovered&&!refreshRequested&&romPurpose!=='export'){restored=validateProject(recovered.project,catalog);await checkEmbeddedImages(restored);restored.id=uid();buffer=recovered.source.buffer;}const reader=new GbaMaps(buffer,file.name);await reader.discover(message=>{if($('#romOpeningProgress'))$('#romOpeningProgress').textContent=message;});
-    let id;if(globalThis.crypto?.subtle)id=[...new Uint8Array(await crypto.subtle.digest('SHA-256',buffer))].map(n=>n.toString(16).padStart(2,'0')).join('');else id=reader.code+'-'+reader.size+'-'+reader.mapTable;
-    if(matchedExport)id=matchedExport.sourceId;else if(project.romRoundTrip?.sourceFingerprint===id&&project.maps.some(m=>m.rom?.sourceId===project.romRoundTrip.sourceId))id=project.romRoundTrip.sourceId;
-    identifyEngineProfile(reader.bytes,id);if(refreshRequested&&!matchedExport){romPurpose=null;await reviewROMRefresh(reader,id,previousSession);return;}if(matchedExport&&refreshRequested)romPurpose=null;romSession={reader,id};if(restored)await switchProject(restored);await hydrateROMInfo();updateChrome();if(romPurpose==='projectTool'){romPurpose=null;const open=pendingROMTool;pendingROMTool=null;if(modalHistory.length)restoreModal();else closeModal();await open?.();}else if(romPurpose==='hex'){romPurpose=null;hexTools.open();}else if(romPurpose==='actors'){romPurpose=null;authorTools.resume();}else if(romPurpose==='eventAppearance'){romPurpose=null;eventsUI.resumeAppearance();}else if(romPurpose==='source'){romPurpose=null;sourceTools.open('music');}else if(romPurpose==='export'){romPurpose=null;exportRomDialog();}else if(romPurpose==='patch'){romPurpose=null;applyPatchDialog();}else if(romPurpose==='play'){romPurpose=null;playROMDialog();}else if(romPurpose==='game'||romPurpose==='sprites'){const purpose=romPurpose;romPurpose=null;if(purpose==='game')gameTools.open();else spriteTools.open({kind:'mon',id:1,side:'front',shiny:false});}else if(recovered){$('#dialog').close();toast('Editable ROM restored: objects, layers, events and original source.');}else if(matchedExport){$('#dialog').close();toast('Recognised your exported ROM. Current edits retained; verified original source restored for the next export.');}else romBrowser();
+    const fingerprint=await romFingerprint(reader.bytes);
+    const originalProject=project,subject=restored||project;
+    const binding=matchedExport?{status:'verified-export',sourceId:matchedExport.sourceId}:refreshRequested?{status:'canonical',sourceId:fingerprint}:inspectROMSourceBinding(subject,reader,fingerprint);
+    let id=binding.sourceId;
+    if(binding.status==='review-legacy'||binding.status==='blocked-legacy'){
+      const approved=binding.status==='review-legacy',subjectName=esc(subject.name||'this saved project');
+      const warning=approved?'<p>The saved original map headers, layouts, scripts and tile/collision baselines agree with this ROM. These checks are not a cryptographic proof of the historical import. Confirm the source manually to bind it securely.</p>':'<p>This ROM cannot be attached to the saved project. '+esc(binding.problems.slice(0,5).join(' '))+'</p>';
+      modal.replace(approved?'Verify original ROM for older project':'Legacy source mismatch',
+        '<p>'+subjectName+' contains maps imported on an older Android WebView with a non-unique ROM identifier. The new ROM fingerprint is <code>'+fingerprint.slice(0,16)+'…</code>.</p>'+warning+
+        (approved?'<label class="check"><input type="checkbox" id="legacySourceConsent"> I confirm this is the original ROM used to import these maps, not another revision.</label>':'')+
+        '<button type="button" id="legacyOpenSeparate">Open this ROM separately without changing project bindings</button>',
+        async()=>{
+          if(!approved)throw Error('This original-source verification failed. Open the correct original ROM or use a separate project.');
+          if(!$('#legacySourceConsent').checked)throw Error('Confirm that you selected the original ROM.');
+          if(project!==originalProject)throw Error('The active project changed during verification. Reopen the ROM.');
+          if(restored)approveLegacyROMBinding(restored,reader,fingerprint,binding.legacyId);
+          else change(()=>approveLegacyROMBinding(project,reader,fingerprint,binding.legacyId));
+          closeModal();
+          await finishOpenedROM(reader,binding.legacyId,{refreshRequested,matchedExport,restored,recovered,previousSession});
+        },approved?'Verify this original ROM':'Review blocked');
+      $('#legacyOpenSeparate').onclick=async()=>{
+        try{
+          if(project!==originalProject)throw Error('The active project changed. Open the ROM again.');
+          closeModal();
+          await finishOpenedROM(reader,fingerprint,{refreshRequested,matchedExport,restored,recovered,previousSession});
+        }catch(error){showError(error);}
+      };
+      return;
+    }
+
+    await finishOpenedROM(reader,id,{refreshRequested,matchedExport,restored,recovered,previousSession});
   }catch(error){$('#dialog').close();showError(error);}finally{busy(false);e.target.value='';}
 };
 function rgbaCanvas(image){const c=document.createElement('canvas');c.width=image.width;c.height=image.height;const ic=c.getContext('2d'),data=ic.createImageData(image.width,image.height);data.data.set(image.pixels);ic.putImageData(data,0,0);return c;}
