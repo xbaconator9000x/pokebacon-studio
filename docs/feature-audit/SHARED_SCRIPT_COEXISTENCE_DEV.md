@@ -9,7 +9,7 @@ A Gen III map can contain two different NPC event *entries* pointing to one orig
 - A **native structural flow** controls one specific event entry pointer and conflicts with an active visual/authored replacement of the **same root**. The exporter still rejects this combination before it writes changes.
 - Shared original **command, dialogue and movement data** can be updated while a different entry now points to an authored scene. Source bytes remain for other roots. Existing output-byte alias guards continue protecting overlapping writes.
 - Disabled visual replacements and markers bound to a different original ROM do not claim the native root's pointer.
-- Reports explicitly distinguish accepted coexistence from conflicts. No source event identifiers, map IDs, or original maps are renumbered.
+- Reports explicitly distinguish accepted coexistence from conflicts. The native command inspector now shows how many original roots reach an instruction, how many remain live native entries, and how many have been replaced by a visual scene. No source event identifiers, map IDs, or original maps are renumbered.
 
 ## End-to-end bounded regression
 
@@ -20,6 +20,7 @@ Separate cases check:
 2. A conflicting original-root structural flow + authored replacement throws without changing the candidate output bytes.
 3. Authored NPC replacement + a native structural flow for the **other** NPC + shared source dialogue are all preserved.
 4. Disabled and different-ROM scenes do not falsely claim the source entry.
+5. The inspector's source-impact analysis separates authored replacement roots from native roots and handles unreachable nodes.
 
 This is a **native-byte integration fixture**, not retail Pokémon engine execution or a Shattered runtime acceptance test. No private game data, ROM or certificate is included. Test status must be assigned from the exact-head GitHub QA result, not from this document alone.
 
