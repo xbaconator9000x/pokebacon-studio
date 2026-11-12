@@ -99,3 +99,18 @@ test('supported inline fixed HMA numeric table formats become editable layouts; 
  saveTableDefinition(project,ID,source,{...parsed,id:'hma-different',name:'Verified numeric table'});
  assert.equal(tableRecord(project,ID,source,{...parsed,id:'hma-different',name:'Verified numeric table'},0).at,TABLE);
 });
+
+test('hidden unaligned bytecode pointer blocks repoint, even though the basic aligned lookup misses it',()=>{
+ const {project,source,table}=scenario();
+ const packed=0x559;view(source).setUint32(packed,BASE+TABLE,true);
+ assert.deepEqual(findROMReferences(project,ID,source,TABLE).map(x=>x.at),[SITE1,SITE2]);
+ assert.deepEqual(findROMReferences(project,ID,source,TABLE,{scanUnaligned:true}).map(x=>x.at),[SITE1,SITE2,packed]);
+ assert.throws(()=>planSafeTableRepoint(project,ID,source,table,[SITE1,SITE2]),/Unreviewed/);
+ assert.equal(project.hexStudio.sources[ID].repoints,undefined);
+ const planned=planSafeTableRepoint(project,ID,source,table,[SITE1,SITE2,packed]);
+ assert.equal(planned.sites.length,3);
+ const output=new RomOutput(source);
+ const [result]=installSafeTableRepoints(project,ID,source,output);
+ assert.equal(result.updatedPointers,3);
+ assert.equal(view(output.bytes).getUint32(packed,true),BASE+result.newAddress);
+});
