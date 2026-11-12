@@ -90,3 +90,20 @@ test('page candidates with corrupted conditions cannot win preview priority',()=
  second.conditions=[{kind:'flag',flagId:'acquired'}];
  assert.equal(chooseScenePage(event.runtime,()=>true),second);
 });
+
+test('new event pages cannot reuse page or nested action IDs, even during first-time conversion',()=>{
+ const {event}=fixture();
+ const before=structuredClone(event.runtime);
+ assert.throws(()=>addScenePage(event.runtime,()=>event.runtime.pages[0].id),/duplicate stable ID/);
+ assert.deepEqual(event.runtime,before);
+ const plain={action:'scene',steps:[{id:'base-action',type:'say',text:'Before pages'}]};
+ const prior=structuredClone(plain);
+ assert.throws(()=>addScenePage(plain,()=> 'same-id'),/duplicate stable ID/);
+ assert.deepEqual(plain,prior);
+ const good=addScenePage(plain,uid);
+ assert.equal(plain.pages.length,2);
+ assert.ok(plain.pages[0].steps[0].text.includes('Before pages'));
+ assert.ok(good.steps.length);
+ assert.equal(plain.steps.length,0);
+ assert.deepEqual(pageStructureIssues(plain),[]);
+});
