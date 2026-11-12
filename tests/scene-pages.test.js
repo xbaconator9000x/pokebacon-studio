@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {addScenePage,chooseScenePage,enableScenePages,pageStructureIssues} from '../dist/scene-pages.js';
+import {addScenePage,chooseScenePage,enableScenePages,pageStructureIssues,replaceScenePagesFromJson} from '../dist/scene-pages.js';
 let count=0;const id=()=>`page-${++count}`;
 test('pages retain old actions and use the highest matching enabled page',()=>{const runtime={action:'scene',steps:[{type:'say',text:'Base'}]};const pages=enableScenePages(runtime,id);const later=addScenePage(runtime,id);later.conditions=[{kind:'flag',flagId:'done'}];later.steps=[{type:'say',text:'Later'}];assert.equal(runtime.steps.length,0);assert.equal(chooseScenePage(runtime,c=>c.flagId==='done'),later);assert.equal(chooseScenePage(runtime,()=>false),pages[0]);later.enabled=false;assert.equal(chooseScenePage(runtime,()=>true),pages[0]);});
 test('pages reject duplicate identities and empty actions',()=>{const issues=pageStructureIssues({pages:[{id:'same',name:'First',conditions:[],steps:[{type:'say'}]},{id:'same',name:'Second',conditions:[],steps:[]}]}).join(' ');assert.match(issues,/duplicate stable ID/);assert.match(issues,/needs 1–256 actions/);});
@@ -82,4 +82,18 @@ test('scene diagnostics report malformed page imports and invalid nested actions
  n.runtime.steps=[{id:'nested',type:'choice',yes:'not-an-array'}];
  assert.doesNotThrow(()=>issues=sceneIssues(n,project,map));
  assert.ok(issues.some(issue=>issue.path==='Actions'&&/list/.test(issue.message)));
+});
+
+test('manual JSON page repair is validation-first, leaves malformed imported data untouched until accepted',()=>{
+ const runtime={action:'scene',pages:[{id:'a',name:'A',conditions:'corrupt',steps:[{id:'x',type:'say',text:'Hello'}]}]};
+ const before=structuredClone(runtime);
+ for(const input of ['{not-json}',JSON.stringify([]),JSON.stringify([{id:'a',name:'Broken',conditions:null,steps:[]}]),'a'.repeat(2_000_001)]){
+  assert.throws(()=>replaceScenePagesFromJson(runtime,input));
+  assert.deepEqual(runtime,before);
+ }
+ const repaired=[{id:'a',name:'Recovered',enabled:true,conditions:[],steps:[{id:'x',type:'say',text:'Hello'}]}];
+ assert.deepEqual(replaceScenePagesFromJson(runtime,JSON.stringify(repaired)),repaired);
+ repaired[0].steps[0].text='Changed externally';
+ assert.equal(runtime.pages[0].steps[0].text,'Hello');
+ assert.deepEqual(pageStructureIssues(runtime),[]);
 });
