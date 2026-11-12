@@ -2,6 +2,8 @@
 
 **Objective: functional parity with all applicable [Hex Maniac Advance](https://github.com/haven1433/HexManiacAdvance) capabilities**, with a mobile-first Android/web implementation, safe original-ROM handling, and additional PokéBacon capabilities retained. This is an engineering target, **not** a statement that the editor already has parity.
 
+**Fifth HMA integration batch:** Add atomic, bounded bit-range updates over verified native u8/u16/u32 fields, including the most significant bit of a 32-bit word, without overwriting unrelated flags. The existing touch-oriented cell editor exposes the bit editor, with optional batch edits across 256 rows. This is manual bit editing, **not inferred HMA bitfield/enum decoding**. [Implementation details](HMA_TABLE_BITS_DEV.md).
+
 **Fourth HMA integration batch:** Strict HMA format recognition now supports plain four-byte pointer columns, signed `|z`, hexadecimal `|h`, and fixed-count linked-length sources with explicit metadata; native tables also support atomic exact typed find-and-replace (maximum 256 matches). All features remain source-bound; this is **not** generic HMA decoding or expanding live engine tables. See [HMA table format work](HMA_TABLE_FORMATS_DEV.md).
 
 **Third HMA integration batch:** [existing-row copy/swap, bounded column fill and typed search](HMA_TABLE_ROW_TOOLS_DEV.md) plus [transactional CSV import/export](HMA_TABLE_CSV_DEV.md) are integrated into the existing source-bound Android/web table UI. These remain fixed-capacity operations; no inferred source-engine table growth or full parity is claimed.

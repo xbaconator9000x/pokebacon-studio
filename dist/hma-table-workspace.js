@@ -236,6 +236,35 @@ export function fillTableColumn(project,sourceId,source,table,fieldName,start,en
 // Exact typed find-and-replace over existing records. Scan the complete
 // requested range before staging; never silently truncate a >256-row match
 // set or partially apply writes when the source/patch budget rejects them.
+/**
+ * Edit a bit range of an existing native unsigned field without altering
+ * adjacent flags. Field width and matching ROM source are verified first.
+ * This intentionally does NOT decode unsupported HMA bitfield Format syntax.
+ */
+export function setTableBitRange(project,sourceId,source,table,fieldName,firstRow,lastRow,firstBit,bitCount,value){
+ validateTable(table,source.length);
+ const field=table.fields.find(f=>f.name===fieldName);
+ if(!field||!['u8','u16','u32'].includes(field.type))throw Error('Bit editing requires a recognized unsigned 8/16/32-bit field.');
+ if(!Number.isInteger(firstRow)||!Number.isInteger(lastRow)||firstRow<0||lastRow<firstRow||lastRow>=table.count||lastRow-firstRow>=256)
+  throw Error('Edit a range of 1–256 existing native rows.');
+ const bitWidth=types[field.type]*8;
+ if(!Number.isInteger(firstBit)||!Number.isInteger(bitCount)||firstBit<0||bitCount<1||firstBit+bitCount>bitWidth)
+  throw Error('Bit start and width must remain inside this field.');
+ if(typeof value==='string'&&!value.trim())throw Error('Enter the replacement bit value.');
+ const raw=typeof value==='string'?number(value):value,max=(2**bitCount)-1;
+ if(!Number.isInteger(raw)||raw<0||raw>max)throw Error('Bit value must fit '+bitCount+' bit(s): 0–'+max+'.');
+ const mask=((1n<<BigInt(bitCount))-1n)<<BigInt(firstBit),replacement=BigInt(raw)<<BigInt(firstBit),writes=[];
+ for(let row=firstRow;row<=lastRow;row++){
+  const at=tableRowStart(table,row)+field.offset;
+  const existing=Uint8Array.from({length:types[field.type]},(_,i)=>stagedROMByte(project,sourceId,source,at+i));
+  const current=BigInt(readInteger(existing,0,field.type));
+  const updated=Number((current&~mask)|replacement);
+  writes.push([at,bytesFor(field.type,updated,0,source.length)]);
+ }
+ const report=stageTableTransaction(project,sourceId,source,writes);
+ return {...report,rows:lastRow-firstRow+1,bits:bitCount};
+}
+
 export function replaceTableColumnMatches(project,sourceId,source,table,fieldName,oldValue,newValue,{start=0,end=table.count-1}={}){
  validateTable(table,source.length);
  const field=table.fields.find(f=>f.name===fieldName);

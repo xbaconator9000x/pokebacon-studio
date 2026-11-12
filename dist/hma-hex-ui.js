@@ -1,5 +1,5 @@
 import {parseROMOffset,hexInput,formatHex,hexRows,findROMHex,hexDiffSummary,hexState,stageROMHex,installROMHexEdits} from './native-hex-workspace.js';
-import {hmaMetadata,importHMAToml,tableDefinitions,saveTableDefinition,tableRecord,editTableField,fixedNumericHMATable,copyTableRecord,swapTableRecords,fillTableColumn,findTableRows,replaceTableColumnMatches,exportTableCSV,importTableCSV} from './hma-table-workspace.js';
+import {hmaMetadata,importHMAToml,tableDefinitions,saveTableDefinition,tableRecord,editTableField,fixedNumericHMATable,copyTableRecord,swapTableRecords,fillTableColumn,findTableRows,replaceTableColumnMatches,setTableBitRange,exportTableCSV,importTableCSV} from './hma-table-workspace.js';
 import {pointerAt,findROMReferences,planSafeTableRepoint,installSafeTableRepoints} from './hma-pointer-navigation.js';
 import {createIPS} from './ips.js';
 import {RomOutput} from './rom-writer.js';
@@ -143,8 +143,19 @@ export function hmaHexWorkshop(api){
   function wireRemove(){document.querySelectorAll('[data-fremove]').forEach(b=>b.onclick=()=>b.closest('.hma-field').remove());}wireRemove();
  }
  function editCell(table,row,field){
-  const current=tableRecord(source(),id(),data(),table,row).values[field.name],isPointer=field.type==='ptr';
-  api.modal('Edit '+table.name+' · row '+row+' · '+field.name,'<p>Original source offset: 0x'+(table.address+row*table.stride+field.offset).toString(16).toUpperCase()+'</p><label>New '+esc(field.type)+' value<input id="hmaCellValue" value="'+esc(isPointer?'0x'+current.toString(16).toUpperCase():current)+'"></label><p class="hint-line">This operation will stage a reversible binary write, not change the source ROM on disk.</p>',()=>{api.change(()=>editTableField(source(),id(),data(),table,row,field.name,$('#hmaCellValue').value));state.row=Math.floor(row/16)*16;tablesScreen();return false;},'Apply typed edit');
+  const current=tableRecord(source(),id(),data(),table,row).values[field.name],isPointer=field.type==='ptr',canEditBits=['u8','u16','u32'].includes(field.type);
+  api.modal('Edit '+table.name+' · row '+row+' · '+field.name,'<p>Original source offset: 0x'+(table.address+row*table.stride+field.offset).toString(16).toUpperCase()+'</p><label>New '+esc(field.type)+' value<input id="hmaCellValue" value="'+esc(isPointer?'0x'+current.toString(16).toUpperCase():current)+'"></label><p class="hint-line">This operation will stage a reversible binary write, not change the source ROM on disk.</p>'+(canEditBits?'<button id="hmaCellEditBits" type="button">Edit selected flag bits…</button>':''),()=>{api.change(()=>editTableField(source(),id(),data(),table,row,field.name,$('#hmaCellValue').value));state.row=Math.floor(row/16)*16;tablesScreen();return false;},'Apply typed edit');
+  if(canEditBits)$('#hmaCellEditBits').onclick=()=>tableBitsEditor(table,row,field);
+ }
+ function tableBitsEditor(table,row,field){
+  const max=table.count-1,bitMax=({'u8':8,'u16':16,'u32':32})[field.type],current=tableRecord(source(),id(),data(),table,row).values[field.name];
+  api.modal('Edit native bit flags · '+esc(table.name),'<p>Editing unsigned '+field.type+' field <b>'+esc(field.name)+'</b> in row '+row+'. Existing neighbouring bits and other columns are preserved. The selected bit range is zero-based, counting from the least significant bit.</p><p>Current value: <code>0x'+current.toString(16).toUpperCase()+'</code></p><div class="studio-actions"><label>First bit<input id="hmaBitsStart" type="number" inputmode="numeric" min="0" max="'+(bitMax-1)+'" value="0"></label><label>Number of bits<input id="hmaBitsWidth" type="number" inputmode="numeric" min="1" max="'+bitMax+'" value="1"></label><label>New bit value<input id="hmaBitsValue" inputmode="numeric" value="1"></label></div><label>Apply from row '+row+' through row (max '+max+')<input id="hmaBitsLastRow" type="number" inputmode="numeric" min="'+row+'" max="'+max+'" value="'+row+'"></label><p class="hint-line">Batch edit is limited to 256 rows. All writes are validated and committed atomically, and the source ROM remains immutable.</p>',()=>{
+   const start=$('#hmaBitsStart').value.trim(),width=$('#hmaBitsWidth').value.trim(),last=$('#hmaBitsLastRow').value.trim();
+   if(!/^\d+$/.test(start)||!/^\d+$/.test(width)||!/^\d+$/.test(last))throw Error('Bit offsets and row IDs must be whole numbers.');
+   const report=api.change(()=>setTableBitRange(source(),id(),data(),table,field.name,row,Number(last),Number(start),Number(width),$('#hmaBitsValue').value));
+   state.row=Math.floor(row/16)*16;state.tableSearchValue='';render();
+   api.toast('Updated '+(report?.rows??1)+' row(s), preserving unrelated bits.');return false;
+  },'Stage bit flags');
  }
  function metadataScreen(){
   const meta=hmaMetadata(source(),id(),data()),query=state.anchorQuery.toLowerCase(),anchors=meta.anchors.filter(a=>a.name.toLowerCase().includes(query)||a.format.toLowerCase().includes(query));
