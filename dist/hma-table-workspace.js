@@ -32,16 +32,17 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
   const line=lines[i],header=line.match(/^\s*\[\[([A-Za-z0-9_]+)\]\]\s*(?:#.*)?$/),single=line.match(/^\s*\[([A-Za-z0-9_]+)\]\s*(?:#.*)?$/);
   if(header||single){push();section=(header||single)[1];record={};last=i+1;multi=null;continue;}
   if(!section)continue;
+  if(multi){buffer+='\n'+line;if(/^\s*\]\s*(?:#.*)?$/.test(line)){record[multi]=buffer;multi=null;buffer='';}continue;}
   const assign=line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$/);
   if(!assign)continue;
   const key=assign[1],value=assign[2];
   // Multi-line arrays are left as raw metadata. Import must preserve the exact
   // complete TOML document, not pretend to interpret unknown HMA structures.
   if(value==='['||value.startsWith('[')&&!value.includes(']')){multi=key;buffer=value;continue;}
-  if(multi){if(value.includes(']')){record[multi]=buffer+'\n'+line;multi=null;buffer='';}else buffer+='\n'+line;continue;}
   record[key]=quoted(value);
   if(section==='General')general[key]=record[key];
  }
+ if(multi&&record){record[multi]=buffer;warnings.push('Unterminated HMA TOML array near line '+last);}
  push();
  if(anchors.length>MAX_ANCHORS)throw Error('This HMA metadata file contains too many named anchors.');
  return{anchors,lists,offsetPointers,groups,general,warnings,raw:text};
@@ -71,6 +72,7 @@ export function validateTable(table,sourceLength){
  for(const field of fields){
   const n=width(field);
   if(!nameOk(field.name)||names.has(field.name)||!Number.isInteger(field.offset)||field.offset<0||!Number.isInteger(n)||n<1||field.offset+n>stride||(field.type==='ascii'&&n>256))throw Error('Invalid or overlapping table field: '+String(field.name));
+  if(field.enumList!==undefined&&(!nameOk(field.enumList)||!['u8','u16','u32'].includes(field.type)))throw Error('HMA labels require an unsigned numeric field.');
   names.add(field.name);
   for(let i=0;i<n;i++){if(occupied.has(field.offset+i))throw Error('Overlapping native table fields.');occupied.add(field.offset+i);}
  }
@@ -87,6 +89,45 @@ export function saveTableDefinition(project,sourceId,source,table){
  const dest=project.hexStudio.sources[sourceId];dest.tables=dest.tables.filter(x=>x.id!==table.id).concat([structuredClone(table)]);
  return table;
 }
+// Named HMA metadata lists provide labels, never inferred native encodings.
+export function hmaListLabels(project,sourceId,source,listName){
+ if(!nameOk(listName))throw Error('Choose a named HMA list.');
+ const found=hmaMetadata(project,sourceId,source).lists.filter(row=>row.name===listName);
+ if(found.length!==1)throw Error('HMA named list is missing or ambiguous.');
+ const labels=[],used=new Set();
+ const add=(value,label)=>{
+  if(!Number.isInteger(value)||value<0||value>65535||typeof label!=='string'||label.length<1||label.length>100||!(/^[\x20-\x7E]+$/.test(label))||used.has(value)||labels.length>=1024)
+   throw Error('Invalid, overlapping or excessive numeric HMA labels.');
+  used.add(value);labels.push({value,label});
+ };
+ for(const [key,value] of Object.entries(found[0].values||{})){
+  if(!/^(0|[1-9]\d{0,4})$/.test(key))continue;
+  const start=Number(key),raw=String(value).trim();
+  if(raw.startsWith('[')){
+   if(!raw.endsWith(']'))throw Error('Incomplete HMA list array.');
+   const inner=raw.slice(1,-1),token=/'''([^'\r\n]{1,100})'''|"""([^"\r\n]{1,100})"""/g;
+   const words=[...inner.matchAll(token)].map(m=>m[1]??m[2]);
+   if(!words.length||inner.replace(token,'').replace(/[\s,]/g,'')!=='')throw Error('HMA arrays must contain quoted labels only.');
+   words.forEach((word,i)=>add(start+i,word));
+  }else add(start,raw);
+ }
+ if(!labels.length)throw Error('No compatible numeric HMA labels found.');
+ return labels.sort((a,b)=>a.value-b.value);
+}
+export function bindTableEnumList(project,sourceId,source,table,fieldName,listName){
+ validateTable(table,source.length);
+ const field=table.fields.find(row=>row.name===fieldName);
+ if(!field||!['u8','u16','u32'].includes(field.type))throw Error('Choose an unsigned u8, u16 or u32 field.');
+ const copy=structuredClone(table),target=copy.fields.find(row=>row.name===fieldName);
+ if(listName){
+  const labels=hmaListLabels(project,sourceId,source,listName),max=2**(types[field.type]*8)-1;
+  if(!labels.some(row=>row.value<=max))throw Error('All HMA label codes exceed the native field width.');
+  target.enumList=listName;
+ }else delete target.enumList;
+ saveTableDefinition(project,sourceId,source,copy);
+ return {field:fieldName,list:listName||null};
+}
+
 export function tableDefinitions(project,sourceId,source){
  return (hexState(project,sourceId)?.tables||[]).map(row=>validateTable(row,source.length));
 }
