@@ -2,6 +2,8 @@
 
 **Objective: functional parity with all applicable [Hex Maniac Advance](https://github.com/haven1433/HexManiacAdvance) capabilities**, with a mobile-first Android/web implementation, safe original-ROM handling, and additional PokéBacon capabilities retained. This is an engineering target, **not** a statement that the editor already has parity.
 
+**Latest partial implementation:** [HMA hex, typed table and TOML foundation](HMA_HEX_TABLE_FOUNDATION_DEV.md) adds genuinely editable original ROM byte spans, manually described native typed records and losslessly imported HMA metadata, with export ownership conflicts blocked. This does **not** establish general HMA parity, linked-table expansion or broad metadata-format decoding.
+
 **Canonical machine-readable contract:** [hma-parity.json](hma-parity.json) — **101 atomic HMA features across eight sections**, independently linked to the existing [98-record broad capability inventory](inventory.json). Source reference: [HMA README](https://github.com/haven1433/HexManiacAdvance/blob/master/README.md), [UI guide](https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface), [tutorial index](https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials), and [releases](https://github.com/haven1433/HexManiacAdvance/releases). The previously pinned [upstream source audit](upstream-evidence.json) and [comparative review](COMPARATIVE_EDITORS.md) provide architectural context. This new checklist breaks broad items into user-verifiable actions; it is **not** an exhaustive enumeration of every undocumented upstream command or minor future release.
 
 ## Release baseline and scope
