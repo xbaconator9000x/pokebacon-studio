@@ -1243,12 +1243,14 @@
         "dist/story-flow-ui.js",
         "dist/script-engine.js",
         "dist/script-data.js",
-        "dist/story-readable.js"
+        "dist/story-readable.js",
+        "dist/native-story-state.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
-        "tests/scene-outline.test.js"
+        "tests/scene-outline.test.js",
+        "tests/native-story-state.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1260,17 +1262,17 @@
         "Demonstrate names with target-engine constraints.",
         "Demonstrate ownership with target-engine constraints.",
         "Unify allocation and naming across quests, scenes, native scripts and engine extensions.",
-        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
-        "tested": "Native condition/name fixtures, mobile save/reload and private Shattered export/reindex; see DELIVERY_4_72_7.md. Not full gameplay.",
-        "integrated": "4.72.7 test candidate on PR #19; main/device/gameplay acceptance open.",
+        "tested": "4.72.7 baseline as documented; state reservation regression tests added on development/studio-upgrades (CI/runtime pending). Synthetic flag branches and project reindex do not establish actual engine save-slot persistence.",
+        "integrated": "Development branch only after main a1672ed; no signed APK, main merge, real gameplay or physical Android acceptance.",
         "released": false,
         "gameplayVerified": false
       },
       "backlogGroup": "REL",
-      "implementationNotes": "Guided existing-ID flag/variable branches and project-local names implemented. New native state allocation and complete event pages remain open."
+      "implementationNotes": "Project-local names, guided native branches and explicit source-verified, bounded ID reservations implemented. Collision scanner covers imported commands, authored flow changes, map conditions and existing names/claims. Manual source-range proof, custom native routines, quests and actual game save execution remain open; see STATE_RESERVATIONS_DEV.md."
     },
     {
       "id": "EVT07",
