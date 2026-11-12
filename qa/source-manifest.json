@@ -1781,7 +1781,7 @@
     "dist/rom-terrain.js": "cbb0b0d7bb1b5ed44b2b61f8dfd87835b76ec35590d234de96fbb5bf0e27f48c",
     "dist/rom-text.js": "36a8cbcb47c53f818419abe41f3f0a0b1a1a09e05cab7206daa42370d76e2b89",
     "dist/rom-world.js": "bf5ee0dcb4df760710bf17b23af0c05a545ca6fd070c4095bcf145a02cb2d79b",
-    "dist/rom-writer.js": "1b37fcf00e270d757636f37ee27f1bca2a85b17a9f38c1824bcf34f714f25aac",
+    "dist/rom-writer.js": "12eb2d0cb9c8f9fbb3c503b200db2df0781eb530ad0b7348cb84464c5bd66a52",
     "dist/rom.js": "a8682db61298729478ca9075319bc44575e1ed2c306b7c7bacdabcb9d968efc7",
     "dist/save-profiles.js": "832d32d22f994d56162644d42980fe6acfcbc796cf5d1c52c01ea23df510dc29",
     "dist/save-worker.js": "af6ca816ee483ff37da6b2db825ba54daa9bf3e87ec3ee394f171c4d9e7af0dc",
@@ -1894,9 +1894,9 @@
     "dist/native-scene-import.js": "65985bfcc55989e5f5e332d993520a57d5eadce9fd19b83a1d013d4dc4b0ef89",
     "dist/quest-reference-index.js": "aa71e6112f9f673ff50c8ee16e7e5b8d5d33799f3458e701ac19333856a2c922",
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
-    "dist/native-hex-workspace.js": "631054e393e4e51ea7eeaee81477a9ba29aa3c7fb40f3696f77fee6c7bbbf459",
+    "dist/native-hex-workspace.js": "1fdddd413f181456c924a2d9ddd44d58eca0572c5aedb3146a9769ce6f50f314",
     "dist/hma-table-workspace.js": "71a9a4dd8877d19d0a157622135fd97d3c713b87e897efacf72b44ee46a183c5",
-    "dist/hma-hex-ui.js": "05898446889c8733da5b122839ed718497b9ed3e519cf0acc22f8d5cfdc8d6d9"
+    "dist/hma-hex-ui.js": "9db45a88bdf80c50dd904de989e53f4b3d2846bd06f279237fcd87f511d78d4b"
   },
   "developmentBranch": "development/studio-upgrades",
   "releaseBaseAPK_SHA256": "2eec5f5a67603b1738932e57657d769cdc2d19d2f4f171dd6394adeea2e11381",
