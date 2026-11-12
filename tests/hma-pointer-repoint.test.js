@@ -126,3 +126,10 @@ test('direct and HMA-biased interior pointers veto a table move before any nativ
  assert.throws(()=>planSafeTableRepoint(project,ID,source,table,[SITE1,SITE2]),/interior table pointer/);
  assert.equal(project.hexStudio.sources[ID].repoints,undefined);
 });
+
+test('header pointer sites are refused at planning time instead of creating invalid saved projects',()=>{
+ const {project,source,table}=scenario();
+ const site=0x180;view(source).setUint32(site,BASE+TABLE,true);
+ assert.throws(()=>planSafeTableRepoint(project,ID,source,table,[SITE1,SITE2,site]),/GBA header/);
+ assert.equal(project.hexStudio.sources[ID].repoints,undefined);
+});
