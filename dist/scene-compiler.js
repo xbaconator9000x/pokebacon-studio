@@ -25,7 +25,7 @@ export function sceneSource(n,context={}){
   const label=prefix=>'@s'+serial+++'_'+prefix;
   const slot=id=>{const q=questFlags.find(q=>q.id===id);if(!q)throw Error('A scene references a missing saved flag.');return q.slot;};const ctx={questRuntime,slot};
   const valueText=s=>s.dialogueId?a.dialogues.find(d=>d.id===s.dialogueId)?.text:s.text;
-  const say=(value,{scroll=false,messageType=4}={})=>{const at=label('text');data.push(at+':\n= '+wrapDialogue(value)+'
+  const say=(value,{scroll=false,messageType=4}={})=>{const at=label('text');data.push(at+':\n= '+wrapDialogue(value)+'$');const style=Number(messageType);if(![4,6].includes(style))throw Error('Visual dialogue supports standard and keep-open message boxes only.');if(scroll)code.push('messageautoscroll '+at,'waitmessage','waitbuttonpress','closemessage');else code.push('msgbox '+at+' '+style,'closemessage');};
   const actor=id=>{if(id==='player')return 255;const target=id==='self'?n:map.markers.find(m=>m.id===id),local=target&&(npcBindings.get(target.id)?.localId??target.rom?.localId);if(!Number.isInteger(local)||local<1||local>255)throw Error('A scene character has no native local ID.');return local;};
   const item=s=>{const id=s.itemRef?itemIds.get(s.itemRef):+s.itemId;if(!Number.isInteger(id)||id<1||id>=(gameProfile?.itemCount||0)||gameProfile?.itemIds&&!gameProfile.itemIds.includes(id))throw Error('Choose a bound item record for this scene.');return id;};
   function movement(id,actions,wait=true){const at=label('movement');data.push(at+':\n'+actions.join('\n')+'\nstep_end');code.push('applymovement '+actor(id)+' '+at);if(wait)code.push('waitmovement '+actor(id));}
