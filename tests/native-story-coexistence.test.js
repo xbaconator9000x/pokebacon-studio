@@ -169,3 +169,23 @@ test('actual visual-scene pages, once-only quest progress and native shared dial
  assert.ok(authored.some(text=>text.includes('The gate opens for Aipom.')));
  assert.ok(Object.values(fresh.nodes).some(n=>n.name==='callnative'));
 });
+
+test('unbound visual interaction taking over a native sign blocks conflicting original-root flow',async()=>{
+ const {bytes,project}=await scenario(),image=bytes.slice(),view=new DataView(image.buffer);
+ image[0x3003]=1;view.setUint32(0x3010,BASE+0x3300,true);
+ view.setInt16(0x3300,2,true);view.setInt16(0x3302,2,true);
+ image[0x3305]=0;view.setUint32(0x3308,BASE+0x5000,true);
+ const reader=await new GbaMaps(image).discover(),graph=await indexNativeStory(reader,{mapKeys:['0.0']});
+ const nativeSign=graph.roots.find(r=>r.kind==='signs'&&r.mapKey==='0.0');
+ assert.ok(nativeSign);
+ project.maps[0].markers.push({title:'New interaction',x:2,y:2,runtime:{action:'scene',trigger:'interact',enabled:true,steps:[{type:'say',text:'Replacement'}]}});
+ const owners=reviewNativeStoryOwnership(project,'fixture',graph);
+ assert.ok(owners.replaced.some(root=>root.id===nativeSign.id));
+ const impact=nativeStoryImpact(project,'fixture',graph,0x5000);
+ assert.ok(impact.authoredRoots.some(root=>root.id===nativeSign.id));
+ const direct=createStoryFlow(graph,nativeSign);
+ graph.edits.flows={[nativeSign.id]:direct};
+ assert.throws(()=>reviewNativeStoryOwnership(project,'fixture',graph),/unbound visual scene already replaces this original sign/);
+ project.maps[0].markers.at(-1).runtime.enabled=false;
+ assert.doesNotThrow(()=>reviewNativeStoryOwnership(project,'fixture',graph));
+});
