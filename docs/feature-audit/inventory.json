@@ -1025,7 +1025,10 @@
         "dist/script-engine.js",
         "dist/script-data.js",
         "dist/story-readable.js",
-        "dist/native-story-state.js"
+        "dist/native-story-state.js",
+        "dist/native-scene-import.js",
+        "dist/native-story-ui.js",
+        "dist/scene-compiler.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
@@ -1034,7 +1037,8 @@
         "tests/native-story-roundtrip.test.js",
         "tests/native-story-state.test.js",
         "scripts/test-release-mobile-browser.mjs",
-        "tests/native-story-coexistence.test.js"
+        "tests/native-story-coexistence.test.js",
+        "tests/native-scene-import.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1050,13 +1054,13 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Previous v4.72.7 native-byte and phone UI evidence remains valid; PR #29 adds source-sharing and authored visual-scene coexistence fixtures exercising project save/reopen, native edits, export/reindex and explicit same-root conflict guards. Exact new QA pending; real gameplay unverified.",
+        "tested": "Previous v4.72.7 native-byte and phone UI evidence remains valid; PR #29 adds source-sharing and authored visual-scene coexistence fixtures exercising project save/reopen, native edits, export/reindex and explicit same-root conflict guards. Exact new QA pending; real gameplay unverified. New native→visual conversion / project state dependency fixture tests included; actual GBA emulator gameplay not claimed.",
         "integrated": "Visual event pages and the prior native editor are on main; newer shared-script ownership/reimport fixes are on development PR #29 only, with actual ROM/Android gameplay not accepted.",
         "released": false,
         "gameplayVerified": false
       },
       "backlogGroup": "REL",
-      "implementationNotes": "Current main contains guided native conditions and names. PR #29 adds explicit source-verified bounded flag/variable reservations and flow/map-condition collision checks, NOT automatic engine-safe allocation; complete imported-event/gameplay parity remains open. Native root-pointer ownership now separates direct same-entry authored scene conflicts from legitimate edits to shared original dialogue/commands used by other NPCs. See SHARED_SCRIPT_COEXISTENCE_DEV.md."
+      "implementationNotes": "Current main contains guided native conditions and names. PR #29 adds explicit source-verified bounded flag/variable reservations and flow/map-condition collision checks, NOT automatic engine-safe allocation; complete imported-event/gameplay parity remains open. Native root-pointer ownership now separates direct same-entry authored scene conflicts from legitimate edits to shared original dialogue/commands used by other NPCs. See SHARED_SCRIPT_COEXISTENCE_DEV.md. PR #29 now adds an explicit guarded native→visual action import for original NPC/sign/coordinate triggers: verifies linear dialogue/mode, SFX, music, wait and fade commands; preserves original record/index and refuses branches/calls/custom routines without losing bytes. See NATIVE_VISUAL_BRIDGE_DEV.md."
     },
     {
       "id": "EVT03",
@@ -1191,7 +1195,7 @@
         "essentials"
       ],
       "whyNeeded": "Prove text/visual equivalence and source locations after structural editing.",
-      "status": "implemented_not_gameplay_verified",
+      "status": "partial",
       "sourceEvidence": [
         "dist/native-story.js",
         "dist/story-flow.js",
@@ -1199,14 +1203,17 @@
         "dist/script-engine.js",
         "dist/script-data.js",
         "dist/story-readable.js",
-        "dist/native-story-state.js"
+        "dist/native-story-state.js",
+        "dist/scene-compiler.js",
+        "dist/scene-ui.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
         "tests/scene-outline.test.js",
         "tests/native-story-state.test.js",
-        "scripts/test-release-mobile-browser.mjs"
+        "scripts/test-release-mobile-browser.mjs",
+        "tests/native-scene-import.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1218,16 +1225,17 @@
         "Demonstrate labels with target-engine constraints.",
         "Demonstrate raw directives with target-engine constraints.",
         "Prove text/visual equivalence and source locations after structural editing.",
-        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix. New native→visual conversion / project state dependency fixture tests included; actual GBA emulator gameplay not claimed.",
         "integrated": "PR branch only; latest delivered APK source not reconciled.",
         "released": false,
         "gameplayVerified": false
       },
-      "backlogGroup": "REL"
+      "backlogGroup": "REL",
+      "implementationNotes": " Visual say actions now allow explicit native msgbox modes 4/6, preserving source normal versus keep-open styles during conservative imports, with editor control and field validation."
     },
     {
       "id": "EVT06",
@@ -1362,7 +1370,8 @@
         "dist/script-data.js",
         "dist/story-readable.js",
         "dist/native-scene-preflight.js",
-        "dist/rom-project.js"
+        "dist/rom-project.js",
+        "dist/native-scene-import.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
@@ -1370,7 +1379,8 @@
         "tests/scene-outline.test.js",
         "tests/native-story-coexistence.test.js",
         "tests/scene-export-preflight.test.js",
-        "tests/scene-sidecar-roundtrip.test.js"
+        "tests/scene-sidecar-roundtrip.test.js",
+        "tests/native-scene-import.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1386,13 +1396,13 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Previous v4.72.7 native-byte and phone UI evidence remains valid; PR #29 adds source-sharing and authored visual-scene coexistence fixtures exercising project save/reopen, native edits, export/reindex and explicit same-root conflict guards. Exact new QA pending; real gameplay unverified. Added nested page and ROM sidecar round-trip fixture coverage (exact-head CI required); no physical-device or live Pokémon engine proof.",
+        "tested": "Previous v4.72.7 native-byte and phone UI evidence remains valid; PR #29 adds source-sharing and authored visual-scene coexistence fixtures exercising project save/reopen, native edits, export/reindex and explicit same-root conflict guards. Exact new QA pending; real gameplay unverified. Added nested page and ROM sidecar round-trip fixture coverage (exact-head CI required); no physical-device or live Pokémon engine proof. New native→visual conversion / project state dependency fixture tests included; actual GBA emulator gameplay not claimed.",
         "integrated": "Visual event pages and the prior native editor are on main; newer shared-script ownership/reimport fixes are on development PR #29 only, with actual ROM/Android gameplay not accepted.",
         "released": false,
         "gameplayVerified": false
       },
       "backlogGroup": "REL",
-      "implementationNotes": "Production native-byte script export/reindex and existing-source shared text relocation fixtures are covered. Explicit source-root ownership prevents accidental double-authoring while allowing different original roots to be edited independently. Real Shattered runtime, cross-version map refresh and complete quest-save reimport equivalence remain open. Bounded synthetic integration now covers authored conditional page compilation, source NPC event-pointer update, editable project/quest state sidecar, original ROM snapshot recovery and actual native script reindexing. This is not game/emulator execution or proof of live save persistence."
+      "implementationNotes": "Production native-byte script export/reindex and existing-source shared text relocation fixtures are covered. Explicit source-root ownership prevents accidental double-authoring while allowing different original roots to be edited independently. Real Shattered runtime, cross-version map refresh and complete quest-save reimport equivalence remain open. Bounded synthetic integration now covers authored conditional page compilation, source NPC event-pointer update, editable project/quest state sidecar, original ROM snapshot recovery and actual native script reindexing. This is not game/emulator execution or proof of live save persistence. Original event entry identity and shared source script bytes are explicitly preserved across native→visual conversion, project save/reopen and synthetic GBA script-byte reindex. Real ROM engine behaviour remains unverified."
     },
     {
       "id": "SCN01",
@@ -1732,12 +1742,15 @@
         "dist/quest-presets.js",
         "dist/quest-runtime.js",
         "dist/event-recipes.js",
-        "dist/event-model.js"
+        "dist/event-model.js",
+        "dist/quest-reference-index.js",
+        "dist/authoring-ui.js"
       ],
       "testEvidence": [
         "tests/quest-presets.test.js",
         "tests/event-recipes.test.js",
-        "tests/scene-item-award.test.js"
+        "tests/scene-item-award.test.js",
+        "tests/quest-reference-index.test.js"
       ],
       "dependencies": [
         "EVT"
@@ -1749,16 +1762,17 @@
         "Demonstrate named stages with target-engine constraints.",
         "Demonstrate acceptance with target-engine constraints.",
         "Needs player-readable condition editor and runtime acceptance on current Shattered.",
-        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix. New native→visual conversion / project state dependency fixture tests included; actual GBA emulator gameplay not claimed.",
         "integrated": "PR branch only; latest delivered APK source not reconciled.",
         "released": false,
         "gameplayVerified": false
       },
-      "backlogGroup": "EVT"
+      "backlogGroup": "EVT",
+      "implementationNotes": " Project-only quest flag and counter reference explorer now tracks linked events, nested page actions, field-object persistence, visit flags, repeat actions and counter storage with map navigation. Read-only and separate from original native engine flag namespace; no live save proof."
     },
     {
       "id": "QST02",
