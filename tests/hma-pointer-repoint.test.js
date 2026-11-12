@@ -114,3 +114,15 @@ test('hidden unaligned bytecode pointer blocks repoint, even though the basic al
  assert.equal(result.updatedPointers,3);
  assert.equal(view(output.bytes).getUint32(packed,true),BASE+result.newAddress);
 });
+
+test('direct and HMA-biased interior pointers veto a table move before any native output changes',()=>{
+ const {project,source,table}=scenario();
+ view(source).setUint32(0x550,BASE+TABLE+4,true);
+ assert.throws(()=>planSafeTableRepoint(project,ID,source,table,[SITE1,SITE2]),/interior table pointer/);
+ assert.equal(project.hexStudio.sources[ID].repoints,undefined);
+ view(source).setUint32(0x550,0,true);
+ importHMAToml(project,ID,source,["[[OffsetPointer]]","Address = 0x000554","Offset = 4"].join('\n'));
+ view(source).setUint32(0x554,BASE+TABLE,true);
+ assert.throws(()=>planSafeTableRepoint(project,ID,source,table,[SITE1,SITE2]),/interior table pointer/);
+ assert.equal(project.hexStudio.sources[ID].repoints,undefined);
+});
