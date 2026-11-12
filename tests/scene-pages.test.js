@@ -97,3 +97,19 @@ test('manual JSON page repair is validation-first, leaves malformed imported dat
  assert.equal(runtime.pages[0].steps[0].text,'Hello');
  assert.deepEqual(pageStructureIssues(runtime),[]);
 });
+
+test('invalid pages never crash quest adapter detection or native event validation',async()=>{
+ const {newProject}=await import('../dist/model.js');
+ const {newScene}=await import('../dist/authoring-model.js');
+ const {needsQuest,validateEvent}=await import('../dist/event-model.js');
+ const project=newProject(),n=newScene(project,1,1);
+ for(const pages of [[null],[{id:'one',name:'broken',conditions:'invalid',steps:[]}],[]]){
+  n.runtime.pages=pages;
+  assert.equal(needsQuest(n),false);
+  assert.throws(()=>validateEvent(n,project),/Repair the invalid event pages/);
+ }
+ delete n.runtime.pages;
+ n.runtime.steps=[{id:'nested',type:'choice',yes:'invalid'}];
+ assert.equal(needsQuest(n),false);
+ assert.throws(()=>validateEvent(n,project),/action queue must be a list/i);
+});
