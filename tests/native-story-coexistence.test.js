@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {syntheticROM} from '../scripts/synthetic-map-rom.mjs';
 import {GbaMaps} from '../dist/rom.js';
 import {compileScript} from '../dist/script-engine.js';
-import {indexNativeStory,installNativeStoryEdits,reviewNativeStoryOwnership} from '../dist/native-story.js';
+import {indexNativeStory,installNativeStoryEdits,reviewNativeStoryOwnership,nativeStoryImpact} from '../dist/native-story.js';
 import {createStoryFlow,validateStoryFlow} from '../dist/story-flow.js';
 import {insertStoryCondition} from '../dist/native-story-state.js';
 import {RomOutput} from '../dist/rom-writer.js';
@@ -101,4 +101,20 @@ test('disabled authored event and unrelated map do not reserve a native script e
  assert.equal(reviewNativeStoryOwnership(project,'fixture',graph).replaced.length,0);
  graph.edits.flows={[roots[0].id]:createStoryFlow(graph,roots[0])};
  assert.doesNotThrow(()=>reviewNativeStoryOwnership(project,'fixture',graph));
+});
+
+test('command impact distinguishes visual replacements from live native roots',async()=>{
+ const {graph,project}=await scenario();
+ const all=nativeStoryImpact(project,'fixture',graph,0x5000);
+ assert.equal(all.sourceRoots.length,2);
+ assert.equal(all.authoredRoots.length,1);
+ assert.equal(all.liveNativeRoots.length,1);
+ assert.equal(all.mapCount,1);
+ project.maps[0].markers[0].runtime.enabled=false;
+ const restored=nativeStoryImpact(project,'fixture',graph,0x5000);
+ assert.equal(restored.liveNativeRoots.length,2);
+ assert.equal(restored.authoredRoots.length,0);
+ const missing=nativeStoryImpact(project,'fixture',graph,0x7000);
+ assert.equal(missing.sourceRoots.length,0);
+ assert.equal(missing.mapCount,0);
 });
