@@ -18,9 +18,9 @@ function stepsFromNativeGraph(graph,root,newId,map){
  if(!root||!['npcs','signs','triggers'].includes(root.kind))fail('only original NPC, sign and tile event entries can become visual scenes');
  if(graph.edits?.flows?.[root.id])fail('this entry has a native structural flow; restore that flow before converting',root.address);
  const seen=new Set(),state={commands:0,actions:0};
- const current=at=>{
+ const current=(at,{allowMessageStd=false}={})=>{
   const n=graph.nodes?.[at];
-  if(!n||n.opaque||n.external||n.adapter)fail('an unresolved or engine-specific command cannot be translated',at);
+  if(!n||n.opaque||(n.external||n.adapter)&&!(allowMessageStd&&n.code===9))fail('an unresolved or engine-specific command cannot be translated',at);
   if(graph.edits?.commands?.[at])fail('this event has edited native command arguments',at);
   return n;
  };
@@ -55,7 +55,7 @@ function stepsFromNativeGraph(graph,root,newId,map){
     at=n.end;continue;
    }
    if(code===15&&args[0]===0){
-    const next=current(n.end),style=next.code===9?next.args?.[0]?.value:null;
+    const next=current(n.end,{allowMessageStd:true}),style=next.code===9?next.args?.[0]?.value:null;
     if(![4,6].includes(style))fail('unsupported message box mode or command sequence',at);
     visit(next.at);out.push(newAction({type:'say',text:textFor(graph,at,n),messageType:style},at));
     hadDialogue=true;at=next.end;continue;
@@ -96,7 +96,7 @@ function stepsFromNativeGraph(graph,root,newId,map){
     if(!graph.nodes?.[trueAt]||trueAt<=falseAt)fail('flag branch target is not a forward original script block',conditional.at);
     let seek=falseAt,exit=null;
     for(let i=0;i<MAX_COMMANDS&&seek<trueAt;i++){
-     const candidate=current(seek);
+     const candidate=current(seek,{allowMessageStd:true});
      if(candidate.code===5){exit=candidate;break;}
      if(candidate.end<=seek||candidate.end>trueAt)fail('flag branch has an unresolved forward command boundary',seek);
      seek=candidate.end;
