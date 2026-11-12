@@ -1043,17 +1043,17 @@
         "Demonstrate text with target-engine constraints.",
         "Demonstrate args with target-engine constraints.",
         "Flow editing exists; current Shattered end-to-end event benchmark is unexecuted.",
-        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
         "tested": "Native condition/name fixtures, mobile save/reload and private Shattered export/reindex; see DELIVERY_4_72_7.md. Not full gameplay.",
-        "integrated": "4.72.7 test candidate on PR #19; main/device/gameplay acceptance open.",
+        "integrated": "4.72.7 event editor is on main; PR #29 reservation extensions remain on development branch, with device/gameplay acceptance still open.",
         "released": false,
         "gameplayVerified": false
       },
       "backlogGroup": "REL",
-      "implementationNotes": "Guided existing-ID flag/variable branches and project-local names implemented. New native state allocation and complete event pages remain open."
+      "implementationNotes": "Current main contains guided native conditions and names. PR #29 adds explicit source-verified bounded flag/variable reservations and flow/map-condition collision checks, NOT automatic engine-safe allocation; complete imported-event/gameplay parity remains open."
     },
     {
       "id": "EVT03",
@@ -1133,14 +1133,19 @@
         "dist/script-engine.js",
         "dist/script-data.js",
         "dist/story-readable.js",
-        "dist/native-story-state.js"
+        "dist/native-story-state.js",
+        "dist/scene-pages.js",
+        "dist/scene-ui.js",
+        "dist/authoring-model.js",
+        "dist/scene-compiler.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
         "tests/scene-outline.test.js",
         "tests/native-story-state.test.js",
-        "scripts/test-release-mobile-browser.mjs"
+        "scripts/test-release-mobile-browser.mjs",
+        "tests/scene-pages.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1152,16 +1157,17 @@
         "Demonstrate ordered conditions with target-engine constraints.",
         "Demonstrate self switches with target-engine constraints.",
         "Draft PR #11 needs reconciliation; a native flow graph does not provide full RPG Maker page semantics.",
-        "Complete applicable Import \u2192 Inspect \u2192 Edit \u2192 Save \u2192 Reopen \u2192 Export \u2192 Execute \u2192 Reimport \u2192 Validate checks; keep unsupported bytes unchanged."
+        "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
-        "integrated": "PR branch only; latest delivered APK source not reconciled.",
+        "tested": "4.72.7 page UI on main; PR #29 adds deep-ID duplication, malformed-import diagnostics, saved page-state and native script-compilation tests. No game runtime proven.",
+        "integrated": "Basic page authoring merged on main PR #28; enhanced copy/import safety on PR #29 development only.",
         "released": false,
         "gameplayVerified": false
       },
-      "backlogGroup": "REL"
+      "backlogGroup": "REL",
+      "implementationNotes": "Highest-priority matching event pages and edit/duplicate/reorder controls are merged on main. New development safety guards duplicate all nested action IDs and preserve malformed drafts for correction. Self-switch, appearance/trigger parity, original Shattered runtime and gameplay acceptance remain open."
     },
     {
       "id": "EVT05",
