@@ -14,7 +14,7 @@
     "dist/ability-runtime-data.js": "e86863ce25a8a40402b4aca33292dfbc70ce912efecbe5fc01c7a8d5cda0c02f",
     "dist/ability-runtime-profile.js": "8bd8af6bb3f294175480e5d10808018feeebd29b3c6a55b3c1720ab3638ad377",
     "dist/ability-studio-model.js": "bded3f182c6e28534ac50ab5f05cc570f3c3bed2c720eb123329157d2ee2a6a6",
-    "dist/app.js": "3c5801e62cd199383c90024ea0e40543ccd4dc4f5254b2ebd113dea19056173c",
+    "dist/app.js": "2539fb5c3087c43c0ff340f02f876620e6762dd8ba40c409e9e8dcddd8c38d54",
     "dist/asset-browser.js": "261d7bfa03991621406f1bde99b0d30d19387593d78fdda226f034e60289e1d7",
     "dist/asset-extras.js": "b5ec338dd23c6cf3538dde70240b72ae0627e328559b2a646016919b0a2eeb21",
     "dist/asset-organizer.js": "7c9d82c0d5f7e8cfbc3dae44eee0949a594eadf16c2ca3ae2aee223240cdaf19",
@@ -1897,7 +1897,7 @@
     "dist/native-hex-workspace.js": "8063a62b5e4d687133980e54983eba3d8c9ed38ed229e1d0b610718a8b486e1e",
     "dist/hma-table-workspace.js": "2a52c1b7243d69f9c12def5281ff412107c559bde7d5a9ded26253530a57c74f",
     "dist/hma-hex-ui.js": "e4a320814ed7775ca2080acff9bdd362c68be3529ea26406e81cfd86a6695a34",
-    "dist/hma-pointer-navigation.js": "abeea65123b2fbf3d9089ed089a54901da82636404bbc4625465817e0a44968b",
+    "dist/hma-pointer-navigation.js": "c6698d97178f9db0ea4b42913c34069e6b4c4ba8a4d3cda165df6b06a4749f06",
     "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f"
   },
   "developmentBranch": "development/studio-upgrades",
