@@ -54,6 +54,18 @@ export function validateHexStudio(model){
    if(!Number.isInteger(p.at)||p.at<0||p.at>=LIMIT||!Number.isInteger(p.before)||p.before<0||p.before>255||!Number.isInteger(p.after)||p.after<0||p.after>255||p.before===p.after||seen.has(p.at))throw Error('Invalid, duplicated or unchanged staged native ROM patch.');
    seen.add(p.at);
   }
+  const repoints=state.repoints||[];
+  if(!Array.isArray(repoints)||repoints.length>32)throw Error('Saved HMA table repoint list is invalid or exceeds its safe limit.');
+  const usedSites=new Set(),usedTables=new Set();
+  for(const p of repoints){
+   if(!p||typeof p.tableId!=='string'||!Number.isInteger(p.address)||p.address<512||p.address>=LIMIT||!Number.isInteger(p.length)||p.length<1||p.length>4096*4096||!Array.isArray(p.sites)||p.sites.length<1||p.sites.length>64||usedTables.has(p.tableId)||!tables.some(t=>t.id===p.tableId))
+    throw Error('Saved HMA table repoint has invalid fields or no matching typed table.');
+   usedTables.add(p.tableId);
+   for(const at of p.sites){
+    if(!Number.isInteger(at)||at<512||at+4>LIMIT||usedSites.has(at))throw Error('Duplicate or out-of-range saved table pointer source.');
+    usedSites.add(at);
+   }
+  }
   for(const table of tables){
    if(!table||typeof table.id!=='string'||!/^[A-Za-z0-9-]{1,80}$/.test(table.id)||typeof table.name!=='string'||!Array.isArray(table.fields)||table.fields.length>32||table.fields.length<1||!Number.isInteger(table.address)||table.address<0||table.address>=LIMIT||!Number.isInteger(table.stride)||table.stride<1||table.stride>4096||!Number.isInteger(table.count)||table.count<1||table.count>4096||table.address+table.stride*table.count>LIMIT)throw Error('Invalid saved typed-ROM-table layout.');
    for(const field of table.fields)if(!field||typeof field.name!=='string'||!Number.isInteger(field.offset)||field.offset<0||field.offset>4095||!['u8','s8','u16','s16','u32','s32','ptr','ascii'].includes(field.type))throw Error('Invalid saved typed-ROM-table field.');
