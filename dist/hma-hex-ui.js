@@ -6,7 +6,7 @@ export function hmaHexWorkshop(api){
  const $=s=>document.querySelector(s),esc=api.esc;
  const state={tab:'hex',offset:0,query:'',tableId:'',row:0,anchorQuery:'',anchorPage:0,editing:null};
  const session=()=>api.session(),data=()=>session().reader.bytes,id=()=>session().id,source=()=>api.project();
- const safe=f=>{try{return f();}catch(error){api.error(error);return null;}};
+ const safe=f=>{try{const result=f();if(result&&typeof result.then==='function')result.catch(api.error);return result;}catch(error){api.error(error);return null;}};
  const nbytes=()=>hexState(source(),id())?.patches?.length||0;
  function open(tab=state.tab){
   state.tab=tab;
