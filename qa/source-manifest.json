@@ -1895,8 +1895,8 @@
     "dist/quest-reference-index.js": "aa71e6112f9f673ff50c8ee16e7e5b8d5d33799f3458e701ac19333856a2c922",
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
     "dist/native-hex-workspace.js": "8063a62b5e4d687133980e54983eba3d8c9ed38ed229e1d0b610718a8b486e1e",
-    "dist/hma-table-workspace.js": "9755a45584b77118c5a7e6f78272b16ebf2758ee9bf2502b74055891138407c3",
-    "dist/hma-hex-ui.js": "130b81d9df2dd66b8cfc90d7c1d06c69fa3ce4e8eb1e6ceb5805242265581520",
+    "dist/hma-table-workspace.js": "df01a62df08a3571ab817f5658abd6b3fe67f38cb5cfb2caefc482edd7eef18f",
+    "dist/hma-hex-ui.js": "14584e10eeea6040eb21930da31917e13d3ce4205a9d76202334c37c506e7a23",
     "dist/hma-pointer-navigation.js": "17d09c4f8061a702930c0b6b554dacd1b383e2660148df2db21e842692dad17b",
     "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f"
   },
