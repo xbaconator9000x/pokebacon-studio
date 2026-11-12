@@ -76,3 +76,20 @@ test('quest references preserve page/branch identities through project save/reop
  assert.deepEqual([...after.flags.keys()],[...before.flags.keys()]);
  assert.deepEqual([...after.variables.keys()],[...before.variables.keys()]);
 });
+
+test('original engine flags in conditional visual scenes are indexed separately from project quest bits',()=>{
+ const {project,event,accepted}=projectFixture();
+ event.runtime.steps=[{id:uid(),type:'nativeFlagIf',nativeFlagId:0x200,then:[{id:uid(),type:'flag',flagId:accepted.id,value:true}],else:[{id:uid(),type:'nativeFlagIf',nativeFlagId:0x201,then:[],else:[]}]}];
+ delete event.runtime.pages;
+ const snapshot=JSON.stringify(project),result=questReferenceIndex(project);
+ assert.equal(result.nativeFlags.get(0x200)?.length,1);
+ assert.equal(result.nativeFlags.get(0x201)?.length,1);
+ assert.equal(result.nativeFlags.get(0x200)[0].eventId,event.id);
+ assert.match(result.nativeFlags.get(0x200)[0].detail,/original ROM only/);
+ assert.ok(!result.flags.has(0x200));
+ assert.ok(result.flags.get(accepted.id).some(x=>/action/.test(x.detail)));
+ assert.equal(JSON.stringify(project),snapshot);
+ const save=planSave(project),parts=new Map(save.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const reopened=assembleSavedProject(save.header,savedProjectKeys(save.header).map(k=>parts.get(k)));
+ assert.deepEqual([...questReferenceIndex(reopened).nativeFlags.entries()],[...result.nativeFlags.entries()]);
+});
