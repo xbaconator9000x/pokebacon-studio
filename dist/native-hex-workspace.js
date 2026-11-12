@@ -161,6 +161,18 @@ export function findMaskedROMHex(project,sourceId,source,pattern,{from=0,limit=1
  return {hits,nextFrom:end<latest?end:null,scanned:end-from};
 }
 
+/** Unstage a bounded raw-byte range while retaining all unrelated project
+ * changes. Source preconditions are checked against the original ROM. */
+export function revertROMHexRange(project,sourceId,source,at,length){
+ if(!Number.isInteger(at)||!Number.isInteger(length)||at<0||length<1||length>4096||at+length>source.length)
+  throw Error('Choose 1–4096 original-ROM bytes to revert.');
+ const pending=checked(store(project,sourceId),source);
+ const matched=pending.filter(p=>p.at>=at&&p.at<at+length).length;
+ if(!matched)return {changed:0,removed:0,total:pending.length};
+ const result=stageROMHex(project,sourceId,source,at,source.slice(at,at+length));
+ return {...result,removed:matched};
+}
+
 export function hexDiffSummary(project,sourceId,source,{limit=100}={}){
  const patches=checked(store(project,sourceId),source),spans=[];
  for(const patch of patches){const last=spans.at(-1);
