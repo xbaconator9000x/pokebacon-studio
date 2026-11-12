@@ -1897,7 +1897,7 @@
     "dist/native-hex-workspace.js": "8063a62b5e4d687133980e54983eba3d8c9ed38ed229e1d0b610718a8b486e1e",
     "dist/hma-table-workspace.js": "2a52c1b7243d69f9c12def5281ff412107c559bde7d5a9ded26253530a57c74f",
     "dist/hma-hex-ui.js": "e4a320814ed7775ca2080acff9bdd362c68be3529ea26406e81cfd86a6695a34",
-    "dist/hma-pointer-navigation.js": "c6698d97178f9db0ea4b42913c34069e6b4c4ba8a4d3cda165df6b06a4749f06",
+    "dist/hma-pointer-navigation.js": "17d09c4f8061a702930c0b6b554dacd1b383e2660148df2db21e842692dad17b",
     "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f"
   },
   "developmentBranch": "development/studio-upgrades",
