@@ -1896,7 +1896,7 @@
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
     "dist/native-hex-workspace.js": "8063a62b5e4d687133980e54983eba3d8c9ed38ed229e1d0b610718a8b486e1e",
     "dist/hma-table-workspace.js": "2a52c1b7243d69f9c12def5281ff412107c559bde7d5a9ded26253530a57c74f",
-    "dist/hma-hex-ui.js": "2059f17b3c372297db1a517b21226079c6ea6fd95533c2590116c6e1bb2e96f4",
+    "dist/hma-hex-ui.js": "e4a320814ed7775ca2080acff9bdd362c68be3529ea26406e81cfd86a6695a34",
     "dist/hma-pointer-navigation.js": "abeea65123b2fbf3d9089ed089a54901da82636404bbc4625465817e0a44968b",
     "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f"
   },
