@@ -120,3 +120,31 @@ test('converter handles original native signs and tile triggers without rewritin
   assert.equal(converted.marker.runtime.steps[0].text,'A native '+kind+'.');
  }
 });
+
+test('visualized original NPC remains recoverable through playable ROM plus editable project sidecar',async()=>{
+ const {project,reader,graph,roots,bytes}=await fixture({copies:2});
+ const converted=applyNativeVisualImport(project,'fixture',graph,roots[0],id),steps=converted.marker.runtime.steps;
+ const output=new RomOutput(bytes);
+ const src=sceneSource(converted.marker,{project,map:converted.map,gameProfile:{engine:'frlg'}});
+ output.write(0x6000,compileScript(src,0x6000,'frlg').bytes);
+ output.int(roots[0].reference,BASE+0x6000);
+ const {createROMProjectSidecar,restoreROMProjectSidecar,resolveROMExportSource}=await import('../dist/rom-project.js');
+ const sidecar=await createROMProjectSidecar(output.bytes,bytes,project,{sourceId:'fixture'});
+ const snapshot=JSON.stringify(sidecar);
+ const recovered=await restoreROMProjectSidecar(JSON.parse(snapshot),output.bytes);
+ assert.deepEqual(recovered.source,bytes);
+ assert.equal(recovered.project.maps[0].markers[0].runtime.steps.length,steps.length);
+ assert.equal(recovered.project.maps[0].markers[0].runtime.importedNative.rootId,roots[0].id);
+ assert.equal(recovered.project.maps[0].markers[1].runtime,undefined);
+ assert.deepEqual((await resolveROMExportSource(sidecar,output.bytes)).source,bytes);
+ assert.equal(JSON.stringify(sidecar),snapshot,'reading the playable export must not rewrite the saved project sidecar');
+});
+test('exhausted project quest save space leaves original imported pin, source graph and state unchanged',async()=>{
+ const {project,graph,roots}=await fixture({copies:1});
+ project.questFlags=Array.from({length:1024},(_,slot)=>({id:'reserved-'+slot,name:'Reserved '+slot,slot}));
+ project.questToken=123456;
+ const before=JSON.stringify(project);
+ assert.throws(()=>applyNativeVisualImport(project,'fixture',graph,roots[0],id),/all 1,024 quest slots/);
+ assert.equal(JSON.stringify(project),before);
+ assert.equal(project.maps[0].markers[0].runtime,undefined);
+});
