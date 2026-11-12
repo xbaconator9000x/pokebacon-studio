@@ -132,3 +132,29 @@ export function editTableField(project,sourceId,source,table,index,fieldName,val
  const at=table.address+index*table.stride+field.offset;
  return stageROMHex(project,sourceId,source,at,bytes);
 }
+
+// Only recognize HMA's strictly fixed, inline numeric table subset:
+// [field. field: field::]COUNT (. = 1, : = 2, :: = 4 bytes).
+// Dynamic counts, pointers, enums, strings, bitfields and compressed data
+// are NOT inferred; preserving unsupported metadata is preferable to
+// silently misinterpreting engine-native memory.
+export function fixedNumericHMATable(anchor,sourceLength){
+ if(!anchor||typeof anchor.format!=='string'||typeof anchor.name!=='string'||!Number.isInteger(anchor.at))return null;
+ const match=anchor.format.trim().match(/^\[([^\]\[\r\n]+)\]([1-9]\d{0,3})$/);
+ if(!match)return null;
+ const cells=match[1].trim().split(/\s+/),count=Number(match[2]),fields=[];
+ if(!cells.length||cells.length>32||count>4096)return null;
+ let stride=0;
+ for(const token of cells){
+  const parsed=token.match(/^([A-Za-z_][A-Za-z0-9_-]*)(::|:|\.)$/);
+  if(!parsed||fields.some(f=>f.name===parsed[1]))return null;
+  const type=parsed[2]==='.'?'u8':parsed[2]===':'?'u16':'u32';
+  fields.push({name:parsed[1],type,offset:stride});
+  stride+=types[type];
+ }
+ if(stride<1||stride>4096||anchor.at<0||anchor.at+stride*count>sourceLength)return null;
+ const id='hma-'+anchor.name.replace(/[^A-Za-z0-9-]/g,'-').replace(/-+/g,'-').slice(0,67);
+ const table={id,name:anchor.name,address:anchor.at,stride,count,fields};
+ try{validateTable(table,sourceLength);}catch{return null;}
+ return table;
+}
