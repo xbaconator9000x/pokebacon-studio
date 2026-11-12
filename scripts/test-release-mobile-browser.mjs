@@ -83,6 +83,52 @@ try{
  await page.reload();await page.waitForFunction(()=>globalThis.__releaseQA&&document.querySelector('#loading')?.hidden);
  assert.equal(await page.evaluate(()=>__releaseQA.project().nativeStory['synthetic-event'].symbols.flags[512]),'Has the gate key');
  assert.equal(await page.evaluate(()=>Object.keys(__releaseQA.project().nativeStory['synthetic-event'].edits.flows).length),1);
+ // Actual 412px mobile-browser flow: original ROM byte -> typed table -> HMA
+ // anchor import -> split IndexedDB project save and re-open.
+ await page.evaluate(async()=>{
+  document.querySelector('#dialog')?.close();
+  const {syntheticROM}=await import('/__fixture.mjs'),{GbaMaps}=await import('/rom.js');
+  const reader=await new GbaMaps(syntheticROM()).discover();
+  __releaseQA.attachROM(reader,'hma-fixture');
+  await __releaseQA.openWorkspace('source');
+ });
+ await page.locator('#sourceHexWorkspace').click();
+ await page.locator('#hmaGoto').fill('0xA0');await page.locator('#hmaGo').click();
+ assert.equal(await page.locator('#hmaEditAt').inputValue(),'0xA0');
+ await page.locator('#hmaEditHex').fill('5A');
+ await page.locator('#hmaStage').click();
+ assert.equal(await page.evaluate(()=>__releaseQA.project().hexStudio.sources['hma-fixture'].patches.find(p=>p.at===0xa0)?.after),90);
+ await page.locator('[data-hex-tab="tables"]').click();
+ await page.locator('#hmaCreateTable').click();
+ await page.locator('#hmaLayoutName').fill('Imported original table');
+ await page.locator('#hmaLayoutAt').fill('0x680');
+ await page.locator('#hmaLayoutStride').fill('4');
+ await page.locator('#hmaLayoutCount').fill('3');
+ await page.locator('#submitDialog').click();
+ await page.locator('[data-table-row="0"]').click();
+ await page.locator('#hmaCellValue').fill('25');
+ await page.locator('#submitDialog').click();
+ assert.equal(await page.evaluate(()=>__releaseQA.project().hexStudio.sources['hma-fixture'].tables[0].count),3);
+ await page.locator('[data-hex-tab="metadata"]').click();
+ const metadataText=["[[NamedAnchors]]","Name = '''test.original.records'''","Address = 0x000680","Format = '''[value::]3'''","[[Unknown]]","Future = '''preserve me'''"].join('\n')+'\n';
+ await page.locator('#hmaTomlInput').setInputFiles({name:'user-hma.toml',mimeType:'text/plain',buffer:Buffer.from(metadataText)});
+ await page.waitForFunction(()=>document.querySelectorAll('[data-hma-anchor]').length===1);
+ assert.match(await page.locator('#hmaHexBody').innerText(),/test.original.records/);
+ await page.locator('[data-hma-anchor]').first().click();
+ assert.equal(await page.locator('#hmaEditAt').inputValue(),'0x680');
+ await page.locator('[data-hex-tab="changes"]').click();
+ assert.match(await page.locator('#hmaHexBody').innerText(),/staged bytes/);
+ await page.screenshot({path:path.join(screens,'hma-hex-tables-412.png')});
+ await page.evaluate(async()=>{await __releaseQA.persist();});
+ await page.reload();await page.waitForFunction(()=>__releaseQA&&document.querySelector('#loading')?.hidden);
+ const restored=await page.evaluate(()=>{
+  const state=__releaseQA.project().hexStudio?.sources?.['hma-fixture'];
+  return {writes:state?.patches?.length,hex:state?.patches?.find(p=>p.at===0xa0)?.after,value:state?.patches?.find(p=>p.at===0x680)?.after,table:state?.tables?.[0]?.name,toml:state?.hmaToml};
+ });
+ assert.equal(restored.hex,90);assert.equal(restored.value,25);
+ assert.equal(restored.table,'Imported original table');
+ assert.equal(restored.toml,metadataText);
+
  assert.equal(errors.length,0,errors.join('\n'));
  console.log('PASS mobile sprite tools, IndexedDB reload, event search, named-state branch creation and saved structure after reload. Screenshots: '+screens);
 }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}
