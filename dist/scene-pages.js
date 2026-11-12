@@ -44,8 +44,20 @@ export function addScenePage(runtime,newId,from=null){
  // Validate the draft *before* enabling pages so malformed input cannot
  // partially consume the existing unsplit scene actions.
  if(pageStructureIssues({pages:[page]}).length)throw Error('The new event page is incomplete or invalid.');
- const pages=enableScenePages(runtime,newId);
- pages.push(page);
+ // Validate the *whole* destination, including collisions with existing
+ // pages and action IDs. For a first conversion, prepare the base page in a
+ // temporary array and commit only after every ID has been checked.
+ let pages=scenePages(runtime);
+ if(!pages){
+  const id=newId();
+  if(typeof id!=='string'||!id.trim())throw Error('A new event page needs a stable ID.');
+  pages=[{id,name:'Page 1',enabled:true,conditions:[],steps:runtime.steps||[]}];
+ }
+ const candidate=[...pages,page],issues=pageStructureIssues({pages:candidate});
+ if(issues.length)throw Error('Cannot add event page: '+issues[0]);
+ runtime.pages=candidate;
+ if(!scenePages(runtime)?.length)throw Error('The event pages could not be saved.');
+ runtime.steps=[];
  return page;
 }
 export function chooseScenePage(runtime,satisfies){
