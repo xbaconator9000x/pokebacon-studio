@@ -51,15 +51,35 @@ export function movementNames(){return Object.entries(SCRIPT_DATA.movements).map
 // A root-local visual scene owns its event entry; a native structural flow cannot
 // also own that entry. In-place shared command/text/movement edits are legitimate
 // when other original entry pointers continue using their source script.
+function authoredNativeRoot(project,sourceId,root){
+ const type={npcs:'npc',signs:'sign',triggers:'trigger'}[root.kind];if(!type)return null;
+ const map=project.maps?.find(m=>!m.rom?.isCopy&&m.rom?.sourceId===sourceId&&m.rom.key===root.mapKey);
+ const marker=map?.markers?.find(n=>n.rom?.type===type&&n.rom?.index===root.index);
+ return marker?.runtime&&marker.runtime.enabled!==false?{map,marker}:null;
+}
+// Report reachable source entries and their *current* authored/native ownership.
+// This report intentionally does not imply original bytes are still executed
+// by entries whose map pins now point at replacement visual scenes.
+export function nativeStoryImpact(project,sourceId,graph,address){
+ const incoming=new Map();
+ for(const n of Object.values(graph.nodes||{}))for(const edge of effectiveStoryEdges(graph,n)){
+  if(!incoming.has(edge.to))incoming.set(edge.to,[]);
+  incoming.get(edge.to).push(n.at);
+ }
+ const visited=new Set(),work=graph.nodes?.[address]?[address]:[];
+ while(work.length){
+  const at=work.shift();if(visited.has(at))continue;
+  visited.add(at);work.push(...(incoming.get(at)||[]));
+ }
+ const sourceRoots=(graph.roots||[]).filter(root=>visited.has(root.address));
+ const authoredRoots=sourceRoots.filter(root=>!!authoredNativeRoot(project,sourceId,root));
+ return{sourceRoots,authoredRoots,liveNativeRoots:sourceRoots.filter(root=>!authoredNativeRoot(project,sourceId,root)),mapCount:new Set(sourceRoots.map(root=>root.mapKey)).size};
+}
 export function reviewNativeStoryOwnership(project,sourceId,graph,edits=graph.edits||{}){
  const replaced=[],flows=new Set(Object.keys(edits.flows||{}));
- const groups={npcs:'npc',signs:'sign',triggers:'trigger'};
  for(const root of graph.roots||[]){
-  const type=groups[root.kind];if(!type)continue;
-  const map=project.maps?.find(m=>!m.rom?.isCopy&&m.rom?.sourceId===sourceId&&m.rom.key===root.mapKey);
-  const marker=map?.markers?.find(n=>n.rom?.type===type&&n.rom?.index===root.index);
-  if(!marker?.runtime||marker.runtime.enabled===false)continue;
-  if(flows.has(root.id))throw Error('This event also has an authored replacement scene. Keep one source of event edits: '+map.name+' / '+marker.title);
+  const owner=authoredNativeRoot(project,sourceId,root);if(!owner)continue;
+  if(flows.has(root.id))throw Error('This event also has an authored replacement scene. Keep one source of event edits: '+owner.map.name+' / '+owner.marker.title);
   replaced.push(root);
  }
  return{replaced,reports:replaced.length?['Native script coexistence: '+replaced.length+' authored event entr'+(replaced.length===1?'y retains its replacement':'ies retain their replacements')+'; shared source scripts remain available to other native events.']:[]};
