@@ -70,3 +70,16 @@ test('native page prerequisites survive a project save and compile to FRLG scrip
  assert.match(source,/goto_if 1/);
  assert.ok(compileScript(source,0x1001000,'frlg').bytes.length>0);
 });
+
+test('scene diagnostics report malformed page imports and invalid nested actions instead of throwing',async()=>{
+ const {newProject}=await import('../dist/model.js');
+ const {newScene,sceneIssues}=await import('../dist/authoring-model.js');
+ const project=newProject(),map=project.maps[0],n=newScene(project,2,2);
+ n.runtime.pages=[{id:'bad',name:'Broken',enabled:true,conditions:'not-an-array',steps:[]}];
+ let issues;assert.doesNotThrow(()=>issues=sceneIssues(n,project,map));
+ assert.ok(issues.some(issue=>issue.path==='Pages'&&/prerequisite|action/.test(issue.message)));
+ delete n.runtime.pages;
+ n.runtime.steps=[{id:'nested',type:'choice',yes:'not-an-array'}];
+ assert.doesNotThrow(()=>issues=sceneIssues(n,project,map));
+ assert.ok(issues.some(issue=>issue.path==='Actions'&&/list/.test(issue.message)));
+});
