@@ -48,6 +48,24 @@ export function hmaHexWorkshop(api){
    state.offset=hits[0];render();api.toast('Found at 0x'+state.offset.toString(16).toUpperCase());
   });
  }
+ function pointersScreen(){
+  const bytes=data(),format=n=>'0x'+Number(n).toString(16).toUpperCase();
+  let inspected=null,refs=[],error='';
+  try{
+   inspected=pointerAt(source(),id(),bytes,state.pointerSite);
+   refs=findROMReferences(source(),id(),bytes,state.pointerTarget,{limit:64});
+  }catch(e){error=e.message;}
+  shell('<p>Aligned native 0x08/0x09 32-bit references are <b>candidates</b>, not proven ownership. HMA OffsetPointer entries are recognized for inspection but will never be silently rewritten.</p><div class="studio-actions"><label>Pointer source offset<input id="hmaPointerSite" value="'+format(state.pointerSite)+'"></label><button id="hmaInspectPtr" type="button">Inspect</button><label>Target offset<input id="hmaPointerTarget" value="'+format(state.pointerTarget)+'"></label><button id="hmaSearchRefs" type="button">Find uses</button></div>'+(error?'<p class="needs-attention">'+esc(error)+'</p>':'<p>Source '+format(inspected.site)+' → '+(inspected.valid?format(inspected.at):'not a valid ROM pointer')+' · '+esc(inspected.kind)+'</p><button id="hmaJumpPtr" type="button" '+(!inspected.valid?'disabled':'')+'>Follow pointer</button><p>'+refs.length+' references displayed for '+format(state.pointerTarget)+' (at most 64; more may exist).</p><div style="max-height:42vh;overflow:auto">'+refs.map(r=>'<div class="field-row"><small>'+format(r.at)+' · '+esc(r.kind)+(r.owner?.name?' · '+esc(r.owner.name):'')+'</small><button type="button" data-hma-ptrsite="'+r.at+'">Inspect</button><button type="button" data-hma-gotosite="'+r.at+'">Hex</button></div>').join('')+'</div>'));
+  $('#hmaInspectPtr').onclick=()=>safe(()=>{state.pointerSite=parseROMOffset($('#hmaPointerSite').value,bytes.length);const pointer=pointerAt(source(),id(),bytes,state.pointerSite);if(pointer.valid)state.pointerTarget=pointer.at;render();});
+  $('#hmaSearchRefs').onclick=()=>safe(()=>{state.pointerTarget=parseROMOffset($('#hmaPointerTarget').value,bytes.length);render();});
+  if($('#hmaJumpPtr'))$('#hmaJumpPtr').onclick=()=>{state.offset=inspected.at;open('hex');};
+  document.querySelectorAll('[data-hma-ptrsite]').forEach(b=>b.onclick=()=>{state.pointerSite=+b.dataset.hmaPtrsite;render();});
+  document.querySelectorAll('[data-hma-gotosite]').forEach(b=>b.onclick=()=>{state.offset=+b.dataset.hmaGotosite;open('hex');});
+ }
+ function reviewTableRepoint(table){
+  const refs=findROMReferences(source(),id(),data(),table.address,{limit:65}),format=n=>'0x'+n.toString(16).toUpperCase(),queued=hexState(source(),id())?.repoints?.find(p=>p.tableId===table.id);
+  api.modal('Review native table repoint','<p>Copy '+esc(table.name)+' ('+(table.count*table.stride)+' bytes) into a new ROM allocation, then update <b>all reviewed direct pointer sites</b>. This does not increase row count or prove compatibility with arbitrary packed bytecode.</p><p>'+refs.length+' candidate pointer sites'+(refs.length===65?' (more may exist; relink is blocked)':'')+': '+esc(refs.map(r=>format(r.at)+' · '+r.kind).join(', ')||'none')+'</p>'+(queued?'<p>Already queued; every export will revalidate the original source and pointer sites.</p>':'<label>Reviewed source pointer addresses (comma/space separated)<textarea id="hmaRepointSites" rows="3">'+esc(refs.length<65?refs.map(r=>format(r.at)).join(', '):'')+'</textarea></label>')+'<p class="hint-line">Unverified engine references, dynamic pointer calculations, hardcoded addresses or unexpected shared resources may need manual engine work. Keep your original ROM backup.</p>',queued?null:()=>{const sites=$('#hmaRepointSites').value.split(/[\s,;]+/).filter(Boolean).map(x=>parseROMOffset(x,data().length));api.change(()=>planSafeTableRepoint(source(),id(),data(),table,sites));open('tables');return false;},queued?'Done':'Queue repoint');
+ }
  function tablesScreen(){
   const tables=tableDefinitions(source(),id(),data());
   if(!tables.some(t=>t.id===state.tableId))state.tableId=tables[0]?.id||'';
