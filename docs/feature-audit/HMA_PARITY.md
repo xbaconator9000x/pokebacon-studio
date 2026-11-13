@@ -2,6 +2,8 @@
 
 **Objective: functional parity with all applicable [Hex Maniac Advance](https://github.com/haven1433/HexManiacAdvance) capabilities**, with a mobile-first Android/web implementation, safe original-ROM handling, and additional PokéBacon capabilities retained. This is an engineering target, **not** a statement that the editor already has parity.
 
+**Eleventh HMA integration batch:** [Source-pinned dependency review and atomic multi-table native export](HMA_SOURCE_PINNED_REVIEW_DEV.md) adds source SHA-256 reviewed manifest import/export, up to 16 extra count fields, immutable full-project review, and all-or-nothing ROM output allocation/pointer/count/code writes. This still requires engine-specific runtime validation.
+
 **Tenth HMA integration batch:** [Engine-bound Thumb count dependencies](HMA_ENGINE_COUNT_DEPENDENCIES_DEV.md) support explicitly reviewed FireRed/LeafGreen/Emerald CMP/MOVS immediate instructions during native table growth. Source engine/opcode checks, 16-site caps, bounded candidate scanning and compiler ownership remain required; this is not automatic engine-code discovery or gameplay acceptance.
 
 **Ninth HMA integration batch:** [Guarded fixed-width table expansion](HMA_TABLE_EXPANSION_DEV.md) now allocates a larger native table, copies original staged rows, supports edited appended typed rows, relinks every reviewed direct pointer and updates an explicit native literal count field. This remains an **opt-in, engine-specific prerequisite workflow**; it is not a generic dynamic-length HMA format interpreter or gameplay verification.
