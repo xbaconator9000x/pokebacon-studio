@@ -123,6 +123,21 @@ test('staged native count, bad appended pointer and stale table plan reject with
  assert.equal(discardTableRepoint(project,ID,source,table).removed,1);
  assert.equal(expandedTablePlan(project,ID,source,table),null);
 });
+test('two independent growth plans cannot assign overlapping native count and pointer bytes',()=>{
+ const {source,project,table}=fixture();
+ const other={id:'other-eight',name:'Other eight-row native table',address:0x7800,stride:4,count:8,fields:[{name:'data',type:'u32',offset:0}]};
+ saveTableDefinition(project,ID,source,other);
+ view(source).setUint32(0x56c,BASE+other.address,true);
+ planSafeTableExpansion(project,ID,source,table,POINTERS,{newCount:5,countSite:COUNT,countWidth:2});
+ // The high 0x08 byte of a 0x08007000 pointer *happens* to equal 8.
+ // Even an explicitly reviewed count value must not overwrite a different
+ // queued allocation's 4-byte pointer site.
+ assert.equal(source[POINTERS[0]+3],8);
+ planSafeTableExpansion(project,ID,source,other,[0x56c],{newCount:9,countSite:POINTERS[0]+3,countWidth:1});
+ const out=new RomOutput(source),before=out.bytes.slice(),writes=out.writes.length;
+ assert.throws(()=>installSafeTableRepoints(project,ID,source,out),/Overlapping table pointer\/count ownership/);
+ assert.deepEqual(out.bytes,before);assert.equal(out.writes.length,writes);
+});
 test('Android native tables expose queue, verification, edit and undo controls for appended records',()=>{
  const ui=readFileSync(new URL('../dist/hma-hex-ui.js',import.meta.url),'utf8');
  for(const key of ['hmaGrowTable','hmaGrowCountSite','hmaGrowCountWidth','hmaGrowReviewed','hmaGrowSeed','hmaUnqueueTable','expandedTableRecord(','editExpandedTableField(','pendingAllocation'])assert.ok(ui.includes(key),key);
