@@ -1,5 +1,6 @@
 import {parseROMOffset,hexInput,formatHex,hexRows,findROMHex,parseMaskedHexSearch,findMaskedROMHex,revertROMHexRange,hexDiffSummary,hexState,stageROMHex,installROMHexEdits} from './native-hex-workspace.js';
 import {hmaMetadata,importHMAToml,tableDefinitions,saveTableDefinition,tableRecord,editTableField,fixedNumericHMATable,copyTableRecord,swapTableRecords,fillTableColumn,findTableRows,replaceTableColumnMatches,setTableBitRange,hmaListLabels,bindTableEnumList,exportTableCSV,importTableCSV,previewTableCSV,adjustTableColumn} from './hma-table-workspace.js';
+import {gbaCountEngine,scanThumbCountCandidates} from './hma-engine-count.js';
 import {pointerAt,findROMReferences,planSafeTableRepoint,planSafeTableExpansion,expandedTablePlan,expandedTableRecord,editExpandedTableField,discardTableRepoint,installSafeTableRepoints} from './hma-pointer-navigation.js';
 import {createIPS} from './ips.js';
 import {RomOutput} from './rom-writer.js';
@@ -89,16 +90,33 @@ export function hmaHexWorkshop(api){
   if(hexState(source(),id())?.repoints?.some(plan=>plan.tableId===table.id))return reviewTableRepoint(table);
   const refs=findROMReferences(source(),id(),data(),table.address,{limit:65,scanUnaligned:true});
   const max=Math.min(4096,table.count+64,table.count+Math.floor(65536/table.stride));
+  const engine=gbaCountEngine(data());
   if(max<=table.count)throw Error('This table has reached the bounded expansion limit.');
-  api.modal('Queue reviewed native table growth','<p>Append up to 64 typed rows (64 KiB total) to '+esc(table.name)+'. The original '+table.count+' records are copied unchanged, and every reviewed direct table pointer is rewritten to the new allocation.</p><p><b>Original rows: '+table.count+'</b> · '+refs.length+' pointer candidates'+(refs.length===65?' (more may exist)':'')+'</p><label>Total rows after expansion<input id="hmaGrowCount" type="number" inputmode="numeric" min="'+(table.count+1)+'" max="'+max+'" value="'+Math.min(max,table.count+4)+'"></label><label>Native source offset of the existing literal table-count field<input id="hmaGrowCountSite" inputmode="text" placeholder="0x... (verified engine count)"></label><label>Native count width<select id="hmaGrowCountWidth"><option value="1">8-bit</option><option value="2" selected>16-bit</option><option value="4">32-bit</option></select></label><label>Initialize appended rows<select id="hmaGrowSeed"><option value="copy-last">Copy last existing native row</option><option value="zero">Zero-filled rows</option></select></label><label>All reviewed direct table pointers<textarea id="hmaGrowSites" rows="3">'+esc(refs.length<65?refs.map(r=>'0x'+r.at.toString(16).toUpperCase()).join(', '):'')+'</textarea></label><label class="check"><input type="checkbox" id="hmaGrowReviewed"> I have verified that this literal count offset controls the game table length, and understand that other engine code may require separate updates.</label><p class="hint-line">Original ROM and linked-length tables are never enlarged in place. Computed pointers, HMA length dependencies and engine code are not automatically repaired. Any conflicting native writer address aborts export.</p>',()=>{
+  api.modal('Queue reviewed native table growth','<p>Append up to 64 typed rows (64 KiB total) to '+esc(table.name)+'. The original '+table.count+' records are copied unchanged, and every reviewed direct table pointer is rewritten to the new allocation.</p><p><b>Original rows: '+table.count+'</b> · '+refs.length+' pointer candidates'+(refs.length===65?' (more may exist)':'')+'</p><label>Total rows after expansion<input id="hmaGrowCount" type="number" inputmode="numeric" min="'+(table.count+1)+'" max="'+max+'" value="'+Math.min(max,table.count+4)+'"></label><label>Native source offset of the existing literal table-count field<input id="hmaGrowCountSite" inputmode="text" placeholder="0x... (verified engine count)"></label><label>Native count width<select id="hmaGrowCountWidth"><option value="1">8-bit</option><option value="2" selected>16-bit</option><option value="4">32-bit</option></select></label><label>Initialize appended rows<select id="hmaGrowSeed"><option value="copy-last">Copy last existing native row</option><option value="zero">Zero-filled rows</option></select></label><label>All reviewed direct table pointers<textarea id="hmaGrowSites" rows="3">'+esc(refs.length<65?refs.map(r=>'0x'+r.at.toString(16).toUpperCase()).join(', '):'')+'</textarea></label><div class="hma-engine-dependencies"><p><b>Detected game header:</b> '+esc(engine.code)+' · '+esc(engine.family||'unrecognised engine')+'. Optional engine-code dependencies must be reviewed at their exact source addresses.</p><label>Additional native Thumb count instructions (one per line: <code>0xOFFSET cmp</code> or <code>0xOFFSET movs</code>)<textarea id="hmaGrowEngineSites" rows="3" placeholder="0x001234 cmp&#10;0x001F00 movs"></textarea></label><button type="button" id="hmaEngineScan" '+(!engine.family?'disabled':'')+'>Find Thumb count candidates (256 KiB)</button><button type="button" id="hmaEngineScanNext" disabled>Search next code window</button><div id="hmaEngineScanResults" role="status" aria-live="polite"></div><p class="hint-line">Matching instructions are candidates only. You must verify that each instruction controls this table and review all engine users. Only confirmed <code>cmp Rn, #oldCount</code> and <code>movs Rn, #oldCount</code> instructions can be rewritten. Unknown code remains untouched.</p></div><label class="check"><input type="checkbox" id="hmaGrowReviewed"> I have verified that this literal count offset controls the game table length, and understand that other engine code may require separate updates.</label><p class="hint-line">Original ROM and linked-length tables are never enlarged in place. Computed pointers, HMA length dependencies and engine code are not automatically repaired. Any conflicting native writer address aborts export.</p>',()=>{
    if(!$('#hmaGrowReviewed').checked)throw Error('Confirm the native count field and engine usage before queuing growth.');
    const count=$('#hmaGrowCount').value.trim(),rawSite=$('#hmaGrowCountSite').value.trim();
    if(!/^\d+$/.test(count))throw Error('Enter a whole-number target row count.');
    const sites=$('#hmaGrowSites').value.split(/[\s,;]+/).filter(Boolean).map(site=>parseROMOffset(site,data().length));
    const countSite=parseROMOffset(rawSite,data().length),width=Number($('#hmaGrowCountWidth').value);
-   api.change(()=>planSafeTableExpansion(source(),id(),data(),table,sites,{newCount:Number(count),countSite,countWidth:width,seed:$('#hmaGrowSeed').value}));
+   api.change(()=>planSafeTableExpansion(source(),id(),data(),table,sites,{newCount:Number(count),countSite,countWidth:width,seed:$('#hmaGrowSeed').value,engineSites:$('#hmaGrowEngineSites').value.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{const hit=line.match(/^(0x[0-9a-f]+|\d+)\s+(cmp|movs)$/i);if(!hit)throw Error('Use one exact Thumb source per line: 0xOFFSET cmp or movs.');return {at:parseROMOffset(hit[1],data().length),kind:'thumb-'+hit[2].toLowerCase()};})}));
    state.row=table.count;state.tableSearchValue='';open('tables');return false;
   },'Queue guarded growth');
+  if(engine.family){
+   let cursor=0x200;
+   const scan=()=>safe(()=>{
+    const result=scanThumbCountCandidates(data(),table.count,{from:cursor,maxScan:262144,limit:16});
+    cursor=result.nextFrom??0x200;
+    $('#hmaEngineScanNext').disabled=result.nextFrom===null;
+    $('#hmaEngineScanResults').innerHTML='<p>'+result.candidates.length+' possible Thumb count instructions found in the scanned window. <b>These are not verified engine dependencies.</b></p>'+result.candidates.map(x=>'<button type="button" data-hma-thumb="'+x.at+'" data-hma-thumb-kind="'+esc(x.kind)+'">0x'+x.at.toString(16).toUpperCase()+' · '+esc(x.kind)+' r'+x.register+'</button>').join('');
+    document.querySelectorAll('[data-hma-thumb]').forEach(b=>b.onclick=()=>{
+     const row='0x'+Number(b.dataset.hmaThumb).toString(16).toUpperCase()+' '+b.dataset.hmaThumbKind.replace('thumb-','');
+     const input=$('#hmaGrowEngineSites');input.value+=(input.value.trim()?'\n':'')+row;
+     api.toast('Added candidate for manual engine review: '+row);
+    });
+   });
+   $('#hmaEngineScan').onclick=()=>{cursor=0x200;scan();};
+   $('#hmaEngineScanNext').onclick=()=>scan();
+  }
  }
  function tablesScreen(){
   const tables=tableDefinitions(source(),id(),data());
