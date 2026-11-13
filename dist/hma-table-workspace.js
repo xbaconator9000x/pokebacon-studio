@@ -154,6 +154,16 @@ function bytesFor(type,value,length=0,sourceLength=32*1024*1024){
  else if(type==='u32'||type==='ptr')v.setUint32(0,n,true);else v.setInt32(0,n,true);
  return b;
 }
+// Reuse the same native numeric/ASCII codecs for reviewed appended table rows.
+export function encodeTableFieldValue(field,value,sourceLength){
+ if(!field||!Number.isInteger(width(field))||width(field)<1)throw Error('Choose a recognized native table field.');
+ return bytesFor(field.type,value,field.length,sourceLength);
+}
+export function decodeTableFieldValue(field,bytes){
+ if(!field||!(bytes instanceof Uint8Array)||bytes.length!==width(field))throw Error('The native table field byte width is invalid.');
+ return field.type==='ascii'?String.fromCharCode(...bytes).replace(/\0.*$/,''):readInteger(bytes,0,field.type);
+}
+
 export function tableRecord(project,sourceId,source,table,index){
  validateTable(table,source.length);
  if(!Number.isInteger(index)||index<0||index>=table.count)throw Error('Table record is outside the described range.');
