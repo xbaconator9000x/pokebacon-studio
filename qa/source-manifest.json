@@ -1894,13 +1894,14 @@
     "dist/native-scene-import.js": "65985bfcc55989e5f5e332d993520a57d5eadce9fd19b83a1d013d4dc4b0ef89",
     "dist/quest-reference-index.js": "aa71e6112f9f673ff50c8ee16e7e5b8d5d33799f3458e701ac19333856a2c922",
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
-    "dist/native-hex-workspace.js": "78830b27f926c08c45622e9c8a3731385d22808948f6b24a4b0ef0fd7e3f0945",
+    "dist/native-hex-workspace.js": "82d1c761db97502cc9e089e4ef165ff4dd2df0d85f618460ef8c89ea38cb667e",
     "dist/hma-table-workspace.js": "8ca38f730d83e24f0b3cb22043203ccd7055088c18b5fb41c5a27965c4de405b",
-    "dist/hma-hex-ui.js": "114ed7ba99db735118ca2731a690c519c5d11e0479fcb4477850cb0ea9ddfb25",
-    "dist/hma-pointer-navigation.js": "b81d101530e3253762c9d4eb4d042890b1798349cb3603ae369e4458a8e2fcab",
+    "dist/hma-hex-ui.js": "821c0b56ac4d5b16c4e937f5eae849274ef3747839e7885646807e6b1e25194a",
+    "dist/hma-pointer-navigation.js": "2b0ccb7d3eed5fa946687169722181fe3ae8cdf2f5294137bed7dd3d0694646e",
     "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f",
     "dist/rom-source-identity.js": "ba9b7e8941f8e7d8c78d4515497e86b76b8db975a150ba444ebdc340ea248da2",
-    "dist/hma-engine-count.js": "e2c222445b0cb7024da04fe1f81066248853a08435027af799ffc03a2ad05266"
+    "dist/hma-engine-count.js": "e2c222445b0cb7024da04fe1f81066248853a08435027af799ffc03a2ad05266",
+    "dist/hma-engine-manifest.js": "5782779d36abdff08975a946937cc5c9b9c5b4c9ed8e2c79117caebb46e78e06"
   },
   "developmentBranch": "development/studio-upgrades",
   "releaseBaseAPK_SHA256": "2eec5f5a67603b1738932e57657d769cdc2d19d2f4f171dd6394adeea2e11381",
