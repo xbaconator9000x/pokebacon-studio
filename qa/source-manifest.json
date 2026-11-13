@@ -1896,8 +1896,8 @@
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
     "dist/native-hex-workspace.js": "b604c40987a9c7df0a5b79e94011f4b53dd420f0002bf2cf7df14182884629a0",
     "dist/hma-table-workspace.js": "8ca38f730d83e24f0b3cb22043203ccd7055088c18b5fb41c5a27965c4de405b",
-    "dist/hma-hex-ui.js": "309f8a5a4871e418d86775548cca15c68be659661fd768aa768fd8c5e8a592f2",
-    "dist/hma-pointer-navigation.js": "53e7b082c34f5aac888dd8815976a446892f2ae932c36bba014c46ec4c68b67c",
+    "dist/hma-hex-ui.js": "1085f871d331b003944458cdf873678930694995e7398386a49e3ad951f72bce",
+    "dist/hma-pointer-navigation.js": "4be50ec4f64b60835799256e810da1274767ba130090f315d732769bf829150f",
     "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f",
     "dist/rom-source-identity.js": "ba9b7e8941f8e7d8c78d4515497e86b76b8db975a150ba444ebdc340ea248da2"
   },
