@@ -62,6 +62,17 @@ export function validateHexStudio(model){
     throw Error('Saved HMA table repoint has invalid fields or no matching typed table.');
    if(p.newCount!==undefined){
     const table=tables.find(t=>t.id===p.tableId),growth=p.newCount-table.count,appended=growth*table.stride;
+    const extraCounts=p.extraCountSites||[];
+    if(!Array.isArray(extraCounts)||extraCounts.length>16||
+     extraCounts.some(count=>!count||!Number.isInteger(count.at)||count.at<512||
+      ![1,2,4].includes(count.width)||count.at+count.width>LIMIT))
+     throw Error('Invalid saved extra native count site.');
+    const allCounts=[{at:p.countSite,width:p.countWidth},...extraCounts];
+    for(let i=0;i<allCounts.length;i++){
+     const x=allCounts[i];
+     if(allCounts.slice(i+1).some(y=>x.at<y.at+y.width&&x.at+x.width>y.at))
+      throw Error('Saved native count ranges overlap.');
+    }
     const instructions=p.engineSites||[];
     if(!Array.isArray(instructions)||instructions.length>16||
      instructions.length&&(!/^[A-Z0-9]{4}$/.test(p.engineCode||'')||!['frlg','emerald'].includes(p.engineFamily)))
