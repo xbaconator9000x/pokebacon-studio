@@ -1,7 +1,7 @@
 // HMA pointer inspection is read-only: an aligned 0x08/0x09 word is a
 // candidate reference, never proof that the site is safe to rewrite.
 import {hexState,stagedROMByte} from './native-hex-workspace.js';
-import {hmaMetadata,tableDefinitions,validateTable} from './hma-table-workspace.js';
+import {hmaMetadata,tableDefinitions,validateTable,encodeTableFieldValue,decodeTableFieldValue} from './hma-table-workspace.js';
 const BASE=0x08000000,MAX=32*1024*1024;
 const check=(source,site)=>source instanceof Uint8Array&&Number.isInteger(site)&&site>=0&&site+4<=source.length;
 function patches(project,id){return new Map((hexState(project,id)?.patches||[]).map(p=>[p.at,p.after]));}
@@ -159,6 +159,42 @@ export function planSafeTableExpansion(project,id,source,table,sites,{newCount,c
 export function expandedTablePlan(project,id,source,table){
  validateTable(table,source.length);
  return (hexState(project,id)?.repoints||[]).find(p=>p.tableId===table.id&&p.newCount>table.count)||null;
+}
+// The new source allocation does not exist until ROM compilation. Expose
+// appended records using the plan's detached byte array, never a fabricated
+// source address. Values are encoded by the same strict native codecs as
+// original rows and remain editable/reversible in the saved project.
+export function expandedTableRecord(project,id,source,table,index){
+ validateTable(table,source.length);
+ const plan=expandedTablePlan(project,id,source,table);
+ if(!plan||!Number.isInteger(index)||index<table.count||index>=plan.newCount)
+  throw Error('Choose a queued appended table row.');
+ verifyExpansion(project,id,source,table,plan);
+ const offset=(index-table.count)*table.stride,values={};
+ for(const field of table.fields){
+  const size=field.type==='ascii'?field.length:({u8:1,s8:1,u16:2,s16:2,u32:4,s32:4,ptr:4})[field.type];
+  values[field.name]=decodeTableFieldValue(field,Uint8Array.from(plan.extraBytes.slice(offset+field.offset,offset+field.offset+size)));
+ }
+ return {index,at:null,values,pendingAllocation:true};
+}
+export function editExpandedTableField(project,id,source,table,index,fieldName,value){
+ validateTable(table,source.length);
+ const plan=expandedTablePlan(project,id,source,table);
+ if(!plan||!Number.isInteger(index)||index<table.count||index>=plan.newCount)
+  throw Error('Choose an existing queued appended row.');
+ verifyExpansion(project,id,source,table,plan);
+ const field=table.fields.find(f=>f.name===fieldName);
+ if(!field)throw Error('Choose a native table column.');
+ const payload=encodeTableFieldValue(field,value,source.length);
+ const offset=(index-table.count)*table.stride+field.offset;
+ const previous=plan.extraBytes.slice(offset,offset+payload.length);
+ if(previous.length!==payload.length)throw Error('Appended source field spans an invalid row.');
+ const changed=previous.reduce((n,v,i)=>n+(v!==payload[i]),0);
+ if(!changed)return {changed:0,index};
+ // Validation is finished; only the queued byte array changes. The original
+ // source ROM and all original table rows are left unchanged.
+ for(let i=0;i<payload.length;i++)plan.extraBytes[offset+i]=payload[i];
+ return {changed,index};
 }
 export function discardTableRepoint(project,id,source,table){
  validateTable(table,source.length);
