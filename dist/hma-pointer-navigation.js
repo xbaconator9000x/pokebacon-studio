@@ -223,10 +223,28 @@ export function discardTableRepoint(project,id,source,table){
  return {removed:1};
 }
 
+// Perform *all* HMA allocations/writes on a detached RomOutput workspace.
+// A late allocator failure or ownership conflict must leave the caller's
+// already-compiled map/events/artwork bytes and allocation metadata untouched.
+function forkOutputForRepoint(output){
+ const trial=Object.create(Object.getPrototypeOf(output));
+ Object.assign(trial,output);
+ trial.bytes=output.bytes.slice();
+ trial.writes=output.writes.map(entry=>({...entry}));
+ trial.allocations=output.allocations.map(entry=>({...entry}));
+ if(output.freeSpans)trial.freeSpans=output.freeSpans.map(entry=>({...entry}));
+ if(output.immutablePools)trial.immutablePools=new Map([...output.immutablePools].map(([key,sites])=>[key,sites.slice()]));
+ if(output.sourcePointerSites)trial.sourcePointerSites=output.sourcePointerSites.map(entry=>({...entry}));
+ return trial;
+}
+function commitOutputRepoints(target,trial){
+ for(const name of ['bytes','writes','allocations','cursor','freeSpans','immutablePools','sourcePointerSites','reusedBytes'])
+  if(Object.hasOwn(trial,name))target[name]=trial[name];
+}
 export function installSafeTableRepoints(project,id,source,output){
  const queued=hexState(project,id)?.repoints||[];
  if(!queued.length)return[];
- if(!output?.bytes||typeof output.allocate!=='function'||typeof output.int!=='function')throw Error('Native writer is required for safe repoints.');
+ if(!output?.bytes||!Array.isArray(output.writes)||!Array.isArray(output.allocations)||typeof output.allocate!=='function'||typeof output.int!=='function')throw Error('Native writer with tracked allocations is required for safe repoints.');
  if(queued.length>32)throw Error('Too many source table repoints.');
  const definitions=tableDefinitions(project,id,source),reviews=[];
  // Preflight all plans before touching *any* output buffer.
@@ -269,19 +287,21 @@ export function installSafeTableRepoints(project,id,source,output){
   // Copy final compiled bytes, including earlier staged typed values.
   reviews.push({plan:p,sites:p.sites,oldCount:table.count});
  }
+ const trial=forkOutputForRepoint(output);
  const results=[];
  for(const {plan,sites,oldCount}of reviews){
-  const original=output.bytes.slice(plan.address,plan.address+plan.length);
+  const original=trial.bytes.slice(plan.address,plan.address+plan.length);
   // Avoid spreading potentially multi-megabyte tables into JS arrays on
   // Android: copy the original and the appended bytes directly into a
   // contiguous typed buffer, bounded by the native ROM allocator.
   const copy=plan.newCount===undefined?original:new Uint8Array(original.length+plan.extraBytes.length);
   if(plan.newCount!==undefined){copy.set(original);copy.set(plan.extraBytes,original.length);}
-  const address=output.allocate(copy,'Reviewed HMA table copy: '+plan.tableId);
-  for(const site of sites)output.int(site,BASE+address);
-  if(plan.newCount!==undefined){if(plan.countWidth===1)output.write(plan.countSite,Uint8Array.of(plan.newCount));else output.int(plan.countSite,plan.newCount,plan.countWidth);}
-  for(const site of plan.engineSites||[])output.write(site.at,Uint8Array.of(plan.newCount));
+  const address=trial.allocate(copy,'Reviewed HMA table copy: '+plan.tableId);
+  for(const site of sites)trial.int(site,BASE+address);
+  if(plan.newCount!==undefined){if(plan.countWidth===1)trial.write(plan.countSite,Uint8Array.of(plan.newCount));else trial.int(plan.countSite,plan.newCount,plan.countWidth);}
+  for(const site of plan.engineSites||[])trial.write(site.at,Uint8Array.of(plan.newCount));
   results.push({tableId:plan.tableId,oldAddress:plan.address,newAddress:address,bytes:copy.length,updatedPointers:sites.length,...(plan.newCount!==undefined?{oldCount,appendedRows:plan.newCount-oldCount,newCount:plan.newCount,countSite:plan.countSite,engineInstructions:(plan.engineSites||[]).length}:{})});
  }
+ commitOutputRepoints(output,trial);
  return results;
 }
