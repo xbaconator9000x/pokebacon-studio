@@ -199,16 +199,16 @@ export function installSafeTableRepoints(project,id,source,output){
     throw Error('Overlapping native table-count owners.');
   }
   // Copy final compiled bytes, including earlier staged typed values.
-  reviews.push({plan:p,sites:p.sites});
+  reviews.push({plan:p,sites:p.sites,oldCount:table.count});
  }
  const results=[];
- for(const {plan,sites}of reviews){
+ for(const {plan,sites,oldCount}of reviews){
   const original=output.bytes.slice(plan.address,plan.address+plan.length);
   const copy=plan.newCount===undefined?original:Uint8Array.from([...original,...plan.extraBytes]);
   const address=output.allocate(copy,'Reviewed HMA table copy: '+plan.tableId);
   for(const site of sites)output.int(site,BASE+address);
-  if(plan.newCount!==undefined)output.int(plan.countSite,plan.newCount,plan.countWidth);
-  results.push({tableId:plan.tableId,oldAddress:plan.address,newAddress:address,bytes:copy.length,updatedPointers:sites.length,...(plan.newCount!==undefined?{appendedRows:plan.extraBytes.length/(plan.length/((plan.length+plan.extraBytes.length)/plan.newCount)),newCount:plan.newCount,countSite:plan.countSite}:{})});
+  if(plan.newCount!==undefined){if(plan.countWidth===1)output.write(plan.countSite,Uint8Array.of(plan.newCount));else output.int(plan.countSite,plan.newCount,plan.countWidth);}
+  results.push({tableId:plan.tableId,oldAddress:plan.address,newAddress:address,bytes:copy.length,updatedPointers:sites.length,...(plan.newCount!==undefined?{oldCount,appendedRows:plan.newCount-oldCount,newCount:plan.newCount,countSite:plan.countSite}:{})});
  }
  return results;
 }
