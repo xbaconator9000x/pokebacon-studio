@@ -2,6 +2,8 @@
 
 **Objective: functional parity with all applicable [Hex Maniac Advance](https://github.com/haven1433/HexManiacAdvance) capabilities**, with a mobile-first Android/web implementation, safe original-ROM handling, and additional PokéBacon capabilities retained. This is an engineering target, **not** a statement that the editor already has parity.
 
+**Tenth HMA integration batch:** [Engine-bound Thumb count dependencies](HMA_ENGINE_COUNT_DEPENDENCIES_DEV.md) support explicitly reviewed FireRed/LeafGreen/Emerald CMP/MOVS immediate instructions during native table growth. Source engine/opcode checks, 16-site caps, bounded candidate scanning and compiler ownership remain required; this is not automatic engine-code discovery or gameplay acceptance.
+
 **Ninth HMA integration batch:** [Guarded fixed-width table expansion](HMA_TABLE_EXPANSION_DEV.md) now allocates a larger native table, copies original staged rows, supports edited appended typed rows, relinks every reviewed direct pointer and updates an explicit native literal count field. This remains an **opt-in, engine-specific prerequisite workflow**; it is not a generic dynamic-length HMA format interpreter or gameplay verification.
 
 **Eighth HMA integration batch:** [Wildcard byte/nibble search and selective staged-range reversion](HMA_HEX_MASK_RECOVERY_DEV.md) extend the actual Android hex UI with bounded scanning and reversible edit cleanup; this is not a complete HMA assembly or code-repoint implementation.
