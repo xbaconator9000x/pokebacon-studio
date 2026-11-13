@@ -220,7 +220,14 @@ export function installSafeTableRepoints(project,id,source,output){
    if(output.writes.some(w=>at<w.address+w.length&&at+4>w.address)||u32(output.bytes,at,new Map())!==BASE+p.address)
     throw Error('Other native edits overlap a table pointer site at 0x'+at.toString(16).toUpperCase());
   }
-  for(const other of reviews)if(p.sites.some(at=>other.sites.includes(at)))throw Error('Duplicate table pointer ownership.');
+  // Every count field and every direct pointer site belongs to exactly one
+  // queued plan. Check full byte ranges, not only identical pointer starts.
+  const owned=[...p.sites.map(at=>({start:at,end:at+4})),...(p.newCount===undefined?[]:[{start:p.countSite,end:p.countSite+p.countWidth}])];
+  for(const other of reviews){
+   const previous=[...other.sites.map(at=>({start:at,end:at+4})),...(other.plan.newCount===undefined?[]:[{start:other.plan.countSite,end:other.plan.countSite+other.plan.countWidth}])];
+   if(owned.some(x=>previous.some(y=>x.start<y.end&&x.end>y.start)))
+    throw Error('Overlapping table pointer/count ownership across queued plans.');
+  }
   // Expanded rows and a literal count update are explicit and preflighted.
   // Saved plans cannot silently enlarge a separate linked-length source.
   if(p.newCount!==undefined){
@@ -240,7 +247,11 @@ export function installSafeTableRepoints(project,id,source,output){
  const results=[];
  for(const {plan,sites,oldCount}of reviews){
   const original=output.bytes.slice(plan.address,plan.address+plan.length);
-  const copy=plan.newCount===undefined?original:Uint8Array.from([...original,...plan.extraBytes]);
+  // Avoid spreading potentially multi-megabyte tables into JS arrays on
+  // Android: copy the original and the appended bytes directly into a
+  // contiguous typed buffer, bounded by the native ROM allocator.
+  const copy=plan.newCount===undefined?original:new Uint8Array(original.length+plan.extraBytes.length);
+  if(plan.newCount!==undefined){copy.set(original);copy.set(plan.extraBytes,original.length);}
   const address=output.allocate(copy,'Reviewed HMA table copy: '+plan.tableId);
   for(const site of sites)output.int(site,BASE+address);
   if(plan.newCount!==undefined){if(plan.countWidth===1)output.write(plan.countSite,Uint8Array.of(plan.newCount));else output.int(plan.countSite,plan.newCount,plan.countWidth);}
