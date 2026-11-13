@@ -80,15 +80,21 @@ test('successful multi-table relocation commits output bytes and allocation ledg
  assert.equal(view(output.bytes).getUint16(COUNT3,true),5);
  assert.equal(view(output.bytes).getUint16(COUNT2,true),6);
 });
-test('two table plans cannot overlap a primary pointer and a secondary count field',()=>{
- const {source,project,table}=fixture(),second={id:'second-table',name:'Other native table',address:TABLE2,count:4,stride:4,fields:[{name:'data',type:'u32',offset:0}]};
+test('an extra count field overlapping another table pointer is rejected before any export writes',()=>{
+ const {source,project,table}=fixture();
+ // This genuine ROM pointer has little-endian low byte 0x04, which happens to
+ // equal the native first-table count (four). Such an accidental match cannot
+ // permit a cross-table overwrite of the second table's pointer.
+ const second={id:'second-table',name:'Other native table',address:TABLE2+4,count:4,stride:4,fields:[{name:'data',type:'u32',offset:0}]};
  saveTableDefinition(project,ID,source,second);
- planSafeTableExpansion(project,ID,source,table,[POINTER],{newCount:5,countSite:COUNT,countWidth:2});
- // Overwrite the second pointer's upper 08 byte with the old count of 4,
- // and set a direct table pointer at a different location for the second table.
- const fake=0x54b;source[fake]=4;
- view(source).setUint32(0x550,BASE+TABLE2,true);
- // The original second table pointer remains an unreviewed direct user;
- // pointer completeness blocks before output can be touched.
- assert.throws(()=>planSafeTableExpansion(project,ID,source,second,[0x550],{newCount:5,countSite:COUNT2,countWidth:2,extraCountSites:[{at:fake,width:1}]}),/Unreviewed|count field/);
+ view(source).setUint32(POINTER2,BASE+second.address,true);
+ assert.equal(source[POINTER2],4);
+ planSafeTableExpansion(project,ID,source,table,[POINTER],{
+  newCount:5,countSite:COUNT,countWidth:2,extraCountSites:[{at:POINTER2,width:1}]
+ });
+ planSafeTableExpansion(project,ID,source,second,[POINTER2],{newCount:6,countSite:COUNT2,countWidth:2});
+ const output=new RomOutput(source),bytes=output.bytes.slice(),cursor=output.cursor;
+ assert.throws(()=>installSafeTableRepoints(project,ID,source,output),/Overlapping table pointer\/count ownership/);
+ assert.deepEqual(output.bytes,bytes);assert.equal(output.cursor,cursor);
+ assert.equal(output.allocations.length,0);assert.equal(output.writes.length,0);
 });
