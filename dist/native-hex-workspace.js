@@ -62,6 +62,20 @@ export function validateHexStudio(model){
     throw Error('Saved HMA table repoint has invalid fields or no matching typed table.');
    if(p.newCount!==undefined){
     const table=tables.find(t=>t.id===p.tableId),growth=p.newCount-table.count,appended=growth*table.stride;
+    const instructions=p.engineSites||[];
+    if(!Array.isArray(instructions)||instructions.length>16||
+     instructions.length&&(!/^[A-Z0-9]{4}$/.test(p.engineCode||'')||!['frlg','emerald'].includes(p.engineFamily)))
+     throw Error('Invalid engine-bound table expansion metadata.');
+    const instructionStarts=new Set();
+    for(const site of instructions){
+     if(!site||!Number.isInteger(site.at)||site.at<512||site.at%2||site.at+2>LIMIT||
+      !['thumb-cmp','thumb-movs'].includes(site.kind)||
+      !Number.isInteger(site.originalWord)||site.originalWord<0||site.originalWord>65535||
+      (site.originalWord&0xf800)!==({ 'thumb-cmp':0x2800,'thumb-movs':0x2000 })[site.kind]||
+      (site.originalWord&255)!==table.count||instructionStarts.has(site.at))
+      throw Error('Saved engine count instruction is invalid or duplicated.');
+     instructionStarts.add(site.at);
+    }
     if(!Number.isInteger(p.newCount)||growth<1||growth>64||p.newCount>4096||appended>65536||
      ![1,2,4].includes(p.countWidth)||!Number.isInteger(p.countSite)||p.countSite<512||p.countSite+p.countWidth>LIMIT||
      !Array.isArray(p.extraBytes)||p.extraBytes.length!==appended||
