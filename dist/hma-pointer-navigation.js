@@ -1,6 +1,6 @@
 // HMA pointer inspection is read-only: an aligned 0x08/0x09 word is a
 // candidate reference, never proof that the site is safe to rewrite.
-import {hexState} from './native-hex-workspace.js';
+import {hexState,stagedROMByte} from './native-hex-workspace.js';
 import {hmaMetadata,tableDefinitions,validateTable} from './hma-table-workspace.js';
 const BASE=0x08000000,MAX=32*1024*1024;
 const check=(source,site)=>source instanceof Uint8Array&&Number.isInteger(site)&&site>=0&&site+4<=source.length;
@@ -104,6 +104,70 @@ export function planSafeTableRepoint(project,id,source,table,sites){
  project.hexStudio.sources[id].repoints.push(plan);
  return plan;
 }
+// Reviewed expansion is opt-in: a copied native table plus one explicitly
+// inspected literal count site. This does not infer arbitrary engine lengths.
+const COUNT_WIDTHS=[1,2,4],MAX_EXTRA_BYTES=65536,MAX_EXTRA_ROWS=64;
+function sourceInteger(source,at,width){
+ let value=0;for(let i=0;i<width;i++)value+=source[at+i]*2**(i*8);
+ return value;
+}
+function verifyExpansion(project,id,source,table,plan){
+ if(!Number.isInteger(plan.newCount)||plan.newCount<=table.count||plan.newCount>4096||
+  plan.newCount-table.count>MAX_EXTRA_ROWS||!COUNT_WIDTHS.includes(plan.countWidth)||
+  !Number.isInteger(plan.countSite)||plan.countSite<512||plan.countSite+plan.countWidth>source.length)
+  throw Error('Expanded table requires 1–64 new rows and a valid 1/2/4-byte native count field.');
+ const appended=(plan.newCount-table.count)*table.stride;
+ if(appended>MAX_EXTRA_BYTES||!Array.isArray(plan.extraBytes)||plan.extraBytes.length!==appended||
+  plan.extraBytes.some(n=>!Number.isInteger(n)||n<0||n>255))
+  throw Error('Expanded table payload is invalid or exceeds 64 KiB.');
+ if(plan.newCount>2**(plan.countWidth*8)-1)throw Error('New count does not fit the selected native integer field.');
+ const countEnd=plan.countSite+plan.countWidth;
+ if(plan.countSite<table.address+table.stride*table.count&&countEnd>table.address)
+  throw Error('The count field overlaps the source table itself.');
+ if(plan.sites.some(at=>plan.countSite<at+4&&countEnd>at))throw Error('The count field overlaps a source pointer.');
+ if(sourceInteger(source,plan.countSite,plan.countWidth)!==table.count)
+  throw Error('The original source count is not the expected table row count.');
+ const patches=hexState(project,id)?.patches||[];
+ if(patches.some(p=>p.at>=plan.countSite&&p.at<countEnd))
+  throw Error('A staged binary edit already owns the native count field.');
+ // An unknown computed/user-defined engine count remains an explicit
+ // responsibility; only the supplied original literal site can be patched.
+ return appended;
+}
+export function planSafeTableExpansion(project,id,source,table,sites,{newCount,countSite,countWidth=2,seed='copy-last'}={}){
+ validateTable(table,source.length);
+ if(table.linkedLength)throw Error('Linked-length HMA tables require engine-specific length propagation; expansion is blocked.');
+ if(!['copy-last','zero'].includes(seed))throw Error('Choose copy-last or zero as the new-row template.');
+ const current=hexState(project,id),existing=current?.repoints||[];
+ if(existing.length>=32||existing.some(p=>p.tableId===table.id||p.sites.some(at=>sites.includes(at))))
+  throw Error('Another queued table plan already uses this table or a selected pointer.');
+ const verified=validatedRepointSites(project,id,source,table.address,sites,{length:table.stride*table.count});
+ const extra=(newCount-table.count)*table.stride;
+ if(!Number.isInteger(newCount)||newCount<=table.count||newCount>4096||newCount-table.count>MAX_EXTRA_ROWS||
+  extra>MAX_EXTRA_BYTES||!COUNT_WIDTHS.includes(countWidth)||!Number.isInteger(countSite)||countSite<512||countSite+countWidth>source.length)
+  throw Error('Choose 1–64 appended rows (64 KiB max) and a source count field.');
+ const row=seed==='copy-last'?Uint8Array.from({length:table.stride},(_,i)=>stagedROMByte(project,id,source,table.address+(table.count-1)*table.stride+i)):new Uint8Array(table.stride);
+ const extraBytes=Array.from({length:extra},(_,i)=>row[i%table.stride]);
+ const plan={tableId:table.id,address:table.address,length:table.stride*table.count,sites:verified.sites,newCount,countSite,countWidth,extraBytes};
+ verifyExpansion(project,id,source,table,plan);
+ project.hexStudio??={version:1,sources:{}};project.hexStudio.sources??={};
+ project.hexStudio.sources[id]??={patches:[],tables:[],hmaToml:''};
+ project.hexStudio.sources[id].repoints??=[];
+ project.hexStudio.sources[id].repoints.push(plan);
+ return {tableId:plan.tableId,oldCount:table.count,newCount,appendedBytes:extra,countSite,countWidth,sites:verified.sites};
+}
+export function expandedTablePlan(project,id,source,table){
+ validateTable(table,source.length);
+ return (hexState(project,id)?.repoints||[]).find(p=>p.tableId===table.id&&p.newCount>table.count)||null;
+}
+export function discardTableRepoint(project,id,source,table){
+ validateTable(table,source.length);
+ const state=hexState(project,id);
+ if(!state?.repoints?.some(p=>p.tableId===table.id))return {removed:0};
+ state.repoints=state.repoints.filter(p=>p.tableId!==table.id);
+ return {removed:1};
+}
+
 export function installSafeTableRepoints(project,id,source,output){
  const queued=hexState(project,id)?.repoints||[];
  if(!queued.length)return[];
@@ -121,16 +185,30 @@ export function installSafeTableRepoints(project,id,source,output){
     throw Error('Other native edits overlap a table pointer site at 0x'+at.toString(16).toUpperCase());
   }
   for(const other of reviews)if(p.sites.some(at=>other.sites.includes(at)))throw Error('Duplicate table pointer ownership.');
-  // Repointing copies data from final compiled bytes: it reflects staged
-  // typed edits, while original source bytes remain available for recovery.
+  // Expanded rows and a literal count update are explicit and preflighted.
+  // Saved plans cannot silently enlarge a separate linked-length source.
+  if(p.newCount!==undefined){
+   if(table.linkedLength)throw Error('Linked-length table expansion cannot safely update its engine dependencies.');
+   verifyExpansion(project,id,source,table,p);
+   const start=p.countSite,end=start+p.countWidth;
+   if(output.writes.some(w=>start<w.address+w.length&&end>w.address))
+    throw Error('Other native edits own the table count field at 0x'+start.toString(16).toUpperCase());
+   if(sourceInteger(output.bytes,start,p.countWidth)!==table.count)
+    throw Error('Native count changed during compilation; table expansion is unsafe.');
+   for(const other of reviews)if(other.plan.countSite!==undefined&&start<other.plan.countSite+other.plan.countWidth&&end>other.plan.countSite)
+    throw Error('Overlapping native table-count owners.');
+  }
+  // Copy final compiled bytes, including earlier staged typed values.
   reviews.push({plan:p,sites:p.sites});
  }
  const results=[];
  for(const {plan,sites}of reviews){
-  const copy=output.bytes.slice(plan.address,plan.address+plan.length);
+  const original=output.bytes.slice(plan.address,plan.address+plan.length);
+  const copy=plan.newCount===undefined?original:Uint8Array.from([...original,...plan.extraBytes]);
   const address=output.allocate(copy,'Reviewed HMA table copy: '+plan.tableId);
   for(const site of sites)output.int(site,BASE+address);
-  results.push({tableId:plan.tableId,oldAddress:plan.address,newAddress:address,bytes:copy.length,updatedPointers:sites.length});
+  if(plan.newCount!==undefined)output.int(plan.countSite,plan.newCount,plan.countWidth);
+  results.push({tableId:plan.tableId,oldAddress:plan.address,newAddress:address,bytes:copy.length,updatedPointers:sites.length,...(plan.newCount!==undefined?{appendedRows:plan.extraBytes.length/(plan.length/((plan.length+plan.extraBytes.length)/plan.newCount)),newCount:plan.newCount,countSite:plan.countSite}:{})});
  }
  return results;
 }
