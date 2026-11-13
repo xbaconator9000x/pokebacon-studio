@@ -119,7 +119,7 @@ function intersects(x,y){return x.at<y.at+y.width&&x.at+x.width>y.at;}
 function verifyCountRanges(project,id,source,table,plan){
  const refs=(plan.sites||[]).map(at=>({at,width:4})),blocks=[{at:table.address,width:table.stride*table.count}],sites=(plan.engineSites||[]).map(x=>({at:x.at,width:2}));
  const edits=hexState(project,id)?.patches||[],ranges=countRanges(plan);
- if(!Array.isArray(plan.extraCountSites)||plan.extraCountSites.length>16)
+ if(plan.extraCountSites!==undefined&&(!Array.isArray(plan.extraCountSites)||plan.extraCountSites.length>16))
   throw Error('Review at most sixteen additional native count fields.');
  for(const item of ranges){
   if(!item||!Number.isInteger(item.at)||item.at<512||!COUNT_WIDTHS.includes(item.width)||item.at+item.width>source.length)
