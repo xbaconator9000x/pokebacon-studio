@@ -60,6 +60,14 @@ export function validateHexStudio(model){
   for(const p of repoints){
    if(!p||typeof p.tableId!=='string'||!Number.isInteger(p.address)||p.address<512||p.address>=LIMIT||!Number.isInteger(p.length)||p.length<1||p.length>4096*4096||!Array.isArray(p.sites)||p.sites.length<1||p.sites.length>64||usedTables.has(p.tableId)||!tables.some(t=>t.id===p.tableId))
     throw Error('Saved HMA table repoint has invalid fields or no matching typed table.');
+   if(p.newCount!==undefined){
+    const table=tables.find(t=>t.id===p.tableId),growth=p.newCount-table.count,appended=growth*table.stride;
+    if(!Number.isInteger(p.newCount)||growth<1||growth>64||p.newCount>4096||appended>65536||
+     ![1,2,4].includes(p.countWidth)||!Number.isInteger(p.countSite)||p.countSite<512||p.countSite+p.countWidth>LIMIT||
+     !Array.isArray(p.extraBytes)||p.extraBytes.length!==appended||
+     p.extraBytes.some(v=>!Number.isInteger(v)||v<0||v>255))
+     throw Error('Invalid or excessive native table expansion state.');
+   }
    usedTables.add(p.tableId);
    for(const at of p.sites){
     if(!Number.isInteger(at)||at<512||at+4>LIMIT||usedSites.has(at))throw Error('Duplicate or out-of-range saved table pointer source.');
