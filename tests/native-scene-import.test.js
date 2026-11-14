@@ -70,7 +70,7 @@ test('native ROM event imports to editable visual dialogue, wait, SFX, BGM and f
 });
 test('native conversion refuses branches, trainer battles, unknown commands, custom flags and already-authored scenes, without mutation',async()=>{
  const scripts=[
-  '@start:\nsetflag 0x200\nend\n',
+  '@start:\nsetvar 0x8000 1\nend\n',
   '@start:\ncall @extra\nend\n@extra:\nend\n',
   '@start:\ncheckflag 0x200\nend\n',
   '@start:\ntrainerbattle 0 1 1 @text @text\nend\n@text:\n= Hello.$\n'

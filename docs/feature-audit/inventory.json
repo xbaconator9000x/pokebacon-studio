@@ -1030,7 +1030,8 @@
         "dist/native-story-ui.js",
         "dist/scene-compiler.js",
         "dist/native-movement-bridge.js",
-        "dist/scene-ui.js"
+        "dist/scene-ui.js",
+        "dist/native-flag-bridge.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
@@ -1041,7 +1042,8 @@
         "scripts/test-release-mobile-browser.mjs",
         "tests/native-story-coexistence.test.js",
         "tests/native-scene-import.test.js",
-        "tests/native-scene-movement.test.js"
+        "tests/native-scene-movement.test.js",
+        "tests/native-scene-flags.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1063,7 +1065,7 @@
         "gameplayVerified": false
       },
       "backlogGroup": "REL",
-      "implementationNotes": "Current main contains guided native conditions and names. PR #29 adds explicit source-verified bounded flag/variable reservations and flow/map-condition collision checks, NOT automatic engine-safe allocation; complete imported-event/gameplay parity remains open. Native root-pointer ownership now separates direct same-entry authored scene conflicts from legitimate edits to shared original dialogue/commands used by other NPCs. See SHARED_SCRIPT_COEXISTENCE_DEV.md. PR #29 now adds an explicit guarded native→visual action import for original NPC/sign/coordinate triggers: verifies linear dialogue/mode, SFX, music, wait and fade commands; preserves original record/index and refuses branches/calls/custom routines without losing bytes. See NATIVE_VISUAL_BRIDGE_DEV.md. PR #29 additional batch converts strictly verified source-native walking/facing/visibility, wait/nonblocking status, and forward checkflag/goto_if 1 diamonds with shared join into editable visual scene actions. It refuses unsupported source opcodes rather than guessing. See NATIVE_MOVEMENT_BRANCH_DEV.md."
+      "implementationNotes": "Current main contains guided native conditions and names. PR #29 adds explicit source-verified bounded flag/variable reservations and flow/map-condition collision checks, NOT automatic engine-safe allocation; complete imported-event/gameplay parity remains open. Native root-pointer ownership now separates direct same-entry authored scene conflicts from legitimate edits to shared original dialogue/commands used by other NPCs. See SHARED_SCRIPT_COEXISTENCE_DEV.md. PR #29 now adds an explicit guarded native→visual action import for original NPC/sign/coordinate triggers: verifies linear dialogue/mode, SFX, music, wait and fade commands; preserves original record/index and refuses branches/calls/custom routines without losing bytes. See NATIVE_VISUAL_BRIDGE_DEV.md. PR #29 additional batch converts strictly verified source-native walking/facing/visibility, wait/nonblocking status, and forward checkflag/goto_if 1 diamonds with shared join into editable visual scene actions. It refuses unsupported source opcodes rather than guessing. See NATIVE_MOVEMENT_BRANCH_DEV.md. Original Gen III setflag/clearflag visual import/typed editor/byte-reindex added in PR #29; see NATIVE_FLAG_WRITES_DEV.md. No real engine gameplay evidence."
     },
     {
       "id": "EVT03",
@@ -1379,7 +1381,8 @@
         "dist/native-scene-preflight.js",
         "dist/rom-project.js",
         "dist/native-scene-import.js",
-        "dist/native-movement-bridge.js"
+        "dist/native-movement-bridge.js",
+        "dist/native-flag-bridge.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
@@ -1389,7 +1392,8 @@
         "tests/scene-export-preflight.test.js",
         "tests/scene-sidecar-roundtrip.test.js",
         "tests/native-scene-import.test.js",
-        "tests/native-scene-movement.test.js"
+        "tests/native-scene-movement.test.js",
+        "tests/native-scene-flags.test.js"
       ],
       "dependencies": [
         "REL"
@@ -1411,7 +1415,7 @@
         "gameplayVerified": false
       },
       "backlogGroup": "REL",
-      "implementationNotes": "Production native-byte script export/reindex and existing-source shared text relocation fixtures are covered. Explicit source-root ownership prevents accidental double-authoring while allowing different original roots to be edited independently. Real Shattered runtime, cross-version map refresh and complete quest-save reimport equivalence remain open. Bounded synthetic integration now covers authored conditional page compilation, source NPC event-pointer update, editable project/quest state sidecar, original ROM snapshot recovery and actual native script reindexing. This is not game/emulator execution or proof of live save persistence. Original event entry identity and shared source script bytes are explicitly preserved across native→visual conversion, project save/reopen and synthetic GBA script-byte reindex. Real ROM engine behaviour remains unverified. Native source → authored two-arm conditional + movement byte export/reindex retains original shared script and event record identity in bounded synthetic ROM tests; not live GBA emulator execution."
+      "implementationNotes": "Production native-byte script export/reindex and existing-source shared text relocation fixtures are covered. Explicit source-root ownership prevents accidental double-authoring while allowing different original roots to be edited independently. Real Shattered runtime, cross-version map refresh and complete quest-save reimport equivalence remain open. Bounded synthetic integration now covers authored conditional page compilation, source NPC event-pointer update, editable project/quest state sidecar, original ROM snapshot recovery and actual native script reindexing. This is not game/emulator execution or proof of live save persistence. Original event entry identity and shared source script bytes are explicitly preserved across native→visual conversion, project save/reopen and synthetic GBA script-byte reindex. Real ROM engine behaviour remains unverified. Native source → authored two-arm conditional + movement byte export/reindex retains original shared script and event record identity in bounded synthetic ROM tests; not live GBA emulator execution. Original Gen III setflag/clearflag visual import/typed editor/byte-reindex added in PR #29; see NATIVE_FLAG_WRITES_DEV.md. No real engine gameplay evidence."
     },
     {
       "id": "SCN01",

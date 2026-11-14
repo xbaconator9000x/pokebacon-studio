@@ -89,6 +89,10 @@ function stepsFromNativeGraph(graph,root,newId,map){
     out.push(newAction({type:'nativeMovement',actorId,moves,wait},at));
     at=wait?next.end:n.end;continue;
    }
+   if(code===41||code===42){
+    if(args.length!==1||!Number.isInteger(args[0])||args[0]<0||args[0]>65535)fail('native flag write has an invalid original engine ID',at);
+    out.push(newAction({type:'nativeFlag',nativeFlagId:args[0],value:code===41},at));at=n.end;continue;
+   }
    if(code===43){
     const conditional=current(n.end),flag=args[0];
     if(conditional.code!==6||conditional.args?.[0]?.value!==1||conditional.args.length!==2)fail('native flag check must use an explicit checkflag/goto_if 1 pair',at);

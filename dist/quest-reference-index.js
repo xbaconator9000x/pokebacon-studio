@@ -42,7 +42,7 @@ export function questReferenceIndex(project,{limit=5000}={}){
    if(!step||typeof step!=='object')return;
    const path=prefix+' action '+(i+1)+' ('+(step.type||'unknown')+')';
    if(step.type==='flag')add('flag',step.flagId,source,path);
-   if(step.type==='nativeFlagIf')originalFlag(step.nativeFlagId,source,path+' (original ROM only)');
+   if(['nativeFlag','nativeFlagIf'].includes(step.type))originalFlag(step.nativeFlagId,source,path+(step.type==='nativeFlag'?(step.value===false?' (clear original ROM flag)':' (set original ROM flag)'):' (check original ROM flag)'));
    if(['set','add'].includes(step.type))add('variable',step.variableId,source,path);
    if(step.type==='quest')add('flag',step.questId,source,path);
    if(step.type==='completeField')add('flag',step.completionFlag,source,path);
