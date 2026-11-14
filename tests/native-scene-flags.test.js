@@ -24,7 +24,7 @@ async function fixture(script){
  const roots=graph.roots.filter(r=>r.kind==='npcs'&&r.mapKey==='0.0').sort((a,b)=>a.index-b.index);
  const project=newProject('Original native flags'),map=project.maps[0];
  map.rom={sourceId:'flag-test',key:'0.0',engine:'frlg'};
- map.markers=roots.map((r,i)=>({id:'original-'+i,title:'Original '+i,x:2+i,y:2,kind:'npc',rom:{type:'npc',index:i,localId:i+1}}));
+ map.markers=roots.map((r,i)=>({id:'original-'+i,title:'Original '+i,x:2+i,y:2,kind:'npc',text:'Original imported NPC.',rom:{type:'npc',index:i,localId:i+1}}));
  project.nativeStory={'flag-test':graph};
  return{bytes,reader,graph,roots,project,map};
 }

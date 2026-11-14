@@ -1892,7 +1892,7 @@
     "dist/zip.js": "8d949c3fd348631a849c36b974a5bc162a2f131bb4f671d5547891ffb7234266",
     "dist/native-scene-preflight.js": "e3d9b69585b51ea4437e741737d3d30306c81739c0203147953eb50a31b6f0e7",
     "dist/native-scene-import.js": "767f8be63b7fb3772043633b3dd6390cd8051071e1587b74070137facec6026c",
-    "dist/quest-reference-index.js": "b91dac5ec214a8944d1721dee586920816ad8e16225740a5111ae96efb23e514",
+    "dist/quest-reference-index.js": "1016c481cda176fe90d46f8e54e69d8ce14ddf95cd03cb5cc53771a4b6dd14fc",
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
     "dist/native-hex-workspace.js": "82d1c761db97502cc9e089e4ef165ff4dd2df0d85f618460ef8c89ea38cb667e",
     "dist/hma-table-workspace.js": "8ca38f730d83e24f0b3cb22043203ccd7055088c18b5fb41c5a27965c4de405b",
@@ -1904,7 +1904,7 @@
     "dist/hma-engine-manifest.js": "5782779d36abdff08975a946937cc5c9b9c5b4c9ed8e2c79117caebb46e78e06",
     "dist/event-trade.js": "5fa1e5996f2ea50f314b4dc647843cdee4a9459172fa0e3e1d75e4c5ddc6cacb",
     "dist/event-audit.js": "7c4252c789d7afe2d04a139222806e834420e607aa586d2f640da78e31955c26",
-    "dist/native-flag-bridge.js": "a4bcec668d878e8e13f6fa8d6141207a6e0f55924666bbe318fb5744a48f82de"
+    "dist/native-flag-bridge.js": "f3b68e58bc9197a9bedd278bbd37a0ba8ea27a98df682b7369bf35ef370ce4f1"
   },
   "developmentBranch": "development/studio-upgrades",
   "releaseBaseAPK_SHA256": "2eec5f5a67603b1738932e57657d769cdc2d19d2f4f171dd6394adeea2e11381",
