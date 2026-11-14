@@ -39,6 +39,7 @@ import{installCustomForms,nativeFormGiftSource}from'./expanded-form-native.js';
 import{formSpriteEdits}from'./creature-model.js';
 import{gateInteractionCells,gateInteractsAt}from'./gate-cells.js';
 import{installNPCs,applyNPCAppearances}from'./npc.js';
+import{applyTrainerEncounters}from'./native-trainer-encounter.js';
 import {customNPCGraphicsPlan,installCustomNPCGraphics} from './npc-graphics-native.js';
 import {nativeStudioPlan,installNativeStudio} from './native-studio.js';
 import{installQuest}from'./quest-runtime.js';
@@ -241,7 +242,7 @@ export async function buildRom(project,reader,{sourceId,renderMap,wallStyles=[],
   if(isNew){base=sourceForMap(reader,map);if(!base)throw Error('No source interior tileset could be found.');const header=reader.bytes.slice(base.address,base.address+28);header.fill(0,0,16);header[21]=0;header[22]=0;header[23]=map.rom.mapType??8;header[24]=0;const address=output.allocate(header,'New map header'),index=generated.indexOf(map);native={...base,address,bank:newSupport.bank,index,key:newSupport.bank+'.'+index,events:-1,scripts:-1,connections:-1};}
   else{if([...byId.values()].some(e=>!e.isNew&&e.map.rom.key===map.rom.key))throw Error('Two designs target the same ROM map slot. Keep only one assigned to that slot.');base=mapSource(reader,map,sourceId);native=isolateMapHeader(output,reader,base,isolatedBanks);}
   if(reader.profile(base).mixedMetatileLayers&&map.rom.metatileLayers!==3)throw Error(map.name+': this older project has only two CFRU drawing planes. Refresh or reimport the map from the same ROM in this version before exporting; keep your original project copy.');
-  const events=isNew?{npcs:[],warps:[],triggers:[],signs:[]}:rawEvents(reader,native),shifted=!isNew&&shiftNativeEvents(map,events),appearanceChanged=!isNew&&applyNPCAppearances(reader,map,events,{sourceHash:game?.hash,sourceId});byId.set(map.id,{map,native,base,isNew,events,portalRules:new Map(),portalStyles:new Map(),tombstones:new Set(),changed:isNew||shifted||appearanceChanged||!!map.rom.sourceCells?.some((v,i)=>v!==i)});
+  const events=isNew?{npcs:[],warps:[],triggers:[],signs:[]}:rawEvents(reader,native),shifted=!isNew&&shiftNativeEvents(map,events),appearanceChanged=!isNew&&applyNPCAppearances(reader,map,events,{sourceHash:game?.hash,sourceId}),encounterChanged=applyTrainerEncounters(reader,native,map,events,sourceId);byId.set(map.id,{map,native,base,isNew,events,portalRules:new Map(),portalStyles:new Map(),tombstones:new Set(),changed:isNew||shifted||appearanceChanged||encounterChanged||!!map.rom.sourceCells?.some((v,i)=>v!==i)});
  }
  const generatedPoolIds=new Map(),assetsById=new Map(project.assets.map(a=>[a.id,a])),newCohort=new Map(),seamAdj=new Map([...byId.keys()].map(id=>[id,[]]));
  for(const l of project.links.filter(l=>l.seam)){if(seamAdj.has(l.from.mapId))seamAdj.get(l.from.mapId).push(l.to.mapId);if(seamAdj.has(l.to.mapId))seamAdj.get(l.to.mapId).push(l.from.mapId);}
