@@ -96,6 +96,7 @@ export function sceneIssues(n,p,map,{native=false}={}){
     if(s.type==='gate'&&!map.gates?.some(g=>g.id===s.gateId))add(at,'Choose a gate on this map.');
     if(s.type==='warp'){const m=p.maps.find(m=>m.id===s.to?.mapId);if(!m||!inBounds(m,s.to.x,s.to.y))add(at,'Choose a destination tile.');}
     if(s.type==='item'&&s.itemRef&&!a.items.some(v=>v.id===s.itemRef))add(at,'The custom item is missing.');
+    if(s.type==='trade'&&(!Number.isInteger(s.fromItemId)||s.fromItemId<1||s.fromItemId>4095||!Number.isInteger(s.toItemId)||s.toItemId<1||s.toItemId>4095||s.fromItemId===s.toItemId||!Number.isInteger(s.fromQuantity)||s.fromQuantity<1||s.fromQuantity>999||!Number.isInteger(s.toQuantity)||s.toQuantity<1||s.toQuantity>999))add(at,'An item exchange needs two different native item IDs and quantities from 1 to 999.');
     if(s.type==='music'&&s.trackId&&!a.music.some(t=>t.id===s.trackId))add(at,'The imported track is missing.');
     if(s.type==='cry'&&(!Number.isInteger(+s.species)||+s.species<1))add(at,'Choose a Pokémon cry.');
     if(s.type==='wait'&&(!Number.isInteger(+s.frames)||+s.frames<1||+s.frames>36000))add(at,'Use 1–36,000 frames.');
