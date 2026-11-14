@@ -26,6 +26,8 @@ function copyActions(steps,newId,depth=0){
   const copy=structuredClone(step),id=newId();
   if(typeof id!=='string'||!id.trim())throw Error('A copied event action needs a stable ID.');
   copy.id=id;
+  // Source-specific trainer local IDs must not leak to a different NPC.
+  if(copy.type==='battle')delete copy.nativeLocalId;
   for(const key of ['yes','no','then','else','cancel'])if(copy[key]!==undefined)copy[key]=copyActions(copy[key],newId,depth+1);
   if(copy.choices!==undefined){
    if(!Array.isArray(copy.choices))throw Error('Cannot duplicate an invalid choice list.');

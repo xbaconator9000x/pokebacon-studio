@@ -1,19 +1,21 @@
 // Deliberately bounded native-to-visual bridge. No attempt to translate
-// arbitrary Gen III bytecode: conditions, flags, trainer battles, native calls,
-// jumps and shared script subroutines must remain in the native editor.
+// arbitrary Gen III bytecode: only bounded linear conditions, movements,
+// standard trainer battles, flags and dialogue are translated. Other script
+// variants, calls, jumps and shared subroutines remain native-only.
 import {sceneIssues,prepareScene} from './authoring-model.js';
 import {decodeNativeMovement} from './native-movement-bridge.js';
+import {nativeTrainerId,nativeTrainerLocalId} from './native-trainer-bridge.js';
 
 const BASE=0x08000000,MAX_COMMANDS=128,MAX_ACTIONS=64;
 const fail=(message,at)=>{throw Error('Native event conversion: '+message+(Number.isInteger(at)?' at 0x'+at.toString(16):'')+'. Keep its original native script or edit it in ROM story.');};
-function textFor(graph,at,node){
- const original=node.args.find(a=>a.kind==='text'),pointer=original?.value;
+function textAt(graph,at,pointer){
  if(!Number.isInteger(pointer)||pointer<BASE+512)fail('dialogue pointer could not be verified',at);
  const row=graph.texts?.[pointer-BASE];
  if(!row||typeof row.text!=='string')fail('dialogue bytes could not be decoded',at);
- if(graph.edits?.commands?.[node.at])fail('edited dialogue pointer needs a native flow review',at);
+ if(graph.edits?.commands?.[at])fail('edited dialogue pointer needs a native flow review',at);
  return graph.edits?.texts?.[row.at]?.text??row.text;
 }
+function textFor(graph,at,node){return textAt(graph,at,node.args.find(a=>a.kind==='text')?.value);}
 function stepsFromNativeGraph(graph,root,newId,map){
  if(!root||!['npcs','signs','triggers'].includes(root.kind))fail('only original NPC, sign and tile event entries can become visual scenes');
  if(graph.edits?.flows?.[root.id])fail('this entry has a native structural flow; restore that flow before converting',root.address);
@@ -88,6 +90,23 @@ function stepsFromNativeGraph(graph,root,newId,map){
     }
     out.push(newAction({type:'nativeMovement',actorId,moves,wait},at));
     at=wait?next.end:n.end;continue;
+   }
+   if(code===92){
+    // Only the original type-1 NPC battle with two indexed messages and an
+    // immediate post-battle continuation has a safe one-action equivalent.
+    if(root.kind!=='npcs'||args.length!==6||args[0]!==1||
+       n.args?.[3]?.kind!=='text'||n.args?.[4]?.kind!=='text'||n.args?.[5]?.kind!=='script'||
+       args[5]!==BASE+n.end)fail('trainer battle variant or post-battle continuation is not safely convertible',at);
+    let trainerId,localId;
+    try{trainerId=nativeTrainerId(args[1]);localId=nativeTrainerLocalId(args[2]);}catch(e){fail(e.message,at);}
+    out.push(newAction({type:'battle',trainerId,nativeLocalId:localId,
+      intro:textAt(graph,at,args[3]),defeat:textAt(graph,at,args[4])},at));
+    at=n.end;continue;
+   }
+   if(code===97||code===98){
+    if(args.length!==1)fail('trainer defeated-state command has invalid arguments',at);
+    let trainerId;try{trainerId=nativeTrainerId(args[0]);}catch(e){fail(e.message,at);}
+    out.push(newAction({type:'nativeTrainerFlag',trainerId,value:code===97},at));at=n.end;continue;
    }
    if(code===41||code===42){
     if(args.length!==1||!Number.isInteger(args[0])||args[0]<0||args[0]>65535)fail('native flag write has an invalid original engine ID',at);
