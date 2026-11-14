@@ -12,7 +12,7 @@ async function fixture(){
  const bytes=syntheticROM(),v=new DataView(bytes.buffer);
  bytes[0x3000]=2;v.setUint32(0x3004,BASE+0x3200,true);
  for(let i=0;i<2;i++){const at=0x3200+i*24;
-  bytes[at]=i+1;bytes[at+2]=0;v.setInt16(at+4,4+i,true);v.setInt16(at+6,3,true);bytes[at+9]=8;
+  bytes[at]=i+1;bytes[at+2]=0;v.setInt16(at+4,2+i,true);v.setInt16(at+6,2,true);bytes[at+9]=8;
   bytes[at+10]=0x21;bytes[at+11]=0xa5;v.setUint16(at+12,1,true);v.setUint16(at+14,3+i,true);
   v.setUint32(at+16,BASE+0x5000,true);v.setUint16(at+20,100+i,true);
  }
