@@ -10,7 +10,7 @@ import {sceneIssues} from '../dist/authoring-model.js';
 import {sceneSource} from '../dist/scene-compiler.js';
 import {previewNativeVisualImport,applyNativeVisualImport} from '../dist/native-scene-import.js';
 import {nativeTrainerId,nativeTrainerLocalId,nativeTrainerFlagSource,applyNativeTrainerFlagPreview} from '../dist/native-trainer-bridge.js';
-import {cloneSceneForNewEvent} from '../dist/scene-pages.js';
+import {cloneSceneForNewEvent,enableScenePages,addScenePage} from '../dist/scene-pages.js';
 import {planSave,savedProjectKeys,assembleSavedProject} from '../dist/project-store.js';
 import {RomOutput} from '../dist/rom-writer.js';
 const BASE=0x08000000;
@@ -111,4 +111,17 @@ test('Android-first scene inspector exposes native trainer status, battle messag
  assert.match(ui,/Mark trainer defeated/);
  assert.match(ui,/applyNativeTrainerFlagPreview\(s,p\.trainerFlags\)/);
  assert.match(ui,/does not simulate winning/);
+});
+
+test('same-NPC page copies retain the source trainer parameter, while new-NPC scenes rebind',async()=>{
+ const f=await fixture(),{marker}=applyNativeVisualImport(f.project,'trainer-fixture',f.graph,f.roots[0],uid);
+ enableScenePages(marker.runtime,uid);
+ assert.equal(marker.runtime.pages[0].steps[0].nativeLocalId,0);
+ const page=addScenePage(marker.runtime,uid,marker.runtime.pages[0]);
+ assert.equal(page.steps[0].nativeLocalId,0,'same-event page copy must not alter the battle parameter');
+ const cloned=cloneSceneForNewEvent(marker,uid);
+ assert.equal(cloned.runtime.pages[0].steps[0].nativeLocalId,undefined);
+ assert.equal(cloned.runtime.pages[1].steps[0].nativeLocalId,undefined);
+ assert.equal(marker.runtime.pages[0].steps[0].nativeLocalId,0);
+ assert.equal(marker.runtime.pages[1].steps[0].nativeLocalId,0);
 });

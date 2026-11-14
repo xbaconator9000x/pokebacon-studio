@@ -18,7 +18,7 @@ export function enableScenePages(runtime,newId){
 // Duplicating an event page must allocate new identities for *all* nested
 // actions. Keeping the original action IDs causes collisions when two pages
 // are subsequently edited, linked or copied through the project editor.
-function copyActions(steps,newId,depth=0){
+function copyActions(steps,newId,depth=0,stripSourceLocalId=false){
  if(depth>8)throw Error('Cannot duplicate a page nested more than eight levels.');
  if(!Array.isArray(steps)||steps.length>256)throw Error('Cannot duplicate a page with invalid actions.');
  return steps.map(step=>{
@@ -26,12 +26,12 @@ function copyActions(steps,newId,depth=0){
   const copy=structuredClone(step),id=newId();
   if(typeof id!=='string'||!id.trim())throw Error('A copied event action needs a stable ID.');
   copy.id=id;
-  // Source-specific trainer local IDs must not leak to a different NPC.
-  if(copy.type==='battle')delete copy.nativeLocalId;
-  for(const key of ['yes','no','then','else','cancel'])if(copy[key]!==undefined)copy[key]=copyActions(copy[key],newId,depth+1);
+  // Same-NPC page copies retain native script parameters. A new NPC does not.
+  if(stripSourceLocalId&&copy.type==='battle')delete copy.nativeLocalId;
+  for(const key of ['yes','no','then','else','cancel'])if(copy[key]!==undefined)copy[key]=copyActions(copy[key],newId,depth+1,stripSourceLocalId);
   if(copy.choices!==undefined){
    if(!Array.isArray(copy.choices))throw Error('Cannot duplicate an invalid choice list.');
-   copy.choices=copy.choices.map(choice=>({...choice,id:newId(),steps:copyActions(choice.steps||[],newId,depth+1)}));
+   copy.choices=copy.choices.map(choice=>({...choice,id:newId(),steps:copyActions(choice.steps||[],newId,depth+1,stripSourceLocalId)}));
   }
   return copy;
  });
@@ -166,11 +166,11 @@ export function cloneSceneForNewEvent(source,newId){
  delete clone.runtime.importedNative;
  delete clone.runtime.completionFlag;
  delete clone.runtime.areaActiveFlag;
- clone.runtime.steps=copyActions(source.runtime.steps||[],newId);
- clone.runtime.repeatSteps=copyActions(source.runtime.repeatSteps||[],newId);
+ clone.runtime.steps=copyActions(source.runtime.steps||[],newId,0,true);
+ clone.runtime.repeatSteps=copyActions(source.runtime.repeatSteps||[],newId,0,true);
  if(scenePages(source.runtime))clone.runtime.pages=source.runtime.pages.map(page=>({
   ...structuredClone(page),id:newId(),conditions:structuredClone(page.conditions),
-  steps:copyActions(page.steps,newId)
+  steps:copyActions(page.steps,newId,0,true)
  }));
  const issues=pageStructureIssues(clone.runtime);
  if(issues.length)throw Error('The duplicated scene is invalid: '+issues[0]);
