@@ -6,6 +6,7 @@ import {validateMusicAsset} from '../dist/music-assets.js';
 import {musicScore} from '../dist/music-motifs.js';
 import {studioProgramForMIDI,selectNativeInstrument,varyMusicParts} from '../dist/music-part-options.js';
 import {composeSong} from '../dist/music-song.js';
+import {styleTrackBase} from '../dist/music-track-style.js';
 import {quickTrackSettings} from '../dist/music-quick-presets.js';
 function score(parts=24,overlap=false){
  const tracks=Array.from({length:parts},(_,i)=>({
@@ -77,4 +78,21 @@ test('both Android music screens offer relative instrument sliders and automatic
  assert.match(compose,/selectNativeInstrument\(t,voices/);
  assert.match(compose,/varyMusicParts\(score/);
  assert.match(compose,/autoFit:true/);
+});
+
+test('source-based Quick Track keeps all original MIDI notes until native export, even at 24 concurrent parts',()=>{
+ const source=score(24,true),original=structuredClone(source);
+ const arranged=styleTrackBase(source,{preset:'sunny-route',scope:'whole',melodyPart:0,targetScale:'original'}).score;
+ assert.equal(arranged.tracks.length,24);
+ assert.equal(arranged.tracks.reduce((n,t)=>n+t.notes.length,0),24);
+ const compiled=compileMusic(arranged,{autoFit:true});
+ assert.ok(compiled.trackCount<=10);
+ assert.equal(compiled.arrangement.sourceScore.tracks.length,24);
+ assert.equal(compiled.arrangement.sourceScore.tracks.reduce((n,t)=>n+t.notes.length,0),24);
+ assert.deepEqual(source,original);
+});
+test('MIDI export puts reused-channel instrument changes at each part’s first note',()=>{
+ const original=score(24);
+ const recovered=readMIDI(writeMIDI(original)).score;
+ assert.deepEqual(recovered.tracks.map(t=>t.midiProgram),original.tracks.map(t=>t.midiProgram));
 });
