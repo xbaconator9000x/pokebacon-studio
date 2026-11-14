@@ -29,7 +29,7 @@ function copyActions(steps,newId,depth=0){
   for(const key of ['yes','no','then','else','cancel'])if(copy[key]!==undefined)copy[key]=copyActions(copy[key],newId,depth+1);
   if(copy.choices!==undefined){
    if(!Array.isArray(copy.choices))throw Error('Cannot duplicate an invalid choice list.');
-   copy.choices=copy.choices.map(choice=>({...choice,steps:copyActions(choice.steps||[],newId,depth+1)}));
+   copy.choices=copy.choices.map(choice=>({...choice,id:newId(),steps:copyActions(choice.steps||[],newId,depth+1)}));
   }
   return copy;
  });
@@ -90,6 +90,10 @@ function nestedActionIssues(steps,path,ids,stats,depth=0){
    if(!Array.isArray(action.choices)||action.choices.length>16)errors.push(at+' has an invalid answer list.');
    else action.choices.forEach((choice,j)=>{
     if(!choice||typeof choice!=='object'||Array.isArray(choice)){errors.push(at+' / answer '+(j+1)+' is invalid.');return;}
+    if(choice.id!==undefined){
+     if(typeof choice.id!=='string'||!choice.id.trim()||ids.has(choice.id))errors.push(at+' / answer '+(j+1)+' has an invalid or duplicate stable ID.');
+     else ids.add(choice.id);
+    }
     if(choice.steps!==undefined)errors.push(...nestedActionIssues(choice.steps,at+' / answer '+(j+1),ids,stats,depth+1));
    });
   }
@@ -123,4 +127,50 @@ export function replaceScenePagesFromJson(runtime,text){
  if(issues.length)throw Error(issues[0]+' The original pages are untouched.');
  runtime.pages=structuredClone(pages);
  return runtime.pages;
+}
+
+/**
+ * Temporary, project-scoped page clipboard. Copying and pasting never edits
+ * the source marker or reserves a new quest bit; references stay in-project.
+ */
+export function createScenePageClipboard(projectId,page){
+ if(typeof projectId!=='string'||!projectId.trim())throw Error('A source project is required for event page copying.');
+ const issues=pageStructureIssues({pages:[page]});
+ if(issues.length)throw Error('Repair this page before copying: '+issues[0]);
+ if(JSON.stringify(page).length>256000)throw Error('The event page is too large to copy.');
+ return{version:1,projectId,page:structuredClone(page)};
+}
+export function pasteScenePageClipboard(runtime,clipboard,projectId,newId){
+ if(!clipboard||clipboard.version!==1||!projectId||clipboard.projectId!==projectId)
+  throw Error('Copied event pages can only be pasted into the same open project.');
+ const issues=pageStructureIssues({pages:[clipboard.page]});
+ if(issues.length)throw Error('The copied event page is invalid: '+issues[0]);
+ return addScenePage(runtime,newId,clipboard.page);
+}
+/**
+ * Duplicate an authored event, not its original native ROM object identity.
+ * Every action, nested branch and answer receives a new stable ID. Completion
+ * bits are allocated later, only if the user actually saves the copy.
+ */
+export function cloneSceneForNewEvent(source,newId){
+ if(!source||source.runtime?.action!=='scene')throw Error('Choose an authored visual scene to duplicate.');
+ if(pageStructureIssues(source.runtime).length)throw Error('Repair the scene pages before duplicating.');
+ const clone=structuredClone(source),id=newId();
+ if(typeof id!=='string'||!id.trim()||id===source.id)throw Error('A duplicate scene needs a new event identity.');
+ clone.id=id;
+ clone.kind='event';
+ delete clone.rom;
+ delete clone.npc;
+ delete clone.runtime.importedNative;
+ delete clone.runtime.completionFlag;
+ delete clone.runtime.areaActiveFlag;
+ clone.runtime.steps=copyActions(source.runtime.steps||[],newId);
+ clone.runtime.repeatSteps=copyActions(source.runtime.repeatSteps||[],newId);
+ if(scenePages(source.runtime))clone.runtime.pages=source.runtime.pages.map(page=>({
+  ...structuredClone(page),id:newId(),conditions:structuredClone(page.conditions),
+  steps:copyActions(page.steps,newId)
+ }));
+ const issues=pageStructureIssues(clone.runtime);
+ if(issues.length)throw Error('The duplicated scene is invalid: '+issues[0]);
+ return clone;
 }
