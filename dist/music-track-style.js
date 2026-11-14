@@ -59,7 +59,8 @@ export function styleTrackBase(source,options={}){
  score=retuneTrackScore(score,{targetKey,targetScale:targetScale==='vibe'?QUICK_TRACKS[options.preset||'shattered'].scale:targetScale,sourceTonality:tonal,percussionPrograms});
  // Follow the selected vibe without replacing the source with a recipe song.
  if(['loss','shattered'].includes(options.preset))for(let i=1;i<score.tracks.length;i++){const t=score.tracks[i];if(t.channel===9)t.notes=t.notes.filter((n,j)=>options.preset==='loss'?false:j%8===0);else if(!/bass/.test(t.name))t.notes=t.notes.filter((n,j)=>j%(options.preset==='loss'?3:2)===0);}
- const fitted=fitSourceVoices(score);score=fitted.score;if(fitted.trimmed)styled.warnings.push(`${fitted.trimmed} backing gates reduced to fit eight simultaneous cartridge voices.`);
+ // Preserve every selected source part and note in the editable arrangement.
+ // Native export alone handles any required eight-voice playback reduction.
  checkScore(score,{arranging:true});return{score,warnings:styled.warnings};
 }
 function melodyNotes(track,drums,length){

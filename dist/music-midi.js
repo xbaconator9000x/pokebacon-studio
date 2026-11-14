@@ -78,7 +78,7 @@ export function writeMIDI(score){
  const tracks=score.tracks.map((tr,index)=>{const channel=tr.channel===9?9:(index%15)>=9?(index%15)+1:index%15,events=[];
   if(index===0&&score.loopStart!==undefined)for(const [tick,text]of [[score.loopStart,'loopStart'],[score.length,'loopEnd']]){const b=[...new TextEncoder().encode(text)];events.push({tick,order:-1,b:[255,6,b.length,...b]});}
   if(index===0)for(const t of score.tempos){const n=Math.round(60000000/t.bpm);events.push({tick:t.tick,order:1,b:[255,0x51,3,n>>>16&255,n>>>8&255,n&255]});}
-  const name=[...new TextEncoder().encode((tr.name||'Part '+(index+1)).slice(0,120))];events.push({tick:0,order:-3,b:[255,3,...vlq(name.length),...name]},{tick:0,order:-2,b:[0xc0+channel,tr.midiProgram??tr.program]});
+  const name=[...new TextEncoder().encode((tr.name||'Part '+(index+1)).slice(0,120))];events.push({tick:0,order:-3,b:[255,3,...vlq(name.length),...name]},{tick:tr.notes.reduce((first,n)=>Math.min(first,n.tick),score.length),order:-2,b:[0xc0+channel,tr.midiProgram??tr.program]});
   for(const p of automationFor(tr)){const bend=Math.max(0,Math.min(16383,p.bend*128+8192));for(const b of [[0xb0+channel,101,0],[0xb0+channel,100,0],[0xb0+channel,6,p.range],[0xb0+channel,7,p.volume],[0xb0+channel,10,p.pan],[0xe0+channel,bend&127,bend>>7]])events.push({tick:p.tick,order:1,b});}
   for(const n of tr.notes)events.push({tick:n.tick,order:2,b:[0x90+channel,n.key,n.velocity]},{tick:n.tick+n.duration,order:0,b:[0x80+channel,n.key,0]});
   events.sort((a,b)=>a.tick-b.tick||a.order-b.order);let tick=0;const b=[];for(const e of events){b.push(...vlq(e.tick-tick),...e.b);tick=e.tick;}b.push(...vlq(score.length-tick),255,47,0);return chunk('MTrk',b);
