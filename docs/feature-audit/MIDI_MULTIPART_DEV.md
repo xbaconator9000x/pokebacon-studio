@@ -17,3 +17,7 @@ Quick Track and the MIDI arranger offer a relative slider (neutral = existing/so
 ## Verification and limitations
 
 Synthetic 24-part MIDI, dense simultaneous-voice MIDI, independent program-switch playback, original-versus-playback preservation, source save/reopen, slider determinism and mobile UI wiring are tested. Real Team Rocket MIDI requires user source-specific acceptance, and in-game music on phone/mGBA and post-export ROM play remain unverified. MIDI SysEx soundbanks, dynamic MIDI program changes within a channel, custom native engines and all soundtrack formats are not claimed. No ROM data or copyrighted game music was committed.
+
+## Additional source-preservation correction
+
+Quick Track no longer pre-trims source score voices before compilation. Both the original ROM/MIDI part count and its authored note events survive into the editable asset metadata when the GBA mix must fit an eight-voice budget. Reduction occurs solely in the compiled native playback copy; the report discloses adjusted gates. MIDI export defers each track's GM program-change message to its first note onset, improving instrument recovery when more than fifteen source parts reuse MIDI channels sequentially. The original MIDI file remains unchanged.
