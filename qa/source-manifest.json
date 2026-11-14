@@ -1660,7 +1660,7 @@
     "dist/music-controls.js": "a9524943a9078b6ed226757eb91107cd613cf6241f624c3c9e2b9fe3fe5c573d",
     "dist/music-game-score.js": "0640263c75758d968333817e3fafc859c2bdbdadf2cbf1743fd48370830b01ee",
     "dist/music-learning.js": "8afb7efb8682f99b18d6e9f38ed3ec36d2e84436b32a14c69ca5a25ffb77272b",
-    "dist/music-midi.js": "767daf080e62c637864cfc43acf014466ee07c067dabc806314aaa25174c2d76",
+    "dist/music-midi.js": "c96a4a4dab6b1acb91ea505ab837d521f5023cd685ac551c1506ef878ffda5ec",
     "dist/music-motifs.js": "94971bfa15e06b2b5e50a51e8c1407e5056751d9d1f23618491c38e34c124d89",
     "dist/music-musigan-score.js": "2781afb631552146f507ecdad08829d3e6a8f5f850f34ca99db1f330d44a4175",
     "dist/music-musigan-worker.js": "654e946fd16fab324f1e8b7da52f27cbf2312bbceab91d1cd29f6b9bd66adc2e",

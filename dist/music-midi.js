@@ -75,7 +75,7 @@ export function readMIDI(input){
 
 export function writeMIDI(score){
  checkScore(score,{arranging:true});const u32=n=>[n>>>24&255,n>>>16&255,n>>>8&255,n&255],vlq=n=>{const b=[n&127];while(n=Math.floor(n/128))b.unshift((n&127)|128);return b;},chunk=(tag,b)=>[...new TextEncoder().encode(tag),...u32(b.length),...b];
- const tracks=score.tracks.map((tr,index)=>{const channel=tr.channel===9:(index%15)>=9?(index%15)+1:index%15,events=[];
+ const tracks=score.tracks.map((tr,index)=>{const channel=tr.channel===9?9:(index%15)>=9?(index%15)+1:index%15,events=[];
   if(index===0&&score.loopStart!==undefined)for(const [tick,text]of [[score.loopStart,'loopStart'],[score.length,'loopEnd']]){const b=[...new TextEncoder().encode(text)];events.push({tick,order:-1,b:[255,6,b.length,...b]});}
   if(index===0)for(const t of score.tempos){const n=Math.round(60000000/t.bpm);events.push({tick:t.tick,order:1,b:[255,0x51,3,n>>>16&255,n>>>8&255,n&255]});}
   const name=[...new TextEncoder().encode((tr.name||'Part '+(index+1)).slice(0,120))];events.push({tick:0,order:-3,b:[255,3,...vlq(name.length),...name]},{tick:0,order:-2,b:[0xc0+channel,tr.midiProgram??tr.program]});
