@@ -1,4 +1,4 @@
-import {packMusicParts} from './music-pack-parts.js';
+import {packMusicParts,interleaveMusicParts,fitMusicVoices} from './music-pack-parts.js';
 import {installCartridgeVoices,CARTRIDGE_VOICES} from './music-cartridge-voices.js';
 import {validateAutomation,automationFor} from './music-controls.js';
 export {readMIDI,writeMIDI} from './music-midi.js';
@@ -41,23 +41,35 @@ export function availableVoices(asset){
 }
 function checkHardware(score,bytes,bank){
  const v=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),events=[];
- for(const t of score.tracks)for(const n of t.notes){let at=bank+t.program*12,type=bytes[at];if(type&0xc0){const child=v.getUint32(at+4,true)-BASE,index=type&0x40?bytes[v.getUint32(at+8,true)-BASE+n.key]:n.key;at=child+index*12;type=bytes[at];}const hardware=type&7;if(hardware){events.push({tick:n.tick,delta:1,hardware},{tick:n.tick+n.duration,delta:-1,hardware});}}
+ for(const t of score.tracks)for(const n of t.notes){let at=bank+(n.program??t.program)*12,type=bytes[at];if(type&0xc0){const child=v.getUint32(at+4,true)-BASE,index=type&0x40?bytes[v.getUint32(at+8,true)-BASE+n.key]:n.key;at=child+index*12;type=bytes[at];}const hardware=type&7;if(hardware){events.push({tick:n.tick,delta:1,hardware},{tick:n.tick+n.duration,delta:-1,hardware});}}
  const active=new Map();for(const e of events.sort((a,b)=>a.tick-b.tick||a.delta-b.delta)){const count=(active.get(e.hardware)||0)+e.delta;active.set(e.hardware,count);if(count>1)throw Error('PSG channel '+e.hardware+' has overlapping notes. Each hardware channel plays one note at a time.');}
 }
-export function compileMusic(score,{bankAsset=null,loop=true,name='New track'}={}){
- if(score?.tracks?.length>10){checkScore(score,{arranging:true});score=packMusicParts(score);}
- checkScore(score);const voices=availableVoices(bankAsset),allowed=new Set(voices.map(v=>v.program));if(score.tracks.some(t=>!allowed.has(t.program)))throw Error('Choose an available instrument for each part.');
+export function compileMusic(score,{bankAsset=null,loop=true,name='New track',autoFit=false}={}){
+ const input=score;let sourceScore=null,voiceTrimmed=0;
+ if(autoFit){checkScore(score,{arranging:true});const fit=fitMusicVoices(score);score=fit.score;voiceTrimmed=fit.trimmed;if(voiceTrimmed||score.tracks.length!==input.tracks.length)sourceScore=structuredClone(input);}
+ if(score?.tracks?.length>10){sourceScore??=structuredClone(input);checkScore(score,{arranging:true});score=packMusicParts(score);if(score.tracks.length>10)score=interleaveMusicParts(score);}
+ checkScore(score);const voices=availableVoices(bankAsset),allowed=new Set(voices.map(v=>v.program));
+ if(score.tracks.some(t=>!allowed.has(t.program)||t.notes.some(n=>n.program!==undefined&&!allowed.has(n.program))))throw Error('Choose an available instrument for each part.');
  let base,bank;if(bankAsset){const unpacked=unpackMusic(bankAsset);base=unpacked.bytes;bank=new DataView(base.buffer).getUint32(bankAsset.header+4,true)-BASE;}else({bytes:base,bank}=chipBank());
- for(const t of score.tracks){const voice=voices.find(v=>v.program===t.program);if(voice?.keys&&t.notes.some(n=>!voice.keys.includes(n.key)))throw Error((t.name||'Part')+': this copied split or drum instrument does not include every requested key. Use notes from the source track, or choose another instrument.');}checkHardware(score,base,bank);
+ for(const t of score.tracks){const voice=voices.find(v=>v.program===t.program);if(voice?.keys&&t.notes.some(n=>!voices.find(v=>v.program===(n.program??t.program))?.keys?.includes(n.key)))throw Error((t.name||'Part')+': this copied split or drum instrument does not include every requested key. Use notes from the source track, or choose another instrument.');}checkHardware(score,base,bank);
  const chunks=[],relocations=[];let length=(base.length+3)&~3;const append=b=>{const at=length;chunks.push({at,b:Uint8Array.from(b)});length=(length+b.length+3)&~3;return at;};
  const starts=score.tracks.map((track,index)=>{const data=[0xbc,0,0xbd,track.program],events=[];for(const p of automationFor(track))events.push({tick:p.tick,order:1,bytes:[0xc1,p.range,0xc0,p.bend+64,0xbe,p.volume,0xbf,p.pan]});const emitWait=ticks=>{while(ticks){let i=WAIT.length-1;while(WAIT[i]>ticks)i--;data.push(0x80+i);ticks-=WAIT[i];}};
   const loopStart=score.loopStart??0;let loopOffset=0;
-  for(const n of track.notes){events.push({tick:n.tick,order:2,bytes:[0xcf,n.key,n.velocity]},{tick:n.tick+n.duration,order:0,bytes:[0xce,n.key]});if(loop&&n.tick<loopStart&&n.tick+n.duration>loopStart){events.push({tick:loopStart,order:0,bytes:[0xce,n.key]},{tick:loopStart,order:2,bytes:[0xcf,n.key,n.velocity]});}}
+  for(const n of track.notes){
+    if(n.voiceControl){const c=n.voiceControl;
+     events.push({tick:n.tick,order:1.5,bytes:[0xbd,n.program??track.program,0xc1,c.range,0xc0,c.bend+64,0xbe,c.volume,0xbf,c.pan]});
+     for(const a of n.inlineAutomation||[])events.push({tick:a.tick,order:1.5,bytes:[0xc1,a.range,0xc0,a.bend+64,0xbe,a.volume,0xbf,a.pan]});
+    }else if(n.program!==undefined&&n.program!==track.program)events.push({tick:n.tick,order:1.5,bytes:[0xbd,n.program]});
+    events.push({tick:n.tick,order:2,bytes:[0xcf,n.key,n.velocity]},{tick:n.tick+n.duration,order:0,bytes:[0xce,n.key]});if(loop&&n.tick<loopStart&&n.tick+n.duration>loopStart){events.push({tick:loopStart,order:1.5,bytes:[0xbd,n.program??track.program]});events.push({tick:loopStart,order:0,bytes:[0xce,n.key]},{tick:loopStart,order:2,bytes:[0xcf,n.key,n.velocity]});}}
   if(index===0)for(const t of score.tempos)events.push({tick:t.tick,order:1,bytes:[0xbb,Math.round(t.bpm/2)]});
   if(loop&&loopStart){const p=automationFor(track).filter(p=>p.tick<=loopStart).at(-1),bpm=score.tempos.filter(t=>t.tick<=loopStart).at(-1).bpm;events.push({tick:loopStart,order:.5,marker:true,bytes:[0xbc,0,0xbd,track.program,0xc1,p.range,0xc0,p.bend+64,0xbe,p.volume,0xbf,p.pan,...(index===0?[0xbb,Math.round(bpm/2)]:[])]});}
   events.sort((a,b)=>a.tick-b.tick||a.order-b.order);let tick=0;for(const e of events){emitWait(e.tick-tick);tick=e.tick;if(e.marker)loopOffset=data.length;data.push(...e.bytes);}emitWait(score.length-tick);const pointerAt=data.length+1;data.push(...(loop?[0xb2,0,0,0,0]:[0xb1]));const at=append(data);if(loop)relocations.push({at:at+pointerAt,to:at+loopOffset});return at;});
  const header=append(new Uint8Array(8+starts.length*4)),table=append(new Uint8Array(8)),bytes=new Uint8Array(length),v=new DataView(bytes.buffer);bytes.set(base);for(const c of chunks)bytes.set(c.b,c.at);bytes[header]=starts.length;v.setUint32(header+4,BASE+bank,true);starts.forEach((at,i)=>v.setUint32(header+8+i*4,BASE+at,true));v.setUint32(table,BASE+header,true);for(const r of relocations)v.setUint32(r.at,BASE+r.to,true);
- const asset=extractMusic(bytes,table,0,{name,sourceName:bankAsset?'Composed · '+bankAsset.sourceName:'Composed · original chip instruments'});asset.arrangement={version:1,score:structuredClone(score),loop};return asset;
+ const asset=extractMusic(bytes,table,0,{name,sourceName:bankAsset?'Composed · '+bankAsset.sourceName:'Composed · original chip instruments'});asset.arrangement={version:1,score:structuredClone(score),loop,
+  ...(sourceScore?{sourceScore,playbackNotice:voiceTrimmed
+   ?voiceTrimmed+' voice gates adjusted to fit native eight-note playback; all MIDI parts remain editable.'
+   :'Source parts share '+score.tracks.length+' native playback lanes; original parts remain editable.'}:{})};
+ return asset;
 }
 
 /** Tempo/volume edits touch decoded command operands, never arbitrary bytes. */

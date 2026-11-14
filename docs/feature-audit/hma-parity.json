@@ -1,0 +1,1808 @@
+{
+  "schemaVersion": 1,
+  "title": "Hex Maniac Advance feature parity contract",
+  "auditedDate": "2026-11-12",
+  "sourceProduct": {
+    "name": "Hex Maniac Advance",
+    "repo": "https://github.com/haven1433/HexManiacAdvance",
+    "stableBaseline": "v0.5.6.1",
+    "additionalCoverage": "v0.6.0 / v0.6.1",
+    "caveat": "0.5.6.1 is marked latest/stable; 0.6.0/0.6.1 capabilities tracked without requiring their reported regressions"
+  },
+  "targetProduct": {
+    "repo": "xbaconator9000x/pokebacon-studio",
+    "branch": "development/studio-upgrades",
+    "featureInventory": "docs/feature-audit/inventory.json"
+  },
+  "statusDefinitions": {
+    "not_verified": "Mapping to general capability is not native functional parity. Requires independent HMA-equivalent end-to-end acceptance.",
+    "verified": "Verified against target original engine/revision including save/reimport and game execution."
+  },
+  "acceptanceGate": "Each feature must work for its applicable supported GBA engine/revision through Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Verify; unsupported source edits preserve original bytes.",
+  "features": [
+    {
+      "id": "HMA-HEX-01",
+      "category": "Hex editor, metadata and navigation",
+      "name": "Raw byte/hex editing, text-as-hex and search",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Read, edit, undo, save and export arbitrary original bytes without losing metadata",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-HEX-02",
+      "category": "Hex editor, metadata and navigation",
+      "name": "Copy/paste, overwrite, range selections and byte-level diff",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL04"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Compare before/after ROM bytes, paste a range and reimport exactly",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-HEX-03",
+      "category": "Hex editor, metadata and navigation",
+      "name": "Address goto, back/forward navigation and quick goto shortcuts",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL01"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Jump by offset or name and retain navigation history",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-HEX-04",
+      "category": "Hex editor, metadata and navigation",
+      "name": "Semantic pointer rendering and follow-pointer navigation",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL01",
+        "REL08"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Display typed pointers and follow them to safe in-ROM targets",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-pointer-navigation.js",
+          "dist/hma-hex-ui.js"
+        ],
+        "tests": [
+          "tests/hma-pointer-repoint.test.js"
+        ],
+        "limitations": "Pointer rendering/follow supports candidate and HMA offset pointers; semantic engine ownership remains unverified."
+      }
+    },
+    {
+      "id": "HMA-HEX-05",
+      "category": "Hex editor, metadata and navigation",
+      "name": "Named anchors, format strings and editable metadata",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL01",
+        "UI06"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Inspect, create and change named anchor/format without corrupting raw data",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-HEX-06",
+      "category": "Hex editor, metadata and navigation",
+      "name": "Import/export HMA TOML metadata and preserve custom anchors",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Round-trip .toml metadata alongside ROM, including table formats and renamed anchors",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-table-workspace.js",
+          "dist/hma-hex-ui.js"
+        ],
+        "tests": [
+          "tests/hma-table-workspace.test.js"
+        ],
+        "limitations": "HMA TOML source imported losslessly; no full arbitrary metadata schema/writeback or rewriting unsupported anchors."
+      }
+    },
+    {
+      "id": "HMA-HEX-07",
+      "category": "Hex editor, metadata and navigation",
+      "name": "Pointer-source and show-uses cross-reference navigation",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL08"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "List all verified ROM address users of table/text/image/code pointers",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-pointer-navigation.js",
+          "dist/hma-hex-ui.js"
+        ],
+        "tests": [
+          "tests/hma-pointer-repoint.test.js",
+          "scripts/test-release-mobile-browser.mjs"
+        ],
+        "limitations": "Aligned/unaligned direct pointer match and named-anchor where-used; dynamic computed references not inferred."
+      }
+    },
+    {
+      "id": "HMA-HEX-08",
+      "category": "Hex editor, metadata and navigation",
+      "name": "Safe free-space detection, relocation and repointing",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL02"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Grow a resource and rewrite only proven owned pointer sources",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-pointer-navigation.js",
+          "dist/rom-writer.js"
+        ],
+        "tests": [
+          "tests/hma-pointer-repoint.test.js"
+        ],
+        "limitations": "Verified same-count table copy-on-write and explicit pointer-site repoint; no automatic expansion or generalized bytecode owner analysis."
+      }
+    },
+    {
+      "id": "HMA-HEX-09",
+      "category": "Hex editor, metadata and navigation",
+      "name": "Unknown/unrecognized data preserved byte-for-byte",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT03",
+        "REL06"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Export and reimport unmodified unknown byte ranges identical to source",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-HEX-10",
+      "category": "Hex editor, metadata and navigation",
+      "name": "ROM revision and model compatibility fingerprinting",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL01"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Recognize all HMA-supported game/revision combinations with confidence",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-HEX-11",
+      "category": "Hex editor, metadata and navigation",
+      "name": "Internal hex bookmarks, meaningful formats and contextual data preview",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL01",
+        "UX02"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Bookmark and inspect formatted data from an on-screen hex selection",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-HEX-12",
+      "category": "Hex editor, metadata and navigation",
+      "name": "ROM metadata sidecar, named tables and custom override migrations",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI06",
+        "REL06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Retain manually located tables after project reopen and validated revision migration",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TBL-01",
+      "category": "Tables and general-purpose structured data",
+      "name": "Generic typed ROM table editor with add/copy/delete rows",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit an arbitrary metadata-described table with safe row addition and native reimport",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-table-workspace.js",
+          "dist/hma-hex-ui.js",
+          "dist/native-hex-workspace.js"
+        ],
+        "tests": [
+          "tests/hma-table-workspace.test.js",
+          "tests/hma-table-bulk.test.js",
+          "tests/hma-table-csv.test.js"
+        ],
+        "limitations": "Fixed-capacity typed records support individual edits, full-row copy/swap, bounded typed column fill and transactional CSV import/export. No true row creation/deletion, engine table length patching, linked-table expansion or live ROM gameplay acceptance."
+      }
+    },
+    {
+      "id": "HMA-TBL-02",
+      "category": "Tables and general-purpose structured data",
+      "name": "Linked table joins and synchronized expansion",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL08",
+        "MON01"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Expand related species names/stats/teaching tables as one transaction",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TBL-03",
+      "category": "Tables and general-purpose structured data",
+      "name": "Fields typed as enums, bitfields, pointers, numbers and text",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI06"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Preserve every native field and unknown enum across edit/reimport",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-table-workspace.js"
+        ],
+        "tests": [
+          "tests/hma-table-workspace.test.js",
+          "tests/hma-pointer-repoint.test.js"
+        ],
+        "limitations": "Fixed native integer/pointer/ASCII fields; no generalized enum or bitfield support yet."
+      }
+    },
+    {
+      "id": "HMA-TBL-04",
+      "category": "Tables and general-purpose structured data",
+      "name": "Table filters/search, selectable columns and direct references",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "NPC05",
+        "MAP10"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Search arbitrary tables, hide columns and jump to referenced rows",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-table-workspace.js",
+          "dist/hma-hex-ui.js",
+          "dist/hma-pointer-navigation.js"
+        ],
+        "tests": [
+          "tests/hma-table-bulk.test.js",
+          "tests/hma-table-csv.test.js",
+          "tests/hma-pointer-repoint.test.js"
+        ],
+        "limitations": "Source-bound typed field search and bounded CSV selection/column import, pointer-follow for fixed pointers; no generalized join/filter expression engine, dynamic child-row resolution or native gameplay acceptance."
+      }
+    },
+    {
+      "id": "HMA-TBL-05",
+      "category": "Tables and general-purpose structured data",
+      "name": "Inline pointers and linked child records in table fields",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL08"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit child data safely while retaining other users and ownership",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TBL-06",
+      "category": "Tables and general-purpose structured data",
+      "name": "Generic table structure/layout change and fixed-size constraints",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL02",
+        "UI06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Reject engine-incompatible table resize and supply valid relocation plan",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TBL-07",
+      "category": "Tables and general-purpose structured data",
+      "name": "ROM constants editor (shiny odds, badges, Exp multipliers)",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI05"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Show exact revision-specific hook and verify changed constant in native engine",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TBL-08",
+      "category": "Tables and general-purpose structured data",
+      "name": "Miscellaneous lookup tables (Soundproof/Metronome/trainer payout/trades)",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Locate and safely edit named miscellaneous tables with reimport equality",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TBL-09",
+      "category": "Tables and general-purpose structured data",
+      "name": "Table order/reindex and reference remapping",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON04",
+        "REL08"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Reorder indexed data and update every verified reference",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TBL-10",
+      "category": "Tables and general-purpose structured data",
+      "name": "HMA-style metadata and schema definitions for expansions",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Load engine/revision-specific custom named tables, preserving incompatible records",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-table-workspace.js"
+        ],
+        "tests": [
+          "tests/hma-pointer-repoint.test.js"
+        ],
+        "limitations": "Strict [field. field: field::]N known fixed layouts; complex/dynamic HMA tables read-only."
+      }
+    },
+    {
+      "id": "HMA-MON-01",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Species base stats/types/abilities/EXP/EV data",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON01"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Change species data, reimport and execute relevant battle checks",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-02",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Species names, descriptions, Pokédex entries and dex numbers",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON04"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Round-trip species/dex text and ordering in game",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-03",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Evolution methods, targets and item/level rules",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON03"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Verify native evolution conditions from edited source",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-04",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Level-up movesets, TM/HM, egg moves and tutors",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON02"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit learnsets and tutor tables, including expansion coherence",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-05",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Move name, accuracy, power, PP, targets and native properties",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON05"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit move record and verify damage/targeting behaviour in game",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-06",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Move effect scripts and battle command editing",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON06",
+        "UI04"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Decompile/recompile native move effects and execute battle test",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-07",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Move animation scripting",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Decompile/recompile animation commands and execute animated native battle",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-08",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Trainer teams, held items, moves, levels, AI flags and sprite",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "NPC02"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit existing trainer and verify native battle, flags and rematch",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-09",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "New trainers and expansion/trainer party schemas",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "NPC06",
+        "NPC02"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Add trainer with schema-specific party fields and no loss",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-10",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Trainer encounters and rematches (approach, defeat, rematch tables)",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "NPC03"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Win, lose, re-enter and rematch in native game",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-11",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Wild encounter tables, slots, levels, encounter methods",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "NPC04"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Change and encounter wild Pokémon on an imported source map",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-12",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Starter Pokémon, in-game trades and gifts",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "NPC04",
+        "MON01"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit starters/trades and validate actual receipt in game",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-13",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Trainer payout and trainer-class lookup tables",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit original payout tables and verify native money award",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-14",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Pokédex graphical reordering utility",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON04"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Reorder dex while preserving linked species references and UI",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-15",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Additional species/move/tutor slot expansion tools",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON03",
+        "MON05",
+        "MON02"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Extend slots with revision-aware code/metadata and battle tests",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MON-16",
+      "category": "Pokémon, trainers, moves and encounters",
+      "name": "Trainer validation of illegal levels/evolution and move sources",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "NPC02"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Warn when trainer team cannot satisfy species/learnset restrictions",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-01",
+      "category": "Map and events editing",
+      "name": "Original maps open/edit/save/export",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MAP01",
+        "MAP09"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit existing map pixels and collision in native ROM without changing unrelated map",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-02",
+      "category": "Map and events editing",
+      "name": "New maps and bank/route allocation",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MAP08",
+        "MAP10"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Add native map bank and enter it in a fresh native game",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-03",
+      "category": "Map and events editing",
+      "name": "Map scripts (load, on-frame, step and field events)",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT01",
+        "EVT02"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit original map script with precise entry lifecycle and no hooks lost",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-04",
+      "category": "Map and events editing",
+      "name": "NPC/object, warps, signs, hidden-item and trigger placement",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT01",
+        "NPC01"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit each imported event type and reimport its original identity",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-05",
+      "category": "Map and events editing",
+      "name": "Visual map NPC/text/trainer/item event templates",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT02"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Create/edit trainer, dialogue, item and shop scripts from map context",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-06",
+      "category": "Map and events editing",
+      "name": "Connected maps, border offsets and target warps",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MAP03"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit connection, enter both directions and preserve edge rules",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-07",
+      "category": "Map and events editing",
+      "name": "Tileset and metatile/block editor including collision/behaviors",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MAP05",
+        "MAP02"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit native block visuals and behaviors without palette corruption",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-08",
+      "category": "Map and events editing",
+      "name": "Map selection, paint/erase, fill, 9-grid and smart-fill",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MAP01",
+        "MAP06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Use mobile painting and verify native exported metatile patterns",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-09",
+      "category": "Map and events editing",
+      "name": "Copy/paste native blocks, layers and tiles between maps",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MAP05",
+        "ART08"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Copy owned blocks across maps without bad pointer aliasing",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-10",
+      "category": "Map and events editing",
+      "name": "Map bank, header, music, weather and metadata controls",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MAP10"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit source map header and retain environment during transition",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-11",
+      "category": "Map and events editing",
+      "name": "Map script variables and unused flag/var selection",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Select unused engine flags/variables without collision or quest-slot confusion",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-12",
+      "category": "Map and events editing",
+      "name": "Dynamic overworld sprite visualisation and transparent invisible objects",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "ART07",
+        "NPC01"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Resolve original dynamic sprite and preserve native display behavior",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-13",
+      "category": "Map and events editing",
+      "name": "Map script ownership, shared-code references and show uses",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT03",
+        "REL08"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Inspect all original roots before replacing a shared script",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-14",
+      "category": "Map and events editing",
+      "name": "Map export as image and map editing diagnostics",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MAP03",
+        "MAP10"
+      ],
+      "priority": "P2",
+      "parityStatus": "not_verified",
+      "acceptance": "Export correct map pixels and highlight invalid warps/collision",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-15",
+      "category": "Map and events editing",
+      "name": "Live source script edit from selected map event",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT02",
+        "EVT05"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Open exact original ROM entry and edit native script safely",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-MAP-16",
+      "category": "Map and events editing",
+      "name": "Wild encounter chance UI linked to original map",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "NPC04"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Inspect/edit species, slot rates and encounter rate from original map",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-TXT-01",
+      "category": "Text, images, palettes and visuals",
+      "name": "ROM-wide text find, replace and navigation",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "SCN05"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Find and replace arbitrary indexed source ROM dialogue with safe script references",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-02",
+      "category": "Text, images, palettes and visuals",
+      "name": "Native text encoding, control codes and game-style preview",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "SCN05",
+        "UI03"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit encoded text with variable/control tokens and preview correct pagination",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-03",
+      "category": "Text, images, palettes and visuals",
+      "name": "Automatic safe text repointing and shared text ownership",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL02",
+        "SCN05"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Grow original text, update every verified pointer and keep unknown bytes",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-04",
+      "category": "Text, images, palettes and visuals",
+      "name": "PNG import/export for sprites/icons/tilemaps",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "ART08",
+        "ART07"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Round trip indexed PNG into native ROM and reindex graphic",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-05",
+      "category": "Text, images, palettes and visuals",
+      "name": "Image editing: select, pencil, fill, erase, palette and transform",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "ART01",
+        "ART02"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit native indexed asset via touch canvas with correct palette indexes",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-06",
+      "category": "Text, images, palettes and visuals",
+      "name": "Image discovery at raw address, dimensions/bit-depth and decompression",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "ART07"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Locate arbitrary original image by address and decode/encode without corruption",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-07",
+      "category": "Text, images, palettes and visuals",
+      "name": "Image relocation and copy-on-write for shared graphics",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "ART06",
+        "REL08"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit one image without changing other shared users unless approved",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-08",
+      "category": "Text, images, palettes and visuals",
+      "name": "Palette viewer, import/edit and shared-palette conflict options",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "ART06",
+        "ART09"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Change or detach shared palette with original palette references intact",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-09",
+      "category": "Text, images, palettes and visuals",
+      "name": "Tilesets and tilemaps as images (including large tilemaps)",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MAP05",
+        "ART08"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit native tilemap using image tools then preserve tile index references",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-10",
+      "category": "Text, images, palettes and visuals",
+      "name": "Title screen, menus, intro graphics, fonts and type icons",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI03",
+        "UI07",
+        "ART07"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit these native asset classes with correct animation and palette",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-11",
+      "category": "Text, images, palettes and visuals",
+      "name": "World/town map images and layout",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MAP10",
+        "UI03"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit original town-map graphics and region metadata",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-12",
+      "category": "Text, images, palettes and visuals",
+      "name": "Overworld sprites, frame palettes and reflection palette handling",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "ART07",
+        "ART09"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Change original OW/reflection data, preserving every used frame",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-TXT-13",
+      "category": "Text, images, palettes and visuals",
+      "name": "Image transparency/index-0 selection and recolor controls",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "ART02",
+        "ART06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Maintain palette-index zero and image transparent regions correctly",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-01",
+      "category": "Scripting, assembly and automation",
+      "name": "Event script decompiler/compiler with native commands",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT05"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Decompile, change and reassemble original event script with export/reimport parity",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-02",
+      "category": "Scripting, assembly and automation",
+      "name": "Labels, macros, goto, branching and autocomplete",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT05",
+        "EVT02"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit nested source events with labels and compile under engine constraints",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-03",
+      "category": "Scripting, assembly and automation",
+      "name": "Inline visual event changes with native advanced-code fallback",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT02"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Convert supported commands without losing unsupported native routines",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-04",
+      "category": "Scripting, assembly and automation",
+      "name": "Battle script editor/decompiler/compiler",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI04"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit an actual original battle script and execute an effect in engine",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-05",
+      "category": "Scripting, assembly and automation",
+      "name": "Trainer AI script editor/decompiler/compiler",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI04"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit native AI flow and verify trainer behavior in battle",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-06",
+      "category": "Scripting, assembly and automation",
+      "name": "Move animation script editor/decompiler/compiler",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit original animation script and run battle rendering",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-07",
+      "category": "Scripting, assembly and automation",
+      "name": "THUMB disassembly and assembly with length/free-space checks",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit a known thumb function, encode/pointer update, and execute native test",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-08",
+      "category": "Scripting, assembly and automation",
+      "name": "Code/text syntax highlighting, inline diagnostics and autocomplete",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT05"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Show inline parse errors and source completion for native command families",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-09",
+      "category": "Scripting, assembly and automation",
+      "name": "ASM pointers, named symbols, auto/section pointers and code relocation",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI06",
+        "REL02"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Resolve named anchors/automatic pointers in compiled source safely",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-10",
+      "category": "Scripting, assembly and automation",
+      "name": "HMA automation scripts for migrations, patches and utilities",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Run versioned scripted editing transaction safely with rollback",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-11",
+      "category": "Scripting, assembly and automation",
+      "name": "Python scripting console and table-access automation API",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit typed ROM tables through a sandboxed documented automation API",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-12",
+      "category": "Scripting, assembly and automation",
+      "name": "Reusable script templates and context-aware event helper macros",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "EVT07"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Edit a source script template into a native ROM using visual map context",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-SCR-13",
+      "category": "Scripting, assembly and automation",
+      "name": "Source-level diff/patch preview before arbitrary code edits",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL08"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Show exact byte delta and ownership impact before high-risk native write",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
+      ]
+    },
+    {
+      "id": "HMA-UTL-01",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "Create/apply IPS patches",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Create and apply IPS diff and verify bytes after reimport",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/ips.js",
+          "dist/app.js",
+          "dist/hma-hex-ui.js"
+        ],
+        "tests": [
+          "tests/ips.test.js"
+        ],
+        "limitations": "Standard IPS create/apply, no source checksum; changes at >=16 MiB need BPS; no real game runtime acceptance."
+      }
+    },
+    {
+      "id": "HMA-UTL-02",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "Create/apply UPS patches",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL06"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Create and apply UPS diff and verify source/target CRCs",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-UTL-03",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "Automatic ROM backups and undo/redo history",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL07",
+        "REL04"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Restore untouched previous ROM after every failed operation",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-UTL-04",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "Safe Fairy-type insertion or equivalent revision-aware engine install",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI05",
+        "MON01"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Identify prerequisites, install target code safely and run type-effectiveness checks",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-UTL-05",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "Move/tutor expansion with code and table dependencies",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON02",
+        "MON05"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Expand engine tables without breaking hardcoded lengths",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-UTL-06",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "Pixilate-like custom ability patching with verified hooks",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "MON07"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Install/inspect custom ability hook in known ROM and verify battle effect",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-UTL-07",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "CFRU/DPE compatibility and guarded installer for known bases",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI05"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Detect known source revision and refuse incompatible/modified base",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-UTL-08",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "Custom HMA metadata/TOML and symbolic anchor adapters",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UI06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Import named HMA metadata and preserve source override mappings",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-UTL-09",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "UI and map/script cross-navigation, bookmarks and saved tabs",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UX03",
+        "MAP10"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Return from original map event to source and prior table with stable selection",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-UTL-10",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "Multiple native editor tabs and independent selection contexts",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "UX03"
+      ],
+      "priority": "P2",
+      "parityStatus": "not_verified",
+      "acceptance": "Open multiple source scripts/tables and keep per-tab position",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-UTL-11",
+      "category": "Utilities, patches, engine extensions and UX",
+      "name": "Automatic table repointing and buffer growth warnings",
+      "baseline": "0.5.6.1 stable baseline",
+      "inventoryIds": [
+        "REL02"
+      ],
+      "priority": "P0",
+      "parityStatus": "not_verified",
+      "acceptance": "Show exact allocation, warn on no free space and avoid writes on failure",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
+        "https://github.com/haven1433/HexManiacAdvance/wiki/Tutorials",
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-L06-01",
+      "category": "HMA 0.6.0/0.6.1 additional coverage",
+      "name": "WFC map generation with backtracking and 9-grid upgrades",
+      "baseline": "0.6.0–0.6.1 delta",
+      "inventoryIds": [
+        "MAP08",
+        "MAP06"
+      ],
+      "priority": "P2",
+      "parityStatus": "not_verified",
+      "acceptance": "Generate and native-export valid maps under constraints without broken blocks",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-L06-02",
+      "category": "HMA 0.6.0/0.6.1 additional coverage",
+      "name": "Dynamic OW rendering including expanded overworld tables",
+      "baseline": "0.6.0–0.6.1 delta",
+      "inventoryIds": [
+        "ART09",
+        "ART07"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Visualize and edit engine-native dynamic OW using exact known schema",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-L06-03",
+      "category": "HMA 0.6.0/0.6.1 additional coverage",
+      "name": "Partial map display for complex scripts (flags/items/text)",
+      "baseline": "0.6.0–0.6.1 delta",
+      "inventoryIds": [
+        "EVT02",
+        "EVT03"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Show recognized substeps while keeping unsupported source spans untouched",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-L06-04",
+      "category": "HMA 0.6.0/0.6.1 additional coverage",
+      "name": "Unused map variable picker and map-flag conflict diagnostics",
+      "baseline": "0.6.0–0.6.1 delta",
+      "inventoryIds": [
+        "EVT06"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Allocate only native free slots supported by source revision",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-L06-05",
+      "category": "HMA 0.6.0/0.6.1 additional coverage",
+      "name": "Block behavior search filters and selected tile/block indices",
+      "baseline": "0.6.0–0.6.1 delta",
+      "inventoryIds": [
+        "MAP05"
+      ],
+      "priority": "P2",
+      "parityStatus": "not_verified",
+      "acceptance": "Filter all original metatile behaviors with source numeric ID visible",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-L06-06",
+      "category": "HMA 0.6.0/0.6.1 additional coverage",
+      "name": "Map blockset use-based naming and collision visibility overlays",
+      "baseline": "0.6.0–0.6.1 delta",
+      "inventoryIds": [
+        "MAP10",
+        "MAP02"
+      ],
+      "priority": "P2",
+      "parityStatus": "not_verified",
+      "acceptance": "Reveal source uses and selected collision differences",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-L06-07",
+      "category": "HMA 0.6.0/0.6.1 additional coverage",
+      "name": "Trainer invalid-evolution/move compatibility warnings",
+      "baseline": "0.6.0–0.6.1 delta",
+      "inventoryIds": [
+        "NPC02"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Compute actual learnability against original source species/moves tables",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-L06-08",
+      "category": "HMA 0.6.0/0.6.1 additional coverage",
+      "name": "THUMB code region-size compile diagnostics",
+      "baseline": "0.6.0–0.6.1 delta",
+      "inventoryIds": [],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Warn on oversized code before changing original bytes",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-L06-09",
+      "category": "HMA 0.6.0/0.6.1 additional coverage",
+      "name": "Diagnostic/logging tab with exportable error context",
+      "baseline": "0.6.0–0.6.1 delta",
+      "inventoryIds": [
+        "UX02"
+      ],
+      "priority": "P1",
+      "parityStatus": "not_verified",
+      "acceptance": "Capture reproducible revision/action/pointer diagnostics without leaking ROM bytes",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    },
+    {
+      "id": "HMA-L06-10",
+      "category": "HMA 0.6.0/0.6.1 additional coverage",
+      "name": "Selection size/position reporting in sprite editor",
+      "baseline": "0.6.0–0.6.1 delta",
+      "inventoryIds": [
+        "ART01"
+      ],
+      "priority": "P2",
+      "parityStatus": "not_verified",
+      "acceptance": "Show selection bounds in pixels on Android/desktop",
+      "upstream": [
+        "https://github.com/haven1433/HexManiacAdvance/releases"
+      ]
+    }
+  ]
+}

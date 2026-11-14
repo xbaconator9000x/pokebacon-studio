@@ -1,3 +1,6 @@
+import {nativeMovementIssues} from './native-movement-bridge.js';
+import {nativeFlagNumber} from './native-flag-bridge.js';
+import {nativeTrainerId,nativeTrainerLocalId} from './native-trainer-bridge.js';
 import {hmAllowed} from './hm-rules.js';
 // Shared authoring data. References are stable IDs; drafts may contain unresolved IDs.
 import {effectIssues} from './scene-effects.js';
@@ -62,30 +65,41 @@ export function sceneIssues(n,p,map,{native=false}={}){
   if(native&&(r.trigger==='portal'||r.trigger==='enter'&&!map.rom?.generated))add('Trigger','Native '+r.trigger+' hooks are not verified for this map. Use a step or drawn area at the arrival tile. Map-enter scenes are supported on newly generated maps.');
   if(native&&['area','radius'].includes(r.trigger)&&sceneCells(n,map).length>200)add('Trigger','Use an area of at most 200 tiles for native coordinate events.');
   for(const [i,c]of (r.conditions||[]).entries())issues.push(...conditionIssues(c,p,'Requirement '+(i+1)));
-  for(const message of pageStructureIssues(r))add('Pages',message);
-  for(const [i,page]of (scenePages(r)||[]).entries())for(const [j,c]of (page.conditions||[]).entries())issues.push(...conditionIssues(c,p,'Page '+(i+1)+' / prerequisite '+(j+1)));
+  const pageErrors=pageStructureIssues(r);
+  for(const message of pageErrors)add('Pages',message);
+  // Imported / recovered project JSON may contain partially authored pages.
+  // Show a repairable diagnostic rather than crashing the scene inspector.
+  if(pageErrors.length)return issues;
+  for(const [i,page]of (scenePages(r)||[]).entries())for(const [j,c]of page.conditions.entries())issues.push(...conditionIssues(c,p,'Page '+(i+1)+' / prerequisite '+(j+1)));
   if(!scenePages(r)&&!r.steps?.length)add('Actions','Add at least one action.');
-  const actions=sceneActions(n);if(actions.length>256)add('Actions','Keep one scene within 256 actions.');
+  let actions;
+  try{actions=sceneActions(n);}catch(e){add('Actions',e.message);return issues;}
+  if(actions.length>256)add('Actions','Keep one scene within 256 actions.');
   for(const [i,s]of actions.entries()){
     const at='Action '+(i+1);for(const message of effectIssues(s,map))add(at,message);if(s.type==='completeField'&&!map.fieldObjects?.some(o=>o.id===s.targetId&&o.permanent))add(at,'Choose a permanent HM object.');
+    if(s.type==='say'&&s.messageType!==undefined&&![4,6].includes(+s.messageType))add(at,'Choose a supported native dialogue box style.');
     if(['say','choice','answers'].includes(s.type)){const value=s.dialogueId?a.dialogues.find(d=>d.id===s.dialogueId)?.text:s.text;if(!value?.trim())add(at,s.dialogueId?'The linked dialogue is missing.':'Write the dialogue / question.');else try{wrapDialogue(value);}catch(e){add(at,e.message);}}
     if(s.type==='answers'&&(!s.id||!Array.isArray(s.choices)||s.choices.length<2||s.choices.length>4||s.choices.some(c=>!c.label?.trim()||c.label.length>24)))add(at,'Add two to four labelled answers (up to 24 characters each).');
-    if(!['say','choice','answers','if','path','face','emote','visible','wait','flag','set','add','item','money','cry','music','sound','fade','warp','heal','gate','hm','stop','abort','shop','battle','giveMon','portrait','shake','weather','rockfall','completeField','respawn'].includes(s.type))add(at,'This action type is not supported.');
+    if(!['say','choice','answers','if','nativeFlag','nativeFlagIf','nativeMovement','nativeTrainerFlag','nativeTrainerIf','path','face','emote','visible','wait','flag','set','add','item','trade','money','cry','music','sound','fade','warp','heal','gate','hm','stop','abort','shop','battle','giveMon','portrait','shake','weather','rockfall','completeField','respawn'].includes(s.type))add(at,'This action type is not supported.');
     if(['set','add'].includes(s.type)&&(!Number.isInteger(+s.value)||Math.abs(+s.value)>65535))add(at,'Use a whole number between -65,535 and 65,535.');
     if(['cry','portrait','giveMon'].includes(s.type)&&(!Number.isInteger(+s.species)||+s.species<1))add(at,'Choose a native Pokémon.');
     if(s.type==='giveMon'&&(!Number.isInteger(+s.level)||+s.level<1||+s.level>100))add(at,'Use a level from 1 to 100.');
-    if(s.type==='battle'&&(!Number.isInteger(+s.trainerId)||+s.trainerId<1))add(at,'Choose a native trainer.');
+    if(['battle','nativeTrainerFlag','nativeTrainerIf'].includes(s.type))try{nativeTrainerId(s.trainerId);}catch(e){add(at,'Choose a native trainer ID (1–65,535).');}
+    if(s.type==='battle'&&s.nativeLocalId!==undefined)try{nativeTrainerLocalId(s.nativeLocalId);}catch(e){add(at,e.message);}
     if(s.type==='shop'&&(!s.items?.length||s.items.length>50||s.items.some(i=>typeof i==='string'?!a.items.some(v=>v.id===i):!Number.isInteger(i)||i<1)))add(at,'Choose 1–50 shop items.');
     if(s.type==='if'){if(!s.conditions?.length)add(at,'Add a branch condition.');for(const c of s.conditions||[])issues.push(...conditionIssues(c,p,at));}
+    if(['nativeFlag','nativeFlagIf'].includes(s.type))try{nativeFlagNumber(s.nativeFlagId);}catch(e){add(at,e.message);}
+    if(s.type==='nativeMovement')for(const message of nativeMovementIssues(s.moves))add(at,message);
     if(['set','add'].includes(s.type)&&!a.variables.some(v=>v.id===s.variableId))add(at,'Choose a saved counter.');
     if(s.type==='respawn'&&(!Number.isInteger(s.healId)||s.healId<1||s.healId>20))add(at,'Use a healing checkpoint from 1 to 20.');
     if(s.type==='flag'&&!p.questFlags?.some(q=>q.id===s.flagId))add(at,'Choose a saved flag.');
-    if(['path','face','emote','visible'].includes(s.type)&&s.actorId!=='player'&&s.actorId!=='self'&&!map.markers.some(m=>m.id===s.actorId&&(m.npc||m.rom?.type==='npc')))add(at,'Choose a character placed on this map.');
-    if(s.actorId==='self'&&['path','face','emote','visible'].includes(s.type)&&!n.npc&&n.rom?.type!=='npc')add(at,'This event has no character appearance. Choose Player or another NPC.');
+    if(['path','face','emote','visible','nativeMovement'].includes(s.type)&&s.actorId!=='player'&&s.actorId!=='self'&&!map.markers.some(m=>m.id===s.actorId&&(m.npc||m.rom?.type==='npc')))add(at,'Choose a character placed on this map.');
+    if(s.actorId==='self'&&['path','face','emote','visible','nativeMovement'].includes(s.type)&&!n.npc&&n.rom?.type!=='npc')add(at,'This event has no character appearance. Choose Player or another NPC.');
     if(s.type==='path'){if(!s.points?.length||s.points.length<2)add(at,'Draw the movement path.');else{try{const dirs=pathDirections(s.points);let{x,y}=s.points[0];for(const d of dirs){x+=DIRECTIONS[d][0];y+=DIRECTIONS[d][1];if(!inBounds(map,x,y)||movementAt(map,x,y,{ignoreFieldObjects:true}).collision){add(at,'The path crosses blocked or out-of-bounds ground.');break;}}}catch(e){add(at,e.message);}}}
     if(s.type==='gate'&&!map.gates?.some(g=>g.id===s.gateId))add(at,'Choose a gate on this map.');
     if(s.type==='warp'){const m=p.maps.find(m=>m.id===s.to?.mapId);if(!m||!inBounds(m,s.to.x,s.to.y))add(at,'Choose a destination tile.');}
     if(s.type==='item'&&s.itemRef&&!a.items.some(v=>v.id===s.itemRef))add(at,'The custom item is missing.');
+    if(s.type==='trade'&&(!Number.isInteger(s.fromItemId)||s.fromItemId<1||s.fromItemId>4095||!Number.isInteger(s.toItemId)||s.toItemId<1||s.toItemId>4095||s.fromItemId===s.toItemId||!Number.isInteger(s.fromQuantity)||s.fromQuantity<1||s.fromQuantity>999||!Number.isInteger(s.toQuantity)||s.toQuantity<1||s.toQuantity>999))add(at,'An item exchange needs two different native item IDs and quantities from 1 to 999.');
     if(s.type==='music'&&s.trackId&&!a.music.some(t=>t.id===s.trackId))add(at,'The imported track is missing.');
     if(s.type==='cry'&&(!Number.isInteger(+s.species)||+s.species<1))add(at,'Choose a Pokémon cry.');
     if(s.type==='wait'&&(!Number.isInteger(+s.frames)||+s.frames<1||+s.frames>36000))add(at,'Use 1–36,000 frames.');

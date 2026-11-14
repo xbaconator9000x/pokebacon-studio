@@ -4,6 +4,10 @@ Canonical tracking: [audit #20](https://github.com/xbaconator9000x/pokebacon-stu
 
 Complexity is a relative planning label, not a duration promise: M is a bounded cross-module slice, L is multi-system integration, XL needs engine/runtime work and substantial acceptance.
 
+## Hex Maniac Advance parity crosswalk
+
+The full [101-function HMA checklist](HMA_PARITY.md) and its [verified-only-with-native-acceptance JSON contract](hma-parity.json) are now additional planning gates. **Keep HMA feature parity as a long-term non-negotiable objective**, but never interpret a broad item such as `EVT05` or `MON01` as evidence of all its HMA subfunctions working. The nine functions not individually mapped to the original 98-capability inventory are openly tracked there; most urgent are raw hex editing, generic typed tables, TOML anchor compatibility, THUMB source tools, IPS generation and safe automation. Batch implementation by resource ownership and runtime relevance; preserve the existing Shattered milestone and Android-first UX.
+
 ## Immediate delivery sequence
 
 | Batch | Priority / complexity | Dependencies | Coherent deliverable and stop gate | Tracking |

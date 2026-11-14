@@ -1,0 +1,320 @@
+import {parseROMOffset,hexInput,formatHex,hexRows,findROMHex,parseMaskedHexSearch,findMaskedROMHex,revertROMHexRange,hexDiffSummary,hexState,stageROMHex,installROMHexEdits} from './native-hex-workspace.js';
+import {hmaMetadata,importHMAToml,tableDefinitions,saveTableDefinition,tableRecord,editTableField,fixedNumericHMATable,copyTableRecord,swapTableRecords,fillTableColumn,findTableRows,replaceTableColumnMatches,setTableBitRange,hmaListLabels,bindTableEnumList,exportTableCSV,importTableCSV,previewTableCSV,adjustTableColumn} from './hma-table-workspace.js';
+import {gbaCountEngine,scanThumbCountCandidates} from './hma-engine-count.js';
+import {createEngineReviewManifest,inspectEngineReviewManifest} from './hma-engine-manifest.js';
+import {pointerAt,findROMReferences,planSafeTableRepoint,planSafeTableExpansion,expandedTablePlan,expandedTableRecord,editExpandedTableField,discardTableRepoint,installSafeTableRepoints} from './hma-pointer-navigation.js';
+import {createIPS} from './ips.js';
+import {RomOutput} from './rom-writer.js';
+const TYPES=['u8','s8','u16','s16','u32','s32','ptr','ascii'];
+export function hmaHexWorkshop(api){
+ const $=s=>document.querySelector(s),esc=api.esc;
+ const state={tab:'hex',offset:0,query:'',tableId:'',row:0,anchorQuery:'',anchorPage:0,tableSearchField:'',tableSearchValue:'',editing:null,maskQuery:'',maskResume:null,maskHits:[],pointerSite:0x200,pointerTarget:0x200};
+ const session=()=>api.session(),data=()=>session().reader.bytes,id=()=>session().id,source=()=>api.project();
+ const safe=f=>{try{const result=f();if(result&&typeof result.then==='function')result.catch(api.error);return result;}catch(error){api.error(error);return null;}};
+ const nbytes=()=>hexState(source(),id())?.patches?.length||0;
+ function open(tab=state.tab){
+  state.tab=tab;
+  if(!session()){api.modal('ROM hex & tables','<p>Open the original GBA ROM to inspect real bytes and create reversible native edits. Projects cannot use arbitrary byte addresses without a matching source.</p><button id="hmaHexChoose" type="button" class="primary">Open GBA ROM</button>');$('#hmaHexChoose').onclick=()=>api.pickROM('hex');return;}
+  render();
+ }
+ function shell(content){
+  const bytes=data();
+  api.modal('ROM hex & typed tables','<p class="hint-line">'+esc(session().reader.filename)+' · '+bytes.length.toLocaleString()+' bytes · '+nbytes()+' staged byte changes. Source ROM stays untouched.</p><div class="studio-tabs">'+[['hex','Hex'],['pointers','Pointers'],['tables','Typed tables'],['metadata','HMA metadata'],['changes','Review changes']].map(([tab,name])=>'<button type="button" data-hex-tab="'+tab+'" '+(state.tab===tab?'class="active"':'')+'>'+name+'</button>').join('')+'</div><div id="hmaHexBody">'+content+'</div>',null,'Done');
+  document.querySelectorAll('[data-hex-tab]').forEach(b=>b.onclick=()=>open(b.dataset.hexTab));
+ }
+ function render(){
+  if(state.tab==='hex')return hexScreen();
+  if(state.tab==='pointers')return pointersScreen();
+  if(state.tab==='tables')return tablesScreen();
+  if(state.tab==='metadata')return metadataScreen();
+  return changesScreen();
+ }
+ function hexScreen(){
+  const bytes=data(),pos=Math.max(0,Math.min(bytes.length-1,state.offset));
+  const rows=hexRows(source(),id(),bytes,pos,{rows:16}),current=hexState(source(),id());
+  const block=rows.map(row=>'<div class="hma-hex-line"><span>0x'+row.address.toString(16).toUpperCase().padStart(6,'0')+'</span><div style="display:grid;grid-template-columns:repeat(16,minmax(23px,1fr));gap:1px;min-width:380px">'+row.columns.map(cell=>'<button type="button" class="hma-hex-byte" data-hex-at="'+cell.at+'" title="Original '+cell.original.toString(16).padStart(2,'0')+'" style="padding:3px 0;font:12px monospace;min-width:0;'+(cell.edited?'font-weight:700;text-decoration:underline':'')+'">'+cell.byte.toString(16).toUpperCase().padStart(2,'0')+'</button>').join('')+'</div><code>'+esc(row.columns.map(c=>c.ascii).join(''))+'</code></div>').join('');
+  shell('<p class="hint-line">Address is a decimal or 0x-prefixed hexadecimal source offset. Tap a byte to fill the editor. All changes are staged in project history until export.</p><div class="studio-actions"><label>Go to address<input id="hmaGoto" inputmode="text" value="0x'+pos.toString(16).toUpperCase()+'"></label><button id="hmaGo" type="button">Go</button><button id="hmaPrev" type="button">◀ Previous</button><button id="hmaNext" type="button">Next ▶</button></div><div style="overflow:auto;max-width:100%;font:12px monospace">'+block+'</div><div class="studio-actions"><label>Edit at offset<input id="hmaEditAt" value="0x'+pos.toString(16).toUpperCase()+'"></label><label>Hex bytes (max 4096)<textarea id="hmaEditHex" rows="2" placeholder="00 FF 7A"></textarea></label><button id="hmaStage" type="button" class="primary">Stage byte edit</button></div><div class="studio-actions"><label>Search bytes<input id="hmaSearch" placeholder="12 AB FF"></label><button id="hmaFind" type="button">Find next</button><button id="hmaFollow" type="button">Follow pointer</button><button id="hmaUses" type="button">Find pointer uses</button></div><div class="studio-actions hma-mask-search"><label>Hex pattern (wildcards: ??, A?, ?F)<input id="hmaMaskQuery" inputmode="text" placeholder="08 ?? 3? FF" value="'+esc(state.maskQuery)+'"></label><button id="hmaMaskFind" type="button">Search next 256 KiB</button><button id="hmaMaskNext" type="button" '+(state.maskResume===null?'disabled':'')+'>Continue search</button></div>'+(state.maskHits.length?'<div class="hma-mask-hits" aria-label="Found masked byte patterns">'+state.maskHits.map(at=>'<button type="button" data-hma-mask-hit="'+at+'">0x'+at.toString(16).toUpperCase()+'</button>').join('')+'</div>':'')+'<p class="hint-line">This search reads your staged byte edits, scans at most 256 KiB at a time and never alters project data. Tap a result to jump to its source offset.</p><p class="hint-line">Raw edits to code, pointers, header data, and shared resources are high risk. Other PokéBacon editor writes take precedence: conflicting regions abort ROM export instead of silently overwriting them.</p>');
+  $('#hmaGo').onclick=()=>safe(()=>{state.offset=parseROMOffset($('#hmaGoto').value,bytes.length);render();});
+  $('#hmaPrev').onclick=()=>{state.offset=Math.max(0,(pos&~255)-256);render();};
+  $('#hmaNext').onclick=()=>{state.offset=Math.min(bytes.length-1,(pos&~255)+256);render();};
+  document.querySelectorAll('[data-hex-at]').forEach(b=>b.onclick=()=>{const at=+b.dataset.hexAt;$('#hmaEditAt').value='0x'+at.toString(16).toUpperCase();$('#hmaEditHex').value=b.textContent;});
+  $('#hmaStage').onclick=()=>safe(()=>{
+   const at=parseROMOffset($('#hmaEditAt').value,bytes.length),payload=hexInput($('#hmaEditHex').value);
+   api.change(()=>stageROMHex(source(),id(),bytes,at,payload));state.offset=at;render();api.toast('Staged '+payload.length+' byte(s). Undo is available.');
+  });
+  $('#hmaFollow').onclick=()=>safe(()=>{state.pointerSite=parseROMOffset($('#hmaEditAt').value,bytes.length);const p=pointerAt(source(),id(),bytes,state.pointerSite);if(!p.valid)throw Error('This location is not an in-ROM pointer.');state.offset=p.at;open('hex');api.toast('Followed '+p.kind+' pointer to 0x'+p.at.toString(16).toUpperCase());});
+  $('#hmaUses').onclick=()=>{state.pointerTarget=pos;open('pointers');};
+  $('#hmaFind').onclick=()=>safe(()=>{
+   const hits=findROMHex(source(),id(),bytes,hexInput($('#hmaSearch').value),{from:Math.min(bytes.length-1,pos+1),limit:1});
+   if(!hits.length){api.toast('No later match in ROM.');return;}
+   state.offset=hits[0];render();api.toast('Found at 0x'+state.offset.toString(16).toUpperCase());
+  });
+  $('#hmaMaskQuery').oninput=()=>{state.maskResume=null;state.maskHits=[];$('#hmaMaskNext').disabled=true;};
+  const searchMasked=(resume=false)=>safe(()=>{
+   const query=$('#hmaMaskQuery').value.trim(),pattern=parseMaskedHexSearch(query),start=resume?state.maskResume:Math.min(bytes.length-1,pos+1);
+   if(resume&&start===null)throw Error('No further matching byte ranges. Start a new search.');
+   const report=findMaskedROMHex(source(),id(),bytes,pattern,{from:start,limit:16,maxScan:262144});
+   state.maskQuery=query;state.maskHits=report.hits;state.maskResume=report.nextFrom;
+   if(report.hits.length)state.offset=report.hits[0];
+   render();
+   api.toast(report.hits.length?'Found '+report.hits.length+' matching address(es).':'No matches in this 256 KiB chunk.'+(report.nextFrom!==null?' Continue searching.':' End of ROM.'));
+  });
+  $('#hmaMaskFind').onclick=()=>searchMasked(false);
+  $('#hmaMaskNext').onclick=()=>searchMasked(true);
+  document.querySelectorAll('[data-hma-mask-hit]').forEach(b=>b.onclick=()=>{state.offset=+b.dataset.hmaMaskHit;render();});
+ }
+ function pointersScreen(){
+  const bytes=data(),format=n=>'0x'+Number(n).toString(16).toUpperCase();
+  let inspected=null,refs=[],error='';
+  try{
+   inspected=pointerAt(source(),id(),bytes,state.pointerSite);
+   refs=findROMReferences(source(),id(),bytes,state.pointerTarget,{limit:64,scanUnaligned:true});
+  }catch(e){error=e.message;}
+  shell('<p>Native 0x08/0x09 32-bit references, including packed/unaligned values, are <b>candidates</b>, not proven ownership. HMA OffsetPointer entries are recognized for inspection but will never be silently rewritten.</p><div class="studio-actions"><label>Pointer source offset<input id="hmaPointerSite" value="'+format(state.pointerSite)+'"></label><button id="hmaInspectPtr" type="button">Inspect</button><label>Target offset<input id="hmaPointerTarget" value="'+format(state.pointerTarget)+'"></label><button id="hmaSearchRefs" type="button">Find uses</button></div><div id="hmaPointerReport">'+(error?'<p class="needs-attention">'+esc(error)+'</p>':'<p>Source '+format(inspected.site)+' → '+(inspected.valid?format(inspected.at):'not a valid ROM pointer')+' · '+esc(inspected.kind)+'</p><button id="hmaJumpPtr" type="button" '+(!inspected.valid?'disabled':'')+'>Follow pointer</button><p>'+refs.length+' references displayed for '+format(state.pointerTarget)+' (at most 64; more may exist). The byte scan includes unaligned direct pointer patterns.</p><div style="max-height:42vh;overflow:auto">'+refs.map(r=>'<div class="field-row"><small>'+format(r.at)+' · '+esc(r.kind)+(r.owner?.name?' · '+esc(r.owner.name):'')+'</small><button type="button" data-hma-ptrsite="'+r.at+'">Inspect</button><button type="button" data-hma-gotosite="'+r.at+'">Hex</button></div>').join('')+'</div>')+'</div>');
+  $('#hmaInspectPtr').onclick=()=>safe(()=>{state.pointerSite=parseROMOffset($('#hmaPointerSite').value,bytes.length);const pointer=pointerAt(source(),id(),bytes,state.pointerSite);if(pointer.valid)state.pointerTarget=pointer.at;render();});
+  $('#hmaSearchRefs').onclick=()=>safe(()=>{state.pointerTarget=parseROMOffset($('#hmaPointerTarget').value,bytes.length);render();});
+  if($('#hmaJumpPtr'))$('#hmaJumpPtr').onclick=()=>{state.offset=inspected.at;open('hex');};
+  document.querySelectorAll('[data-hma-ptrsite]').forEach(b=>b.onclick=()=>{state.pointerSite=+b.dataset.hmaPtrsite;render();});
+  document.querySelectorAll('[data-hma-gotosite]').forEach(b=>b.onclick=()=>{state.offset=+b.dataset.hmaGotosite;open('hex');});
+ }
+ function reviewTableRepoint(table){
+  const refs=findROMReferences(source(),id(),data(),table.address,{limit:65,scanUnaligned:true}),format=n=>'0x'+n.toString(16).toUpperCase(),queued=hexState(source(),id())?.repoints?.find(p=>p.tableId===table.id);
+  api.modal('Review native table repoint','<p>Copy '+esc(table.name)+' ('+(table.count*table.stride)+' bytes) into a new ROM allocation, then update all reviewed direct source pointers. This does not change the number of rows or establish arbitrary engine compatibility.</p><p>'+refs.length+' candidate references'+(refs.length===65?' (additional references may exist)':'')+': '+esc(refs.map(r=>format(r.at)+' · '+r.kind).join(', ')||'none')+'</p>'+(queued?'<p>Queued: '+(queued.newCount?'growth to '+queued.newCount+' records':'fixed-capacity repoint')+'. Export always revalidates the exact original ROM and pointer sites.</p><button id="hmaExportEngineManifest" type="button">Export source-pinned dependency review</button><button id="hmaUnqueueTable" type="button">Remove queued table plan</button>':'<label>Reviewed pointer sites, comma/space separated<textarea id="hmaRepointSites" rows="3">'+esc(refs.length<65?refs.map(r=>format(r.at)).join(', '):'')+'</textarea></label>')+'<p class="hint-line">Computed references and undocumented engine dependencies are not automatically verified. Keep an original ROM backup and run the modified game in an emulator before relying on these changes.</p>',queued?null:()=>{const sites=$('#hmaRepointSites').value.split(/[\s,;]+/).filter(Boolean).map(x=>parseROMOffset(x,data().length));api.change(()=>planSafeTableRepoint(source(),id(),data(),table,sites));open('tables');return false;},queued?'Done':'Queue repoint');
+  if(queued?.newCount)$('#hmaExportEngineManifest').onclick=()=>safe(async()=>{
+   const active=session(),originalProject=source();
+   const manifest=await createEngineReviewManifest(originalProject,id(),data(),table);
+   if(session()!==active||source()!==originalProject)throw Error('The active project or source ROM changed during manifest export.');
+   await api.save(new Blob([JSON.stringify(manifest,null,2)+'\n'],{type:'application/json'}),active.reader.filename.replace(/\.gba$/i,'')+'_'+table.id+'_dependencies.json');
+   api.toast('Saved an exact-SHA-256-pinned table dependency review. Original ROM bytes are not included.');
+  });
+  if(queued)$('#hmaUnqueueTable').onclick=()=>{
+   api.modal('Remove queued table allocation','<p>Remove the unexported repoint or table expansion for '+esc(table.name)+'? This also discards all newly entered appended records. The original source remains untouched and Undo can restore the plan.</p>',()=>{
+    api.change(()=>discardTableRepoint(source(),id(),data(),table));state.row=0;open('tables');return false;
+   },'Remove queued plan');
+  };
+ }
+ function reviewTableExpansion(table){
+  if(table.linkedLength)throw Error('Linked-length HMA tables require verified propagation to dependent tables and are not eligible for generic growth.');
+  if(hexState(source(),id())?.repoints?.some(plan=>plan.tableId===table.id))return reviewTableRepoint(table);
+  const refs=findROMReferences(source(),id(),data(),table.address,{limit:65,scanUnaligned:true});
+  const max=Math.min(4096,table.count+64,table.count+Math.floor(65536/table.stride));
+  const engine=gbaCountEngine(data());
+  if(max<=table.count)throw Error('This table has reached the bounded expansion limit.');
+  api.modal('Queue reviewed native table growth','<p>Append up to 64 typed rows (64 KiB total) to '+esc(table.name)+'. The original '+table.count+' records are copied unchanged, and every reviewed direct table pointer is rewritten to the new allocation.</p><p><b>Original rows: '+table.count+'</b> · '+refs.length+' pointer candidates'+(refs.length===65?' (more may exist)':'')+'</p><label>Total rows after expansion<input id="hmaGrowCount" type="number" inputmode="numeric" min="'+(table.count+1)+'" max="'+max+'" value="'+Math.min(max,table.count+4)+'"></label><label>Native source offset of the existing literal table-count field<input id="hmaGrowCountSite" inputmode="text" placeholder="0x... (verified engine count)"></label><label>Native count width<select id="hmaGrowCountWidth"><option value="1">8-bit</option><option value="2" selected>16-bit</option><option value="4">32-bit</option></select></label><label>Initialize appended rows<select id="hmaGrowSeed"><option value="copy-last">Copy last existing native row</option><option value="zero">Zero-filled rows</option></select></label><label>Additional native literal count sites (one per line: <code>0xOFFSET 1</code>, <code>2</code> or <code>4</code> bytes)<textarea id="hmaGrowExtraCounts" rows="3" placeholder="0x000600 2&#10;0x000640 1"></textarea></label><label>Load a source-pinned reviewed dependency manifest<input type="file" id="hmaGrowManifestFile" accept=".json,application/json"></label><button type="button" id="hmaGrowManifestValidate">Validate and prefill dependency review</button><div id="hmaGrowManifestReport" role="status" aria-live="polite"></div><label>All reviewed direct table pointers<textarea id="hmaGrowSites" rows="3">'+esc(refs.length<65?refs.map(r=>'0x'+r.at.toString(16).toUpperCase()).join(', '):'')+'</textarea></label><div class="hma-engine-dependencies"><p><b>Detected game header:</b> '+esc(engine.code)+' · '+esc(engine.family||'unrecognised engine')+'. Optional engine-code dependencies must be reviewed at their exact source addresses.</p><label>Additional native Thumb count instructions (one per line: <code>0xOFFSET cmp</code> or <code>0xOFFSET movs</code>)<textarea id="hmaGrowEngineSites" rows="3" placeholder="0x001234 cmp&#10;0x001F00 movs"></textarea></label><button type="button" id="hmaEngineScan" '+(!engine.family?'disabled':'')+'>Find Thumb count candidates (256 KiB)</button><button type="button" id="hmaEngineScanNext" disabled>Search next code window</button><div id="hmaEngineScanResults" role="status" aria-live="polite"></div><p class="hint-line">Matching instructions are candidates only. You must verify that each instruction controls this table and review all engine users. Only confirmed <code>cmp Rn, #oldCount</code> and <code>movs Rn, #oldCount</code> instructions can be rewritten. Unknown code remains untouched.</p></div><label class="check"><input type="checkbox" id="hmaGrowReviewed"> I have verified that this literal count offset controls the game table length, and understand that other engine code may require separate updates.</label><p class="hint-line">Original ROM and linked-length tables are never enlarged in place. Computed pointers, HMA length dependencies and engine code are not automatically repaired. Any conflicting native writer address aborts export.</p>',()=>{
+   if(!$('#hmaGrowReviewed').checked)throw Error('Confirm the native count field and engine usage before queuing growth.');
+   const count=$('#hmaGrowCount').value.trim(),rawSite=$('#hmaGrowCountSite').value.trim();
+   if(!/^\d+$/.test(count))throw Error('Enter a whole-number target row count.');
+   const sites=$('#hmaGrowSites').value.split(/[\s,;]+/).filter(Boolean).map(site=>parseROMOffset(site,data().length));
+   const countSite=parseROMOffset(rawSite,data().length),width=Number($('#hmaGrowCountWidth').value);
+   api.change(()=>planSafeTableExpansion(source(),id(),data(),table,sites,{newCount:Number(count),countSite,countWidth:width,seed:$('#hmaGrowSeed').value,extraCountSites:$('#hmaGrowExtraCounts').value.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{const match=line.match(/^(0x[0-9a-f]+|\d+)\s+([124])$/i);if(!match)throw Error('Enter one reviewed native count per line, e.g. 0x000600 2.');return {at:parseROMOffset(match[1],data().length),width:Number(match[2])};}),engineSites:$('#hmaGrowEngineSites').value.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{const hit=line.match(/^(0x[0-9a-f]+|\d+)\s+(cmp|movs)$/i);if(!hit)throw Error('Use one exact Thumb source per line: 0xOFFSET cmp or movs.');return {at:parseROMOffset(hit[1],data().length),kind:'thumb-'+hit[2].toLowerCase()};})}));
+   state.row=table.count;state.tableSearchValue='';open('tables');return false;
+  },'Queue guarded growth');
+  $('#hmaGrowManifestValidate').onclick=()=>safe(async()=>{
+   const file=$('#hmaGrowManifestFile').files?.[0],active=session(),originalProject=source();
+   if(!file||file.size>65536)throw Error('Choose a reviewed dependency JSON file under 64 KiB.');
+   const raw=await file.text();
+   if(session()!==active||source()!==originalProject)throw Error('The opened ROM/project changed while reading the dependency manifest.');
+   const {manifest,review}=await inspectEngineReviewManifest(originalProject,id(),data(),table,raw);
+   if(session()!==active||source()!==originalProject)throw Error('The opened ROM/project changed during SHA-256 validation.');
+   $('#hmaGrowCount').value=String(manifest.suggestedNewCount);
+   $('#hmaGrowCountSite').value='0x'+manifest.primaryCount.at.toString(16).toUpperCase();
+   $('#hmaGrowCountWidth').value=String(manifest.primaryCount.width);
+   $('#hmaGrowExtraCounts').value=manifest.extraCountSites.map(c=>'0x'+c.at.toString(16).toUpperCase()+' '+c.width).join('\n');
+   $('#hmaGrowSites').value=manifest.pointerSites.map(at=>'0x'+at.toString(16).toUpperCase()).join(', ');
+   $('#hmaGrowEngineSites').value=manifest.thumbSites.map(site=>'0x'+site.at.toString(16).toUpperCase()+' '+site.kind.replace('thumb-','')).join('\n');
+   $('#hmaGrowManifestReport').textContent='Exact original ROM SHA-256 verified; '+review.sites.length+' table pointers, '+(manifest.extraCountSites.length+1)+' literal count fields and '+manifest.thumbSites.length+' Thumb instructions match structurally. Review all runtime usage yourself before confirming and queuing.';
+   $('#hmaGrowReviewed').checked=false;
+  });
+  if(engine.family){
+   let cursor=0x200;
+   const scan=()=>safe(()=>{
+    const result=scanThumbCountCandidates(data(),table.count,{from:cursor,maxScan:262144,limit:16});
+    cursor=result.nextFrom??0x200;
+    $('#hmaEngineScanNext').disabled=result.nextFrom===null;
+    $('#hmaEngineScanResults').innerHTML='<p>'+result.candidates.length+' possible Thumb count instructions found in the scanned window. <b>These are not verified engine dependencies.</b></p>'+result.candidates.map(x=>'<button type="button" data-hma-thumb="'+x.at+'" data-hma-thumb-kind="'+esc(x.kind)+'">0x'+x.at.toString(16).toUpperCase()+' · '+esc(x.kind)+' r'+x.register+'</button>').join('');
+    document.querySelectorAll('[data-hma-thumb]').forEach(b=>b.onclick=()=>{
+     const row='0x'+Number(b.dataset.hmaThumb).toString(16).toUpperCase()+' '+b.dataset.hmaThumbKind.replace('thumb-','');
+     const input=$('#hmaGrowEngineSites');input.value+=(input.value.trim()?'\n':'')+row;
+     api.toast('Added candidate for manual engine review: '+row);
+    });
+   });
+   $('#hmaEngineScan').onclick=()=>{cursor=0x200;scan();};
+   $('#hmaEngineScanNext').onclick=()=>scan();
+  }
+ }
+ function tablesScreen(){
+  const tables=tableDefinitions(source(),id(),data());
+  if(!tables.some(t=>t.id===state.tableId))state.tableId=tables[0]?.id||'';
+  const table=tables.find(t=>t.id===state.tableId);
+  const queuedExpansion=table?expandedTablePlan(source(),id(),data(),table):null;
+  const visibleCount=queuedExpansion?.newCount??table?.count??0;
+  const searching=!!(table&&state.tableSearchValue);
+  const field=table?.fields.some(f=>f.name===state.tableSearchField)?state.tableSearchField:table?.fields[0]?.name;
+  const matches=searching?findTableRows(source(),id(),data(),table,field,state.tableSearchValue,{limit:32}):[];
+  const labelMaps=new Map();
+  if(table)for(const f of table.fields.filter(field=>field.enumList)){
+   try{
+    const max=2**(({'u8':1,'u16':2,'u32':4})[f.type]*8)-1;
+    labelMaps.set(f.name,new Map(hmaListLabels(source(),id(),data(),f.enumList).filter(x=>x.value<=max).map(x=>[x.value,x.label])));
+   }catch{} // Invalidated metadata never authorizes guessing names or writes.
+  }
+  const rows=table?(searching?matches.map(x=>tableRecord(source(),id(),data(),table,x.index)):Array.from({length:Math.min(16,Math.max(0,visibleCount-state.row))},(_,i)=>state.row+i<table.count?tableRecord(source(),id(),data(),table,state.row+i):expandedTableRecord(source(),id(),data(),table,state.row+i))):[];
+  shell('<p>Define reusable typed layouts for source ROM records. Named HMA anchors can prefill the address; unknown HMA format strings are never guessed or written.</p><div class="studio-actions hma-table-actions"><label>Tables<select id="hmaTablePick">'+tables.map(t=>'<option value="'+esc(t.id)+'" '+(t.id===state.tableId?'selected':'')+'>'+esc(t.name)+'</option>').join('')+'</select></label><button id="hmaCreateTable" type="button">＋ New layout</button>'+(table?'<button id="hmaEditTable" type="button">Edit layout</button><button id="hmaLabelTable" type="button">Label numeric columns…</button><button id="hmaRepointTable" type="button">Review table repoint</button><button id="hmaGrowTable" type="button">Grow records…</button><button id="hmaExportTableCSV" type="button">Export CSV</button><button id="hmaImportTableCSV" type="button">Import CSV</button>':'')+'</div>'+(table?'<div class="studio-actions hma-table-nav"><button id="hmaTablePrev" type="button" '+(searching?'disabled':'')+'>◀</button><span>'+(searching?'First '+rows.length+' matching rows':('Rows '+(state.row+1)+'–'+(state.row+rows.length)+' / '+visibleCount))+'</span><button id="hmaTableNext" type="button" '+(searching?'disabled':'')+'>▶</button><button id="hmaBulkFill" type="button">Fill a column…</button><button id="hmaBulkReplace" type="button">Replace matches…</button><button id="hmaBulkAdjust" type="button">Add/subtract…</button><label>Jump to row<input id="hmaJumpRow" type="number" inputmode="numeric" min="0" max="'+(visibleCount-1)+'" value="'+state.row+'"></label><button id="hmaGoRow" type="button">Go</button></div><div class="studio-actions hma-table-filters"><label>Find in column<select id="hmaTableFindField">'+table.fields.map(f=>'<option value="'+esc(f.name)+'" '+(field===f.name?'selected':'')+'>'+esc(f.name)+'</option>').join('')+'</select></label><label>Value<input id="hmaTableFindValue" value="'+esc(state.tableSearchValue)+'" placeholder="Number or text"></label><button id="hmaTableSearch" type="button">Find rows</button><button id="hmaTableClearSearch" type="button">All rows</button></div><div class="hma-table-scroller" role="region" aria-label="Source ROM typed table rows" tabindex="0"><table class="hma-table-grid"><thead><tr><th scope="col">Row / ROM offset</th>'+table.fields.map(f=>'<th scope="col">'+esc(f.name)+' <small>'+esc(f.type)+'</small></th>').join('')+'</tr></thead><tbody>'+rows.map(record=>'<tr><td class="hma-table-record" data-label="ROM record">'+record.index+(record.pendingAllocation?' / NEW · allocated on export':' / 0x'+record.at.toString(16).toUpperCase())+(record.pendingAllocation?'':' <button type="button" data-table-rowtool="'+record.index+'">Copy/swap</button>')+'</td>'+table.fields.map((f,i)=>'<td data-label="'+esc(f.name)+' · '+esc(f.type)+'"><button type="button" aria-label="Edit '+esc(f.name)+' at record '+record.index+'" data-table-row="'+record.index+'" data-table-field="'+i+'">'+esc((f.type==='ptr'||f.display==='hex'?'0x'+record.values[f.name].toString(16).toUpperCase():record.values[f.name])+(labelMaps.get(f.name)?.has(record.values[f.name])?' · '+labelMaps.get(f.name).get(record.values[f.name]):''))+'</button>'+(f.type==='ptr'&&!record.pendingAllocation?'<button type="button" data-table-ptr="'+record.index+'" data-table-ptr-field="'+i+'">Follow</button>':'')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div><p class="hint-line">Tap a cell to edit its typed value or selected flag bits. On phones, each record is a separate card. Numeric values use little-endian ROM encoding; pointers are range checked.</p>':'<p>No typed layouts yet. Create one for a verified native table and reuse it for all its records.</p>'));
+  if($('#hmaTablePick'))$('#hmaTablePick').onchange=()=>{state.tableId=$('#hmaTablePick').value;state.row=0;state.tableSearchValue='';state.tableSearchField='';render();};
+  $('#hmaCreateTable').onclick=()=>tableEditor(null);
+  if(table){
+   $('#hmaEditTable').onclick=()=>tableEditor(table);
+   $('#hmaLabelTable').onclick=()=>tableLabelEditor(table);
+   $('#hmaRepointTable').onclick=()=>reviewTableRepoint(table);
+   $('#hmaGrowTable').onclick=()=>safe(()=>reviewTableExpansion(table));
+   $('#hmaExportTableCSV').onclick=()=>safe(async()=>{
+    const original=session(),csv=exportTableCSV(source(),id(),data(),table);
+    if(session()!==original)throw Error('The original ROM changed during CSV export.');
+    await api.save(new Blob([csv],{type:'text/csv;charset=utf-8'}),table.id+'.csv');
+    api.toast('Exported existing source-bound table rows as CSV.');
+   });
+   $('#hmaImportTableCSV').onclick=()=>tableCSVImport(table);
+   $('#hmaTablePrev').onclick=()=>{state.row=Math.max(0,state.row-16);render();};
+   $('#hmaTableNext').onclick=()=>{state.row=Math.min(visibleCount-1,state.row+16);render();};
+   $('#hmaBulkFill').onclick=()=>bulkFillTable(table);
+   $('#hmaBulkReplace').onclick=()=>bulkReplaceTable(table);
+   $('#hmaBulkAdjust').onclick=()=>bulkAdjustTable(table);
+   $('#hmaGoRow').onclick=()=>safe(()=>{const value=$('#hmaJumpRow').value.trim(),row=Number(value);if(!/^\d+$/.test(value)||!Number.isInteger(row)||row<0||row>=visibleCount)throw Error('Choose an existing or queued zero-based row.');state.row=Math.floor(row/16)*16;state.tableSearchValue='';render();});
+   $('#hmaTableSearch').onclick=()=>safe(()=>{state.tableSearchField=$('#hmaTableFindField').value;state.tableSearchValue=$('#hmaTableFindValue').value.trim();if(!state.tableSearchValue)throw Error('Enter a value to search.');render();});
+   $('#hmaTableClearSearch').onclick=()=>{state.tableSearchValue='';render();};
+  }
+  document.querySelectorAll('[data-table-row]').forEach(b=>b.onclick=()=>editCell(table,+b.dataset.tableRow,table.fields[+b.dataset.tableField]));
+  document.querySelectorAll('[data-table-rowtool]').forEach(b=>b.onclick=()=>tableRowTool(table,+b.dataset.tableRowtool));
+  document.querySelectorAll('[data-table-ptr]').forEach(b=>b.onclick=()=>{const field=table.fields[+b.dataset.tablePtrField],row=+b.dataset.tablePtr;state.pointerSite=table.address+row*table.stride+field.offset;open('pointers');});
+ }
+ function tableCSVImport(table){
+  api.modal('Preview native table CSV','<p>Validate all source-bound rows and inspect the first eight changed records before staging. Preview does not modify your project, undo history or original ROM.</p><label>CSV file<input type="file" id="hmaTableCSVFile" accept=".csv,text/csv"></label><button type="button" id="hmaTableCSVStage">Validate and preview CSV</button><div id="hmaTableCSVPreview" class="hma-csv-preview" role="status" aria-live="polite"></div><button type="button" id="hmaTableCSVApply" class="primary" hidden>Stage reviewed CSV</button><p class="hint-line">Up to 256 existing rows, 2,048 typed cells and 2 MiB. Modified project edits or a changed source require a new preview.</p>',null,'Done');
+  let pending=null;
+  $('#hmaTableCSVFile').onchange=()=>{pending=null;$('#hmaTableCSVApply').hidden=true;$('#hmaTableCSVPreview').textContent='File selected. Preview before applying.';};
+  $('#hmaTableCSVStage').onclick=async()=>safe(async()=>{
+   const file=$('#hmaTableCSVFile').files?.[0],opened=session();
+   if(!file)throw Error('Select a CSV to validate.');
+   if(file.size>2*1024*1024)throw Error('CSV is larger than 2 MiB.');
+   const raw=await file.text();if(session()!==opened)throw Error('ROM changed during CSV read.');
+   const sourceProject=source(),patches=JSON.stringify(hexState(sourceProject,id())?.patches||[]),layout=JSON.stringify(table);
+   const result=previewTableCSV(sourceProject,id(),data(),table,raw);
+   const examples=result.samples.map(row=>'<article class="studio-record"><b>Row '+row.row+'</b><small>Before: '+esc(JSON.stringify(row.before))+'</small><small>After: '+esc(JSON.stringify(row.after))+'</small></article>').join('');
+   $('#hmaTableCSVPreview').innerHTML='<p><b>'+result.records+' rows, '+result.cells+' cells, '+result.changedBytes+' changed bytes</b> ('+result.changedRows+' changed records).</p>'+examples+(result.moreRows?'<p>'+result.moreRows+' further changes validated but not shown.</p>':'');
+   pending={raw,opened,sourceProject,patches,layout};$('#hmaTableCSVApply').hidden=false;
+  });
+  $('#hmaTableCSVApply').onclick=()=>safe(()=>{
+   if(!pending||session()!==pending.opened||source()!==pending.sourceProject||JSON.stringify(hexState(source(),id())?.patches||[])!==pending.patches||JSON.stringify(table)!==pending.layout)
+    throw Error('The source or staged edits changed after preview. Review the CSV again.');
+   // Re-run all original type and source checks under the real project.
+   let result;api.change(()=>{result=importTableCSV(source(),id(),data(),table,pending.raw);});
+   state.row=0;state.tableSearchValue='';open('tables');
+   api.toast('Staged '+result.records+' reviewed CSV records.');
+  });
+ }
+ function bulkAdjustTable(table){
+  const numeric=table.fields.filter(f=>['u8','s8','u16','s16','u32','s32'].includes(f.type));
+  if(!numeric.length)throw Error('This table has no editable numeric columns.');
+  const start=Math.min(state.row,table.count-1),end=Math.min(table.count-1,start+15);
+  api.modal('Adjust existing native values','<p>Add or subtract a signed number from each value of a numeric column. Overflow in any row cancels the entire operation. Pointer arithmetic is disabled.</p><label>Column<select id="hmaAdjustField">'+numeric.map(f=>'<option value="'+esc(f.name)+'">'+esc(f.name)+' ('+f.type+')</option>').join('')+'</select></label><div class="studio-actions"><label>First row<input id="hmaAdjustFirst" type="number" inputmode="numeric" min="0" max="'+(table.count-1)+'" value="'+start+'"></label><label>Last row<input id="hmaAdjustLast" type="number" inputmode="numeric" min="0" max="'+(table.count-1)+'" value="'+end+'"></label></div><label>Delta<input id="hmaAdjustDelta" inputmode="numeric" placeholder="e.g. -3 or 0x10"></label><p class="hint-line">Up to 256 original rows. Undo returns to your previous staged values.</p>',()=>{
+   const col=$('#hmaAdjustField').value,first=Number($('#hmaAdjustFirst').value),last=Number($('#hmaAdjustLast').value);
+   api.change(()=>adjustTableColumn(source(),id(),data(),table,col,first,last,$('#hmaAdjustDelta').value));
+   state.row=Math.floor(first/16)*16;state.tableSearchValue='';render();return false;
+  },'Stage arithmetic');
+ }
+ function tableRowTool(table,row){
+  api.modal('Copy or swap a native table row','<p>Source row '+row+' of '+esc(table.name)+'. Copy replaces the entire destination row, including uninterpreted padding bytes; swap exchanges both complete existing rows. No new engine table entries are created.</p><label>Operation<select id="hmaRowOperation"><option value="copy">Copy source row into destination</option><option value="swap">Swap the two rows</option></select></label><label>Destination row (0–'+(table.count-1)+')<input id="hmaRowDestination" type="number" inputmode="numeric" min="0" max="'+(table.count-1)+'" value="'+Math.min(table.count-1,row+1)+'"></label>',()=>{
+   const target=Number($('#hmaRowDestination').value),operation=$('#hmaRowOperation').value;
+   api.change(()=>operation==='swap'?swapTableRecords(source(),id(),data(),table,row,target):copyTableRecord(source(),id(),data(),table,row,target));
+   state.row=Math.floor(target/16)*16;state.tableSearchValue='';render();return false;
+  },'Stage row operation');
+ }
+ function bulkFillTable(table){
+  const start=Math.min(state.row,table.count-1),end=Math.min(table.count-1,start+15);
+  api.modal('Fill an existing table column','<p>Stages the same typed value in up to 256 existing rows. This never enlarges the ROM table, and native writer collisions still block export.</p><label>Column<select id="hmaFillField">'+table.fields.map(f=>'<option value="'+esc(f.name)+'">'+esc(f.name)+' ('+f.type+')</option>').join('')+'</select></label><div class="studio-actions"><label>First row<input id="hmaFillStart" type="number" inputmode="numeric" min="0" max="'+(table.count-1)+'" value="'+start+'"></label><label>Last row (inclusive)<input id="hmaFillEnd" type="number" inputmode="numeric" min="0" max="'+(table.count-1)+'" value="'+end+'"></label></div><label>New typed value<input id="hmaFillValue" placeholder="Decimal, 0x pointer or ASCII"></label><p class="hint-line">Review the selected range before applying. All values are validated before committing; undo restores the previous staged changes.</p>',()=>{
+   const field=$('#hmaFillField').value,first=Number($('#hmaFillStart').value),last=Number($('#hmaFillEnd').value),value=$('#hmaFillValue').value;
+   api.change(()=>fillTableColumn(source(),id(),data(),table,field,first,last,value));
+   state.row=Math.floor(first/16)*16;state.tableSearchValue='';render();return false;
+  },'Stage column fill');
+ }
+ function bulkReplaceTable(table){
+  api.modal('Replace matching typed table values','<p>Find exact values in a selected native table column and replace all matches together. Existing records only; no hidden partial updates. If more than 256 records match, narrow the range first.</p><label>Column<select id="hmaReplaceField">'+table.fields.map(f=>'<option value="'+esc(f.name)+'">'+esc(f.name)+' ('+f.type+')</option>').join('')+'</select></label><div class="studio-actions"><label>First row<input id="hmaReplaceStart" type="number" inputmode="numeric" min="0" max="'+(table.count-1)+'" value="0"></label><label>Last row<input id="hmaReplaceEnd" type="number" inputmode="numeric" min="0" max="'+(table.count-1)+'" value="'+(table.count-1)+'"></label></div><label>Exact old value<input id="hmaReplaceOld" placeholder="Decimal, 0x pointer, or ASCII"></label><label>Replacement value<input id="hmaReplaceNew" placeholder="Validated typed value"></label><p class="hint-line">Matches are compared against staged values. Failed validation, excess matches or writer conflicts leave the project unchanged. Undo restores the previous edits.</p>',()=>{
+   const field=$('#hmaReplaceField').value,first=Number($('#hmaReplaceStart').value),last=Number($('#hmaReplaceEnd').value);
+   const result=api.change(()=>replaceTableColumnMatches(source(),id(),data(),table,field,$('#hmaReplaceOld').value,$('#hmaReplaceNew').value,{start:first,end:last}));
+   state.row=Math.floor(first/16)*16;state.tableSearchValue='';render();api.toast('Replaced '+(result?.matches??0)+' matching rows.');return false;
+  },'Stage exact replacements');
+ }
+ function tableLabelEditor(table){
+  const fields=table.fields.filter(field=>['u8','u16','u32'].includes(field.type));
+  if(!fields.length)throw Error('Create an unsigned numeric field first.');
+  const lists=hmaMetadata(source(),id(),data()).lists.map(l=>l.name).filter(x=>typeof x==='string'&&x.length);
+  const names=[...new Set(lists)].filter(n=>lists.filter(x=>x===n).length===1);
+  api.modal('HMA labels for native fields','<p>Select a verified HMA named list for an existing unsigned numeric field. Labels are for display and value selection only; the ROM still stores the exact original numeric type.</p><label>Numeric field<select id="hmaEnumField">'+fields.map(f=>'<option value="'+esc(f.name)+'">'+esc(f.name)+' ('+f.type+')</option>').join('')+'</select></label><label>HMA named list<select id="hmaEnumList"><option value="">None (plain numbers)</option>'+names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('')+'</select></label><p class="hint-line">Unknown or duplicate HMA list definitions are not editable. Unlinking a list removes names, not existing ROM numeric data.</p>',()=>{
+   api.change(()=>bindTableEnumList(source(),id(),data(),table,$('#hmaEnumField').value,$('#hmaEnumList').value));
+   render();return false;
+  },'Save field labels');
+  $('#hmaEnumField').onchange=()=>{
+   const field=table.fields.find(f=>f.name===$('#hmaEnumField').value);
+   $('#hmaEnumList').value=names.includes(field?.enumList)?field.enumList:'';
+  };
+  $('#hmaEnumField').onchange();
+ }
+ function tableEditor(previous,{anchor=null}={}){
+  const sourceBytes=data(),model=previous?structuredClone(previous):{id:'table-'+Date.now().toString(36),name:anchor?.name||'New ROM table',address:anchor?.at??0,stride:4,count:1,fields:[{name:'value',type:'u32',offset:0}]};
+  const fieldRow=(f,i)=>'<div class="studio-actions hma-field" data-enum-list="'+esc(f.enumList||'')+'"><label>Name<input data-fname value="'+esc(f.name)+'"></label><label>Type<select data-ftype>'+TYPES.map(t=>'<option '+(f.type===t?'selected':'')+' value="'+t+'">'+t+'</option>').join('')+'</select></label><label>Offset<input data-foffset type="number" min="0" value="'+f.offset+'"></label><label>ASCII length<input data-flength type="number" min="1" max="256" value="'+(f.length||1)+'"></label><button type="button" data-fremove="'+i+'">×</button></div>';
+  const body='<p>Only listed fields are editable. HMA text/image/battle formats must be handled by dedicated verified adapters, not guessed as integers.</p><label>Layout name<input id="hmaLayoutName" value="'+esc(model.name)+'"></label><div class="studio-actions"><label>Source start offset<input id="hmaLayoutAt" value="0x'+model.address.toString(16).toUpperCase()+'"></label><label>Row stride in bytes<input id="hmaLayoutStride" type="number" min="1" max="4096" value="'+model.stride+'"></label><label>Row count<input id="hmaLayoutCount" type="number" min="1" max="4096" value="'+model.count+'"></label></div><div id="hmaFields">'+model.fields.map(fieldRow).join('')+'</div><button id="hmaAddField" type="button">＋ Column</button>';
+  api.modal(previous?'Edit typed table layout':'Create typed table layout',body,()=>{const rows=[...document.querySelectorAll('#hmaFields .hma-field')],columns=rows.map(row=>({name:row.querySelector('[data-fname]').value.trim(),type:row.querySelector('[data-ftype]').value,offset:Number(row.querySelector('[data-foffset]').value),...(row.querySelector('[data-ftype]').value==='ascii'?{length:Number(row.querySelector('[data-flength]').value)}:{}),...(['u8','u16','u32'].includes(row.querySelector('[data-ftype]').value)&&row.dataset.enumList?{enumList:row.dataset.enumList}:{})}));const table={id:model.id,name:$('#hmaLayoutName').value.trim(),address:parseROMOffset($('#hmaLayoutAt').value,sourceBytes.length),stride:Number($('#hmaLayoutStride').value),count:Number($('#hmaLayoutCount').value),fields:columns};api.change(()=>saveTableDefinition(source(),id(),sourceBytes,table));state.tableId=table.id;state.row=0;render();return false;},'Save layout');
+  $('#hmaAddField').onclick=()=>{const block=$('#hmaFields');if(block.children.length>=32){api.toast('Maximum 32 columns.');return;}block.insertAdjacentHTML('beforeend',fieldRow({name:'field'+(block.children.length+1),type:'u8',offset:0},block.children.length));wireRemove();};
+  function wireRemove(){document.querySelectorAll('[data-fremove]').forEach(b=>b.onclick=()=>b.closest('.hma-field').remove());}wireRemove();
+ }
+ function editCell(table,row,field){
+  const appended=row>=table.count,current=(appended?expandedTableRecord(source(),id(),data(),table,row):tableRecord(source(),id(),data(),table,row)).values[field.name],isPointer=field.type==='ptr',canEditBits=!appended&&['u8','u16','u32'].includes(field.type);
+  let labels=[];if(field.enumList)try{
+   const max=2**(({'u8':1,'u16':2,'u32':4})[field.type]*8)-1;
+   labels=hmaListLabels(source(),id(),data(),field.enumList).filter(x=>x.value<=max);
+  }catch{} 
+  api.modal('Edit '+table.name+' · row '+row+' · '+field.name,'<p>'+(appended?'New row pending ROM allocation':('Original source offset: 0x'+(table.address+row*table.stride+field.offset).toString(16).toUpperCase()))+'</p><label>New '+esc(field.type)+' value<input id="hmaCellValue" value="'+esc(isPointer?'0x'+current.toString(16).toUpperCase():current)+'"></label>'+(labels.length?'<label>Choose a named HMA value<select id="hmaEnumChoice"><option value="">Use typed number above</option>'+labels.map(v=>'<option value="'+v.value+'">'+v.value+' · '+esc(v.label)+'</option>').join('')+'</select></label>':'')+'<p class="hint-line">This operation will stage a reversible binary write, not change the source ROM on disk.</p>'+(canEditBits?'<button id="hmaCellEditBits" type="button">Edit selected flag bits…</button>':''),()=>{api.change(()=>appended?editExpandedTableField(source(),id(),data(),table,row,field.name,labels.length&&$('#hmaEnumChoice').value!==''?$('#hmaEnumChoice').value:$('#hmaCellValue').value):editTableField(source(),id(),data(),table,row,field.name,labels.length&&$('#hmaEnumChoice').value!==''?$('#hmaEnumChoice').value:$('#hmaCellValue').value));state.row=Math.floor(row/16)*16;tablesScreen();return false;},'Apply typed edit');
+  if(canEditBits)$('#hmaCellEditBits').onclick=()=>tableBitsEditor(table,row,field);
+ }
+ function tableBitsEditor(table,row,field){
+  const max=table.count-1,bitMax=({'u8':8,'u16':16,'u32':32})[field.type],current=tableRecord(source(),id(),data(),table,row).values[field.name];
+  api.modal('Edit native bit flags · '+esc(table.name),'<p>Editing unsigned '+field.type+' field <b>'+esc(field.name)+'</b> in row '+row+'. Existing neighbouring bits and other columns are preserved. The selected bit range is zero-based, counting from the least significant bit.</p><p>Current value: <code>0x'+current.toString(16).toUpperCase()+'</code></p><div class="studio-actions"><label>First bit<input id="hmaBitsStart" type="number" inputmode="numeric" min="0" max="'+(bitMax-1)+'" value="0"></label><label>Number of bits<input id="hmaBitsWidth" type="number" inputmode="numeric" min="1" max="'+bitMax+'" value="1"></label><label>New bit value<input id="hmaBitsValue" inputmode="numeric" value="1"></label></div><label>Apply from row '+row+' through row (max '+max+')<input id="hmaBitsLastRow" type="number" inputmode="numeric" min="'+row+'" max="'+max+'" value="'+row+'"></label><p class="hint-line">Batch edit is limited to 256 rows. All writes are validated and committed atomically, and the source ROM remains immutable.</p>',()=>{
+   const start=$('#hmaBitsStart').value.trim(),width=$('#hmaBitsWidth').value.trim(),last=$('#hmaBitsLastRow').value.trim();
+   if(!/^\d+$/.test(start)||!/^\d+$/.test(width)||!/^\d+$/.test(last))throw Error('Bit offsets and row IDs must be whole numbers.');
+   const report=api.change(()=>setTableBitRange(source(),id(),data(),table,field.name,row,Number(last),Number(start),Number(width),$('#hmaBitsValue').value));
+   state.row=Math.floor(row/16)*16;state.tableSearchValue='';render();
+   api.toast('Updated '+(report?.rows??1)+' row(s), preserving unrelated bits.');return false;
+  },'Stage bit flags');
+ }
+ function metadataScreen(){
+  const meta=hmaMetadata(source(),id(),data()),query=state.anchorQuery.toLowerCase(),anchors=meta.anchors.filter(a=>a.name.toLowerCase().includes(query)||a.format.toLowerCase().includes(query));
+  const shown=anchors.slice(state.anchorPage*40,state.anchorPage*40+40);
+  shell('<p>Import an original HMA .toml anchor file. The full text is retained unchanged, including lists, groups, unknown formats and offset pointers. Only verified fixed-width numeric, direct pointer and matched-length layouts become editable.</p><label class="studio-actions">HMA TOML<input id="hmaTomlInput" type="file" accept=".toml,text/plain"></label><p>'+meta.anchors.length+' named anchors · '+meta.lists.length+' named lists · '+meta.offsetPointers.length+' offset pointers · '+meta.warnings.length+' ignored/invalid entries</p><label>Find anchor<input id="hmaAnchorQuery" value="'+esc(state.anchorQuery)+'" placeholder="data.pokemon"></label><div class="studio-actions"><button id="hmaAnchorPrev" type="button">◀</button><span>'+anchors.length+' matches · page '+(state.anchorPage+1)+'</span><button id="hmaAnchorNext" type="button">▶</button></div><div style="max-height:42vh;overflow:auto">'+shown.map((a,i)=>'<article class="studio-record"><b>'+esc(a.name)+'</b><small>0x'+a.at.toString(16).toUpperCase()+' · '+esc(a.format.slice(0,160))+'</small><button type="button" data-hma-anchor="'+i+'">Hex</button><button type="button" data-hma-make="'+i+'">Table layout</button>'+(fixedNumericHMATable(a,data().length,{anchors:meta.anchors})?'<button type="button" data-hma-auto="'+i+'">Import typed table</button>':'')+'<button type="button" data-hma-refs="'+i+'">References</button></article>').join('')+'</div>');
+  $('#hmaTomlInput').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;safe(()=>{if(file.size>2*1024*1024)throw Error('HMA TOML file must be under 2 MiB.');});if(file.size>2*1024*1024)return;try{const raw=await file.text();api.change(()=>importHMAToml(source(),id(),data(),raw));state.anchorPage=0;render();api.toast('HMA metadata attached; unknown definitions preserved.');}catch(err){api.error(err);}};
+  $('#hmaAnchorQuery').onchange=()=>{state.anchorQuery=$('#hmaAnchorQuery').value;state.anchorPage=0;render();};
+  $('#hmaAnchorPrev').onclick=()=>{state.anchorPage=Math.max(0,state.anchorPage-1);render();};
+  $('#hmaAnchorNext').onclick=()=>{state.anchorPage=Math.min(Math.max(0,Math.ceil(anchors.length/40)-1),state.anchorPage+1);render();};
+  document.querySelectorAll('[data-hma-anchor]').forEach(b=>b.onclick=()=>{state.offset=shown[+b.dataset.hmaAnchor].at;open('hex');});
+  document.querySelectorAll('[data-hma-make]').forEach(b=>b.onclick=()=>tableEditor(null,{anchor:shown[+b.dataset.hmaMake]}));
+  document.querySelectorAll('[data-hma-auto]').forEach(b=>b.onclick=()=>safe(()=>{const table=fixedNumericHMATable(shown[+b.dataset.hmaAuto],data().length,{anchors:meta.anchors});if(!table)throw Error('This HMA format cannot safely become a fixed-width typed table.');api.change(()=>saveTableDefinition(source(),id(),data(),table));state.tableId=table.id;state.row=0;open('tables');}));
+  document.querySelectorAll('[data-hma-refs]').forEach(b=>b.onclick=()=>{state.pointerTarget=shown[+b.dataset.hmaRefs].at;open('pointers');});
+ }
+ function changesScreen(){
+  const diff=hexDiffSummary(source(),id(),data(),{limit:120});
+  shell('<p>'+diff.changedBytes.toLocaleString()+' staged bytes in '+diff.spanCount+' contiguous ranges and '+(hexState(source(),id())?.repoints?.length||0)+' guarded table repoints. Edits are applied to a copy only when the exact source and ownership checks pass.</p><div class="studio-actions"><button id="hmaExportSource" type="button" class="primary">Export source + hex/table edits (.gba)</button><button id="hmaExportAll" type="button">Compile all project ROM edits</button><button id="hmaCreateIPS" type="button">Create source-only IPS patch</button><button id="hmaClearChanges" type="button">Clear staged binary changes</button></div><p class="hint-line">Source + hex export does not compile map, event, creature or other PokéBacon authoring changes. Use Compile all for those; conflicting addresses will abort. Changing data owned by other editors with raw bytes can break game behavior.</p><div style="max-height:45vh;overflow:auto">'+diff.spans.map(span=>'<article class="studio-record"><b>0x'+span.at.toString(16).toUpperCase()+' · '+span.before.length+' bytes</b><small>'+esc(formatHex(span.before).slice(0,160))+' → '+esc(formatHex(span.after).slice(0,160))+'</small><div class="hma-diff-actions"><button type="button" data-hma-diff="'+span.at+'">View</button><button type="button" data-hma-revert="'+span.at+'" '+(span.before.length>4096?'disabled title="Revert a smaller range of up to 4,096 bytes"':'')+'>Revert range</button></div></article>').join('')+'</div>');
+  $('#hmaExportSource').onclick=()=>safe(async()=>{const sessionAt=session(),out=new RomOutput(data());const applied=installROMHexEdits(source(),id(),data(),out);const repointed=installSafeTableRepoints(source(),id(),data(),out);if(!applied.bytes&&!repointed.length)throw Error('No staged binary edits or table repoints to export.');if(session()!==sessionAt)throw Error('The opened source ROM changed during export.');await api.save(new Blob([out.bytes],{type:'application/octet-stream'}),session().reader.filename.replace(/\.gba$/i,'')+'_hex_edited.gba');api.toast('Exported a source-only edited ROM copy.');});
+  $('#hmaExportAll').onclick=()=>api.exportROM();
+  $('#hmaCreateIPS').onclick=()=>safe(async()=>{const current=session(),out=new RomOutput(data());const result=installROMHexEdits(source(),id(),data(),out);const repointed=installSafeTableRepoints(source(),id(),data(),out);if(!result.bytes&&!repointed.length)throw Error('No source hex edits or repoints to include.');const patch=createIPS(data(),out.bytes);if(session()!==current)throw Error('The attached ROM changed.');await api.save(new Blob([patch.bytes],{type:'application/octet-stream'}),current.reader.filename.replace(/\.gba$/i,'')+'_hex.ips');api.toast('IPS round-trip verified against the current source.');});
+  $('#hmaClearChanges').onclick=()=>safe(()=>{if(!nbytes())return;api.modal('Clear staged hex/table writes','<p>Remove all staged raw-byte edits for this ROM? Your project-owned table layouts and original HMA metadata will remain.</p>',()=>{api.change(()=>{source().hexStudio.sources[id()].patches=[];});open('changes');return false;},'Clear edits');});
+  document.querySelectorAll('[data-hma-diff]').forEach(b=>b.onclick=()=>{state.offset=+b.dataset.hmaDiff;open('hex');});
+  document.querySelectorAll('[data-hma-revert]').forEach(button=>button.onclick=()=>{
+   const at=Number(button.dataset.hmaRevert),span=diff.spans.find(row=>row.at===at);
+   if(!span||span.before.length>4096)throw Error('Choose a displayed range no longer than 4,096 bytes.');
+   api.modal('Revert selected ROM bytes','<p>Remove '+span.before.length+' staged byte change(s) at offset 0x'+at.toString(16).toUpperCase()+'? Other edits, layouts and HMA metadata remain unchanged. Undo can restore this range.</p><p class="hint-line">Only the saved overlay is changed; the original ROM file is not modified.</p>',()=>{
+    api.change(()=>revertROMHexRange(source(),id(),data(),at,span.before.length));
+    open('changes');return false;
+   },'Revert range');
+  });
+
+ }
+ return{open,state};
+}

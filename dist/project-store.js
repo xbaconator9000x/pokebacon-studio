@@ -1,6 +1,6 @@
 // Local storage v2 splits maps and immutable library payloads. Project exports stay portable v1 JSON.
 export const PARTS_STORE='projectParts';
-export const SPLIT_PROJECT_SECTIONS=Object.freeze(['sourceEngine','spriteStudio','romEdits','interiorTemplates','textEdits','regionMaps','doorAnimations','cryEdits','hmRules']);
+export const SPLIT_PROJECT_SECTIONS=Object.freeze(['hexStudio','sourceEngine','spriteStudio','romEdits','interiorTemplates','textEdits','regionMaps','doorAnimations','cryEdits','hmRules']);
 // A map-only save intentionally omits existing split sections. History must
 // request a full save whenever it changes any of them, including deletion.
 export function saveScopeForEdit(edit){return edit.root.some(([key])=>key==='authoring'||SPLIT_PROJECT_SECTIONS.includes(key))?null:{mapIds:edit.maps.map(map=>map.id)};}

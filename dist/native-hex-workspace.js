@@ -1,0 +1,235 @@
+// Bounded ROM byte editing. Source arrays are immutable; saved projects keep
+// sparse original-byte preconditions, never a second, untracked ROM image.
+const LIMIT=32*1024*1024,MAX_EDITS=65536,MAX_BATCH=4096;
+const validAt=(at,length)=>Number.isInteger(at)&&at>=0&&at<length;
+const store=(project,sourceId,create=false)=>{
+ if(typeof sourceId!=='string'||!sourceId||sourceId.length>128||['__proto__','constructor','prototype'].includes(sourceId))throw Error('Attach a source ROM with a stable identity.');
+ if(create){project.hexStudio??={version:1,sources:{}};project.hexStudio.sources??={};project.hexStudio.sources[sourceId]??={patches:[],tables:[],hmaToml:''};}
+ const root=project.hexStudio;
+ if(!root)return null;
+ if(root.version!==1||!root.sources||typeof root.sources!=='object')throw Error('Unsupported saved hex workspace format.');
+ return root.sources[sourceId]||null;
+};
+export function hexState(project,sourceId){return store(project,sourceId);}
+export function stagedHexCount(project,sourceId){return store(project,sourceId)?.patches?.length||0;}
+export function parseROMOffset(text,length){
+ let s=String(text??'').trim();
+ if(/^0x[0-9a-f]+$/i.test(s))s='0x'+s.slice(2);
+ else if(/^[0-9a-f]+h$/i.test(s))s='0x'+s.slice(0,-1);
+ else if(!/^[0-9]+$/.test(s))throw Error('Use a decimal offset or 0x-prefixed hex offset.');
+ const value=Number(s);
+ if(!validAt(value,length))throw Error('The ROM offset is out of range.');
+ return value;
+}
+export function hexInput(text){
+ const input=String(text||'').trim();
+ if(!input)throw Error('Enter at least one hexadecimal byte.');
+ const compact=input.replace(/[\s,;:_-]+/g,'').replace(/0x/gi,'');
+ if(!/^[0-9a-f]+$/i.test(compact)||compact.length%2)throw Error('Hex bytes must contain pairs of 0–9 / A–F digits.');
+ if(compact.length>MAX_BATCH*2)throw Error('Edit at most 4,096 contiguous bytes per action.');
+ return Uint8Array.from(compact.match(/../g).map(x=>parseInt(x,16)));
+}
+export function formatHex(bytes){return Array.from(bytes,x=>x.toString(16).toUpperCase().padStart(2,'0')).join(' ');}
+function checked(state,source){
+ if(!(source instanceof Uint8Array)||source.length<512||source.length>LIMIT)throw Error('Open the matching unmodified GBA source ROM.');
+ const rows=state?.patches||[],prev=new Set();
+ if(!Array.isArray(rows)||rows.length>MAX_EDITS)throw Error('Invalid or excessive saved ROM edits.');
+ for(const row of rows){
+  if(!validAt(row.at,source.length)||!Number.isInteger(row.before)||row.before<0||row.before>255||!Number.isInteger(row.after)||row.after<0||row.after>255||prev.has(row.at)||source[row.at]!==row.before)throw Error('Saved hex patch no longer matches original ROM at 0x'+Number(row.at||0).toString(16)+'. Open the matching original ROM.');
+  prev.add(row.at);
+ }
+ return rows;
+}
+export function validateHexStudio(model){
+ if(model===undefined||model===null)return true;
+ if(!model||model.version!==1||!model.sources||Array.isArray(model.sources)||typeof model.sources!=='object')throw Error('Invalid ROM hex workspace settings.');
+ const ids=Object.keys(model.sources);
+ if(ids.length>8)throw Error('A project may refer to at most eight original hex source ROMs.');
+ for(const id of ids){
+  if(id.length<1||id.length>128||['__proto__','constructor','prototype'].includes(id))throw Error('Invalid original ROM source identity.');
+  const state=model.sources[id],patches=state?.patches||[],tables=state?.tables||[];
+  if(!state||!Array.isArray(patches)||patches.length>MAX_EDITS||!Array.isArray(tables)||tables.length>64||typeof (state.hmaToml??'')!=='string'||(state.hmaToml??'').length>2*1024*1024)throw Error('Saved ROM hex workspace exceeds safe size limits.');
+  const seen=new Set();
+  for(const p of patches){
+   if(!Number.isInteger(p.at)||p.at<0||p.at>=LIMIT||!Number.isInteger(p.before)||p.before<0||p.before>255||!Number.isInteger(p.after)||p.after<0||p.after>255||p.before===p.after||seen.has(p.at))throw Error('Invalid, duplicated or unchanged staged native ROM patch.');
+   seen.add(p.at);
+  }
+  const repoints=state.repoints||[];
+  if(!Array.isArray(repoints)||repoints.length>32)throw Error('Saved HMA table repoint list is invalid or exceeds its safe limit.');
+  const usedSites=new Set(),usedTables=new Set();
+  for(const p of repoints){
+   if(!p||typeof p.tableId!=='string'||!Number.isInteger(p.address)||p.address<512||p.address>=LIMIT||!Number.isInteger(p.length)||p.length<1||p.length>4096*4096||!Array.isArray(p.sites)||p.sites.length<1||p.sites.length>64||usedTables.has(p.tableId)||!tables.some(t=>t.id===p.tableId))
+    throw Error('Saved HMA table repoint has invalid fields or no matching typed table.');
+   if(p.newCount!==undefined){
+    const table=tables.find(t=>t.id===p.tableId),growth=p.newCount-table.count,appended=growth*table.stride;
+    const extraCounts=p.extraCountSites||[];
+    if(!Array.isArray(extraCounts)||extraCounts.length>16||
+     extraCounts.some(count=>!count||!Number.isInteger(count.at)||count.at<512||
+      ![1,2,4].includes(count.width)||count.at+count.width>LIMIT))
+     throw Error('Invalid saved extra native count site.');
+    const allCounts=[{at:p.countSite,width:p.countWidth},...extraCounts];
+    for(let i=0;i<allCounts.length;i++){
+     const x=allCounts[i];
+     if(allCounts.slice(i+1).some(y=>x.at<y.at+y.width&&x.at+x.width>y.at))
+      throw Error('Saved native count ranges overlap.');
+    }
+    const instructions=p.engineSites||[];
+    if(!Array.isArray(instructions)||instructions.length>16||
+     instructions.length&&(!/^[A-Z0-9]{4}$/.test(p.engineCode||'')||!['frlg','emerald'].includes(p.engineFamily)))
+     throw Error('Invalid engine-bound table expansion metadata.');
+    const instructionStarts=new Set();
+    for(const site of instructions){
+     if(!site||!Number.isInteger(site.at)||site.at<512||site.at%2||site.at+2>LIMIT||
+      !['thumb-cmp','thumb-movs'].includes(site.kind)||
+      !Number.isInteger(site.originalWord)||site.originalWord<0||site.originalWord>65535||
+      (site.originalWord&0xf800)!==({ 'thumb-cmp':0x2800,'thumb-movs':0x2000 })[site.kind]||
+      (site.originalWord&255)!==table.count||instructionStarts.has(site.at))
+      throw Error('Saved engine count instruction is invalid or duplicated.');
+     instructionStarts.add(site.at);
+    }
+    if(!Number.isInteger(p.newCount)||growth<1||growth>64||p.newCount>4096||appended>65536||
+     ![1,2,4].includes(p.countWidth)||!Number.isInteger(p.countSite)||p.countSite<512||p.countSite+p.countWidth>LIMIT||
+     !Array.isArray(p.extraBytes)||p.extraBytes.length!==appended||
+     p.extraBytes.some(v=>!Number.isInteger(v)||v<0||v>255))
+     throw Error('Invalid or excessive native table expansion state.');
+   }
+   usedTables.add(p.tableId);
+   for(const at of p.sites){
+    if(!Number.isInteger(at)||at<512||at+4>LIMIT||usedSites.has(at))throw Error('Duplicate or out-of-range saved table pointer source.');
+    usedSites.add(at);
+   }
+  }
+  for(const table of tables){
+   if(!table||typeof table.id!=='string'||!/^[A-Za-z0-9-]{1,80}$/.test(table.id)||typeof table.name!=='string'||!Array.isArray(table.fields)||table.fields.length>32||table.fields.length<1||!Number.isInteger(table.address)||table.address<0||table.address>=LIMIT||!Number.isInteger(table.stride)||table.stride<1||table.stride>4096||!Number.isInteger(table.count)||table.count<1||table.count>4096||table.address+table.stride*table.count>LIMIT)throw Error('Invalid saved typed-ROM-table layout.');
+   for(const field of table.fields)if(!field||typeof field.name!=='string'||!Number.isInteger(field.offset)||field.offset<0||field.offset>4095||!['u8','s8','u16','s16','u32','s32','ptr','ascii'].includes(field.type))throw Error('Invalid saved typed-ROM-table field.');
+  }
+ }
+ return true;
+}
+export function stagedROMByte(project,sourceId,source,at){
+ if(!validAt(at,source.length))throw Error('ROM byte offset is outside the source.');
+ const row=store(project,sourceId)?.patches?.find(row=>row.at===at);
+ return row?row.after:source[at];
+}
+export function stageROMHex(project,sourceId,source,at,bytes){
+ if(!validAt(at,source.length)||!(bytes instanceof Uint8Array)||!bytes.length||bytes.length>MAX_BATCH||at+bytes.length>source.length)throw Error('Choose 1–4,096 bytes within the original ROM.');
+ const previous=store(project,sourceId),old=checked(previous,source),byAt=new Map(old.map(row=>[row.at,{...row}]));
+
+ let changed=0;
+ for(let i=0;i<bytes.length;i++){const where=at+i,before=source[where],after=bytes[i],existing=byAt.get(where);if((existing?.after??before)!==after)changed++;
+  if(after===before)byAt.delete(where);else byAt.set(where,{at:where,before,after});
+ }
+ if(byAt.size>MAX_EDITS)throw Error('The project is at the 65,536 edited-byte safety limit. Export a ROM copy before making more changes.');
+ // Commit the complete valid draft only after every range check; undo/redo
+ // uses the same outer project history as other studio edits.
+ if(!changed)return {changed:0,total:old.length};
+ const destination=store(project,sourceId,true);destination.patches=[...byAt.values()].sort((a,b)=>a.at-b.at);
+ return{changed,total:destination.patches.length};
+}
+export function hexRows(project,sourceId,source,at,{rows=16}={}){
+ if(!validAt(at,source.length))throw Error('ROM hex viewport is out of bounds.');
+ const from=Math.floor(at/16)*16,result=[],edits=new Map(checked(store(project,sourceId),source).map(p=>[p.at,p]));
+ for(let r=0;r<rows&&from+r*16<source.length;r++){
+  const address=from+r*16,columns=[];
+  for(let i=0;i<16&&address+i<source.length;i++){
+   const pos=address+i,p=edits.get(pos),byte=p?p.after:source[pos];
+   columns.push({at:pos,byte,original:source[pos],edited:!!p,ascii:byte>=32&&byte<=126?String.fromCharCode(byte):'.'});
+  }
+  result.push({address,columns});
+ }
+ return result;
+}
+export function findROMHex(project,sourceId,source,needle,{from=0,limit=32}={}){
+ if(!(needle instanceof Uint8Array)||!needle.length||needle.length>256)throw Error('Search for 1–256 bytes.');
+ if(!Number.isInteger(from)||from<0||from>=source.length)throw Error('Choose a valid starting offset.');
+ const patches=new Map(checked(store(project,sourceId),source).map(p=>[p.at,p.after])),results=[];
+ outer:for(let at=from;at+needle.length<=source.length;at++){
+  for(let i=0;i<needle.length;i++)if((patches.get(at+i)??source[at+i])!==needle[i])continue outer;
+  results.push(at);if(results.length>=limit)break;
+ }
+ return results;
+}
+/** Parse byte/nibble wildcard search: AA ?? 1? ?F. Wildcards are
+ * read-only; raw ROM edits still require fully specified bytes. */
+export function parseMaskedHexSearch(text){
+ const compact=String(text??'').trim().replace(/[\s,;:_-]+/g,'').replace(/0x/gi,'');
+ if(!compact||compact.length%2||compact.length>512||!/^[0-9a-f?]+$/i.test(compact))
+  throw Error('Search for 1–256 hex byte pairs; ? may replace one or both nibbles.');
+ const bytes=new Uint8Array(compact.length/2),masks=new Uint8Array(bytes.length);
+ for(let i=0;i<bytes.length;i++){
+  const pair=compact.slice(2*i,2*i+2);
+  for(let n=0;n<2;n++)if(pair[n]!=='?'){
+   const shift=n===0?4:0;
+   bytes[i]|=parseInt(pair[n],16)<<shift;
+   masks[i]|=15<<shift;
+  }
+ }
+ if(!masks.some(Boolean))throw Error('Include at least one hexadecimal nibble; an all-wildcard pattern cannot identify data.');
+ return {bytes,masks};
+}
+/** Bounded, staged-value-aware hex search. A returned resume offset lets the
+ * phone scan the next small chunk without freezing the whole GBA view. */
+export function findMaskedROMHex(project,sourceId,source,pattern,{from=0,limit=16,maxScan=262144}={}){
+ if(!pattern||!(pattern.bytes instanceof Uint8Array)||!(pattern.masks instanceof Uint8Array)||
+  !pattern.bytes.length||pattern.bytes.length>256||pattern.masks.length!==pattern.bytes.length||
+  !pattern.masks.some(Boolean)||pattern.masks.some(mask=>![0,15,240,255].includes(mask)))
+  throw Error('Choose a valid bounded masked hex search pattern.');
+ if(!Number.isInteger(from)||from<0||from>=source.length||!Number.isInteger(limit)||limit<1||limit>32||
+  !Number.isInteger(maxScan)||maxScan<1||maxScan>1048576)
+  throw Error('Masked hex search bounds are invalid.');
+ const latest=source.length-pattern.bytes.length+1;
+ if(from>=latest)return {hits:[],nextFrom:null,scanned:0};
+ const edits=new Map(checked(store(project,sourceId),source).map(p=>[p.at,p.after]));
+ const end=Math.min(latest,from+maxScan),hits=[];
+ for(let at=from;at<end;at++){
+  let equal=true;
+  for(let i=0;i<pattern.bytes.length;i++)
+   if(((edits.get(at+i)??source[at+i])&pattern.masks[i])!==pattern.bytes[i]){
+    equal=false;break;
+   }
+  if(!equal)continue;
+  hits.push(at);
+  if(hits.length===limit)return {hits,nextFrom:at+1<latest?at+1:null,scanned:at-from+1};
+ }
+ return {hits,nextFrom:end<latest?end:null,scanned:end-from};
+}
+
+/** Unstage a bounded raw-byte range while retaining all unrelated project
+ * changes. Source preconditions are checked against the original ROM. */
+export function revertROMHexRange(project,sourceId,source,at,length){
+ if(!Number.isInteger(at)||!Number.isInteger(length)||at<0||length<1||length>4096||at+length>source.length)
+  throw Error('Choose 1–4096 original-ROM bytes to revert.');
+ const pending=checked(store(project,sourceId),source);
+ const matched=pending.filter(p=>p.at>=at&&p.at<at+length).length;
+ if(!matched)return {changed:0,removed:0,total:pending.length};
+ const result=stageROMHex(project,sourceId,source,at,source.slice(at,at+length));
+ return {...result,removed:matched};
+}
+
+export function hexDiffSummary(project,sourceId,source,{limit=100}={}){
+ const patches=checked(store(project,sourceId),source),spans=[];
+ for(const patch of patches){const last=spans.at(-1);
+  if(last&&last.at+last.before.length===patch.at){last.before.push(patch.before);last.after.push(patch.after);}
+  else spans.push({at:patch.at,before:[patch.before],after:[patch.after]});
+ }
+ return {changedBytes:patches.length,spans:spans.slice(0,limit),spanCount:spans.length};
+}
+// Preflight *all* writes against source and compiler output before mutating.
+// A map, graphics, script or game-data edit with overlapping ownership aborts
+// the whole hex batch, even when the desired end value is coincidentally equal.
+export function installROMHexEdits(project,sourceId,source,output){
+ const rows=checked(store(project,sourceId),source);
+ if(!rows.length)return {bytes:0,spans:0};
+ if(!output?.bytes||typeof output.write!=='function')throw Error('Use the native ROM writer to apply hex edits.');
+ const overlaps=output.writes||[];
+ for(const row of rows){
+  if(row.at>=output.bytes.length)throw Error('The compiled ROM no longer contains source address 0x'+row.at.toString(16)+'.');
+  if(overlaps.some(w=>row.at>=w.address&&row.at<w.address+w.length)||output.bytes[row.at]!==row.before)
+   throw Error('Native editor ownership conflict at 0x'+row.at.toString(16).toUpperCase()+': another editor or allocation writes here. Reconcile the edit before export.');
+ }
+ let spans=0;
+ for(let i=0;i<rows.length;){let j=i+1;while(j<rows.length&&rows[j].at===rows[j-1].at+1)j++;
+  output.write(rows[i].at,Uint8Array.from(rows.slice(i,j).map(x=>x.after)));spans++;i=j;
+ }
+ return{bytes:rows.length,spans};
+}
