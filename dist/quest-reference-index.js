@@ -4,7 +4,7 @@
 export function questReferenceIndex(project,{limit=5000}={}){
  const flags=new Map((project.questFlags||[]).map(q=>[q.id,[]]));
  const variables=new Map((project.authoring?.variables||[]).map(v=>[v.id,[]]));
- const nativeFlags=new Map();
+ const nativeFlags=new Map(),nativeTrainerFlags=new Map();
  const missing=[],references=[];let count=0;
  function add(kind,id,source,detail){
   if(typeof id!=='string'||!id)return;
@@ -22,7 +22,14 @@ export function questReferenceIndex(project,{limit=5000}={}){
   nativeFlags.get(key).push(row);
   references.push(row);
  }
-  function conditions(list,source,prefix){
+ function trainerFlag(id,source,detail){
+  if(!Number.isInteger(+id)||+id<1||+id>65535)return;
+  if(++count>limit)throw Error('The quest reference index exceeded its '+limit+'-reference safety limit.');
+  const key=+id,row={kind:'nativeTrainerFlag',id:key,...source,detail};
+  if(!nativeTrainerFlags.has(key))nativeTrainerFlags.set(key,[]);
+  nativeTrainerFlags.get(key).push(row);references.push(row);
+ }
+ function conditions(list,source,prefix){
   if(!Array.isArray(list))return;
   list.forEach((c,i)=>{
    if(!c||typeof c!=='object')return;
@@ -43,6 +50,7 @@ export function questReferenceIndex(project,{limit=5000}={}){
    const path=prefix+' action '+(i+1)+' ('+(step.type||'unknown')+')';
    if(step.type==='flag')add('flag',step.flagId,source,path);
    if(['nativeFlag','nativeFlagIf'].includes(step.type))originalFlag(step.nativeFlagId,source,path+(step.type==='nativeFlag'?(step.value===false?' (clear original ROM flag; original ROM only)':' (set original ROM flag; original ROM only)'):' (check original ROM flag; original ROM only)'));
+   if(['nativeTrainerFlag','nativeTrainerIf'].includes(step.type))trainerFlag(step.trainerId,source,path+(step.type==='nativeTrainerIf'?' (check trainer defeated)':' (write trainer defeated state)'));
    if(['set','add'].includes(step.type))add('variable',step.variableId,source,path);
    if(step.type==='quest')add('flag',step.questId,source,path);
    if(step.type==='completeField')add('flag',step.completionFlag,source,path);
@@ -69,5 +77,5 @@ export function questReferenceIndex(project,{limit=5000}={}){
  }
  for(const v of project.authoring?.variables||[])for(const id of v.bitIds||[])add('flag',id,{mapId:null,mapName:'Project',eventId:null,eventName:v.name,category:'storage'},'Reserved counter storage bit');
  for(const [mapId,id]of Object.entries(project.authoring?.presentation?.visitFlags||{}))add('flag',id,{mapId,mapName:project.maps?.find(m=>m.id===mapId)?.name||'Map',eventId:null,eventName:'Map visit tracking',category:'presentation'},'Visited location marker');
- return{flags,variables,nativeFlags,missing,references,usedFlags:[...flags].filter(([,refs])=>refs.length).length,usedVariables:[...variables].filter(([,refs])=>refs.length).length};
+ return{flags,variables,nativeFlags,nativeTrainerFlags,missing,references,usedFlags:[...flags].filter(([,refs])=>refs.length).length,usedVariables:[...variables].filter(([,refs])=>refs.length).length};
 }

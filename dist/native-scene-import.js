@@ -112,8 +112,9 @@ function stepsFromNativeGraph(graph,root,newId,map){
     if(args.length!==1||!Number.isInteger(args[0])||args[0]<0||args[0]>65535)fail('native flag write has an invalid original engine ID',at);
     out.push(newAction({type:'nativeFlag',nativeFlagId:args[0],value:code===41},at));at=n.end;continue;
    }
-   if(code===43){
+   if(code===43||code===96){
     const conditional=current(n.end),flag=args[0];
+    if(code===96)try{nativeTrainerId(flag);}catch(e){fail(e.message,at);}
     if(conditional.code!==6||conditional.args?.[0]?.value!==1||conditional.args.length!==2)fail('native flag check must use an explicit checkflag/goto_if 1 pair',at);
     const trueAt=conditional.args[1].value-BASE,falseAt=conditional.end;
     if(!graph.nodes?.[trueAt]||trueAt<=falseAt)fail('flag branch target is not a forward original script block',conditional.at);
@@ -131,7 +132,7 @@ function stepsFromNativeGraph(graph,root,newId,map){
     // Parse false and true as separate paths. Any shared command, loop, goto
     // inside the arm or unsupported opcode aborts the *whole* conversion.
     const otherwise=parse(falseAt,exit.at,depth+1),then=parse(trueAt,join,depth+1);
-    out.push(newAction({type:'nativeFlagIf',nativeFlagId:flag,then,else:otherwise},at));
+    out.push(newAction(code===43?{type:'nativeFlagIf',nativeFlagId:flag,then,else:otherwise}:{type:'nativeTrainerIf',trainerId:flag,then,else:otherwise},at));
     at=join;continue;
    }
    fail('unsupported '+(n.name||'opcode '+code)+' command',at);
