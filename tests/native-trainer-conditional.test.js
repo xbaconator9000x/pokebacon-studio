@@ -55,7 +55,7 @@ test('source checktrainerflag branch imports, persists and reindexes native trai
  assert.equal(refs.missing.length,0,'native trainer state is separate from project quest reservations');
  const code=sceneSource(actual,{project:p,map:p.maps[0],gameProfile:{engine:'frlg',trainerCount:200}});
  assert.match(code,/checktrainerflag 23/);assert.match(code,/settrainerflag 25/);assert.match(code,/cleartrainerflag 24/);
- assert.match(code,/goto_if 1 @s\\d+_trainer_defeated/);
+ assert.match(code,/goto_if 1 @s\d+_trainer_defeated/);
  const out=new RomOutput(f.source);out.write(0x6000,compileScript(code,0x6000,'frlg').bytes);
  out.int(f.roots[0].reference,BASE+0x6000);
  const indexed=await indexNativeStory(await new GbaMaps(out.bytes).discover(),{mapKeys:['0.0']});
