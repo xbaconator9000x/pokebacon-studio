@@ -62,6 +62,19 @@ export function validateHexStudio(model){
     throw Error('Saved HMA table repoint has invalid fields or no matching typed table.');
    if(p.newCount!==undefined){
     const table=tables.find(t=>t.id===p.tableId),growth=p.newCount-table.count,appended=growth*table.stride;
+    const dependent=p.linkedGroup?.role==='dependent';
+    if(p.linkedGroup){
+     const g=p.linkedGroup;
+     if(!g||typeof g.id!=='string'||!/^[A-Za-z0-9-]{1,80}$/.test(g.id)||
+        !['base','dependent'].includes(g.role)||typeof g.baseTableId!=='string'||
+        !Number.isInteger(g.baseNewCount)||g.baseNewCount<=0||g.baseNewCount>4096||
+        !Array.isArray(g.members)||g.members.length<2||g.members.length>8||
+        new Set(g.members).size!==g.members.length||!g.members.includes(p.tableId)||
+        !g.members.includes(g.baseTableId))throw Error('Invalid saved linked HMA table group.');
+     if(dependent&&(!table.linkedLength||p.countSite!==undefined||p.countWidth!==undefined||
+         (p.extraCountSites||[]).length||(p.engineSites||[]).length))
+      throw Error('Linked dependent table has an invalid independent count field.');
+    }else if(table.linkedLength)throw Error('Unreviewed linked HMA table expansion.');
     const extraCounts=p.extraCountSites||[];
     if(!Array.isArray(extraCounts)||extraCounts.length>16||
      extraCounts.some(count=>!count||!Number.isInteger(count.at)||count.at<512||
@@ -88,7 +101,7 @@ export function validateHexStudio(model){
      instructionStarts.add(site.at);
     }
     if(!Number.isInteger(p.newCount)||growth<1||growth>64||p.newCount>4096||appended>65536||
-     ![1,2,4].includes(p.countWidth)||!Number.isInteger(p.countSite)||p.countSite<512||p.countSite+p.countWidth>LIMIT||
+     (!dependent&&(![1,2,4].includes(p.countWidth)||!Number.isInteger(p.countSite)||p.countSite<512||p.countSite+p.countWidth>LIMIT))||
      !Array.isArray(p.extraBytes)||p.extraBytes.length!==appended||
      p.extraBytes.some(v=>!Number.isInteger(v)||v<0||v>255))
      throw Error('Invalid or excessive native table expansion state.');
@@ -97,6 +110,31 @@ export function validateHexStudio(model){
    for(const at of p.sites){
     if(!Number.isInteger(at)||at<512||at+4>LIMIT||usedSites.has(at))throw Error('Duplicate or out-of-range saved table pointer source.');
     usedSites.add(at);
+   }
+  }
+  const linked=new Map();
+  for(const p of repoints.filter(x=>x.linkedGroup)){
+   const g=p.linkedGroup;
+   if(!linked.has(g.id))linked.set(g.id,[]);
+   linked.get(g.id).push(p);
+  }
+  for(const group of linked.values()){
+   const anchor=group.find(p=>p.linkedGroup.role==='base');
+   if(!anchor||anchor.tableId!==anchor.linkedGroup.baseTableId||
+      group.length!==anchor.linkedGroup.members.length||
+      anchor.newCount!==anchor.linkedGroup.baseNewCount)
+    throw Error('Saved linked HMA expansion group is incomplete.');
+   const parent=tables.find(t=>t.id===anchor.tableId);
+   if(!parent||parent.linkedLength)throw Error('Saved linked HMA root table is invalid.');
+   for(const p of group){
+    const g=p.linkedGroup,table=tables.find(t=>t.id===p.tableId);
+    if(g.baseTableId!==anchor.tableId||g.baseNewCount!==anchor.newCount||
+       JSON.stringify(g.members)!==JSON.stringify(anchor.linkedGroup.members)||
+       !g.members.includes(p.tableId)||!table||
+       (p!==anchor&&(g.role!=='dependent'||table.linkedLength?.anchor!==parent.name||
+        table.linkedLength?.verifiedBaseCount!==parent.count||
+        p.newCount!==anchor.newCount+table.linkedLength.delta)))
+      throw Error('Saved linked HMA expansion dependency is incomplete or inconsistent.');
    }
   }
   for(const table of tables){
