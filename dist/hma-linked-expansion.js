@@ -68,7 +68,19 @@ export function verifyLinkedExpansionGroups(project,id,source,queued,definitions
   const tables=members.map(x=>definitions.find(t=>t.id===x));
   if(tables.some(x=>!x))throw Error('Linked-table schema is missing a reviewed source table.');
   checkSourceGroup(project,id,source,baseTable.name,tables);
+  // Explicitly refuse dependencies that own bytes inside another member's
+  // original table. Copying linked rows could otherwise preserve a stale
+  // pointer, count, or instruction which the original graph still references.
+  const originals=tables.map(t=>({start:t.address,end:t.address+t.stride*t.count}));
   for(const p of plans){
+   const sourceSites=[...p.sites.map(at=>({start:at,end:at+4})),
+    ...(p.linkedGroup.role==='base'?[{start:p.countSite,end:p.countSite+p.countWidth},
+      ...(p.extraCountSites||[]).map(c=>({start:c.at,end:c.at+c.width})),
+      ...(p.engineSites||[]).map(x=>({start:x.at,end:x.at+2}))]:[])];
+   if(sourceSites.some(r=>originals.some(t=>r.start<t.end&&r.end>t.start)))
+    throw Error('A linked HMA table contains an original dependency write site; pointer ownership is unresolved.');
+  }
+ for(const p of plans){
    const table=definitions.find(t=>t.id===p.tableId),isBase=p.tableId===baseTableId;
    if((isBase&&p.linkedGroup.role!=='base')||(!isBase&&p.linkedGroup.role!=='dependent'))
     throw Error('Linked expansion root/dependent roles are inconsistent.');
@@ -129,7 +141,7 @@ export function planLinkedTableExpansionGroup(project,id,source,{anchorName,newB
   if(plan.linkedGroup.role==='base'){
    planSafeTableExpansion(trial,id,source,leader,plan.sites,{
      newCount:plan.newCount,countSite:plan.countSite,countWidth:plan.countWidth,
-     seed,extraCountSites:plan.extraCountSites,engineSites:plan.engineSites
+     seed,reviewedLinkedRoot:true,extraCountSites:plan.extraCountSites,engineSites:plan.engineSites
    });
    const planned=hexState(trial,id).repoints.at(-1);
    Object.assign(planned,{linkedGroup:plan.linkedGroup});
