@@ -301,7 +301,21 @@
       "upstream": [
         "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
         "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"
-      ]
+      ],
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-linked-expansion.js",
+          "dist/hma-linked-ui.js",
+          "dist/hma-pointer-navigation.js",
+          "dist/native-hex-workspace.js"
+        ],
+        "tests": [
+          "tests/hma-linked-expansion.test.js",
+          "tests/hma-table-transaction-counts.test.js"
+        ],
+        "limitations": "Source-reviewed exact TOML linked-length fixed-anchor groups (2–8 tables); all direct pointers, native base count and optional Thumb count sites require user review. Runtime/computed count relationships and engine-specific code are not inferred. No actual retail native gameplay acceptance."
+      }
     },
     {
       "id": "HMA-TBL-03",
