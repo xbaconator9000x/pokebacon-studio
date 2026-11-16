@@ -13,16 +13,32 @@ concurrency:
   group: hma-linked-review-${{ github.workflow }}-${{ github.run_id }}
   cancel-in-progress: false
 jobs:
-  linked-source-integration:
+  native-hma-regressions:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        suite:
+          - hma-linked-expansion
+          - hma-table-formats
+          - hma-table-expansion
+          - hma-table-transaction-counts
+          - hma-engine-manifest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Native table source, expansion, metadata and rollback regressions
-        run: |
-          node --test tests/hma-linked-expansion.test.js tests/hma-table-formats.test.js tests/hma-table-expansion.test.js tests/hma-table-transaction-counts.test.js tests/hma-engine-manifest.test.js
-      - name: Original APK identity and deployed asset fingerprints
+      - name: Test ${{ matrix.suite }} source/natives
+        run: node --test tests/${{ matrix.suite }}.test.js
+  source-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify original Android identity and deployed SHA256 assets
         run: node scripts/qa-source-gate.mjs
