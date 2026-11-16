@@ -174,9 +174,11 @@ function verifyExpansion(project,id,source,table,plan){
  // responsibility; only the supplied original literal site can be patched.
  return appended;
 }
-export function planSafeTableExpansion(project,id,source,table,sites,{newCount,countSite,countWidth=2,seed='copy-last',engineSites=[],extraCountSites=[]}={}){
+export function planSafeTableExpansion(project,id,source,table,sites,{newCount,countSite,countWidth=2,seed='copy-last',engineSites=[],extraCountSites=[],reviewedLinkedRoot=false}={}){
  validateTable(table,source.length);
- if(table.linkedLength)throw Error('Linked-length HMA tables require engine-specific length propagation; expansion is blocked.');
+ if(table.linkedLength)throw Error('Linked-length HMA tables require a complete source-reviewed dependency group.');
+ if(!reviewedLinkedRoot&&tableDefinitions(project,id,source).some(t=>t.linkedLength?.anchor===table.name))
+  throw Error('This native table anchors linked HMA tables; grow every dependency as one reviewed group.');
  if(!['copy-last','zero'].includes(seed))throw Error('Choose copy-last or zero as the new-row template.');
  const current=hexState(project,id),existing=current?.repoints||[];
  if(existing.length>=32||existing.some(p=>p.tableId===table.id||p.sites.some(at=>sites.includes(at))))
@@ -272,6 +274,11 @@ export function installSafeTableRepoints(project,id,source,output){
  if(queued.length>32)throw Error('Too many source table repoints.');
  const definitions=tableDefinitions(project,id,source),reviews=[];
  verifyLinkedExpansionGroups(project,id,source,queued,definitions);
+ for(const p of queued.filter(x=>x.newCount!==undefined&&!x.linkedGroup)){
+  const base=definitions.find(t=>t.id===p.tableId);
+  if(base&&definitions.some(t=>t.linkedLength?.anchor===base.name))
+   throw Error('A native HMA count anchor cannot grow without all linked dependent tables.');
+ }
  // Preflight all plans before touching *any* output buffer.
  for(const p of queued){
   const table=definitions.find(t=>t.id===p.tableId);
