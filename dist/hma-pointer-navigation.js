@@ -3,6 +3,7 @@
 import {hexState,stagedROMByte} from './native-hex-workspace.js';
 import {hmaMetadata,tableDefinitions,validateTable,encodeTableFieldValue,decodeTableFieldValue} from './hma-table-workspace.js';
 import {verifyEngineCountSites} from './hma-engine-count.js';
+import {verifyLinkedExpansionGroups} from './hma-linked-expansion.js';
 const BASE=0x08000000,MAX=32*1024*1024;
 const check=(source,site)=>source instanceof Uint8Array&&Number.isInteger(site)&&site>=0&&site+4<=source.length;
 function patches(project,id){return new Map((hexState(project,id)?.patches||[]).map(p=>[p.at,p.after]));}
@@ -113,7 +114,7 @@ function sourceInteger(source,at,width){
  return value;
 }
 function countRanges(plan){
- return plan.newCount===undefined?[]:[{at:plan.countSite,width:plan.countWidth},...(plan.extraCountSites||[])];
+ return plan.newCount===undefined||plan.linkedGroup?.role==='dependent'?[]:[{at:plan.countSite,width:plan.countWidth},...(plan.extraCountSites||[])];
 }
 function intersects(x,y){return x.at<y.at+y.width&&x.at+x.width>y.at;}
 function verifyCountRanges(project,id,source,table,plan){
@@ -137,22 +138,25 @@ function verifyCountRanges(project,id,source,table,plan){
  return ranges;
 }
 function verifyExpansion(project,id,source,table,plan){
+ const linkedDependent=plan.linkedGroup?.role==='dependent';
  if(!Number.isInteger(plan.newCount)||plan.newCount<=table.count||plan.newCount>4096||
-  plan.newCount-table.count>MAX_EXTRA_ROWS||!COUNT_WIDTHS.includes(plan.countWidth)||
-  !Number.isInteger(plan.countSite)||plan.countSite<512||plan.countSite+plan.countWidth>source.length)
-  throw Error('Expanded table requires 1–64 new rows and a valid 1/2/4-byte native count field.');
+  plan.newCount-table.count>MAX_EXTRA_ROWS||
+  (!linkedDependent&&(!COUNT_WIDTHS.includes(plan.countWidth)||
+  !Number.isInteger(plan.countSite)||plan.countSite<512||plan.countSite+plan.countWidth>source.length)))
+  throw Error('Expanded table requires 1–64 new rows and a reviewed native count dependency.');
  const appended=(plan.newCount-table.count)*table.stride;
  if(appended>MAX_EXTRA_BYTES||!Array.isArray(plan.extraBytes)||plan.extraBytes.length!==appended||
   plan.extraBytes.some(n=>!Number.isInteger(n)||n<0||n>255))
   throw Error('Expanded table payload is invalid or exceeds 64 KiB.');
- if(plan.newCount>2**(plan.countWidth*8)-1)throw Error('New count does not fit the selected native integer field.');
- const countEnd=plan.countSite+plan.countWidth;
+ if(!linkedDependent&&plan.newCount>2**(plan.countWidth*8)-1)
+  throw Error('New count does not fit the selected native integer field.');
  const patches=hexState(project,id)?.patches||[];
  const engine=verifyEngineCountSites(source,table.count,plan.newCount,plan.engineSites||[],{
   code:plan.engineCode,family:plan.engineFamily
  });
  if((plan.engineSites||[]).length&&(plan.engineCode!==engine.code||plan.engineFamily!==engine.engine))
   throw Error('The queued count dependencies do not match this ROM engine.');
+ if(linkedDependent&&((plan.extraCountSites||[]).length||(plan.engineSites||[]).length||plan.countSite!==undefined||plan.countWidth!==undefined))throw Error('Linked dependent tables must not fabricate independent engine count sites.');
  verifyCountRanges(project,id,source,table,plan);
  for(const site of engine.sites){
   const finish=site.at+2;
@@ -265,6 +269,7 @@ export function installSafeTableRepoints(project,id,source,output){
  if(!output?.bytes||!Array.isArray(output.writes)||!Array.isArray(output.allocations)||typeof output.allocate!=='function'||typeof output.int!=='function')throw Error('Native writer with tracked allocations is required for safe repoints.');
  if(queued.length>32)throw Error('Too many source table repoints.');
  const definitions=tableDefinitions(project,id,source),reviews=[];
+ verifyLinkedExpansionGroups(project,id,source,queued,definitions);
  // Preflight all plans before touching *any* output buffer.
  for(const p of queued){
   const table=definitions.find(t=>t.id===p.tableId);
@@ -286,7 +291,7 @@ export function installSafeTableRepoints(project,id,source,output){
   // Expanded rows and a literal count update are explicit and preflighted.
   // Saved plans cannot silently enlarge a separate linked-length source.
   if(p.newCount!==undefined){
-   if(table.linkedLength)throw Error('Linked-length table expansion cannot safely update its engine dependencies.');
+   if(table.linkedLength&&!p.linkedGroup)throw Error('Linked-length table expansion needs a complete reviewed dependency group.');
    verifyExpansion(project,id,source,table,p);
    for(const {at,width} of countRanges(p)){
     const end=at+width;
