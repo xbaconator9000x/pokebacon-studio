@@ -96,7 +96,7 @@ export function sceneWorkshop(api){
   if(s.type==='if'){renderConditions($('#branchRequirements'),s.conditions??=[],()=>editAction(s,back));$('#branchAddRequirement').onclick=()=>{s.conditions.push({kind:'flag',flagId:'',value:true});editAction(s,back);};}
   if($('#sceneEditTrainerTeam'))$('#sceneEditTrainerTeam').onclick=async()=>{
     collectAction();
-    try{await api.game().openTrainer(s.trainerId,{onSaved:()=>{api.close();editAction(s,back);}});}
+    try{const sourceId=api.project().maps.find(map=>map.id===state.mapId)?.rom?.sourceId;await api.game().openTrainer(s.trainerId,{expectedSourceId:sourceId,onSaved:()=>{api.close();editAction(s,back);}});}
     catch(error){api.error(error);}
    };
   if($('#sceneDrawPath'))$('#sceneDrawPath').onclick=()=>{readFields($('#dialogBody'),s);beginDraw('path',s);};
