@@ -1,5 +1,6 @@
 import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 import{patchNativeItems}from'./rom-items.js';
+import{encodeTrainerParty}from'./native-trainer-party.js';
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -597,30 +598,12 @@ function applyGameDataEdits(source, p, edits, output) {
     }
     if (tr.doubleBattle && tr.party.length < 2)
       throw Error("A double battle needs at least two Pok\xE9mon.");
-    const needsParty = ["party", "customMoves", "heldItems"].some((k) => owns(patch, k));
+    const needsParty = ["party", "customMoves", "heldItems"].some((key) => owns(patch,key));
     if (needsParty) {
-      if (!Array.isArray(tr.party) || tr.party.length < 1 || tr.party.length > 6)
-        throw Error("A trainer party needs1\u20136 Pok\xE9mon.");
-      if (tr.doubleBattle && tr.party.length < 2)
-        throw Error("A double battle needs at least two Pok\xE9mon.");
-      const stride = tr.customMoves ? (tr.heldItems&&p.expandedTrainerParty?32:16) : 8, d = new Uint8Array(stride * tr.party.length), dv = new DataView(d.buffer);
-      tr.party.forEach((m, i) => {
-        const o = i * stride;
-        if(stride===32){d[o+6]=integer(m.ability??3,0,4,'Trainer ability selection');d[o+7]=integer(m.nature??0,0,24,'Trainer nature');for(const [key,at,max,fallback]of [['ivSpread',8,31,Math.round((m.ivQuality??0)*31/255)],['evSpread',14,255,0]]){const values=m[key]??Array(6).fill(fallback);if(!Array.isArray(values)||values.length!==6)throw Error('A trainer spread needs six values.');values.forEach((n,j)=>d[o+at+j]=integer(n,0,max,key));}dv.setUint16(o+30,integer(m.teraType??0,0,255,'Trainer Tera type'),true);}
-        dv.setUint16(o, integer(m.ivQuality ?? 0, 0, 255, "IV quality"), true);
-        d[o + 2] = integer(m.level, 1, 100, "Trainer level");
-        dv.setUint16(o + 4, integer(m.species, 1, p.speciesCount - 1, "Trainer Pok\xE9mon"), true);
-        if (tr.heldItems)
-          dv.setUint16(o + (stride===32?20:6), integer(m.heldItem || 0, 0, p.itemCount - 1, "Trainer held item"), true);
-        if (tr.customMoves) {
-          if (!Array.isArray(m.moves) || m.moves.length !== 4)
-            throw Error("Custom moves need four slots, including0 for empty.");
-          m.moves.forEach((move, j) => dv.setUint16(o + (stride===32?22:tr.heldItems ? 8 : 6) + j * 2, integer(move, 0, p.moveCount - 1, "Trainer move"), true));
-        }
-      });
-      b[0] = (tr.customMoves ? 1 : 0) | (tr.heldItems ? 2 : 0);
-      b[32] = tr.party.length;
-      v.setUint32(36, BASE + output.allocate(d, "Trainer party"), true);
+      const encoded=encodeTrainerParty(source,p,id,tr);
+      b[0]=encoded.flags;
+      b[32]=encoded.count;
+      v.setUint32(36,BASE+output.allocate(encoded.bytes,"Trainer party"),true);
     }
     output.write(at, b);
     report.push("Trainer " + id);

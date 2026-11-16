@@ -19,7 +19,7 @@ export function trainerPartySource(source,profile,id){
  integer(count,0,6,'Trainer party size');
  if(!count){if(pointer!==0)throw Error('Unused trainer has a nonempty party pointer; its layout needs review.');return{at,kind,count,start:null,bytes:new Uint8Array()};}
  const start=pointer-BASE;
- if(pointer<BASE||start%4!==0||start<0||start+kind.stride*count>source.length)throw Error('Trainer party pointer points outside a valid aligned source table.');
+ if(pointer<BASE||start%2!==0||start<0||start+kind.stride*count>source.length)throw Error('Trainer party pointer points outside a valid aligned source table.');
  const bytes=source.slice(start,start+kind.stride*count);
  for(let i=0;i<count;i++){
   const off=i*kind.stride,lv=bytes[off+2],species=u16(bytes,off+4);
