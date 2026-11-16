@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {inspectTrainerBattle} from '../dist/trainer-battle-link.js';
+import {inspectTrainerBattle,nativeStoryTrainerSlot} from '../dist/trainer-battle-link.js';
 import {trainerPartySource,encodeTrainerParty} from '../dist/native-trainer-party.js';
 import {editsFor,validateGameEdits} from '../dist/game-edits.js';
 import {newProject,validateProject} from '../dist/model.js';
@@ -153,4 +153,32 @@ test('scene and Game Workshop use the verified source and return to unsaved acti
  assert.match(ui,/inspectTrainerBattle\(c,api\.project\(\),id\)/);
  assert.match(ui,/expectedSourceId&&session\.id!==expectedSourceId/);
  assert.match(ui,/if\(onSaved\)\{onSaved\(\);return false;\}/);
+});
+
+test('original ROM story resolves only one reachable standard trainerbattle slot, respecting command edits',()=>{
+ const a=0x5000,b=0x5008,root={id:'npc01',kind:'npcs',address:a};
+ const graph={nodes:{[a]:{at:a,code:92,args:[{value:1},{value:23}],edges:[]}},edits:{commands:{},flows:{}}};
+ assert.equal(nativeStoryTrainerSlot(graph,root),23);
+ graph.edits.commands[a]={args:[1,24]};
+ assert.equal(nativeStoryTrainerSlot(graph,root),24,'uses pending original native command edit');
+ graph.edits.commands[a]={args:[4,24]};
+ assert.equal(nativeStoryTrainerSlot(graph,root),null,'unsupported native battle type cannot be assumed safe');
+ graph.edits.commands[a]={args:[1,24]};
+ graph.nodes[b]={at:b,code:92,args:[{value:1},{value:25}],edges:[]};
+ graph.nodes[a].edges=[{to:b,kind:'next'}];
+ assert.equal(nativeStoryTrainerSlot(graph,root),null,'multiple distinct trainer teams are ambiguous');
+ graph.edits.commands[b]={args:[1,24]};
+ assert.equal(nativeStoryTrainerSlot(graph,root),24,'multiple references to one team are unambiguous');
+ graph.edits.flows.npc01={steps:[]};
+ assert.equal(nativeStoryTrainerSlot(graph,root),null,'authored replacement has different script semantics');
+ delete graph.edits.flows.npc01;
+ assert.equal(nativeStoryTrainerSlot(graph,{...root,kind:'signs'}),null,'ordinary sign is not a trainer NPC event');
+});
+test('native story inspector exposes original trainer team navigation without converting native event scripts',()=>{
+ const ui=readFileSync(new URL('../dist/native-story-ui.js',import.meta.url),'utf8');
+ assert.match(ui,/nativeStoryTrainerSlot\(g,root\)/);
+ assert.match(ui,/id="nativeStoryTrainerTeam"/);
+ assert.match(ui,/disabled=linkedTrainer===null/);
+ assert.match(ui,/openTrainer\(linkedTrainer,\{expectedSourceId:session\(\)\.id\}\)/);
+ assert.match(ui,/Trainer sight &amp; patrol/,'existing native NPC movement controls retained');
 });
