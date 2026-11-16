@@ -154,6 +154,6 @@ export function planLinkedTableExpansionGroup(project,id,source,{anchorName,newB
  // Commit all plans atomically. Failed pointer, count or dependency review
  // leaves the caller's project unmodified.
  project.hexStudio=trial.hexStudio;
- return{groupId,anchorName,baseOldCount:leader.count,baseNewCount,
+ return{groupId,anchorName,baseOldCount:leader.count,baseNewCount:newBaseCount,
   tables:groupRows.map(x=>({id:x.tableId,newCount:x.newCount,oldCount:all.find(t=>t.id===x.tableId).count,updatedPointers:x.sites.length}))};
 }
