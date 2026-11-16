@@ -241,8 +241,10 @@ export function discardTableRepoint(project,id,source,table){
  validateTable(table,source.length);
  const state=hexState(project,id);
  if(!state?.repoints?.some(p=>p.tableId===table.id))return {removed:0};
- state.repoints=state.repoints.filter(p=>p.tableId!==table.id);
- return {removed:1};
+ const linked=state.repoints.find(p=>p.tableId===table.id)?.linkedGroup?.id;
+ const before=state.repoints.length;
+ state.repoints=state.repoints.filter(p=>linked?p.linkedGroup?.id!==linked:p.tableId!==table.id);
+ return {removed:before-state.repoints.length,linkedGroup:linked||null};
 }
 
 // Perform *all* HMA allocations/writes on a detached RomOutput workspace.
