@@ -86,7 +86,7 @@ test('tampered or partly discarded groups fail closed on save and export',()=>{
  assert.throws(()=>installSafeTableRepoints(f.project,ID,f.source,new RomOutput(f.source)),/incomplete/i);
  const g=fixture();queue(g);
  g.project.hexStudio.sources[ID].repoints[1].newCount++;
- assert.throws(()=>validateProject(g.project),/linked HMA|dependency/i);
+ assert.throws(()=>validateProject(g.project),/linked HMA|dependency|native table expansion state/i);
  assert.throws(()=>installSafeTableRepoints(g.project,ID,g.source,new RomOutput(g.source)),/linked|count|inconsistent/i);
 });
 test('second linked table allocation failure cannot alter output, pointers, count or other compiled edits',()=>{
