@@ -1911,7 +1911,7 @@
     "dist/music-part-options.js": "7340ea715641fc0cae0cfa405937c85d2ba864ee50c7045230275a9c11e55104",
     "dist/native-trainer-party.js": "67072755f75d715052d9e795377307631f1aa2a9e2bc8d9cfc512f24a2936a6f",
     "dist/trainer-battle-link.js": "fb0fc38664956314f3667922d2b2f3b0dcd29d8397f565972871a2852923ec18",
-    "dist/hma-linked-expansion.js": "ba4d035912df9f1830ae40e512c806349a43e170f22dfe45ed8133209744d39e",
+    "dist/hma-linked-expansion.js": "1420bec196bc27ab0834da726fb913230534b2745a9b762362201d1fb30d9aec",
     "dist/hma-linked-ui.js": "c531c867657331fb1ac3f041c2d507998f7b1f58580dee90a8e80f9fd3a040dc"
   },
   "developmentBranch": "development/studio-upgrades",
