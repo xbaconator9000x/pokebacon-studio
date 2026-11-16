@@ -1710,7 +1710,7 @@
     "dist/native-source/tileset-runtime.ld": "c656ca5f56f5121ffd0cae4e141320953f82bbbbcaab40fea2fed799d9aeeefb",
     "dist/native-sprites.js": "2014e18ae8ca44dd6e2e7f319cbd7d8a974781f1566b1acfea680f9daca8bdf9",
     "dist/native-story-state.js": "09b652bfd09927f4e0300dfc2908deb140564cbe874a6ed47e9ce45e8a1ec7d3",
-    "dist/native-story-ui.js": "9ec61840d091cad4f79a6c01e344647ae90de04ae03c573799f87275db6fd619",
+    "dist/native-story-ui.js": "d463f0ed6d5090f67e071677a15604c34013728df5059eea681984aa61620dba",
     "dist/native-story.js": "9b0a33df12a5f158d31f4e492ccff3574003baf45c57e075a9fff28d100b4eb0",
     "dist/native-studio-code.js": "4f060869ccd9b9801313a8a161098bd6cf0de0d9dd60de6fa23bc0c52c2309ff",
     "dist/native-studio.js": "aa07bc018ec6707d28c8c4d38dc9df773440d85e4f56efc54c4cf09e1ca7888c",
@@ -1910,7 +1910,7 @@
     "dist/native-trainer-encounter-ui.js": "fdb47f1c0718918d5ecf9f52f2fa360ed510a69410866e6daa22f8954b60e872",
     "dist/music-part-options.js": "7340ea715641fc0cae0cfa405937c85d2ba864ee50c7045230275a9c11e55104",
     "dist/native-trainer-party.js": "67072755f75d715052d9e795377307631f1aa2a9e2bc8d9cfc512f24a2936a6f",
-    "dist/trainer-battle-link.js": "3f825d45fafa9452b98b4f81c2da54e3f4b26e05192ff40aa66a7ffb1c5eb4ba"
+    "dist/trainer-battle-link.js": "fb0fc38664956314f3667922d2b2f3b0dcd29d8397f565972871a2852923ec18"
   },
   "developmentBranch": "development/studio-upgrades",
   "releaseBaseAPK_SHA256": "2eec5f5a67603b1738932e57657d769cdc2d19d2f4f171dd6394adeea2e11381",

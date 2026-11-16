@@ -15,3 +15,11 @@ The user's existing trainer party controls (native item/move fields, party copy,
 Added tests for source-bound resolution, original/staged trainer identity, stale source fingerprints, unsupported/uninitialized tables, invalid staged teams, split project save/reopen, preserved original native trainerbattle parameters/text, independent party allocation and unchanged shared original bytes. UI wiring is also checked. Tests run in the project's real Node suite; an exact-head Android build and Chromium UI suite are required to pass separately before accepting this slice.
 
 **Not proven:** actual win/loss/rematch behaviour, full physical device navigation, private Shattered gameplay, Flash cold restart, or every expanded-ROM variant. Preserve the original Android package ID `dev.shattered.mapstudio.next`, original release signing certificate, and current versionCode 148; no new APK is delivered by this PR batch. Do not publish ROMs, private projects, save data or signing secrets.
+
+## Direct access from the native ROM story inspector
+
+The **ROM story** inspector now exposes **Trainer team #ID** alongside the existing **Trainer sight & patrol** control. It inspects the reachable native `trainerbattle` commands from the currently selected original NPC entry and enables the link only for a **single unambiguous native trainer slot** (recognized standard variants 0/1, with pending safe command edits reflected). Ambiguous multiple trainer IDs, unsupported variants, non-NPC roots and structurally replaced flows do not expose a link.
+
+Selecting it opens the same source-bound Game Workshop trainer editor without converting the original script to a visual scene. No trainer event bytes are modified by navigation. A saved party goes to the verified source-hash-scoped project edit record and requires native ROM export to play. The original event graph remains intact.
+
+Additional tests cover original and patched native trainer IDs, multiple reachable battle slots, scene override refusal, non-NPC refusal and direct UI wiring. Both the scene action and original event paths therefore lead to the **same original team data**, not separate implementations.
