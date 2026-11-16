@@ -1,6 +1,7 @@
 // The trainer ID in a visual trainerbattle action is a slot in the opened
 // source ROM. Never resolve it against a project-local trainer or another ROM.
 import {editsFor} from './game-edits.js';
+import {reachableStory} from './native-story.js';
 import {trainerPartySource,encodeTrainerParty} from './native-trainer-party.js';
 
 export function inspectTrainerBattle(context,project,trainerId){
@@ -30,4 +31,23 @@ export function inspectTrainerBattle(context,project,trainerId){
   sourcePartyAddress:native.start,
   sourcePartyCount:native.count
  };
+}
+
+/**
+ * Only expose a direct native trainer-team link if the original NPC event
+ * resolves to exactly one unambiguous standard trainer slot. No ROM changes.
+ * An authored root flow is excluded because it can replace native semantics.
+ */
+export function nativeStoryTrainerSlot(graph,root){
+ if(!graph||!root||root.kind!=='npcs'||!graph.nodes||graph.edits?.flows?.[root.id])return null;
+ const ids=new Set();
+ for(const address of reachableStory(graph,root.address)){
+  const node=graph.nodes[address];
+  if(node?.code!==92)continue; // original Gen III trainerbattle command
+  const args=graph.edits?.commands?.[address]?.args??node.args?.map(arg=>arg.value);
+  if(!Array.isArray(args)||![0,1].includes(args[0])||
+     !Number.isInteger(args[1])||args[1]<1||args[1]>65535)return null;
+  ids.add(args[1]);if(ids.size>1)return null;
+ }
+ return ids.size===1?[...ids][0]:null;
 }
