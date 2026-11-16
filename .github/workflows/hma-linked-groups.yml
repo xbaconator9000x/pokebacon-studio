@@ -1,0 +1,28 @@
+name: HMA linked native table acceptance
+on:
+  pull_request:
+    paths:
+      - 'dist/hma-*.js'
+      - 'dist/native-hex-workspace.js'
+      - 'tests/hma-*.test.js'
+      - '.github/workflows/hma-linked-groups.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hma-linked-review-${{ github.workflow }}-${{ github.run_id }}
+  cancel-in-progress: false
+jobs:
+  linked-source-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Native table source, expansion, metadata and rollback regressions
+        run: |
+          node --test tests/hma-linked-expansion.test.js tests/hma-table-formats.test.js tests/hma-table-expansion.test.js tests/hma-table-transaction-counts.test.js tests/hma-engine-manifest.test.js
+      - name: Original APK identity and deployed asset fingerprints
+        run: node scripts/qa-source-gate.mjs
