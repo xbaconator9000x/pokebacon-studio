@@ -1608,7 +1608,7 @@
     "dist/game-edits.js": "0d844f97c47e7a07083fb22b46573b60b1bed9fe2f9b16a85e4a3b6cc52ae0f6",
     "dist/game-rules.js": "5152d70e40208994deb98bb5fdbfbc43991ec9d43855bb483b8488a66a29b106",
     "dist/game-runtime.js": "05fd8ffc23183d84139a3ed9f782aee09d962815c05af18378cc17e88aaa17e0",
-    "dist/game-ui.js": "da9b61385f44aec7bca021c6515b97a15939a4486c5f6794348f674946c52df9",
+    "dist/game-ui.js": "9b49cd500ff153b35a76728a45f7afa15d34e9570bce2e7b84b56aa582a7f43f",
     "dist/gate-cells.js": "fe62603e052f32232300cadaa1215b3aaf8c725d66c1c9a849ceb674a5db7be6",
     "dist/gate-editor.js": "e8be16ab9eff23989650108c89e54c4997b44a32ce532d3c04db727b857628d8",
     "dist/gate-placement.js": "3010642fb384f06f21236d24f75c5e574fcdc1c3833b7f80d950d792132bdab1",
@@ -1791,7 +1791,7 @@
     "dist/scene-map-ui.js": "a372ae9d637fc0fc0d27e33f73d6cc98414702c78664c50bef2309c7d1034bc7",
     "dist/scene-outline.js": "33aad91a75ccc9fc6395a54fa6caa4055426c2b1f9879599f79b509402b94bd0",
     "dist/scene-pages.js": "e9460dfc09ed4fcadb0f017261ff379116aaadac055d9d5d121e81df1f5c906a",
-    "dist/scene-ui.js": "5515741acaf0239f54aef42edde7078c4c7b193a5e37d73dcdc6591faed48739",
+    "dist/scene-ui.js": "5245c9a54dc2855bcec5d57248f281079073babffcc36117c658ce40a825db98",
     "dist/script-data.js": "57ffeadb14d57eee848c601632cf8bbd60cde949d61a458327315afb9548918e",
     "dist/script-engine.js": "dac458325e571902a7194d2d3b56bcfde8cc16d1942b4c264747bc4ca230e7df",
     "dist/script-tile-bindings.js": "5a25742708ce0dfe694090d7eeba5c031dbc045222da0e4ccdecef1168817a36",
@@ -1909,7 +1909,8 @@
     "dist/native-trainer-encounter.js": "c332a837dcef96d1f114cbd256ebaf7c45a73c210e090be0c7ab23d0e901f6e2",
     "dist/native-trainer-encounter-ui.js": "fdb47f1c0718918d5ecf9f52f2fa360ed510a69410866e6daa22f8954b60e872",
     "dist/music-part-options.js": "7340ea715641fc0cae0cfa405937c85d2ba864ee50c7045230275a9c11e55104",
-    "dist/native-trainer-party.js": "67072755f75d715052d9e795377307631f1aa2a9e2bc8d9cfc512f24a2936a6f"
+    "dist/native-trainer-party.js": "67072755f75d715052d9e795377307631f1aa2a9e2bc8d9cfc512f24a2936a6f",
+    "dist/trainer-battle-link.js": "3f825d45fafa9452b98b4f81c2da54e3f4b26e05192ff40aa66a7ffb1c5eb4ba"
   },
   "developmentBranch": "development/studio-upgrades",
   "releaseBaseAPK_SHA256": "2eec5f5a67603b1738932e57657d769cdc2d19d2f4f171dd6394adeea2e11381",
