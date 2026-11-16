@@ -5,9 +5,10 @@ import {newProject,validateProject} from '../dist/model.js';
 import {RomOutput} from '../dist/rom-writer.js';
 import {importHMAToml,fixedNumericHMATable,saveTableDefinition} from '../dist/hma-table-workspace.js';
 import {planLinkedTableExpansionGroup,verifyLinkedExpansionGroups} from '../dist/hma-linked-expansion.js';
-import {expandedTableRecord,editExpandedTableField,installSafeTableRepoints,discardTableRepoint} from '../dist/hma-pointer-navigation.js';
+import {expandedTableRecord,editExpandedTableField,installSafeTableRepoints,discardTableRepoint,planSafeTableExpansion} from '../dist/hma-pointer-navigation.js';
 import {planSave,savedProjectKeys,assembleSavedProject} from '../dist/project-store.js';
 import {stageROMHex} from '../dist/native-hex-workspace.js';
+import {readFileSync} from 'node:fs';
 const ID='a'.repeat(64),BASE=0x08000000;
 const ADDRESS=[0x7400,0x7800,0x7c00],POINTER=[0x540,0x548,0x550],COUNT=0x558;
 const TOML=['[[NamedAnchors]]',"Name = '''Species'''",'Address = 0x007400',"Format = '''[id::]4'''",'[[NamedAnchors]]',"Name = '''Moves'''",'Address = 0x007800',"Format = '''[move::]Species+2'''",'[[NamedAnchors]]',"Name = '''Forms'''",'Address = 0x007C00',"Format = '''[form::]Species-1'''"].join('\n');
@@ -15,8 +16,6 @@ const view=b=>new DataView(b.buffer,b.byteOffset,b.byteLength);
 function fixture(){
  const source=syntheticROM(),project=newProject('HMA linked dependency source');
  importHMAToml(project,ID,source,TOML);
- const from=(awaitless)=>awaitless;
- const metadata=project.hexStudio.sources[ID].hmaToml;
  const parsed=['Species','Moves','Forms'].map((name,i)=>fixedNumericHMATable({name,at:ADDRESS[i],format:["[id::]4","[move::]Species+2","[form::]Species-1"][i]},source.length,
   {anchors:[{name:'Species',at:ADDRESS[0],format:'[id::]4'},{name:'Moves',at:ADDRESS[1],format:'[move::]Species+2'},{name:'Forms',at:ADDRESS[2],format:'[form::]Species-1'}]}));
  parsed.forEach((table,i)=>{saveTableDefinition(project,ID,source,table);
@@ -106,4 +105,35 @@ test('original staged table edits cannot overwrite linked reviewed native count 
  const before=structuredClone(f.project);
  assert.throws(()=>queue(f),/staged binary edit/i);
  assert.deepEqual(f.project,before);
+});
+
+test('original HMA anchor cannot grow alone and grouped unqueue removes all dependent plans',()=>{
+ const f=fixture(),before=structuredClone(f.project);
+ assert.throws(()=>planSafeTableExpansion(f.project,ID,f.source,f.parsed[0],[POINTER[0]],{newCount:6,countSite:COUNT,countWidth:2}),/anchors linked HMA tables/i);
+ assert.deepEqual(f.project,before);
+ queue(f);
+ const result=discardTableRepoint(f.project,ID,f.source,f.parsed[1]);
+ assert.equal(result.removed,3);
+ assert.equal(f.project.hexStudio.sources[ID].repoints.length,0);
+ validateProject(f.project);
+});
+test('source table containing a reviewed pointer site is rejected, not copied with a stale reference',()=>{
+ const f=fixture();
+ // Repoint a native table internally: the source scanner now sees the
+ // dependent table's own pointer as an additional live use.
+ const inside=ADDRESS[0]+4;
+ view(f.source).setUint32(inside,BASE+ADDRESS[1],true);
+ const before=structuredClone(f.project);
+ assert.throws(()=>queue(f,{members:[f.members[0],{...f.members[1],sites:[POINTER[1],inside]},f.members[2]]}),/contains an original dependency write site|pointer/i);
+ assert.deepEqual(f.project,before);
+});
+test('Android linked table review UI exposes complete original pointer list and requires explicit confirmation',()=>{
+ const dialog=readFileSync(new URL('../dist/hma-linked-ui.js',import.meta.url),'utf8');
+ const work=readFileSync(new URL('../dist/hma-hex-ui.js',import.meta.url),'utf8');
+ assert.match(dialog,/id="hmaLinkedReviewed"/);
+ assert.match(dialog,/data-linked-pointer-sites/);
+ assert.match(dialog,/planLinkedTableExpansionGroup/);
+ assert.match(dialog,/api\.session\(\)\.id!==sourceId/);
+ assert.match(work,/id="hmaLinkedGrow"/);
+ assert.match(work,/openLinkedGroupReview\(api/);
 });
