@@ -165,7 +165,7 @@ test('original ROM story resolves only one reachable standard trainerbattle slot
  assert.equal(nativeStoryTrainerSlot(graph,root),null,'unsupported native battle type cannot be assumed safe');
  graph.edits.commands[a]={args:[1,24]};
  graph.nodes[b]={at:b,code:92,args:[{value:1},{value:25}],edges:[]};
- graph.nodes[a].edges=[{to:b,kind:'next'}];
+ graph.nodes[a].edges=[{to:b,kind:'next',field:a+0x1000}]; // Ordinary fallthrough is not an editable pointer argument.
  assert.equal(nativeStoryTrainerSlot(graph,root),null,'multiple distinct trainer teams are ambiguous');
  graph.edits.commands[b]={args:[1,24]};
  assert.equal(nativeStoryTrainerSlot(graph,root),24,'multiple references to one team are unambiguous');
