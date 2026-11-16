@@ -93,8 +93,8 @@ test('second linked table allocation failure cannot alter output, pointers, coun
  const f=fixture();queue(f);
  const out=new RomOutput(f.source);
  out.write(0x6000,Uint8Array.of(7,9,12));const old=out.bytes.slice(),writes=structuredClone(out.writes),allocs=structuredClone(out.allocations);
- const originalAllocate=out.allocate.bind(out);let attempt=0;
- out.allocate=function(...args){if(++attempt===2)throw Error('synthetic linked table allocation failed');return originalAllocate(...args);};
+ const originalAllocate=out.allocate;let attempt=0;
+ out.allocate=function(...args){if(++attempt===2)throw Error('synthetic linked table allocation failed');return originalAllocate.apply(this,args);};
  assert.throws(()=>installSafeTableRepoints(f.project,ID,f.source,out),/synthetic linked table allocation failed/);
  assert.deepEqual(out.bytes,old);assert.deepEqual(out.writes,writes);assert.deepEqual(out.allocations,allocs);
  assert.equal(view(out.bytes).getUint16(COUNT,true),4);
