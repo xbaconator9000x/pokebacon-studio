@@ -200,15 +200,20 @@ export function fixedNumericHMATable(anchor,sourceLength,{anchors=[]}={}){
  let count,linkedLength;
  if(/^[1-9]\d{0,3}$/.test(suffix))count=Number(suffix);
  else {
-  const link=suffix.match(/^([A-Za-z_][A-Za-z0-9_.-]*)([+-]\d{1,3})?$/);
-  if(!link||!Array.isArray(anchors))return null;
-  const candidates=anchors.filter(a=>a.name===link[1]);
-  if(candidates.length!==1||candidates[0]===anchor)return null;
-  const fixed=String(candidates[0].format||'').trim().match(/^\[[^\[\]\r\n]+\]([1-9]\d{0,3})$/);
+  if(!Array.isArray(anchors))return null;
+  // A hyphen is legal within an HMA anchor name; it also introduces a
+  // negative linked-length delta. Never greedily absorb 'Species-1' as an
+  // anchor if the intended source anchor is 'Species'. Ambiguity fails closed.
+  const exact=anchors.filter(a=>a.name===suffix),shift=suffix.match(/^([A-Za-z_][A-Za-z0-9_.-]*?)([+-]\d{1,3})$/);
+  const shifted=shift?anchors.filter(a=>a.name===shift[1]):[];
+  if(exact.length+shifted.length!==1)return null;
+  const chosen=exact.length?exact[0]:shifted[0],delta=exact.length?0:Number(shift[2]);
+  if(chosen===anchor)return null;
+  const fixed=String(chosen.format||'').trim().match(/^\[[^\[\]\r\n]+\]([1-9]\d{0,3})$/);
   if(!fixed)return null;
-  const baseCount=Number(fixed[1]),delta=Number(link[2]||0);
+  const baseCount=Number(fixed[1]);
   count=baseCount+delta;
-  linkedLength={anchor:link[1],delta,verifiedBaseCount:baseCount};
+  linkedLength={anchor:chosen.name,delta,verifiedBaseCount:baseCount};
  }
  if(!cells.length||cells.length>32||!Number.isInteger(count)||count<1||count>4096)return null;
  let stride=0;
