@@ -68,7 +68,7 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
   const line=lines[i],header=line.match(/^\s*\[\[([A-Za-z0-9_]+)\]\]\s*(?:#.*)?$/),single=line.match(/^\s*\[([A-Za-z0-9_]+)\]\s*(?:#.*)?$/);
   if(header||single){push();section=(header||single)[1];record={};last=i+1;multi=null;continue;}
   if(!section)continue;
-  if(multi){buffer+='\n'+line;if(/^\s*\]\s*(?:#.*)?$/.test(line)){record[multi]=buffer;multi=null;buffer='';}continue;}
+  if(multi){const cleaned=tomlValue(line);buffer+='\n'+cleaned;if(/^\s*\]\s*$/.test(cleaned)){record[multi]=buffer;multi=null;buffer='';}continue;}
   const assign=line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$/);
   if(!assign)continue;
   const key=assign[1],value=tomlValue(assign[2]);
@@ -131,6 +131,7 @@ export function hmaListLabels(project,sourceId,source,listName){
  if(!nameOk(listName))throw Error('Choose a named HMA list.');
  const found=hmaMetadata(project,sourceId,source).lists.filter(row=>row.name===listName);
  if(found.length!==1)throw Error('HMA named list is missing or ambiguous.');
+ if(found[0].values.__duplicate)throw Error('HMA list has duplicate TOML keys.');
  const labels=[],used=new Set();
  const add=(value,label)=>{
   if(!Number.isInteger(value)||value<0||value>65535||typeof label!=='string'||label.length<1||label.length>100||!(/^[\x20-\x7E]+$/.test(label))||used.has(value)||labels.length>=1024)
