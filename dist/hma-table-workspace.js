@@ -11,7 +11,17 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
   if(!section||!record)return;
   if(section==='NamedAnchors'){
    const at=number(record.Address);
-   if(nameOk(record.Name)&&Number.isInteger(at)&&at>=0&&at<romLength&&typeof record.Format==='string')anchors.push({name:record.Name,at,format:record.Format,line:last});
+   if(nameOk(record.Name)&&Number.isInteger(at)&&at>=0&&at<romLength&&typeof record.Format==='string'){
+    // Never silently select an ambiguous native table source. Keep the raw TOML
+    // for inspection, but exclude every conflicting definition from editing.
+    const name=record.Name.toLowerCase();
+    const conflicting=anchors.filter(row=>row.name.toLowerCase()===name||row.at===at);
+    if(conflicting.length){
+     for(const previous of conflicting)previous.conflicted=true;
+     warnings.push('Conflicting HMA NamedAnchors entry near line '+last);
+    }
+    anchors.push({name:record.Name,at,format:record.Format,line:last,conflicted:conflicting.length>0});
+   }
    else warnings.push('Unsupported or out-of-range NamedAnchors entry near line '+last);
   }else if(section==='OffsetPointer'){
    const at=number(record.Address),offset=number(record.Offset);
@@ -45,7 +55,7 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
  if(multi&&record){record[multi]=buffer;warnings.push('Unterminated HMA TOML array near line '+last);}
  push();
  if(anchors.length>MAX_ANCHORS)throw Error('This HMA metadata file contains too many named anchors.');
- return{anchors,lists,offsetPointers,groups,general,warnings,raw:text};
+ return{anchors:anchors.filter(row=>!row.conflicted).map(({conflicted,...row})=>row),lists,offsetPointers,groups,general,warnings,raw:text};
 }
 export function importHMAToml(project,sourceId,source,text){
  const metadata=parseHMAToml(text,{romLength:source.length});
