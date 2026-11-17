@@ -15,7 +15,7 @@ function tomlValue(line){
    if(c===quote){
     if(triple&&line.slice(i,i+3)===quote.repeat(3)){i+=2;quote='';triple=false;}
     else if(!triple){quote='';}
-   }else if(quote==='"'&&c==='\\\\'&&!triple)i++;
+   }else if(quote==='"'&&c==='\\'&&!triple)i++;
   }else if(c==='#')return line.slice(0,i).trimEnd();
   else if(c==='"'||c==="'"){
    quote=c;triple=line.slice(i,i+3)===c.repeat(3);
