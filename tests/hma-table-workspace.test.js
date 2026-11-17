@@ -5,7 +5,7 @@ import {newProject,validateProject} from '../dist/model.js';
 import {RomOutput} from '../dist/rom-writer.js';
 import {planSave,savedProjectKeys,assembleSavedProject} from '../dist/project-store.js';
 import {installROMHexEdits} from '../dist/native-hex-workspace.js';
-import {parseHMAToml,importHMAToml,hmaMetadata,validateTable,saveTableDefinition,tableDefinitions,tableRecord,editTableField} from '../dist/hma-table-workspace.js';
+import {parseHMAToml,importHMAToml,hmaMetadata,hmaListLabels,validateTable,saveTableDefinition,tableDefinitions,tableRecord,editTableField} from '../dist/hma-table-workspace.js';
 const sourceId='6'.repeat(64);
 test('HMA TOML extracts recognized anchors/offset pointers and retains every unsupported source directive losslessly',()=>{
  const raw=[
@@ -100,4 +100,19 @@ test('HMA duplicate native keys and coercible non-integer addresses fail closed'
  assert.equal(meta.offsetPointers.length,0);
  assert.match(meta.warnings.join(' '),/Duplicate HMA TOML key/);
  assert.equal(meta.raw,raw);
+});
+
+test('HMA numeric label lists decode standard TOML arrays without accepting malformed native labels',()=>{
+ const rom=syntheticROM(),p=newProject(),id='7'.repeat(64);
+ const set=entry=>importHMAToml(p,id,rom,['[[List]]',"Name = '''native.labels'''",'0 = '+entry].join('\\n'));
+ set('["Alpha", "Beta", "Gamma"]');
+ assert.deepEqual(hmaListLabels(p,id,rom,'native.labels').map(x=>x.label),['Alpha','Beta','Gamma']);
+ set("['Literal', 'Second']");
+ assert.deepEqual(hmaListLabels(p,id,rom,'native.labels').map(x=>x.label),['Literal','Second']);
+ set('["A\\\\tB", "C"]');
+ assert.throws(()=>hmaListLabels(p,id,rom,'native.labels'),/Invalid, overlapping/);
+ for(const malformed of ['["A" "B"]','["A", 7]','["A", "B" garbage]','["A", "unterminated]','["A\\\\q"]']){
+  set(malformed);
+  assert.throws(()=>hmaListLabels(p,id,rom,'native.labels'),/HMA|TOML|Incomplete/);
+ }
 });
