@@ -142,9 +142,39 @@ export function hmaListLabels(project,sourceId,source,listName){
   const start=Number(key),raw=String(value).trim();
   if(raw.startsWith('[')){
    if(!raw.endsWith(']'))throw Error('Incomplete HMA list array.');
-   const inner=raw.slice(1,-1),token=/'''([^'\r\n]{1,100})'''|"""([^"\r\n]{1,100})"""/g;
-   const words=[...inner.matchAll(token)].map(m=>m[1]??m[2]);
-   if(!words.length||inner.replace(token,'').replace(/[\s,]/g,'')!=='')throw Error('HMA arrays must contain quoted labels only.');
+   // Parse complete TOML string arrays, not partial regex matches. Standard
+   // single/double quotes and HMA triple-quoted labels are supported.
+   const inner=raw.slice(1,-1),words=[];
+   let pos=0;
+   const whitespace=()=>{while(pos<inner.length&&/\\s/.test(inner[pos]))pos++;};
+   whitespace();
+   while(pos<inner.length){
+    const quote=inner[pos];
+    if(quote!=='"'&&quote!=="'")throw Error('HMA arrays must contain quoted labels only.');
+    const triple=inner.slice(pos,pos+3)===quote.repeat(3);
+    pos+=triple?3:1;
+    let value='',closed=false;
+    while(pos<inner.length){
+     if(triple&&inner.slice(pos,pos+3)===quote.repeat(3)){pos+=3;closed=true;break;}
+     if(!triple&&inner[pos]===quote){pos++;closed=true;break;}
+     const ch=inner[pos++];
+     if(ch==='\\\\'&&quote==='"'&&!triple){
+      if(pos>=inner.length)break;
+      const escaped=inner[pos++];
+      const escapes={n:'\\n',r:'\\r',t:'\\t',b:'\\b',f:'\\f','"':'"','\\\\':'\\\\'};
+      if(!Object.hasOwn(escapes,escaped))throw Error('Unsupported HMA TOML string escape.');
+      value+=escapes[escaped];
+     }else value+=ch;
+    }
+    if(!closed||value.length<1||value.length>100)throw Error('Incomplete HMA list string.');
+    words.push(value);
+    whitespace();
+    if(pos>=inner.length)break;
+    if(inner[pos]!==',')throw Error('Missing HMA list separator.');
+    pos++;
+    whitespace();
+   }
+   if(!words.length)throw Error('HMA arrays must contain quoted labels only.');
    words.forEach((word,i)=>add(start+i,word));
   }else add(start,raw);
  }
