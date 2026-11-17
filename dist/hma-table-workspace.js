@@ -3,6 +3,27 @@ const types={u8:1,s8:1,u16:2,s16:2,u32:4,s32:4,ptr:4};
 const LIMIT=2*1024*1024,MAX_ANCHORS=10000;
 const nameOk=s=>typeof s==='string'&&s.length>=1&&s.length<=120&&/^[a-zA-Z0-9_ .:-]+$/.test(s);
 const number=n=>typeof n==='string'&&/^0x[0-9a-f]+$/i.test(n)?parseInt(n.slice(2),16):Number(n);
+// TOML numeric addresses are never coerced from blank strings, booleans or
+// exponent notation. Unknown syntax is preserved in the original document.
+const tomlInteger=n=>typeof n==='string'&&/^(?:0x[0-9a-fA-F]+|[+-]?(?:0|[1-9][0-9]*))$/.test(n.trim())?number(n.trim()):NaN;
+// Strip comments only outside TOML's single/double and triple-quoted strings.
+function tomlValue(line){
+ let quote='',triple=false;
+ for(let i=0;i<line.length;i++){
+  const c=line[i];
+  if(quote){
+   if(c===quote){
+    if(triple&&line.slice(i,i+3)===quote.repeat(3)){i+=2;quote='';triple=false;}
+    else if(!triple){quote='';}
+   }else if(quote==='"'&&c==='\\\\'&&!triple)i++;
+  }else if(c==='#')return line.slice(0,i).trimEnd();
+  else if(c==='"'||c==="'"){
+   quote=c;triple=line.slice(i,i+3)===c.repeat(3);
+   if(triple)i+=2;
+  }
+ }
+ return line.trimEnd();
+}
 export function parseHMAToml(text,{romLength=32*1024*1024}={}){
  if(typeof text!=='string'||text.length>LIMIT)throw Error('HMA metadata must be a UTF-8 TOML file under 2 MiB.');
  const anchors=[],lists=[],offsetPointers=[],general={},groups=[],warnings=[],lines=text.replace(/^\uFEFF/,'').split(/\r?\n/);
@@ -10,8 +31,8 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
  function push(){
   if(!section||!record)return;
   if(section==='NamedAnchors'){
-   const at=number(record.Address);
-   if(nameOk(record.Name)&&Number.isInteger(at)&&at>=0&&at<romLength&&typeof record.Format==='string'){
+   const at=tomlInteger(record.Address);
+   if(!record.__duplicate&&nameOk(record.Name)&&Number.isInteger(at)&&at>=0&&at<romLength&&typeof record.Format==='string'){
     // Never silently select an ambiguous native table source. Keep the raw TOML
     // for inspection, but exclude every conflicting definition from editing.
     const name=record.Name.toLowerCase();
@@ -24,8 +45,8 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
    }
    else warnings.push('Unsupported or out-of-range NamedAnchors entry near line '+last);
   }else if(section==='OffsetPointer'){
-   const at=number(record.Address),offset=number(record.Offset);
-   if(Number.isInteger(at)&&at>=0&&at+4<=romLength&&Number.isInteger(offset))offsetPointers.push({at,offset});
+   const at=tomlInteger(record.Address),offset=tomlInteger(record.Offset);
+   if(!record.__duplicate&&Number.isInteger(at)&&at>=0&&at+4<=romLength&&Number.isInteger(offset))offsetPointers.push({at,offset});
    else warnings.push('Unsupported OffsetPointer near line '+last);
   }else if(section==='List')lists.push({name:record.Name||'',values:record});
   else if(section==='TableGroup')groups.push({name:record.Name||'',values:record});
@@ -45,7 +66,8 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
   if(multi){buffer+='\n'+line;if(/^\s*\]\s*(?:#.*)?$/.test(line)){record[multi]=buffer;multi=null;buffer='';}continue;}
   const assign=line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$/);
   if(!assign)continue;
-  const key=assign[1],value=assign[2];
+  const key=assign[1],value=tomlValue(assign[2]);
+  if(Object.hasOwn(record,key)){record.__duplicate=true;warnings.push('Duplicate HMA TOML key '+key+' near line '+(i+1));continue;}
   // Multi-line arrays are left as raw metadata. Import must preserve the exact
   // complete TOML document, not pretend to interpret unknown HMA structures.
   if(value==='['||value.startsWith('[')&&!value.includes(']')){multi=key;buffer=value;continue;}
