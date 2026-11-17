@@ -146,7 +146,7 @@ export function hmaListLabels(project,sourceId,source,listName){
    // single/double quotes and HMA triple-quoted labels are supported.
    const inner=raw.slice(1,-1),words=[];
    let pos=0;
-   const whitespace=()=>{while(pos<inner.length&&/\\s/.test(inner[pos]))pos++;};
+   const whitespace=()=>{while(pos<inner.length&&/\s/.test(inner[pos]))pos++;};
    whitespace();
    while(pos<inner.length){
     const quote=inner[pos];
@@ -158,10 +158,10 @@ export function hmaListLabels(project,sourceId,source,listName){
      if(triple&&inner.slice(pos,pos+3)===quote.repeat(3)){pos+=3;closed=true;break;}
      if(!triple&&inner[pos]===quote){pos++;closed=true;break;}
      const ch=inner[pos++];
-     if(ch==='\\\\'&&quote==='"'&&!triple){
+     if(ch==='\\'&&quote==='"'&&!triple){
       if(pos>=inner.length)break;
       const escaped=inner[pos++];
-      const escapes={n:'\\n',r:'\\r',t:'\\t',b:'\\b',f:'\\f','"':'"','\\\\':'\\\\'};
+      const escapes={n:'\n',r:'\r',t:'\t',b:'\b',f:'\f','"':'"','\\':'\\'};
       if(!Object.hasOwn(escapes,escaped))throw Error('Unsupported HMA TOML string escape.');
       value+=escapes[escaped];
      }else value+=ch;
