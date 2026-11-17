@@ -46,8 +46,13 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
    else warnings.push('Unsupported or out-of-range NamedAnchors entry near line '+last);
   }else if(section==='OffsetPointer'){
    const at=tomlInteger(record.Address),offset=tomlInteger(record.Offset);
-   if(!record.__duplicate&&Number.isInteger(at)&&at>=0&&at+4<=romLength&&Number.isInteger(offset))offsetPointers.push({at,offset});
-   else warnings.push('Unsupported OffsetPointer near line '+last);
+   if(!record.__duplicate&&Number.isInteger(at)&&at>=0&&at+4<=romLength&&Number.isInteger(offset)&&Number.isSafeInteger(offset)){
+    // Multiple offset definitions for the same native word are ambiguous even
+    // when their deltas happen to agree. Exclude all of them from navigation.
+    const prior=offsetPointers.filter(row=>row.at===at);
+    if(prior.length){for(const row of prior)row.conflicted=true;warnings.push('Conflicting HMA OffsetPointer near line '+last);}
+    offsetPointers.push({at,offset,conflicted:prior.length>0});
+   }else warnings.push('Unsupported OffsetPointer near line '+last);
   }else if(section==='List')lists.push({name:record.Name||'',values:record});
   else if(section==='TableGroup')groups.push({name:record.Name||'',values:record});
  }
@@ -77,7 +82,7 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
  if(multi&&record){record[multi]=buffer;warnings.push('Unterminated HMA TOML array near line '+last);}
  push();
  if(anchors.length>MAX_ANCHORS)throw Error('This HMA metadata file contains too many named anchors.');
- return{anchors:anchors.filter(row=>!row.conflicted).map(({conflicted,...row})=>row),lists,offsetPointers,groups,general,warnings,raw:text};
+ return{anchors:anchors.filter(row=>!row.conflicted).map(({conflicted,...row})=>row),lists,offsetPointers:offsetPointers.filter(row=>!row.conflicted).map(({conflicted,...row})=>row),groups,general,warnings,raw:text};
 }
 export function importHMAToml(project,sourceId,source,text){
  const metadata=parseHMAToml(text,{romLength:source.length});
