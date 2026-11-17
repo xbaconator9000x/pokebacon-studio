@@ -32,3 +32,29 @@ test('HMA raw metadata persists across import and conflict review',()=>{
  assert.equal(hmaMetadata(project,'source',source).raw,raw);
  assert.deepEqual(hmaMetadata(project,'source',source).anchors.map(a=>a.name),['Moves']);
 });
+
+test('conflicting offset pointer owners are excluded while unrelated native offsets survive',()=>{
+ const raw=[
+  '[[OffsetPointer]]','Address = 0x4000','Offset = 4',
+  '[[OffsetPointer]]','Address = 0x4000','Offset = 8',
+  '[[OffsetPointer]]','Address = 0x5000','Offset = -12'
+ ].join('\n');
+ const metadata=parseHMAToml(raw,{romLength:0x10000});
+ assert.deepEqual(metadata.offsetPointers,[{at:0x5000,offset:-12}]);
+ assert.equal(metadata.warnings.length,1);
+ assert.equal(metadata.raw,raw);
+ const source=new Uint8Array(0x10000),project={};
+ assert.equal(importHMAToml(project,'source',source,raw).pointers,1);
+ assert.deepEqual(hmaMetadata(project,'source',source).offsetPointers,metadata.offsetPointers);
+});
+test('three-way duplicate offset owners never revive an earlier excluded pointer',()=>{
+ const raw=[
+  '[[OffsetPointer]]','Address = 0x4000','Offset = 4',
+  '[[OffsetPointer]]','Address = 0x4000','Offset = 8',
+  '[[OffsetPointer]]','Address = 0x4000','Offset = 12',
+  '[[OffsetPointer]]','Address = 0x5000','Offset = 16'
+ ].join('\n');
+ const metadata=parseHMAToml(raw,{romLength:0x10000});
+ assert.deepEqual(metadata.offsetPointers,[{at:0x5000,offset:16}]);
+ assert.equal(metadata.warnings.length,2);
+});
