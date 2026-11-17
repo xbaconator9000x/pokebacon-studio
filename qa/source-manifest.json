@@ -1895,7 +1895,7 @@
     "dist/quest-reference-index.js": "7f18ab4bbc8efeb4576d88cc011b23d4917dfdbb7ca9cf2018e9f837fdb17bab",
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
     "dist/native-hex-workspace.js": "710cd6d8eb735c9f995e5ef4d5377d69a98e22fec9652d14a8c623b22dd37849",
-    "dist/hma-table-workspace.js": "8f631e3af41351bf1c5ee1bce7c72df74de56e5a10838b68a2c3631ddea0e120",
+    "dist/hma-table-workspace.js": "985a38b89a05086aedd0f6d232562c2592cb614b57dffbef5511b86f519463cd",
     "dist/hma-hex-ui.js": "6337360c74d6ddb63861ece94a17674e75e35e4d6e33f9127f459c53afaf7934",
     "dist/hma-pointer-navigation.js": "9ab649fa52e076205a3c767b108bf89a3b3b7104ce8ab0440da4261f78fa32fa",
     "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f",
@@ -1912,7 +1912,8 @@
     "dist/native-trainer-party.js": "67072755f75d715052d9e795377307631f1aa2a9e2bc8d9cfc512f24a2936a6f",
     "dist/trainer-battle-link.js": "fb0fc38664956314f3667922d2b2f3b0dcd29d8397f565972871a2852923ec18",
     "dist/hma-linked-expansion.js": "1420bec196bc27ab0834da726fb913230534b2745a9b762362201d1fb30d9aec",
-    "dist/hma-linked-ui.js": "c531c867657331fb1ac3f041c2d507998f7b1f58580dee90a8e80f9fd3a040dc"
+    "dist/hma-linked-ui.js": "c531c867657331fb1ac3f041c2d507998f7b1f58580dee90a8e80f9fd3a040dc",
+    "tests/hma-transitive-lengths.test.js": "8036fb035353b7f4b6db2c4a06e920126e2b1341be6d16d694666c6518a70573"
   },
   "developmentBranch": "development/studio-upgrades",
   "releaseBaseAPK_SHA256": "2eec5f5a67603b1738932e57657d769cdc2d19d2f4f171dd6394adeea2e11381",
