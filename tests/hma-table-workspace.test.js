@@ -74,3 +74,29 @@ test('unknown format, overlapping columns, bad table stride/count and invalid fi
   assert.throws(()=>validateTable(row,source.length));
  assert.equal(JSON.stringify(p),before,'all invalid layouts leave project untouched');
 });
+
+test('HMA TOML inline comments preserve quoted hashes and recognize strict native addresses',()=>{
+ const raw=[
+  '[[NamedAnchors]]',"Name = '''# literal''' # comment",'Address = 0x000680 # native offset',"Format = '''[value::]2''' # comment",
+  '[[OffsetPointer]]','Address = 0x000304 # pointer site','Offset = -8 # delta'
+ ].join('\n');
+ const meta=parseHMAToml(raw,{romLength:0x1000});
+ assert.equal(meta.anchors.length,1);
+ assert.equal(meta.anchors[0].name,'# literal');
+ assert.equal(meta.anchors[0].at,0x680);
+ assert.equal(meta.offsetPointers.length,1);
+ assert.equal(meta.offsetPointers[0].offset,-8);
+ assert.equal(meta.raw,raw);
+});
+test('HMA duplicate native keys and coercible non-integer addresses fail closed',()=>{
+ for(const bad of ['','true','1e3','0xGG','0.5','0x100junk']){
+  const meta=parseHMAToml(['[[NamedAnchors]]',"Name = '''unsafe'''",'Address = '+bad,"Format = '''[value::]2'''"].join('\n'),{romLength:0x1000});
+  assert.equal(meta.anchors.length,0,bad);
+ }
+ const raw=['[[NamedAnchors]]',"Name = '''first'''","Name = '''second'''",'Address = 0x680',"Format = '''[value::]2'''",'[[OffsetPointer]]','Address = 0x300','Address = 0x304','Offset = 4'].join('\n');
+ const meta=parseHMAToml(raw,{romLength:0x1000});
+ assert.equal(meta.anchors.length,0);
+ assert.equal(meta.offsetPointers.length,0);
+ assert.match(meta.warnings.join(' '),/Duplicate HMA TOML key/);
+ assert.equal(meta.raw,raw);
+});
