@@ -245,12 +245,31 @@ export function fixedNumericHMATable(anchor,sourceLength,{anchors=[]}={}){
   const shifted=shift?anchors.filter(a=>a.name===shift[1]):[];
   if(exact.length+shifted.length!==1)return null;
   const chosen=exact.length?exact[0]:shifted[0],delta=exact.length?0:Number(shift[2]);
-  if(chosen===anchor)return null;
-  const fixed=String(chosen.format||'').trim().match(/^\[[^\[\]\r\n]+\]([1-9]\d{0,3})$/);
-  if(!fixed)return null;
-  const baseCount=Number(fixed[1]);
-  count=baseCount+delta;
+  // Resolve transitive fixed-count links only through unambiguous source
+  // anchors. Reject cycles, out-of-ROM intermediates and excessive chains.
+  const seen=new Set([anchor]),chain=[];
+  let current=chosen,baseCount=null,depth=0;
+  while(current&&depth++<16){
+   if(seen.has(current)||!Number.isInteger(current.at)||current.at<0||current.at>=sourceLength)return null;
+   seen.add(current);
+   const fmt=String(current.format||'').trim();
+   const m=fmt.match(/^\[[^\[\]\r\n]+\]([^\s\[\]\r\n]+)$/);
+   if(!m)return null;
+   const literal=m[1].match(/^[1-9]\d{0,3}$/);
+   if(literal){baseCount=Number(literal[0]);break;}
+   const suffix=m[1],exactMatches=anchors.filter(a=>a.name===suffix);
+   const shiftedMatch=suffix.match(/^([A-Za-z_][A-Za-z0-9_.-]*?)([+-]\d{1,3})$/);
+   const shiftedMatches=shiftedMatch?anchors.filter(a=>a.name===shiftedMatch[1]):[];
+   if(exactMatches.length+shiftedMatches.length!==1)return null;
+   const next=exactMatches[0]||shiftedMatches[0];
+   chain.push({anchor:current.name,delta:exactMatches.length?0:Number(shiftedMatch[2])});
+   current=next;
+  }
+  if(baseCount===null)return null;
+  count=baseCount+delta+chain.reduce((sum,item)=>sum+item.delta,0);
+  if(count<1||count>4096)return null;
   linkedLength={anchor:chosen.name,delta,verifiedBaseCount:baseCount};
+  if(chain.length)linkedLength.chain=chain;
  }
  if(!cells.length||cells.length>32||!Number.isInteger(count)||count<1||count>4096)return null;
  let stride=0;
