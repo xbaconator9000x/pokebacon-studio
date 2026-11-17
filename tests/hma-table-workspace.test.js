@@ -104,7 +104,7 @@ test('HMA duplicate native keys and coercible non-integer addresses fail closed'
 
 test('HMA numeric label lists decode standard TOML arrays without accepting malformed native labels',()=>{
  const rom=syntheticROM(),p=newProject(),id='7'.repeat(64);
- const set=entry=>importHMAToml(p,id,rom,['[[List]]',"Name = '''native.labels'''",'0 = '+entry].join('\\n'));
+ const set=entry=>importHMAToml(p,id,rom,['[[List]]',"Name = '''native.labels'''",'0 = '+entry].join('\n'));
  set('["Alpha", "Beta", "Gamma"]');
  assert.deepEqual(hmaListLabels(p,id,rom,'native.labels').map(x=>x.label),['Alpha','Beta','Gamma']);
  set("['Literal', 'Second']");
