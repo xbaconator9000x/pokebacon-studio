@@ -116,3 +116,17 @@ test('HMA numeric label lists decode standard TOML arrays without accepting malf
   assert.throws(()=>hmaListLabels(p,id,rom,'native.labels'),/HMA|TOML|Incomplete/);
  }
 });
+
+test('HMA multiline numeric labels retain quoted hashes and refuse duplicate native keys after save/reopen',()=>{
+ const rom=syntheticROM(),p=newProject(),id='8'.repeat(64);
+ const set=rows=>importHMAToml(p,id,rom,['[[List]]',"Name = '''native.multiline'''",...rows].join('\n'));
+ set(['0 = [',' "A#literal", # comment',' "B", # comment','] # comment']);
+ assert.deepEqual(hmaListLabels(p,id,rom,'native.multiline').map(x=>x.label),['A#literal','B']);
+ const plan=planSave(p),parts=new Map(plan.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const restored=assembleSavedProject(structuredClone(plan.header),savedProjectKeys(plan.header).map(k=>parts.get(k)));
+ assert.deepEqual(hmaListLabels(restored,id,rom,'native.multiline').map(x=>x.label),['A#literal','B']);
+ set(['0 = ["A"]','0 = ["B"]']);
+ assert.throws(()=>hmaListLabels(p,id,rom,'native.multiline'),/duplicate TOML keys/);
+ set(['0 = ["A"]','1 = ["B"]']);
+ assert.deepEqual(hmaListLabels(p,id,rom,'native.multiline').map(x=>x.label),['A','B']);
+});
