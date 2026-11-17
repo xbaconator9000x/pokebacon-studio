@@ -77,12 +77,13 @@ test('unknown format, overlapping columns, bad table stride/count and invalid fi
 
 test('HMA TOML inline comments preserve quoted hashes and recognize strict native addresses',()=>{
  const raw=[
-  '[[NamedAnchors]]',"Name = '''# literal''' # comment",'Address = 0x000680 # native offset',"Format = '''[value::]2''' # comment",
+  '[[NamedAnchors]]',"Name = '''literal''' # comment",'Address = 0x000680 # native offset',"Format = '''[value::]2 # inside''' # comment",
   '[[OffsetPointer]]','Address = 0x000304 # pointer site','Offset = -8 # delta'
  ].join('\n');
  const meta=parseHMAToml(raw,{romLength:0x1000});
  assert.equal(meta.anchors.length,1);
- assert.equal(meta.anchors[0].name,'# literal');
+ assert.equal(meta.anchors[0].name,'literal');
+ assert.equal(meta.anchors[0].format,'[value::]2 # inside');
  assert.equal(meta.anchors[0].at,0x680);
  assert.equal(meta.offsetPointers.length,1);
  assert.equal(meta.offsetPointers[0].offset,-8);
