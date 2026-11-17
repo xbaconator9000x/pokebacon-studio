@@ -111,7 +111,7 @@ test('HMA numeric label lists decode standard TOML arrays without accepting malf
  assert.deepEqual(hmaListLabels(p,id,rom,'native.labels').map(x=>x.label),['Literal','Second']);
  set('["A\\tB", "C"]');
  assert.throws(()=>hmaListLabels(p,id,rom,'native.labels'),/Invalid, overlapping/);
- for(const malformed of ['["A" "B"]','["A", 7]','["A", "B" garbage]','["A", "unterminated]','["A\\\\q"]']){
+ for(const malformed of ['["A" "B"]','["A", 7]','["A", "B" garbage]','["A", "unterminated]','["A\\q"]']){
   set(malformed);
   assert.throws(()=>hmaListLabels(p,id,rom,'native.labels'),/HMA|TOML|Incomplete/);
  }
