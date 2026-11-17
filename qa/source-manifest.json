@@ -1895,7 +1895,7 @@
     "dist/quest-reference-index.js": "7f18ab4bbc8efeb4576d88cc011b23d4917dfdbb7ca9cf2018e9f837fdb17bab",
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
     "dist/native-hex-workspace.js": "710cd6d8eb735c9f995e5ef4d5377d69a98e22fec9652d14a8c623b22dd37849",
-    "dist/hma-table-workspace.js": "ace291a19addfd2566de935e88dc871f9611ef9b866795862391ec2898375091",
+    "dist/hma-table-workspace.js": "d07627f709a62ef0bb39e8f723454291499ab14e1dffb6070d96c3a43a7cd53c",
     "dist/hma-hex-ui.js": "6337360c74d6ddb63861ece94a17674e75e35e4d6e33f9127f459c53afaf7934",
     "dist/hma-pointer-navigation.js": "9ab649fa52e076205a3c767b108bf89a3b3b7104ce8ab0440da4261f78fa32fa",
     "dist/ips.js": "98898a1f29fa23e144787693b226b6e501e8f1b1639abb9eb467e115671b1f7f",
