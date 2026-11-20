@@ -206,6 +206,44 @@ export function hmaListLabels(project,sourceId,source,listName){
  if(!labels.length)throw Error('No compatible numeric HMA labels found.');
  return labels.sort((a,b)=>a.value-b.value);
 }
+
+/** Lossless, source-bound writeback for standalone HMA numeric labels only. */
+export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,label){
+ if(!nameOk(listName)||!Number.isInteger(code)||code<0||code>65535||typeof label!=='string'||label.length<1||label.length>100||!/^[\x20-\x7e]+$/.test(label))throw Error('Invalid HMA numeric label.');
+ const state=hexState(project,sourceId),raw=state?.hmaToml;
+ if(!raw)throw Error('Import HMA metadata first.');
+ const before=hmaListLabels(project,sourceId,source,listName);
+ if(!before.some(x=>x.value===code))throw Error('Unknown HMA label code.');
+ const lines=raw.split(/(\r?\n)/),blocks=[];
+ for(let i=0;i<lines.length;i+=2){
+  if(!/^\s*\[\[List\]\]\s*$/.test(lines[i]))continue;
+  let end=lines.length;
+  for(let j=i+2;j<lines.length;j+=2)if(/^\s*\[\[?[A-Za-z0-9_]+\]\]?\s*$/.test(lines[j])){end=j;break;}
+  const names=[];
+  for(let j=i+2;j<end;j+=2){
+   const m=lines[j].match(/^\s*Name\s*=\s*(['"])(.*?)\1\s*$/);
+   if(m)names.push(m[2]);
+  }
+  if(names.length===1&&names[0]===listName)blocks.push([i,end]);
+ }
+ if(blocks.length!==1)throw Error('HMA list is missing or ambiguous.');
+ const [start,end]=blocks[0],matches=[];
+ for(let i=start+2;i<end;i+=2){
+  const m=lines[i].match(/^(\s*)(\d+)(\s*=\s*)(['"])([^'"]*)(\4)(\s*(?:#.*)?)$/);
+  if(m&&Number(m[2])===code)matches.push({i,m});
+ }
+ if(matches.length!==1)throw Error('Only unique standalone quoted HMA labels are writable.');
+ const {i,m}=matches[0];
+ if(label.includes(m[4]))throw Error('Label contains TOML quote delimiter.');
+ const copy=lines.slice();
+ copy[i]=m[1]+m[2]+m[3]+m[4]+label+m[4]+m[7];
+ const updated=copy.join(''),draft={hexStudio:{sources:{[sourceId]:{...state,hmaToml:updated}}}};
+ const after=hmaListLabels(draft,sourceId,source,listName);
+ if(after.length!==before.length||after.some((x,j)=>x.value!==before[j].value)||after.find(x=>x.value===code)?.label!==label)throw Error('HMA label writeback changed numeric identities.');
+ state.hmaToml=updated;
+ return {code,label};
+}
+
 export function bindTableEnumList(project,sourceId,source,table,fieldName,listName){
  validateTable(table,source.length);
  const field=table.fields.find(row=>row.name===fieldName);
