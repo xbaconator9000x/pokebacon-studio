@@ -131,6 +131,13 @@ try{
  await page.locator('[data-hex-tab="metadata"]').click();
  await page.locator('[data-hma-anchor]').first().click();
  assert.equal(await page.locator('#hmaEditAt').inputValue(),'0x680');
+ await page.locator('#hmaGo').click();
+ await page.locator('#hmaGoto').fill('0x550');
+ await page.locator('#hmaGo').click();
+ await page.locator('#hmaBack').click();
+ assert.equal(await page.locator('#hmaEditAt').inputValue(),'0x680');
+ await page.locator('#hmaForward').click();
+ assert.equal(await page.locator('#hmaEditAt').inputValue(),'0x550');
  await page.locator('[data-hex-tab="changes"]').click();
  assert.match(await page.locator('#hmaHexBody').innerText(),/staged bytes/);
  await page.screenshot({path:path.join(screens,'hma-hex-tables-412.png')});
