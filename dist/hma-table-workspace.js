@@ -237,7 +237,7 @@ export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,
  if(label.includes(m[4]))throw Error('Label contains TOML quote delimiter.');
  const copy=lines.slice();
  copy[i]=m[1]+m[2]+m[3]+m[4]+label+m[4]+m[7];
- const updated=copy.join(''),draft={hexStudio:{sources:{[sourceId]:{...state,hmaToml:updated}}}};
+ const updated=copy.join(''),draft={hexStudio:{version:1,sources:{[sourceId]:{...state,hmaToml:updated}}}};
  const after=hmaListLabels(draft,sourceId,source,listName);
  if(after.length!==before.length||after.some((x,j)=>x.value!==before[j].value)||after.find(x=>x.value===code)?.label!==label)throw Error('HMA label writeback changed numeric identities.');
  state.hmaToml=updated;
