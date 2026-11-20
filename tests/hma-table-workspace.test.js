@@ -5,7 +5,7 @@ import {newProject,validateProject} from '../dist/model.js';
 import {RomOutput} from '../dist/rom-writer.js';
 import {planSave,savedProjectKeys,assembleSavedProject} from '../dist/project-store.js';
 import {installROMHexEdits} from '../dist/native-hex-workspace.js';
-import {parseHMAToml,importHMAToml,hmaMetadata,hmaListLabels,validateTable,saveTableDefinition,tableDefinitions,tableRecord,editTableField} from '../dist/hma-table-workspace.js';
+import {parseHMAToml,importHMAToml,hmaMetadata,hmaListLabels,validateTable,saveTableDefinition,tableDefinitions,tableRecord,editTableField,renameHMATomlNumericLabel} from '../dist/hma-table-workspace.js';
 const sourceId='6'.repeat(64);
 test('HMA TOML extracts recognized anchors/offset pointers and retains every unsupported source directive losslessly',()=>{
  const raw=[
