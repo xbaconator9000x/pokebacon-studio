@@ -158,4 +158,8 @@ test('HMA standalone numeric label writeback survives split save and preserves s
  assert.deepEqual(source,original);
  assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',8,'Invalid'));
  assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,"O'Reilly"));
+ const unchanged=hmaMetadata(restored,sourceId,source).raw;
+ assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,'Bad\\nlabel'),/Invalid HMA numeric label/);
+ assert.equal(hmaMetadata(restored,sourceId,source).raw,unchanged,'rejected edits must not mutate saved metadata');
+ assert.deepEqual(hmaListLabels(restored,sourceId,source,'weather').map(x=>x.label),['Clear','Snow']);
 });
