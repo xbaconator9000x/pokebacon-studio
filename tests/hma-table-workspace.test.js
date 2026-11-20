@@ -130,3 +130,18 @@ test('HMA multiline numeric labels retain quoted hashes and refuse duplicate nat
  set(['0 = ["A"]','1 = ["B"]']);
  assert.deepEqual(hmaListLabels(p,id,rom,'native.multiline').map(x=>x.label),['A','B']);
 });
+
+test('multiline HMA arrays respect quoted brackets, comments and inline closing brackets across save/reopen',()=>{
+ const source=syntheticROM(),p=newProject();
+ const raw= ['[[List]]', "Name = 'brackets'", '0 = ["A]#", # outside', ' "B", "C["] # end', '[[NamedAnchors]]', "Name = 'following'", 'Address = 0x680', "Format = '[value.]3'"].join('\n');
+ importHMAToml(p,sourceId,source,raw);
+ const plan=planSave(p),parts=new Map(plan.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const restored=assembleSavedProject(structuredClone(plan.header),savedProjectKeys(plan.header).map(k=>parts.get(k)));
+ assert.deepEqual(hmaListLabels(restored,sourceId,source,'brackets'),[{value:0,label:'A]#'},{value:1,label:'B'},{value:2,label:'C['}]);
+ assert.equal(hmaMetadata(restored,sourceId,source).anchors[0].name,'following');
+ assert.equal(hmaMetadata(restored,sourceId,source).raw,raw);
+ const broken="[[List]]\nName = 'broken'\n0 = ['A'\n[[NamedAnchors]]\nName = 'fake'\nAddress = 0x680\nFormat = '[value.]3'";
+ importHMAToml(p,sourceId,source,broken);
+ assert.equal(hmaMetadata(p,sourceId,source).anchors.length,0);
+ assert.throws(()=>hmaListLabels(p,sourceId,source,'broken'));
+});

@@ -63,23 +63,47 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
   if(trimmed.startsWith('"')&&trimmed.endsWith('"')&&trimmed.length>=2)return trimmed.slice(1,-1);
   return trimmed;
  };
- let multi=null,buffer='';
+ // Track structural array brackets independently of quoted label contents.
+ let multi=null,buffer='',depth=0,arrayQuote='',arrayTriple=false;
+ function arrayLine(input){
+  let end=input.length;
+  for(let j=0;j<input.length;j++){
+   const c=input[j];
+   if(arrayQuote){
+    if(arrayQuote==='"'&&c==='\\'){j++;continue;}
+    if(c===arrayQuote&&(!arrayTriple||input.slice(j,j+3)===c.repeat(3))){
+     if(arrayTriple)j+=2;
+     arrayQuote='';arrayTriple=false;
+    }
+   }else if(c==='#'){end=j;break;}
+   else if(c==='"'||c==="'"){arrayQuote=c;arrayTriple=input.slice(j,j+3)===c.repeat(3);if(arrayTriple)j+=2;}
+   else if(c==='[')depth++;
+   else if(c===']')depth--;
+  }
+  return input.slice(0,end).trimEnd();
+ }
+ function finishArray(){
+  record[multi]=buffer;
+  if(section==='General')general[multi]=buffer;
+  multi=null;buffer='';
+ }
+
  for(let i=0;i<lines.length;i++){
   const line=lines[i],header=line.match(/^\s*\[\[([A-Za-z0-9_]+)\]\]\s*(?:#.*)?$/),single=line.match(/^\s*\[([A-Za-z0-9_]+)\]\s*(?:#.*)?$/);
+  if(multi){buffer+='\n'+arrayLine(line);if(depth===0&&!arrayQuote)finishArray();continue;}
   if(header||single){push();section=(header||single)[1];record={};last=i+1;multi=null;continue;}
   if(!section)continue;
-  if(multi){const cleaned=tomlValue(line);buffer+='\n'+cleaned;if(/^\s*\]\s*$/.test(cleaned)){record[multi]=buffer;multi=null;buffer='';}continue;}
   const assign=line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$/);
   if(!assign)continue;
   const key=assign[1],value=tomlValue(assign[2]);
   if(Object.hasOwn(record,key)){record.__duplicate=true;warnings.push('Duplicate HMA TOML key '+key+' near line '+(i+1));continue;}
   // Multi-line arrays are left as raw metadata. Import must preserve the exact
   // complete TOML document, not pretend to interpret unknown HMA structures.
-  if(value==='['||value.startsWith('[')&&!value.includes(']')){multi=key;buffer=value;continue;}
+  if(value.startsWith('[')){depth=0;arrayQuote='';arrayTriple=false;multi=key;buffer=arrayLine(assign[2]);if(depth===0&&!arrayQuote)finishArray();continue;}
   record[key]=quoted(value);
   if(section==='General')general[key]=record[key];
  }
- if(multi&&record){record[multi]=buffer;warnings.push('Unterminated HMA TOML array near line '+last);}
+ if(multi&&record){record[multi]=buffer;record.__duplicate=true;warnings.push('Unterminated HMA TOML array near line '+last);}
  push();
  if(anchors.length>MAX_ANCHORS)throw Error('This HMA metadata file contains too many named anchors.');
  return{anchors:anchors.filter(row=>!row.conflicted).map(({conflicted,...row})=>row),lists,offsetPointers:offsetPointers.filter(row=>!row.conflicted).map(({conflicted,...row})=>row),groups,general,warnings,raw:text};
