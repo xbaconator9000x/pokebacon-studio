@@ -145,3 +145,17 @@ test('multiline HMA arrays respect quoted brackets, comments and inline closing 
  assert.equal(hmaMetadata(p,sourceId,source).anchors.length,0);
  assert.throws(()=>hmaListLabels(p,sourceId,source,'broken'));
 });
+
+test('HMA standalone numeric label writeback survives split save and preserves source and TOML',()=>{
+ const source=syntheticROM(),project=newProject(),original=source.slice();
+ const raw="[[List]]\r\nName = 'weather'\r\n0 = 'Clear' # keep\r\n7 = 'Rain'\r\n[[NamedAnchors]]\r\nName = 'native'\r\nAddress = 0x680\r\nFormat = '[value.]3'";
+ importHMAToml(project,sourceId,source,raw);
+ assert.deepEqual(renameHMATomlNumericLabel(project,sourceId,source,'weather',7,'Snow'),{code:7,label:'Snow'});
+ assert.equal(hmaMetadata(project,sourceId,source).raw,raw.replace("7 = 'Rain'","7 = 'Snow'"));
+ const saved=planSave(project),parts=new Map(saved.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const restored=assembleSavedProject(structuredClone(saved.header),savedProjectKeys(saved.header).map(k=>parts.get(k)));
+ assert.deepEqual(hmaListLabels(restored,sourceId,source,'weather'),[{value:0,label:'Clear'},{value:7,label:'Snow'}]);
+ assert.deepEqual(source,original);
+ assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',8,'Invalid'));
+ assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,"O'Reilly"));
+});
