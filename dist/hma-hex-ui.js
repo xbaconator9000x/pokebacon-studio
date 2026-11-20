@@ -19,7 +19,7 @@ export function hmaHexWorkshop(api){
   if(!session()){api.modal('ROM hex & tables','<p>Open the original GBA ROM to inspect real bytes and create reversible native edits. Projects cannot use arbitrary byte addresses without a matching source.</p><button id="hmaHexChoose" type="button" class="primary">Open GBA ROM</button>');$('#hmaHexChoose').onclick=()=>api.pickROM('hex');return;}
   render();
  }
- function jump(offset){state.navigation=visitHexLocation(state.navigation,offset);state.offset=currentHexLocation(state.navigation);render();}
+ function jump(offset){state.tab='hex';state.navigation=visitHexLocation(state.navigation,offset);state.offset=currentHexLocation(state.navigation);render();}
  function traverse(direction){state.navigation=moveHexHistory(state.navigation,direction);state.offset=currentHexLocation(state.navigation);render();}
  function shell(content){
   const bytes=data();
@@ -303,7 +303,7 @@ export function hmaHexWorkshop(api){
   $('#hmaAnchorQuery').onchange=()=>{state.anchorQuery=$('#hmaAnchorQuery').value;state.anchorPage=0;render();};
   $('#hmaAnchorPrev').onclick=()=>{state.anchorPage=Math.max(0,state.anchorPage-1);render();};
   $('#hmaAnchorNext').onclick=()=>{state.anchorPage=Math.min(Math.max(0,Math.ceil(anchors.length/40)-1),state.anchorPage+1);render();};
-  document.querySelectorAll('[data-hma-anchor]').forEach(b=>b.onclick=()=>{state.offset=shown[+b.dataset.hmaAnchor].at;open('hex');});
+  document.querySelectorAll('[data-hma-anchor]').forEach(b=>b.onclick=()=>{jump(shown[+b.dataset.hmaAnchor].at);});
   document.querySelectorAll('[data-hma-make]').forEach(b=>b.onclick=()=>tableEditor(null,{anchor:shown[+b.dataset.hmaMake]}));
   document.querySelectorAll('[data-hma-auto]').forEach(b=>b.onclick=()=>safe(()=>{const table=fixedNumericHMATable(shown[+b.dataset.hmaAuto],data().length,{anchors:meta.anchors});if(!table)throw Error('This HMA format cannot safely become a fixed-width typed table.');api.change(()=>saveTableDefinition(source(),id(),data(),table));state.tableId=table.id;state.row=0;open('tables');}));
   document.querySelectorAll('[data-hma-refs]').forEach(b=>b.onclick=()=>{state.pointerTarget=shown[+b.dataset.hmaRefs].at;open('pointers');});
@@ -315,7 +315,7 @@ export function hmaHexWorkshop(api){
   $('#hmaExportAll').onclick=()=>api.exportROM();
   $('#hmaCreateIPS').onclick=()=>safe(async()=>{const current=session(),out=new RomOutput(data());const result=installROMHexEdits(source(),id(),data(),out);const repointed=installSafeTableRepoints(source(),id(),data(),out);if(!result.bytes&&!repointed.length)throw Error('No source hex edits or repoints to include.');const patch=createIPS(data(),out.bytes);if(session()!==current)throw Error('The attached ROM changed.');await api.save(new Blob([patch.bytes],{type:'application/octet-stream'}),current.reader.filename.replace(/\.gba$/i,'')+'_hex.ips');api.toast('IPS round-trip verified against the current source.');});
   $('#hmaClearChanges').onclick=()=>safe(()=>{if(!nbytes())return;api.modal('Clear staged hex/table writes','<p>Remove all staged raw-byte edits for this ROM? Your project-owned table layouts and original HMA metadata will remain.</p>',()=>{api.change(()=>{source().hexStudio.sources[id()].patches=[];});open('changes');return false;},'Clear edits');});
-  document.querySelectorAll('[data-hma-diff]').forEach(b=>b.onclick=()=>{state.offset=+b.dataset.hmaDiff;open('hex');});
+  document.querySelectorAll('[data-hma-diff]').forEach(b=>b.onclick=()=>{jump(+b.dataset.hmaDiff);});
   document.querySelectorAll('[data-hma-revert]').forEach(button=>button.onclick=()=>{
    const at=Number(button.dataset.hmaRevert),span=diff.spans.find(row=>row.at===at);
    if(!span||span.before.length>4096)throw Error('Choose a displayed range no longer than 4,096 bytes.');
