@@ -61,6 +61,17 @@
       "priority": "P0",
       "parityStatus": "not_verified",
       "acceptance": "Jump by offset or name and retain navigation history",
+      "implementationEvidence": {
+        "status": "partial_source_verified",
+        "source": [
+          "dist/hma-hex-navigation.js",
+          "dist/hma-hex-ui.js"
+        ],
+        "tests": [
+          "tests/hma-hex-navigation.test.js"
+        ],
+        "limitations": "History is intentionally in-memory for the active opened ROM workspace; navigation never implies native game execution."
+      },
       "upstream": [
         "https://github.com/haven1433/HexManiacAdvance/blob/master/README.md",
         "https://github.com/haven1433/HexManiacAdvance/wiki/Understanding-the-User-Interface"

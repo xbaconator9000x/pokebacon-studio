@@ -6,10 +6,11 @@ import {openLinkedGroupReview} from './hma-linked-ui.js';
 import {pointerAt,findROMReferences,planSafeTableRepoint,planSafeTableExpansion,expandedTablePlan,expandedTableRecord,editExpandedTableField,discardTableRepoint,installSafeTableRepoints} from './hma-pointer-navigation.js';
 import {createIPS} from './ips.js';
 import {RomOutput} from './rom-writer.js';
+import {createHexNavigation,currentHexLocation,visitHexLocation,moveHexHistory,canMoveHexHistory,findHexAnchor} from './hma-hex-navigation.js';
 const TYPES=['u8','s8','u16','s16','u32','s32','ptr','ascii'];
 export function hmaHexWorkshop(api){
  const $=s=>document.querySelector(s),esc=api.esc;
- const state={tab:'hex',offset:0,query:'',tableId:'',row:0,anchorQuery:'',anchorPage:0,tableSearchField:'',tableSearchValue:'',editing:null,maskQuery:'',maskResume:null,maskHits:[],pointerSite:0x200,pointerTarget:0x200};
+ const state={tab:'hex',offset:0,navigation:createHexNavigation(0),query:'',tableId:'',row:0,anchorQuery:'',anchorPage:0,tableSearchField:'',tableSearchValue:'',editing:null,maskQuery:'',maskResume:null,maskHits:[],pointerSite:0x200,pointerTarget:0x200};
  const session=()=>api.session(),data=()=>session().reader.bytes,id=()=>session().id,source=()=>api.project();
  const safe=f=>{try{const result=f();if(result&&typeof result.then==='function')result.catch(api.error);return result;}catch(error){api.error(error);return null;}};
  const nbytes=()=>hexState(source(),id())?.patches?.length||0;
@@ -18,6 +19,8 @@ export function hmaHexWorkshop(api){
   if(!session()){api.modal('ROM hex & tables','<p>Open the original GBA ROM to inspect real bytes and create reversible native edits. Projects cannot use arbitrary byte addresses without a matching source.</p><button id="hmaHexChoose" type="button" class="primary">Open GBA ROM</button>');$('#hmaHexChoose').onclick=()=>api.pickROM('hex');return;}
   render();
  }
+ function jump(offset){state.navigation=visitHexLocation(state.navigation,offset);state.offset=currentHexLocation(state.navigation);render();}
+ function traverse(direction){state.navigation=moveHexHistory(state.navigation,direction);state.offset=currentHexLocation(state.navigation);render();}
  function shell(content){
   const bytes=data();
   api.modal('ROM hex & typed tables','<p class="hint-line">'+esc(session().reader.filename)+' · '+bytes.length.toLocaleString()+' bytes · '+nbytes()+' staged byte changes. Source ROM stays untouched.</p><div class="studio-tabs">'+[['hex','Hex'],['pointers','Pointers'],['tables','Typed tables'],['metadata','HMA metadata'],['changes','Review changes']].map(([tab,name])=>'<button type="button" data-hex-tab="'+tab+'" '+(state.tab===tab?'class="active"':'')+'>'+name+'</button>').join('')+'</div><div id="hmaHexBody">'+content+'</div>',null,'Done');
@@ -34,21 +37,25 @@ export function hmaHexWorkshop(api){
   const bytes=data(),pos=Math.max(0,Math.min(bytes.length-1,state.offset));
   const rows=hexRows(source(),id(),bytes,pos,{rows:16}),current=hexState(source(),id());
   const block=rows.map(row=>'<div class="hma-hex-line"><span>0x'+row.address.toString(16).toUpperCase().padStart(6,'0')+'</span><div style="display:grid;grid-template-columns:repeat(16,minmax(23px,1fr));gap:1px;min-width:380px">'+row.columns.map(cell=>'<button type="button" class="hma-hex-byte" data-hex-at="'+cell.at+'" title="Original '+cell.original.toString(16).padStart(2,'0')+'" style="padding:3px 0;font:12px monospace;min-width:0;'+(cell.edited?'font-weight:700;text-decoration:underline':'')+'">'+cell.byte.toString(16).toUpperCase().padStart(2,'0')+'</button>').join('')+'</div><code>'+esc(row.columns.map(c=>c.ascii).join(''))+'</code></div>').join('');
-  shell('<p class="hint-line">Address is a decimal or 0x-prefixed hexadecimal source offset. Tap a byte to fill the editor. All changes are staged in project history until export.</p><div class="studio-actions"><label>Go to address<input id="hmaGoto" inputmode="text" value="0x'+pos.toString(16).toUpperCase()+'"></label><button id="hmaGo" type="button">Go</button><button id="hmaPrev" type="button">◀ Previous</button><button id="hmaNext" type="button">Next ▶</button></div><div style="overflow:auto;max-width:100%;font:12px monospace">'+block+'</div><div class="studio-actions"><label>Edit at offset<input id="hmaEditAt" value="0x'+pos.toString(16).toUpperCase()+'"></label><label>Hex bytes (max 4096)<textarea id="hmaEditHex" rows="2" placeholder="00 FF 7A"></textarea></label><button id="hmaStage" type="button" class="primary">Stage byte edit</button></div><div class="studio-actions"><label>Search bytes<input id="hmaSearch" placeholder="12 AB FF"></label><button id="hmaFind" type="button">Find next</button><button id="hmaFollow" type="button">Follow pointer</button><button id="hmaUses" type="button">Find pointer uses</button></div><div class="studio-actions hma-mask-search"><label>Hex pattern (wildcards: ??, A?, ?F)<input id="hmaMaskQuery" inputmode="text" placeholder="08 ?? 3? FF" value="'+esc(state.maskQuery)+'"></label><button id="hmaMaskFind" type="button">Search next 256 KiB</button><button id="hmaMaskNext" type="button" '+(state.maskResume===null?'disabled':'')+'>Continue search</button></div>'+(state.maskHits.length?'<div class="hma-mask-hits" aria-label="Found masked byte patterns">'+state.maskHits.map(at=>'<button type="button" data-hma-mask-hit="'+at+'">0x'+at.toString(16).toUpperCase()+'</button>').join('')+'</div>':'')+'<p class="hint-line">This search reads your staged byte edits, scans at most 256 KiB at a time and never alters project data. Tap a result to jump to its source offset.</p><p class="hint-line">Raw edits to code, pointers, header data, and shared resources are high risk. Other PokéBacon editor writes take precedence: conflicting regions abort ROM export instead of silently overwriting them.</p>');
-  $('#hmaGo').onclick=()=>safe(()=>{state.offset=parseROMOffset($('#hmaGoto').value,bytes.length);render();});
-  $('#hmaPrev').onclick=()=>{state.offset=Math.max(0,(pos&~255)-256);render();};
-  $('#hmaNext').onclick=()=>{state.offset=Math.min(bytes.length-1,(pos&~255)+256);render();};
+  const anchors=hmaMetadata(source(),id(),bytes).anchors;
+  shell('<p class="hint-line">Address is a decimal or 0x-prefixed hexadecimal source offset. Tap a byte to fill the editor. All changes are staged in project history until export.</p><div class="studio-actions"><label>Go to address<input id="hmaGoto" inputmode="text" value="0x'+pos.toString(16).toUpperCase()+'"></label><button id="hmaGo" type="button">Go</button><button id="hmaBack" type="button" '+(!canMoveHexHistory(state.navigation,-1)?'disabled':'')+'>◀ Back</button><button id="hmaForward" type="button" '+(!canMoveHexHistory(state.navigation,1)?'disabled':'')+'>Forward ▶</button><button id="hmaPrev" type="button">◀ Previous</button><button id="hmaNext" type="button">Next ▶</button></div><div class="studio-actions"><label>Go to HMA anchor<input id="hmaAnchorGoto" list="hmaAnchorNames" placeholder="Named anchor"></label><datalist id="hmaAnchorNames">'+anchors.map(anchor=>'<option value="'+esc(anchor.name)+'">0x'+anchor.at.toString(16).toUpperCase()+'</option>').join('')+'</datalist><button id="hmaAnchorGo" type="button" '+(!anchors.length?'disabled':'')+'>Go to anchor</button></div><div style="overflow:auto;max-width:100%;font:12px monospace">'+block+'</div><div class="studio-actions"><label>Edit at offset<input id="hmaEditAt" value="0x'+pos.toString(16).toUpperCase()+'"></label><label>Hex bytes (max 4096)<textarea id="hmaEditHex" rows="2" placeholder="00 FF 7A"></textarea></label><button id="hmaStage" type="button" class="primary">Stage byte edit</button></div><div class="studio-actions"><label>Search bytes<input id="hmaSearch" placeholder="12 AB FF"></label><button id="hmaFind" type="button">Find next</button><button id="hmaFollow" type="button">Follow pointer</button><button id="hmaUses" type="button">Find pointer uses</button></div><div class="studio-actions hma-mask-search"><label>Hex pattern (wildcards: ??, A?, ?F)<input id="hmaMaskQuery" inputmode="text" placeholder="08 ?? 3? FF" value="'+esc(state.maskQuery)+'"></label><button id="hmaMaskFind" type="button">Search next 256 KiB</button><button id="hmaMaskNext" type="button" '+(state.maskResume===null?'disabled':'')+'>Continue search</button></div>'+(state.maskHits.length?'<div class="hma-mask-hits" aria-label="Found masked byte patterns">'+state.maskHits.map(at=>'<button type="button" data-hma-mask-hit="'+at+'">0x'+at.toString(16).toUpperCase()+'</button>').join('')+'</div>':'')+'<p class="hint-line">This search reads your staged byte edits, scans at most 256 KiB at a time and never alters project data. Tap a result to jump to its source offset.</p><p class="hint-line">Raw edits to code, pointers, header data, and shared resources are high risk. Other PokéBacon editor writes take precedence: conflicting regions abort ROM export instead of silently overwriting them.</p>');
+  $('#hmaGo').onclick=()=>safe(()=>jump(parseROMOffset($('#hmaGoto').value,bytes.length)));
+  $('#hmaBack').onclick=()=>traverse(-1);
+  $('#hmaForward').onclick=()=>traverse(1);
+  $('#hmaAnchorGo').onclick=()=>safe(()=>{const anchor=findHexAnchor(anchors,$('#hmaAnchorGoto').value);jump(anchor.at);api.toast('Opened '+anchor.name+' at 0x'+anchor.at.toString(16).toUpperCase());});
+  $('#hmaPrev').onclick=()=>jump(Math.max(0,(pos&~255)-256));
+  $('#hmaNext').onclick=()=>jump(Math.min(bytes.length-1,(pos&~255)+256));
   document.querySelectorAll('[data-hex-at]').forEach(b=>b.onclick=()=>{const at=+b.dataset.hexAt;$('#hmaEditAt').value='0x'+at.toString(16).toUpperCase();$('#hmaEditHex').value=b.textContent;});
   $('#hmaStage').onclick=()=>safe(()=>{
    const at=parseROMOffset($('#hmaEditAt').value,bytes.length),payload=hexInput($('#hmaEditHex').value);
-   api.change(()=>stageROMHex(source(),id(),bytes,at,payload));state.offset=at;render();api.toast('Staged '+payload.length+' byte(s). Undo is available.');
+   api.change(()=>stageROMHex(source(),id(),bytes,at,payload));jump(at);api.toast('Staged '+payload.length+' byte(s). Undo is available.');
   });
-  $('#hmaFollow').onclick=()=>safe(()=>{state.pointerSite=parseROMOffset($('#hmaEditAt').value,bytes.length);const p=pointerAt(source(),id(),bytes,state.pointerSite);if(!p.valid)throw Error('This location is not an in-ROM pointer.');state.offset=p.at;open('hex');api.toast('Followed '+p.kind+' pointer to 0x'+p.at.toString(16).toUpperCase());});
+  $('#hmaFollow').onclick=()=>safe(()=>{state.pointerSite=parseROMOffset($('#hmaEditAt').value,bytes.length);const p=pointerAt(source(),id(),bytes,state.pointerSite);if(!p.valid)throw Error('This location is not an in-ROM pointer.');jump(p.at);api.toast('Followed '+p.kind+' pointer to 0x'+p.at.toString(16).toUpperCase());});
   $('#hmaUses').onclick=()=>{state.pointerTarget=pos;open('pointers');};
   $('#hmaFind').onclick=()=>safe(()=>{
    const hits=findROMHex(source(),id(),bytes,hexInput($('#hmaSearch').value),{from:Math.min(bytes.length-1,pos+1),limit:1});
    if(!hits.length){api.toast('No later match in ROM.');return;}
-   state.offset=hits[0];render();api.toast('Found at 0x'+state.offset.toString(16).toUpperCase());
+   jump(hits[0]);api.toast('Found at 0x'+state.offset.toString(16).toUpperCase());
   });
   $('#hmaMaskQuery').oninput=()=>{state.maskResume=null;state.maskHits=[];$('#hmaMaskNext').disabled=true;};
   const searchMasked=(resume=false)=>safe(()=>{
@@ -56,13 +63,13 @@ export function hmaHexWorkshop(api){
    if(resume&&start===null)throw Error('No further matching byte ranges. Start a new search.');
    const report=findMaskedROMHex(source(),id(),bytes,pattern,{from:start,limit:16,maxScan:262144});
    state.maskQuery=query;state.maskHits=report.hits;state.maskResume=report.nextFrom;
-   if(report.hits.length)state.offset=report.hits[0];
+   if(report.hits.length)state.navigation=visitHexLocation(state.navigation,report.hits[0]),state.offset=currentHexLocation(state.navigation);
    render();
    api.toast(report.hits.length?'Found '+report.hits.length+' matching address(es).':'No matches in this 256 KiB chunk.'+(report.nextFrom!==null?' Continue searching.':' End of ROM.'));
   });
   $('#hmaMaskFind').onclick=()=>searchMasked(false);
   $('#hmaMaskNext').onclick=()=>searchMasked(true);
-  document.querySelectorAll('[data-hma-mask-hit]').forEach(b=>b.onclick=()=>{state.offset=+b.dataset.hmaMaskHit;render();});
+  document.querySelectorAll('[data-hma-mask-hit]').forEach(b=>b.onclick=()=>jump(+b.dataset.hmaMaskHit));
  }
  function pointersScreen(){
   const bytes=data(),format=n=>'0x'+Number(n).toString(16).toUpperCase();
@@ -74,9 +81,9 @@ export function hmaHexWorkshop(api){
   shell('<p>Native 0x08/0x09 32-bit references, including packed/unaligned values, are <b>candidates</b>, not proven ownership. HMA OffsetPointer entries are recognized for inspection but will never be silently rewritten.</p><div class="studio-actions"><label>Pointer source offset<input id="hmaPointerSite" value="'+format(state.pointerSite)+'"></label><button id="hmaInspectPtr" type="button">Inspect</button><label>Target offset<input id="hmaPointerTarget" value="'+format(state.pointerTarget)+'"></label><button id="hmaSearchRefs" type="button">Find uses</button></div><div id="hmaPointerReport">'+(error?'<p class="needs-attention">'+esc(error)+'</p>':'<p>Source '+format(inspected.site)+' → '+(inspected.valid?format(inspected.at):'not a valid ROM pointer')+' · '+esc(inspected.kind)+'</p><button id="hmaJumpPtr" type="button" '+(!inspected.valid?'disabled':'')+'>Follow pointer</button><p>'+refs.length+' references displayed for '+format(state.pointerTarget)+' (at most 64; more may exist). The byte scan includes unaligned direct pointer patterns.</p><div style="max-height:42vh;overflow:auto">'+refs.map(r=>'<div class="field-row"><small>'+format(r.at)+' · '+esc(r.kind)+(r.owner?.name?' · '+esc(r.owner.name):'')+'</small><button type="button" data-hma-ptrsite="'+r.at+'">Inspect</button><button type="button" data-hma-gotosite="'+r.at+'">Hex</button></div>').join('')+'</div>')+'</div>');
   $('#hmaInspectPtr').onclick=()=>safe(()=>{state.pointerSite=parseROMOffset($('#hmaPointerSite').value,bytes.length);const pointer=pointerAt(source(),id(),bytes,state.pointerSite);if(pointer.valid)state.pointerTarget=pointer.at;render();});
   $('#hmaSearchRefs').onclick=()=>safe(()=>{state.pointerTarget=parseROMOffset($('#hmaPointerTarget').value,bytes.length);render();});
-  if($('#hmaJumpPtr'))$('#hmaJumpPtr').onclick=()=>{state.offset=inspected.at;open('hex');};
+  if($('#hmaJumpPtr'))$('#hmaJumpPtr').onclick=()=>jump(inspected.at);
   document.querySelectorAll('[data-hma-ptrsite]').forEach(b=>b.onclick=()=>{state.pointerSite=+b.dataset.hmaPtrsite;render();});
-  document.querySelectorAll('[data-hma-gotosite]').forEach(b=>b.onclick=()=>{state.offset=+b.dataset.hmaGotosite;open('hex');});
+  document.querySelectorAll('[data-hma-gotosite]').forEach(b=>b.onclick=()=>jump(+b.dataset.hmaGotosite));
  }
  function reviewTableRepoint(table){
   const refs=findROMReferences(source(),id(),data(),table.address,{limit:65,scanUnaligned:true}),format=n=>'0x'+n.toString(16).toUpperCase(),queued=hexState(source(),id())?.repoints?.find(p=>p.tableId===table.id);

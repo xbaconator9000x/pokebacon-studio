@@ -4,6 +4,8 @@
 
 **Twelfth HMA integration batch:** [Atomic linked HMA count-dependency groups](HMA_LINKED_GROUPS_DEV.md) can grow a fixed-count original HMA anchor and all 1–7 recognized dependent tables in one transaction, deriving related lengths from original TOML metadata and requiring exact manual pointer/count review. Saved groups reject partial membership and rollback on allocation failure. This is source/native-byte structural work, **not** automatic engine dependency discovery or gameplay verification.
 
+**Navigation integration:** [Hex address history and named-anchor jumps](HMA_HEX_NAVIGATION_DEV.md) provide mobile-safe source-ROM navigation across direct jumps, searches and pointer follows. It is an editor workflow improvement, not native gameplay verification.
+
 **Eleventh HMA integration batch:** [Source-pinned dependency review and atomic multi-table native export](HMA_SOURCE_PINNED_REVIEW_DEV.md) adds source SHA-256 reviewed manifest import/export, up to 16 extra count fields, immutable full-project review, and all-or-nothing ROM output allocation/pointer/count/code writes. This still requires engine-specific runtime validation.
 
 **Tenth HMA integration batch:** [Engine-bound Thumb count dependencies](HMA_ENGINE_COUNT_DEPENDENCIES_DEV.md) support explicitly reviewed FireRed/LeafGreen/Emerald CMP/MOVS immediate instructions during native table growth. Source engine/opcode checks, 16-site caps, bounded candidate scanning and compiler ownership remain required; this is not automatic engine-code discovery or gameplay acceptance.
