@@ -52,6 +52,15 @@ test('CSV malformed headers, quoting, duplicate/missing rows, numeric overflow a
   'row,level\n1,2\n1,4\n',
   'row,level\n100,5\n',
   'row,level\n1,999\n',
+  'row,level\n1,\n',
+  'row,level\n1,1e2\n',
+  'row,level\n1,0b10\n',
+  'row,level\n1, 5\n',
+  'row,level\n1,NaN\n',
+  'row,level\n1,Infinity\n',
+  'row,level\n1,true\n',
+  'row,level\n1,01\n',
+  'row,growth\n1,1.5\n',
   'row,link\n1,0x09007000\n',
   'row,level\n1,"unterminated',
   'row,label\n1,"quote"oops\n',
@@ -72,6 +81,20 @@ test('failed late CSV row value leaves prior edits untouched; split save/reopen 
  const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
  validateProject(reopened);
  assert.equal(tableRecord(reopened,ID,source,table,1).values.level,44);
+});
+test('CSV numeric lexemes survive split save/reopen, native export and reimport',()=>{
+ const {source,project,table}=fixture();
+ importTableCSV(project,ID,source,table,'row,level,growth,link\n2,+15,-17,0X08000500\n');
+ const row=tableRecord(project,ID,source,table,2).values;
+ assert.equal(row.level,15);assert.equal(row.growth,-17);assert.equal(row.link,0x08000500);
+ const save=planSave(project),parts=new Map(save.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ const csv=exportTableCSV(reopened,ID,source,table,{start:2,end:2});
+ const imported=newProject();saveTableDefinition(imported,ID,source,table);
+ importTableCSV(imported,ID,source,table,csv);
+ assert.deepEqual(tableRecord(imported,ID,source,table,2).values,tableRecord(reopened,ID,source,table,2).values);
+ const out=new RomOutput(source);installROMHexEdits(imported,ID,source,out);
+ assert.equal(out.bytes[AT+2*13],15);
 });
 test('phone UI integrates table CSV export and asynchronous validated import',()=>{
  const ui=readFileSync(new URL('../dist/hma-hex-ui.js',import.meta.url),'utf8');
