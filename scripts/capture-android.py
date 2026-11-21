@@ -3,8 +3,17 @@ import pathlib, re, subprocess, time, xml.etree.ElementTree as ET
 root = pathlib.Path(__file__).resolve().parent.parent
 out = root / 'android' / 'previews'
 def adb(*args):return subprocess.check_output(['adb', *args])
+def dump_window(attempts=3, delay=3):
+    """Retry only transient emulator uiautomator termination (SIGKILL/137)."""
+    for attempt in range(attempts):
+        try:
+            return adb('shell', 'uiautomator', 'dump', '--compressed', '/sdcard/studio-window.xml')
+        except subprocess.CalledProcessError as error:
+            if error.returncode not in (137, -9) or attempt == attempts - 1:
+                raise
+            time.sleep(delay)
 def nodes():
-    adb('shell', 'uiautomator', 'dump', '--compressed', '/sdcard/studio-window.xml')
+    dump_window()
     xml = adb('exec-out', 'cat', '/sdcard/studio-window.xml')
     (out / 'last-window.xml').write_bytes(xml)
     try:return list(ET.fromstring(xml).iter('node'))
