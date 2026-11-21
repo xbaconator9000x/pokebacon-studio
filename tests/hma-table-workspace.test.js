@@ -201,3 +201,17 @@ test('atomic HMA quote switching survives split save and retains comments',()=>{
  assert.equal(hmaMetadata(reopened,sourceId,rom).raw,unchanged);
  assert.deepEqual(rom,original);
 });
+
+test('HMA switched TOML quote delimiters remain editable across successive native metadata saves',()=>{
+ const rom=syntheticROM(),p=newProject(),before=rom.slice();
+ importHMAToml(p,sourceId,rom,["[[List]]","Name = 'weather'","7 = 'Rain' # keep"].join('\n'));
+ renameHMATomlNumericLabel(p,sourceId,rom,'weather',7,"O'Reilly");
+ assert.deepEqual(hmaListLabels(p,sourceId,rom,'weather'),[{value:7,label:"O'Reilly"}]);
+ renameHMATomlNumericLabel(p,sourceId,rom,'weather',7,'Snow "Day"');
+ assert.match(hmaMetadata(p,sourceId,rom).raw,/7 = 'Snow "Day"' # keep/);
+ const saved=planSave(p),parts=new Map(saved.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(saved.header),savedProjectKeys(saved.header).map(k=>parts.get(k)));
+ assert.deepEqual(hmaListLabels(reopened,sourceId,rom,'weather'),[{value:7,label:'Snow "Day"'}]);
+ assert.throws(()=>renameHMATomlNumericLabel(reopened,sourceId,rom,'weather',7,`Both ' and "`),/both TOML quote delimiters/);
+ assert.deepEqual(rom,before);
+});
