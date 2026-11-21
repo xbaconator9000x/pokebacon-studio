@@ -5,7 +5,12 @@ const nameOk=s=>typeof s==='string'&&s.length>=1&&s.length<=120&&/^[a-zA-Z0-9_ .
 const number=n=>typeof n==='string'&&/^0x[0-9a-f]+$/i.test(n)?parseInt(n.slice(2),16):Number(n);
 // TOML numeric addresses are never coerced from blank strings, booleans or
 // exponent notation. Unknown syntax is preserved in the original document.
-const tomlInteger=n=>typeof n==='string'&&/^(?:0x[0-9a-fA-F]+|[+-]?(?:0|[1-9][0-9]*))$/.test(n.trim())?number(n.trim()):NaN;
+const tomlInteger=n=>{
+ if(typeof n!=='string'||!/^(?:0x[0-9a-fA-F]+|[+-]?(?:0|[1-9][0-9]*))$/.test(n.trim()))return NaN;
+ const parsed=number(n.trim());
+ // Reject rounded TOML addresses and offsets before they can select a native byte.
+ return Number.isSafeInteger(parsed)?parsed:NaN;
+};
 // Strip comments only outside TOML's single/double and triple-quoted strings.
 function tomlValue(line){
  let quote='',triple=false;
