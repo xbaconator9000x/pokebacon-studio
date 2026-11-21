@@ -87,3 +87,25 @@ test('HMA scalar and array labels decode TOML escapes consistently',()=>{
   assert.throws(()=>hmaListLabels(project,ID,source,'invalid.labels'));
  }
 });
+
+test('HMA TOML rejects unsafe rounded addresses and offset-pointer deltas',()=>{
+ const source=syntheticROM();
+ const raw=[
+  '[[NamedAnchors]]',"Name = 'safe.anchor'",'Address = 0x7200',"Format = '[value.]1'",
+  '[[NamedAnchors]]',"Name = 'rounded.hex'",'Address = 0x20000000000001',"Format = '[value.]1'",
+  '[[NamedAnchors]]',"Name = 'rounded.dec'",'Address = 9007199254740993',"Format = '[value.]1'",
+  '[[OffsetPointer]]','Address = 0x7204','Offset = 9007199254740993',
+  '[[OffsetPointer]]','Address = 0x7208','Offset = 0x20000000000001',
+  '[[OffsetPointer]]','Address = 0x720c','Offset = -8'
+ ].join('\n');
+ const parsed=parseHMAToml(raw,{romLength:source.length});
+ assert.deepEqual(parsed.anchors.map(x=>x.name),['safe.anchor']);
+ assert.deepEqual(parsed.offsetPointers.map(x=>({at:x.at,offset:x.offset})),[{at:0x720c,offset:-8}]);
+ assert.equal(parsed.warnings.length,4);
+ const {project}=scenario();
+ importHMAToml(project,ID,source,raw);
+ const save=planSave(project),parts=new Map(save.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ validateProject(reopened);
+ assert.deepEqual(parseHMAToml(reopened.hexStudio.sources[ID].hmaToml,{romLength:source.length}).offsetPointers.map(x=>x.offset),[-8]);
+});
