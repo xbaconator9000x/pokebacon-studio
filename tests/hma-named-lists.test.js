@@ -69,11 +69,18 @@ test('nonzero HMA numeric keys preserve literal and triple-quoted labels through
 
 test('HMA scalar and array labels decode TOML escapes consistently',()=>{
  const {source,project}=scenario();
- const raw=['[[List]]',"Name = '''escaped.labels'''",'0 = "Hex\u0041"','4 = ["Hex\U00000042", "Tab\tEnd"]'].join('\n');
+ // Keep backslashes in the TOML input; JavaScript must not pre-decode them.
+ // Numeric HMA labels intentionally allow printable ASCII only.
+ const raw=['[[List]]',"Name = '''escaped.labels'''",'0 = "Hex\\u0041"','4 = ["Hex\\U00000042", "Quote\\"End"]'].join('\n');
  importHMAToml(project,ID,source,raw);
- assert.deepEqual(hmaListLabels(project,ID,source,'escaped.labels'),[
-  {value:0,label:'HexA'},{value:4,label:'HexB'},{value:5,label:'Tab\tEnd'.replace('\\t','\t')}
- ]);
+ const expected=[
+  {value:0,label:'HexA'},{value:4,label:'HexB'},{value:5,label:'Quote"End'}
+ ];
+ assert.deepEqual(hmaListLabels(project,ID,source,'escaped.labels'),expected);
+ const save=planSave(project),parts=new Map(save.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ validateProject(reopened);
+ assert.deepEqual(hmaListLabels(reopened,ID,source,'escaped.labels'),expected);
  for(const invalid of ['\\uD800','\\U00110000','\\u12G4','\\q']){
   const broken=['[[List]]',"Name = '''invalid.labels'''",'0 = "Bad'+invalid+'"'].join('\n');
   importHMAToml(project,ID,source,broken);
