@@ -152,6 +152,7 @@ test('HMA standalone numeric label writeback survives split save and preserves s
  importHMAToml(project,sourceId,source,raw);
  assert.deepEqual(renameHMATomlNumericLabel(project,sourceId,source,'weather',7,'Snow'),{code:7,label:'Snow'});
  assert.equal(hmaMetadata(project,sourceId,source).raw,raw.replace("7 = 'Rain'","7 = 'Snow'"));
+ assert.ok(!hmaMetadata(project,sourceId,source).raw.includes('undefined'),'TOML serialization must not append an undefined suffix');
  const saved=planSave(project),parts=new Map(saved.parts.map(p=>[p.id,structuredClone(p.value)]));
  const restored=assembleSavedProject(structuredClone(saved.header),savedProjectKeys(saved.header).map(k=>parts.get(k)));
  assert.deepEqual(hmaListLabels(restored,sourceId,source,'weather'),[{value:0,label:'Clear'},{value:7,label:'Snow'}]);
@@ -191,6 +192,7 @@ test('atomic HMA quote switching survives split save and retains comments',()=>{
  const raw=hmaMetadata(p,sourceId,rom).raw;
  assert.match(raw,/0 = "O'Reilly" # keep/);
  assert.match(raw,/1 = 'Rock "Face"' # keep/);
+ assert.ok(!raw.includes('undefined'),'atomic quote edits must preserve comments without injected text');
  assert.ok(raw.includes('\r\n'));
  const save=planSave(p),parts=new Map(save.parts.map(x=>[x.id,structuredClone(x.value)]));
  const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
