@@ -229,7 +229,9 @@ export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,
  if(blocks.length!==1)throw Error('HMA list is missing or ambiguous.');
  const [start,end]=blocks[0],matches=[];
  for(let i=start+2;i<end;i+=2){
-  const m=lines[i].match(/^(\s*)(\d+)(\s*=\s*)(['"])([^'"]*)(\4)(\s*(?:#.*)?)$/);
+  const m=lines[i].match(/^(\s*)(\d+)(\s*=\s*)(['"])(.*?)\4(\s*(?:#.*)?)$/);
+  // Opposite quotes are legal in TOML literals; an embedded active delimiter is not.
+  if(m&&m[5].includes(m[4]))continue;
   if(m&&Number(m[2])===code)matches.push({i,m});
  }
  if(matches.length!==1)throw Error('Only unique standalone quoted HMA labels are writable.');
