@@ -157,11 +157,15 @@ test('HMA standalone numeric label writeback survives split save and preserves s
  assert.deepEqual(hmaListLabels(restored,sourceId,source,'weather'),[{value:0,label:'Clear'},{value:7,label:'Snow'}]);
  assert.deepEqual(source,original);
  assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',8,'Invalid'));
- assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,"O'Reilly"));
+ assert.deepEqual(renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,"O'Reilly"),{code:7,label:"O'Reilly"});
+ assert.match(hmaMetadata(restored,sourceId,source).raw,/7 = "O'Reilly"/);
+ assert.deepEqual(renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,'Snow "Day"'),{code:7,label:'Snow "Day"'});
+ assert.match(hmaMetadata(restored,sourceId,source).raw,/7 = 'Snow "Day"'/);
+ assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,`Both ' and "`),/both TOML quote delimiters/);
  const unchanged=hmaMetadata(restored,sourceId,source).raw;
  assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,'Bad\nlabel'),/Invalid HMA numeric label/);
  assert.equal(hmaMetadata(restored,sourceId,source).raw,unchanged,'rejected edits must not mutate saved metadata');
- assert.deepEqual(hmaListLabels(restored,sourceId,source,'weather').map(x=>x.label),['Clear','Snow']);
+ assert.deepEqual(hmaListLabels(restored,sourceId,source,'weather').map(x=>x.label),['Clear','Snow "Day"']);
 });
 
 test('atomic multi-list HMA label writeback survives split save and rolls back failures',()=>{
@@ -178,4 +182,22 @@ test('atomic multi-list HMA label writeback survives split save and rolls back f
   assert.equal(hmaMetadata(reopened,sourceId,source).raw,changed);
  }
  assert.throws(()=>renameHMATomlNumericLabels(reopened,sourceId,source,[]));
+});
+
+test('atomic HMA quote switching survives split save and retains comments',()=>{
+ const rom=syntheticROM(),original=rom.slice(),p=newProject();
+ importHMAToml(p,sourceId,rom,["[[List]]","Name = 'weather'","0 = 'Clear' # keep","7 = 'Rain'","[[List]]","Name = 'terrain'","1 = \"Rock\" # keep"].join('\r\n'));
+ assert.deepEqual(renameHMATomlNumericLabels(p,sourceId,rom,[{listName:'weather',code:0,label:"O'Reilly"},{listName:'terrain',code:1,label:'Rock "Face"'}]),{updated:2});
+ const raw=hmaMetadata(p,sourceId,rom).raw;
+ assert.match(raw,/0 = "O'Reilly" # keep/);
+ assert.match(raw,/1 = 'Rock "Face"' # keep/);
+ assert.ok(raw.includes('\r\n'));
+ const save=planSave(p),parts=new Map(save.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ assert.equal(hmaMetadata(reopened,sourceId,rom).raw,raw);
+ assert.deepEqual(hmaListLabels(reopened,sourceId,rom,'weather'),[{value:0,label:"O'Reilly"},{value:7,label:'Rain'}]);
+ const unchanged=hmaMetadata(reopened,sourceId,rom).raw;
+ assert.throws(()=>renameHMATomlNumericLabels(reopened,sourceId,rom,[{listName:'weather',code:7,label:'Sunny'},{listName:'terrain',code:1,label:`Both ' and "`}]),/both TOML quote delimiters/);
+ assert.equal(hmaMetadata(reopened,sourceId,rom).raw,unchanged);
+ assert.deepEqual(rom,original);
 });
