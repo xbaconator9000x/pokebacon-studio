@@ -152,6 +152,18 @@ export function saveTableDefinition(project,sourceId,source,table){
  const dest=project.hexStudio.sources[sourceId];dest.tables=dest.tables.filter(x=>x.id!==table.id).concat([structuredClone(table)]);
  return table;
 }
+function decodeHmaBasicLabel(value){
+ return value.replace(/\\(u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|.)/gs,(_,code)=>{
+  const escapes={n:'\n',r:'\r',t:'\t',b:'\b',f:'\f','"':'"','\\':'\\'};
+  if(Object.hasOwn(escapes,code))return escapes[code];
+  if(code[0]==='u'||code[0]==='U'){
+   const number=Number.parseInt(code.slice(1),16);
+   if(number>0x10ffff||(number>=0xd800&&number<=0xdfff))throw Error('Invalid HMA TOML Unicode scalar.');
+   return String.fromCodePoint(number);
+  }
+  throw Error('Unsupported HMA TOML string escape.');
+ });
+}
 // Named HMA metadata lists provide labels, never inferred native encodings.
 export function hmaListLabels(project,sourceId,source,listName){
  if(!nameOk(listName))throw Error('Choose a named HMA list.');
@@ -186,15 +198,17 @@ export function hmaListLabels(project,sourceId,source,listName){
      if(!triple&&inner[pos]===quote){pos++;closed=true;break;}
      const ch=inner[pos++];
      if(ch==='\\'&&quote==='"'&&!triple){
-      if(pos>=inner.length)break;
+      if(pos>=inner.length)throw Error('Incomplete HMA TOML escape.');
       const escaped=inner[pos++];
-      const escapes={n:'\n',r:'\r',t:'\t',b:'\b',f:'\f','"':'"','\\':'\\'};
-      if(!Object.hasOwn(escapes,escaped))throw Error('Unsupported HMA TOML string escape.');
-      value+=escapes[escaped];
+      if(escaped==='u'||escaped==='U'){
+       const count=escaped==='u'?4:8,digits=inner.slice(pos,pos+count);
+       if(!new RegExp('^[0-9a-fA-F]{'+count+'}$').test(digits))throw Error('Invalid HMA TOML Unicode escape.');
+       value+='\\'+escaped+digits;pos+=count;
+      }else value+='\\'+escaped;
      }else value+=ch;
     }
     if(!closed||value.length<1||value.length>100)throw Error('Incomplete HMA list string.');
-    words.push(value);
+    words.push(quote==='"'&&!triple?decodeHmaBasicLabel(value):value);
     whitespace();
     if(pos>=inner.length)break;
     if(inner[pos]!==',')throw Error('Missing HMA list separator.');
@@ -207,10 +221,7 @@ export function hmaListLabels(project,sourceId,source,listName){
    // Decode TOML basic-string escapes without changing numeric label identity.
    if((raw.startsWith("'''")&&raw.endsWith("'''")&&raw.length>=6)||(raw.startsWith('"""')&&raw.endsWith('"""')&&raw.length>=6)){add(start,raw.slice(3,-3));continue;}
    const basic=raw.match(/^"((?:\\.|[^"\\])*)"$/);
-   if(basic)add(start,basic[1].replace(/\\(.)/g,(_,ch)=>{
-    if(ch==='"'||ch==='\\')return ch;
-    throw Error('Unsupported HMA TOML string escape.');
-   }));
+   if(basic)add(start,decodeHmaBasicLabel(basic[1]));
    else if(raw.startsWith("'")&&raw.endsWith("'")&&raw.length>=2)add(start,raw.slice(1,-1));
    else throw Error('HMA numeric labels must be TOML quoted strings.');
   }
