@@ -577,18 +577,19 @@ const encodeCSVCell=value=>{
  const str=String(value??'');
  return /[",\r\n]/.test(str)?'"'+str.replace(/"/g,'""')+'"':str;
 };
-export function exportTableCSV(project,sourceId,source,table,{start=0,end=table.count-1}={}){
+export function exportTableCSV(project,sourceId,source,table,{start=0,end=table.count-1,asciiHex=false}={}){
  validateTable(table,source.length);
  if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<start||end>=table.count)
   throw Error('CSV export range must be within existing source table rows.');
  const edit=new Map((hexState(project,sourceId)?.patches||[]).map(p=>[p.at,p.after]));
- const lines=[['row',...table.fields.map(f=>f.name)].map(encodeCSVCell).join(',')];
+ if(typeof asciiHex!=='boolean')throw Error('CSV asciiHex option must be a boolean.');
+ const lines=[['row',...table.fields.map(f=>f.name+(asciiHex&&f.type==='ascii'?'@hex':''))].map(encodeCSVCell).join(',')];
  for(let row=start;row<=end;row++){
   const values=[row];
   for(const field of table.fields){
    const at=tableRowStart(table,row)+field.offset;
    const bytes=Uint8Array.from({length:width(field)},(_,i)=>edit.get(at+i)??source[at+i]);
-   const raw=field.type==='ascii'?String.fromCharCode(...bytes).replace(/\0.*$/,''):readInteger(bytes,0,field.type);
+   const raw=field.type==='ascii'?(asciiHex?Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('').toUpperCase():String.fromCharCode(...bytes).replace(/\0.*$/,'')):readInteger(bytes,0,field.type);
    values.push(field.type==='ptr'?'0x'+raw.toString(16).toUpperCase().padStart(8,'0'):raw);
   }
   lines.push(values.map(encodeCSVCell).join(','));
@@ -652,9 +653,13 @@ export function importTableCSV(project,sourceId,source,table,text){
   throw Error('CSV header must begin with row and list one or more existing columns.');
  const known=new Map(table.fields.map(f=>[f.name,f]));
  const selected=header.slice(1).map(name=>{
-  if(!known.has(name))throw Error('Unknown CSV table column: '+name);
-  return known.get(name);
+  const binary=name.endsWith('@hex'),base=binary?name.slice(0,-4):name;
+  if(!known.has(base))throw Error('Unknown CSV table column: '+name);
+  const field=known.get(base);
+  if(binary&&field.type!=='ascii')throw Error('Binary CSV encoding requires an ASCII field: '+name);
+  return {field,binary};
  });
+ if(new Set(selected.map(x=>x.field.name)).size!==selected.length)throw Error('CSV contains duplicate native fields.');
  if(new Set(header).size!==header.length)throw Error('CSV contains duplicated column names.');
  const writes=[],used=new Set();
  for(const cells of rows.slice(1)){
@@ -663,14 +668,19 @@ export function importTableCSV(project,sourceId,source,table,text){
   const row=Number(cells[0]);
   if(!Number.isSafeInteger(row)||row>=table.count||used.has(row))throw Error('CSV row is duplicated or outside this original table.');
   used.add(row);
-  selected.forEach((field,i)=>{
+  selected.forEach(({field,binary},i)=>{
    const value=cells[i+1];
    // CSV is an interchange format, not JavaScript numeric input. Reject
    // empty cells, exponent/Infinity/boolean syntax and implicit base prefixes
    // before the native codec can coerce them into different ROM bytes.
    if(field.type!=='ascii'&&!/^(?:[+-]?(?:0|[1-9][0-9]*)|0[xX][0-9a-fA-F]+)$/.test(value))
     throw Error('CSV numeric cells require an explicit decimal or 0x hexadecimal integer.');
-   const bytes=bytesFor(field.type,value,field.length,source.length);
+   let bytes;
+   if(binary){
+    if(!Number.isInteger(field.length)||value.length!==field.length*2||!/^[0-9a-fA-F]*$/.test(value))
+     throw Error('Binary ASCII CSV cells require exactly two hexadecimal digits per source byte.');
+    bytes=Uint8Array.from({length:field.length},(_,j)=>parseInt(value.slice(j*2,j*2+2),16));
+   }else bytes=bytesFor(field.type,value,field.length,source.length);
    writes.push([tableRowStart(table,row)+field.offset,bytes]);
   });
   if(writes.length>2048)throw Error('Import at most 2,048 individual typed CSV cells per batch.');
