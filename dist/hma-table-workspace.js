@@ -100,7 +100,9 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
   // Multi-line arrays are left as raw metadata. Import must preserve the exact
   // complete TOML document, not pretend to interpret unknown HMA structures.
   if(value.startsWith('[')){depth=0;arrayQuote='';arrayTriple=false;multi=key;buffer=arrayLine(assign[2]);if(depth===0&&!arrayQuote)finishArray();continue;}
-  record[key]=quoted(value);
+  // Preserve string delimiters for numeric List entries so escaped basic
+  // strings can be decoded without losing literal TOML semantics.
+  record[key]=section==='List'&&/^(0|[1-9]\\d{0,4})$/.test(key)?value:quoted(value);
   if(section==='General')general[key]=record[key];
  }
  if(multi&&record){record[multi]=buffer;record.__duplicate=true;warnings.push('Unterminated HMA TOML array near line '+last);}
