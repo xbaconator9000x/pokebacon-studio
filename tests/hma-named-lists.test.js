@@ -54,3 +54,15 @@ test('duplicate, overlapping, incomplete and invalid lists cannot mutate tables'
  assert.throws(()=>bindTableEnumList(project,ID,source,table,'weather','missing'),/missing|ambiguous/);
  assert.equal(JSON.stringify(project),before);
 });
+
+test('nonzero HMA numeric keys preserve literal and triple-quoted labels through split save',()=>{
+ const {source,project}=scenario();
+ const raw=["[[List]]","Name = 'weather.extra'","7 = 'Rain'","10 = '''Overcast'''",'12 = "Snow"'].join('\n');
+ importHMAToml(project,ID,source,raw);
+ const expected=[{value:7,label:'Rain'},{value:10,label:'Overcast'},{value:12,label:'Snow'}];
+ assert.deepEqual(hmaListLabels(project,ID,source,'weather.extra'),expected);
+ const save=planSave(project),parts=new Map(save.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ assert.deepEqual(hmaListLabels(reopened,ID,source,'weather.extra'),expected);
+ assert.equal(parseHMAToml(raw,{romLength:source.length}).raw,raw);
+});
