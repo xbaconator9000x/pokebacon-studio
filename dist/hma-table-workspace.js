@@ -244,6 +244,23 @@ export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,
  return {code,label};
 }
 
+/** Atomically update multiple unique standalone HMA TOML labels. */
+export function renameHMATomlNumericLabels(project,sourceId,source,edits){
+ if(!Array.isArray(edits)||edits.length<1||edits.length>256)throw Error('Choose 1–256 HMA label edits.');
+ const state=hexState(project,sourceId);
+ if(!state?.hmaToml)throw Error('Import HMA metadata first.');
+ const seen=new Set(),draft={hexStudio:{version:1,sources:{[sourceId]:{...state}}}};
+ for(const edit of edits){
+  if(!edit||typeof edit!=='object')throw Error('Invalid HMA label edit.');
+  const key=JSON.stringify([edit.listName,edit.code]);
+  if(seen.has(key))throw Error('Duplicate HMA label edit.');
+  seen.add(key);
+  renameHMATomlNumericLabel(draft,sourceId,source,edit.listName,edit.code,edit.label);
+ }
+ state.hmaToml=draft.hexStudio.sources[sourceId].hmaToml;
+ return {updated:edits.length};
+}
+
 export function bindTableEnumList(project,sourceId,source,table,fieldName,listName){
  validateTable(table,source.length);
  const field=table.fields.find(row=>row.name===fieldName);
