@@ -233,3 +233,11 @@ test('HMA escaped basic-string labels preserve CRLF and rollback invalid multi-e
  assert.equal(hmaMetadata(reopened,sourceId,rom).raw,raw);
  assert.deepEqual(rom,original);
 });
+
+test('HMA literal labels decode without delimiters after writeback',()=>{
+ const rom=syntheticROM(),p=newProject();
+ importHMAToml(p,sourceId,rom,"[[List]]\nName = 'weather'\n7 = 'Rain'");
+ assert.deepEqual(hmaListLabels(p,sourceId,rom,'weather'),[{value:7,label:'Rain'}]);
+ renameHMATomlNumericLabel(p,sourceId,rom,'weather',7,'Snow');
+ assert.deepEqual(hmaListLabels(p,sourceId,rom,'weather'),[{value:7,label:'Snow'}]);
+});
