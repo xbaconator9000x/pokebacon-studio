@@ -201,7 +201,15 @@ export function hmaListLabels(project,sourceId,source,listName){
    }
    if(!words.length)throw Error('HMA arrays must contain quoted labels only.');
    words.forEach((word,i)=>add(start+i,word));
-  }else add(start,raw);
+  }else {
+   // Decode TOML basic-string escapes without changing numeric label identity.
+   const basic=raw.match(/^"((?:\\.|[^"\\])*)"$/);
+   if(basic)add(start,basic[1].replace(/\\(.)/g,(_,ch)=>{
+    if(ch==='"'||ch==='\\')return ch;
+    throw Error('Unsupported HMA TOML string escape.');
+   }));
+   else add(start,raw);
+  }
  }
  if(!labels.length)throw Error('No compatible numeric HMA labels found.');
  return labels.sort((a,b)=>a.value-b.value);
@@ -231,17 +239,17 @@ export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,
  for(let i=start+2;i<end;i+=2){
   const m=lines[i].match(/^(\s*)(\d+)(\s*=\s*)(['"])(.*?)\4(\s*(?:#.*)?)$/);
   // Opposite quotes are legal in TOML literals; an embedded active delimiter is not.
-  if(m&&m[5].includes(m[4]))continue;
+  if(m&&m[4]==="'"&&m[5].includes("'"))continue;
+  if(m&&m[4]==='"'&&/(^|[^\\])"/.test(m[5]))continue;
   if(m&&Number(m[2])===code)matches.push({i,m});
  }
  if(matches.length!==1)throw Error('Only unique standalone quoted HMA labels are writable.');
  const {i,m}=matches[0];
- // Switch TOML literal delimiters rather than reject valid printable labels.
- // Reject strings containing both quotes: escaping would alter literal values.
- const delimiter=label.includes(m[4])?(m[4]==="'"?'"':"'"):m[4];
- if(label.includes(delimiter))throw Error('Label contains both TOML quote delimiters.');
+ // Basic TOML strings safely encode labels containing both quote types.
+ const delimiter=label.includes("'")?'"':label.includes('"')?"'":m[4];
+ const encoded=delimiter==='"'?label.replace(/\\/g,'\\\\').replace(/"/g,'\\"'):label;
  const copy=lines.slice();
- copy[i]=m[1]+m[2]+m[3]+delimiter+label+delimiter+m[6];
+ copy[i]=m[1]+m[2]+m[3]+delimiter+encoded+delimiter+m[6];
  const updated=copy.join(''),draft={hexStudio:{version:1,sources:{[sourceId]:{...state,hmaToml:updated}}}};
  const after=hmaListLabels(draft,sourceId,source,listName);
  if(after.length!==before.length||after.some((x,j)=>x.value!==before[j].value)||after.find(x=>x.value===code)?.label!==label)throw Error('HMA label writeback changed numeric identities.');
