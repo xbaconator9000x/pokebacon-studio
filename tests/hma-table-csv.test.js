@@ -100,3 +100,30 @@ test('phone UI integrates table CSV export and asynchronous validated import',()
  const ui=readFileSync(new URL('../dist/hma-hex-ui.js',import.meta.url),'utf8');
  for(const name of ['hmaExportTableCSV','hmaImportTableCSV','hmaTableCSVFile','hmaTableCSVStage','exportTableCSV(','importTableCSV(','file.text()'])assert.ok(ui.includes(name),name);
 });
+
+test('binary ASCII CSV round-trips embedded NUL, control, high-bit and trailing bytes through split save and native export',()=>{
+ const {source,project,table}=fixture(),original=source.slice();
+ const raw=Uint8Array.of(0x41,0,0xff,0x0a,0x42);
+ stageROMHex(project,ID,source,AT+7,raw);
+ const csv=exportTableCSV(project,ID,source,table,{start:0,end:0,asciiHex:true});
+ assert.match(csv,/^row,level,growth,link,label@hex\\r\\n/);
+ assert.ok(csv.includes('4100FF0A42'));
+ const fresh=newProject();saveTableDefinition(fresh,ID,source,table);
+ importTableCSV(fresh,ID,source,table,csv);
+ const save=planSave(fresh),parts=new Map(save.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ validateProject(reopened);
+ const out=new RomOutput(source);installROMHexEdits(reopened,ID,source,out);
+ assert.deepEqual(Array.from(out.bytes.slice(AT+7,AT+12)),Array.from(raw));
+ assert.deepEqual(source,original);
+ const again=exportTableCSV(reopened,ID,source,table,{start:0,end:0,asciiHex:true});
+ assert.equal(again,csv);
+});
+test('binary ASCII CSV rejects malformed hex, width mismatch, non-ASCII and duplicate aliases atomically',()=>{
+ const {source,project,table}=fixture();const before=JSON.stringify(project);
+ const rejects=['row,label@hex\\n0,AB\\n','row,label@hex\\n0,000000000Z\\n','row,label@hex\\n0,00000000000\\n',
+  'row,level@hex\\n0,0000\\n','row,label,label@hex\\n0,Hello,48656C6C6F\\n',
+  'row,label@hex\\n0,4142434445\\n1,ZZZZZZZZZZ\\n'];
+ for(const csv of rejects){assert.throws(()=>importTableCSV(project,ID,source,table,csv),undefined,csv);assert.equal(JSON.stringify(project),before);}
+ assert.throws(()=>exportTableCSV(project,ID,source,table,{asciiHex:'yes'}),/boolean/);
+});
