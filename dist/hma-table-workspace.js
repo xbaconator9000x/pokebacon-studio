@@ -102,7 +102,7 @@ export function parseHMAToml(text,{romLength=32*1024*1024}={}){
   if(value.startsWith('[')){depth=0;arrayQuote='';arrayTriple=false;multi=key;buffer=arrayLine(assign[2]);if(depth===0&&!arrayQuote)finishArray();continue;}
   // Preserve string delimiters for numeric List entries so escaped basic
   // strings can be decoded without losing literal TOML semantics.
-  record[key]=section==='List'&&/^(0|[1-9]\\d{0,4})$/.test(key)?value:quoted(value);
+  record[key]=section==='List'&&/^(0|[1-9]\d{0,4})$/.test(key)?value:quoted(value);
   if(section==='General')general[key]=record[key];
  }
  if(multi&&record){record[multi]=buffer;record.__duplicate=true;warnings.push('Unterminated HMA TOML array near line '+last);}
@@ -205,6 +205,7 @@ export function hmaListLabels(project,sourceId,source,listName){
    words.forEach((word,i)=>add(start+i,word));
   }else {
    // Decode TOML basic-string escapes without changing numeric label identity.
+   if((raw.startsWith("'''")&&raw.endsWith("'''")&&raw.length>=6)||(raw.startsWith('"""')&&raw.endsWith('"""')&&raw.length>=6)){add(start,raw.slice(3,-3));continue;}
    const basic=raw.match(/^"((?:\\.|[^"\\])*)"$/);
    if(basic)add(start,basic[1].replace(/\\(.)/g,(_,ch)=>{
     if(ch==='"'||ch==='\\')return ch;
