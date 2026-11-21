@@ -630,8 +630,8 @@ export function adjustTableColumn(project,sourceId,source,table,fieldName,start,
   throw Error('Choose an integer field; arithmetic on raw pointers is unsafe.');
  if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<start||end>=table.count||end-start>=256)
   throw Error('Adjust between 1 and 256 original table rows.');
- const amount=typeof delta==='string'?number(delta):delta;
- if(!Number.isSafeInteger(amount)||typeof delta==='string'&&!delta.trim())
+ const amount=typeof delta==='string'?(/^(?:[+-]?(?:0|[1-9][0-9]*)|0x[0-9a-fA-F]+)$/.test(delta.trim())?number(delta.trim()):NaN):delta;
+ if(!Number.isSafeInteger(amount))
   throw Error('Enter a valid integer delta.');
  const writes=[];
  for(let row=start;row<=end;row++){
