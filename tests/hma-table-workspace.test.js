@@ -5,7 +5,7 @@ import {newProject,validateProject} from '../dist/model.js';
 import {RomOutput} from '../dist/rom-writer.js';
 import {planSave,savedProjectKeys,assembleSavedProject} from '../dist/project-store.js';
 import {installROMHexEdits} from '../dist/native-hex-workspace.js';
-import {parseHMAToml,importHMAToml,hmaMetadata,hmaListLabels,validateTable,saveTableDefinition,tableDefinitions,tableRecord,editTableField,renameHMATomlNumericLabel,renameHMATomlNumericLabels} from '../dist/hma-table-workspace.js';
+import {parseHMAToml,importHMAToml,hmaMetadata,hmaListLabels,validateTable,saveTableDefinition,tableDefinitions,tableRecord,editTableField,renameHMATomlNumericLabel,renameHMATomlNumericLabels,adjustTableColumn} from '../dist/hma-table-workspace.js';
 const sourceId='6'.repeat(64);
 test('HMA TOML extracts recognized anchors/offset pointers and retains every unsupported source directive losslessly',()=>{
  const raw=[
@@ -240,4 +240,19 @@ test('HMA literal labels decode without delimiters after writeback',()=>{
  assert.deepEqual(hmaListLabels(p,sourceId,rom,'weather'),[{value:7,label:'Rain'}]);
  renameHMATomlNumericLabel(p,sourceId,rom,'weather',7,'Snow');
  assert.deepEqual(hmaListLabels(p,sourceId,rom,'weather'),[{value:7,label:'Snow'}]);
+});
+
+test('native arithmetic rejects coercible noninteger strings atomically',()=>{
+ const source=syntheticROM(),project=newProject(),table={id:'strict-delta',name:'Strict delta',address:0x680,stride:2,count:2,fields:[{name:'value',type:'u16',offset:0}]};
+ saveTableDefinition(project,sourceId,source,table);
+ const before=JSON.stringify(project);
+ for(const delta of ['1e2','0b10','0o10','1.5','Infinity','true','+','','  ','01']){
+  assert.throws(()=>adjustTableColumn(project,sourceId,source,table,'value',0,1,delta),/valid integer delta/,delta);
+  assert.equal(JSON.stringify(project),before,delta);
+ }
+ assert.equal(adjustTableColumn(project,sourceId,source,table,'value',0,1,'0x2').rows,2);
+ const plan=planSave(project),parts=new Map(plan.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const restored=assembleSavedProject(structuredClone(plan.header),savedProjectKeys(plan.header).map(k=>parts.get(k)));
+ assert.equal(tableRecord(restored,sourceId,source,table,0).values.value,tableRecord(project,sourceId,source,table,0).values.value);
+ const writer=new RomOutput(source);installROMHexEdits(writer,restored,sourceId,source);
 });
