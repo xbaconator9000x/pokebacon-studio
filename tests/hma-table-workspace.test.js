@@ -5,7 +5,7 @@ import {newProject,validateProject} from '../dist/model.js';
 import {RomOutput} from '../dist/rom-writer.js';
 import {planSave,savedProjectKeys,assembleSavedProject} from '../dist/project-store.js';
 import {installROMHexEdits} from '../dist/native-hex-workspace.js';
-import {parseHMAToml,importHMAToml,hmaMetadata,hmaListLabels,validateTable,saveTableDefinition,tableDefinitions,tableRecord,editTableField,renameHMATomlNumericLabel} from '../dist/hma-table-workspace.js';
+import {parseHMAToml,importHMAToml,hmaMetadata,hmaListLabels,validateTable,saveTableDefinition,tableDefinitions,tableRecord,editTableField,renameHMATomlNumericLabel,renameHMATomlNumericLabels} from '../dist/hma-table-workspace.js';
 const sourceId='6'.repeat(64);
 test('HMA TOML extracts recognized anchors/offset pointers and retains every unsupported source directive losslessly',()=>{
  const raw=[
@@ -162,4 +162,20 @@ test('HMA standalone numeric label writeback survives split save and preserves s
  assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,'Bad\nlabel'),/Invalid HMA numeric label/);
  assert.equal(hmaMetadata(restored,sourceId,source).raw,unchanged,'rejected edits must not mutate saved metadata');
  assert.deepEqual(hmaListLabels(restored,sourceId,source,'weather').map(x=>x.label),['Clear','Snow']);
+});
+
+test('atomic multi-list HMA label writeback survives split save and rolls back failures',()=>{
+ const source=syntheticROM(),p=newProject();
+ importHMAToml(p,sourceId,source,["[[List]]","Name = 'weather'","0 = 'Clear' # keep","7 = 'Rain'","[[List]]","Name = 'terrain'","1 = 'Grass'"].join('\n'));
+ assert.deepEqual(renameHMATomlNumericLabels(p,sourceId,source,[{listName:'weather',code:7,label:'Snow'},{listName:'terrain',code:1,label:'Rock'}]),{updated:2});
+ const changed=hmaMetadata(p,sourceId,source).raw;
+ const saved=planSave(p),parts=new Map(saved.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(saved.header),savedProjectKeys(saved.header).map(k=>parts.get(k)));
+ assert.deepEqual(hmaListLabels(reopened,sourceId,source,'weather').map(x=>x.label),['Clear','Snow']);
+ assert.deepEqual(hmaListLabels(reopened,sourceId,source,'terrain').map(x=>x.label),['Rock']);
+ for(const edits of [[{listName:'weather',code:0,label:'Sunny'},{listName:'terrain',code:999,label:'Missing'}],[{listName:'weather',code:7,label:'Ice'},{listName:'weather',code:7,label:'Again'}],[{listName:'weather',code:7,label:'Ice'},{listName:'terrain',code:1,label:'Bad\nlabel'}]]){
+  assert.throws(()=>renameHMATomlNumericLabels(reopened,sourceId,source,edits));
+  assert.equal(hmaMetadata(reopened,sourceId,source).raw,changed);
+ }
+ assert.throws(()=>renameHMATomlNumericLabels(reopened,sourceId,source,[]));
 });
