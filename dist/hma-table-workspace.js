@@ -664,7 +664,13 @@ export function importTableCSV(project,sourceId,source,table,text){
   if(!Number.isSafeInteger(row)||row>=table.count||used.has(row))throw Error('CSV row is duplicated or outside this original table.');
   used.add(row);
   selected.forEach((field,i)=>{
-   const value=cells[i+1],bytes=bytesFor(field.type,value,field.length,source.length);
+   const value=cells[i+1];
+   // CSV is an interchange format, not JavaScript numeric input. Reject
+   // empty cells, exponent/Infinity/boolean syntax and implicit base prefixes
+   // before the native codec can coerce them into different ROM bytes.
+   if(field.type!=='ascii'&&!/^(?:[+-]?(?:0|[1-9][0-9]*)|0[xX][0-9a-fA-F]+)$/.test(value))
+    throw Error('CSV numeric cells require an explicit decimal or 0x hexadecimal integer.');
+   const bytes=bytesFor(field.type,value,field.length,source.length);
    writes.push([tableRowStart(table,row)+field.offset,bytes]);
   });
   if(writes.length>2048)throw Error('Import at most 2,048 individual typed CSV cells per batch.');
