@@ -210,7 +210,8 @@ export function hmaListLabels(project,sourceId,source,listName){
     if(ch==='"'||ch==='\\')return ch;
     throw Error('Unsupported HMA TOML string escape.');
    }));
-   else add(start,raw);
+   else if(raw.startsWith("'")&&raw.endsWith("'")&&raw.length>=2)add(start,raw.slice(1,-1));
+   else throw Error('HMA numeric labels must be TOML quoted strings.');
   }
  }
  if(!labels.length)throw Error('No compatible numeric HMA labels found.');
