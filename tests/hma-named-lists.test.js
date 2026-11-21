@@ -66,3 +66,17 @@ test('nonzero HMA numeric keys preserve literal and triple-quoted labels through
  assert.deepEqual(hmaListLabels(reopened,ID,source,'weather.extra'),expected);
  assert.equal(parseHMAToml(raw,{romLength:source.length}).raw,raw);
 });
+
+test('HMA scalar and array labels decode TOML escapes consistently',()=>{
+ const {source,project}=scenario();
+ const raw=['[[List]]',"Name = '''escaped.labels'''",'0 = "Hex\u0041"','4 = ["Hex\U00000042", "Tab\tEnd"]'].join('\n');
+ importHMAToml(project,ID,source,raw);
+ assert.deepEqual(hmaListLabels(project,ID,source,'escaped.labels'),[
+  {value:0,label:'HexA'},{value:4,label:'HexB'},{value:5,label:'Tab\tEnd'.replace('\\t','\t')}
+ ]);
+ for(const invalid of ['\\uD800','\\U00110000','\\u12G4','\\q']){
+  const broken=['[[List]]',"Name = '''invalid.labels'''",'0 = "Bad'+invalid+'"'].join('\n');
+  importHMAToml(project,ID,source,broken);
+  assert.throws(()=>hmaListLabels(project,ID,source,'invalid.labels'));
+ }
+});
