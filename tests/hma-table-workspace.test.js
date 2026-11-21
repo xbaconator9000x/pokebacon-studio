@@ -162,11 +162,11 @@ test('HMA standalone numeric label writeback survives split save and preserves s
  assert.match(hmaMetadata(restored,sourceId,source).raw,/7 = "O'Reilly"/);
  assert.deepEqual(renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,'Snow "Day"'),{code:7,label:'Snow "Day"'});
  assert.match(hmaMetadata(restored,sourceId,source).raw,/7 = 'Snow "Day"'/);
- assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,`Both ' and "`),/both TOML quote delimiters/);
+ assert.deepEqual(renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,`Both ' and "`),{code:7,label:`Both ' and "`});
  const unchanged=hmaMetadata(restored,sourceId,source).raw;
  assert.throws(()=>renameHMATomlNumericLabel(restored,sourceId,source,'weather',7,'Bad\nlabel'),/Invalid HMA numeric label/);
  assert.equal(hmaMetadata(restored,sourceId,source).raw,unchanged,'rejected edits must not mutate saved metadata');
- assert.deepEqual(hmaListLabels(restored,sourceId,source,'weather').map(x=>x.label),['Clear','Snow "Day"']);
+ assert.deepEqual(hmaListLabels(restored,sourceId,source,'weather').map(x=>x.label),['Clear',`Both ' and "`]);
 });
 
 test('atomic multi-list HMA label writeback survives split save and rolls back failures',()=>{
@@ -199,8 +199,8 @@ test('atomic HMA quote switching survives split save and retains comments',()=>{
  assert.equal(hmaMetadata(reopened,sourceId,rom).raw,raw);
  assert.deepEqual(hmaListLabels(reopened,sourceId,rom,'weather'),[{value:0,label:"O'Reilly"},{value:7,label:'Rain'}]);
  const unchanged=hmaMetadata(reopened,sourceId,rom).raw;
- assert.throws(()=>renameHMATomlNumericLabels(reopened,sourceId,rom,[{listName:'weather',code:7,label:'Sunny'},{listName:'terrain',code:1,label:`Both ' and "`}]),/both TOML quote delimiters/);
- assert.equal(hmaMetadata(reopened,sourceId,rom).raw,unchanged);
+ assert.deepEqual(renameHMATomlNumericLabels(reopened,sourceId,rom,[{listName:'weather',code:7,label:'Sunny'},{listName:'terrain',code:1,label:`Both ' and "`}]),{updated:2});
+ assert.deepEqual(hmaListLabels(reopened,sourceId,rom,'terrain'),[{value:1,label:`Both ' and "`}]);
  assert.deepEqual(rom,original);
 });
 
@@ -214,6 +214,22 @@ test('HMA switched TOML quote delimiters remain editable across successive nativ
  const saved=planSave(p),parts=new Map(saved.parts.map(x=>[x.id,structuredClone(x.value)]));
  const reopened=assembleSavedProject(structuredClone(saved.header),savedProjectKeys(saved.header).map(k=>parts.get(k)));
  assert.deepEqual(hmaListLabels(reopened,sourceId,rom,'weather'),[{value:7,label:'Snow "Day"'}]);
- assert.throws(()=>renameHMATomlNumericLabel(reopened,sourceId,rom,'weather',7,`Both ' and "`),/both TOML quote delimiters/);
+ assert.deepEqual(renameHMATomlNumericLabel(reopened,sourceId,rom,'weather',7,`Both ' and "`),{code:7,label:`Both ' and "`});
+ assert.deepEqual(hmaListLabels(reopened,sourceId,rom,'weather'),[{value:7,label:`Both ' and "`}]);
  assert.deepEqual(rom,before);
+});
+
+test('HMA escaped basic-string labels preserve CRLF and rollback invalid multi-edits',()=>{
+ const rom=syntheticROM(),original=rom.slice(),p=newProject();
+ importHMAToml(p,sourceId,rom,["[[List]]","Name = 'weather'","7 = 'Rain' # comment","[[List]]","Name = 'terrain'","1 = 'Grass'"].join('\r\n'));
+ assert.deepEqual(renameHMATomlNumericLabels(p,sourceId,rom,[{listName:'weather',code:7,label:`Both ' and "`},{listName:'terrain',code:1,label:'Rock'}]),{updated:2});
+ assert.deepEqual(hmaListLabels(p,sourceId,rom,'weather'),[{value:7,label:`Both ' and "`}]);
+ const raw=hmaMetadata(p,sourceId,rom).raw;
+ assert.ok(raw.includes('\r\n')&&raw.includes('# comment'));
+ const saved=planSave(p),parts=new Map(saved.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(saved.header),savedProjectKeys(saved.header).map(k=>parts.get(k)));
+ assert.deepEqual(hmaListLabels(reopened,sourceId,rom,'weather'),[{value:7,label:`Both ' and "`}]);
+ assert.throws(()=>renameHMATomlNumericLabels(reopened,sourceId,rom,[{listName:'weather',code:7,label:'Clear'},{listName:'terrain',code:1,label:'Bad\nline'}]));
+ assert.equal(hmaMetadata(reopened,sourceId,rom).raw,raw);
+ assert.deepEqual(rom,original);
 });
