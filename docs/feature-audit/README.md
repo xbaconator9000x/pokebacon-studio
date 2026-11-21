@@ -2,6 +2,8 @@
 
 This is the persistent entry point for subsequent development sessions. The first pass covers **98 capability records across 13 major categories**, with smaller controls and dependencies inside each record. Twelve upstream source trees are pinned, including the independently verified Cradi CUBHMA fork. It is a broad source review, not a claim that every editor has been exhaustively reverse-engineered.
 
+**New HMA completeness baseline:** [101-feature HMA parity checklist](HMA_PARITY.md) and [machine-readable crosswalk](hma-parity.json). The existing 98 general capabilities are not an exhaustive HMA feature list. Nine HMA functions remain without a one-to-one original inventory record, and none is parity-verified end to end. This is a tracking baseline, not an implementation claim.
+
 Read in order:
 1. [Roadmap and delivery gates](ROADMAP.md)
 2. [Capability inventory](INVENTORY.md) and [machine-readable fields](inventory.json)

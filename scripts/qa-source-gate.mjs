@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 const manifest=JSON.parse(fs.readFileSync('qa/source-manifest.json'));
+assert.equal(manifest.package,'dev.shattered.mapstudio.next','Do not change the installed Android package ID; that would create a second app and orphan local projects.');
+assert.equal(manifest.certificateSHA256,'1181de51b390457daaf04ea9c63108dc084da9597bef23bf2bc19090e1ae7add','Use the verified original release-signing certificate, not a preview or new key.');
 assert.equal(JSON.parse(fs.readFileSync('package.json')).version,manifest.version);
 const xml=fs.readFileSync('android/AndroidManifest.xml','utf8');
 assert.ok(xml.includes(`package="${manifest.package}"`));

@@ -92,7 +92,7 @@ def main():
     signer = ['java', '-jar', a.apksigner_jar.resolve()]
     run(signer + ['sign', '--ks', a.keystore.resolve(), '--ks-key-alias', cfg['alias'], '--ks-pass', 'env:PB_SIGN_PASSWORD', '--key-pass', 'env:PB_SIGN_PASSWORD', '--v4-signing-enabled', 'false', '--out', apk, out / 'aligned.apk'], env=env)
     cert = run(signer + ['verify', '--verbose', '--print-certs', apk]).stdout
-    assert '9f453803f6fe2feb834fc799b8c9cfef5520bb6567b1d55e22baccfb81b59343' in cert.lower()
+    assert '1181de51b390457daaf04ea9c63108dc084da9597bef23bf2bc19090e1ae7add' in cert.lower()
     run([a.zipalign.resolve(), '-c', '4', apk])
     with zipfile.ZipFile(a.base_apk) as base, zipfile.ZipFile(apk) as built:
         assert built.testzip() is None
@@ -102,7 +102,7 @@ def main():
                 continue
             assert built.read(name) == overlays.get(name, base.read(name)), name
         assert {n for n in set(built.namelist()) - set(base.namelist()) if not n.startswith('META-INF/')} <= set(overlays)
-    report = {'version': version, 'versionCode': code, 'package': package, 'certificateSHA256': '9f453803f6fe2feb834fc799b8c9cfef5520bb6567b1d55e22baccfb81b59343', 'base': a.base_apk.name, 'baseSHA256': hashlib.sha256(a.base_apk.read_bytes()).hexdigest(), 'apkSHA256': hashlib.sha256(apk.read_bytes()).hexdigest(), 'changedAssets': sorted(overlays), 'nativeCodeAndResourcesPreserved': True, 'zipCRC': 'pass', 'signatureVerification': 'pass', 'zipAlignment': 'pass', 'deviceInstallationTested': False}
+    report = {'version': version, 'versionCode': code, 'package': package, 'certificateSHA256': '1181de51b390457daaf04ea9c63108dc084da9597bef23bf2bc19090e1ae7add', 'base': a.base_apk.name, 'baseSHA256': hashlib.sha256(a.base_apk.read_bytes()).hexdigest(), 'apkSHA256': hashlib.sha256(apk.read_bytes()).hexdigest(), 'changedAssets': sorted(overlays), 'nativeCodeAndResourcesPreserved': True, 'zipCRC': 'pass', 'signatureVerification': 'pass', 'zipAlignment': 'pass', 'deviceInstallationTested': False}
     (out / 'build-verification.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 

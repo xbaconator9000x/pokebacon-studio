@@ -1,0 +1,65 @@
+name: HMA linked native table acceptance
+on:
+  pull_request:
+    paths:
+      - 'dist/hma-*.js'
+      - 'dist/native-hex-workspace.js'
+      - 'tests/hma-*.test.js'
+      - '.github/workflows/hma-linked-groups.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hma-linked-review-${{ github.workflow }}-${{ github.run_id }}
+  cancel-in-progress: false
+jobs:
+  linked-group-cases:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - phase: original-source
+            pattern: 'linked HMA three-table|source-pinned linked group'
+          - phase: preflight
+            pattern: 'reviewing an incomplete|a missing or unverifiable|group planning rejects'
+          - phase: rollback
+            pattern: 'tampered or partly discarded|second linked table allocation|original staged table'
+          - phase: mobile-and-ownership
+            pattern: 'original HMA anchor|source table containing|Android linked table'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run reviewed native group cases
+        env:
+          HMA_TEST_PATTERN: ${{ matrix.pattern }}
+        run: node --test --test-name-pattern="$HMA_TEST_PATTERN" tests/hma-linked-expansion.test.js
+  base-hma-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        suite:
+          - hma-table-formats
+          - hma-table-expansion
+          - hma-table-transaction-counts
+          - hma-engine-manifest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/${{ matrix.suite }}.test.js
+  source-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/qa-source-gate.mjs

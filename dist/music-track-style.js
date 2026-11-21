@@ -1,6 +1,7 @@
 import {QUICK_TRACKS} from './music-quick-presets.js';
 import {MUSIC_SCALES} from './music-styles.js';
 import {checkScore} from './music-compose.js';
+import {studioProgramForMIDI} from './music-part-options.js';
 
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const pc=n=>(n%12+12)%12;
@@ -48,18 +49,19 @@ export function styleTrackBase(source,options={}){
  }
  checkScore(source,{arranging:true});const indices=scope==='whole'?source.tracks.map((_,i)=>i):[...new Set(selectedParts)];
  if(!indices.length||indices.some(i=>!Number.isInteger(i)||!source.tracks[i]))throw Error('Select at least one existing source part.');
- if(indices.length>10)throw Error('This source has more than ten export parts. Select up to ten parts for the cartridge arrangement.');
+ // MIDI may contain many more source parts than physical GBA playback lanes.
  const subset={...source,tracks:indices.map(i=>source.tracks[i])},chosen=indices.includes(options.melodyPart)?options.melodyPart:indices[suggestMelodyPart(subset,{percussionPrograms})],tonal=sourceTonality(source,chosen),styled=styleExistingTrack(source,{...options,melodyPart:chosen,identity:'exact'}),drums=new Set(percussionPrograms),order=[chosen,...indices.filter(i=>i!==chosen)];
  const recipe=QUICK_TRACKS[options.preset||'shattered'];let score=structuredClone(styled.score);score.tracks=order.map((index,at)=>{
   const t=source.tracks[index],ns=t.notes.filter(n=>!drums.has(n.program??t.program)),isDrum=t.channel===9||(!ns.length&&t.notes.length>0),register=mean(ns),programs=new Map();for(const n of t.notes)programs.set(n.program??t.program,(programs.get(n.program??t.program)||0)+1);const program=[...programs].sort((a,b)=>b[1]-a[1])[0]?.[0]??t.program;
-  return {name:at===0?'Lead melody':isDrum?'Source percussion '+(index+1):register<52?'Source bass '+(index+1):'Source harmony '+(index+1),program:isDrum?3:at===0?recipe.voices[0]:register<52?recipe.voices[2]:recipe.voices[(at%3)+1],sourceProgram:program,sourcePart:index,...(isDrum?{channel:9}:{}),notes:t.notes.map(({program:ignored,...n})=>({...n,velocity:Math.max(1,Math.round(n.velocity*(options.preset==='loss'?.7:options.preset==='shattered'?.82:1)))})),automation:[{tick:0,volume:at===0?100:isDrum?60:78,pan:at===0?64:Math.round(t.automation?.[0]?.pan??64),bend:0,range:2}]};
+  return {name:at===0?'Lead melody':isDrum?'Source percussion '+(index+1):register<52?'Source bass '+(index+1):'Source harmony '+(index+1),program:isDrum?3:t.midiProgram!==undefined?studioProgramForMIDI(t):at===0?recipe.voices[0]:register<52?recipe.voices[2]:recipe.voices[(at%3)+1],sourceProgram:t.midiProgram===undefined?program:undefined,midiProgram:t.midiProgram,sourcePart:index,...(isDrum?{channel:9}:{}),notes:t.notes.map(({program:ignored,...n})=>({...n,velocity:Math.max(1,Math.round(n.velocity*(options.preset==='loss'?.7:options.preset==='shattered'?.82:1)))})),automation:[{tick:0,volume:at===0?100:isDrum?60:78,pan:at===0?64:Math.round(t.automation?.[0]?.pan??64),bend:0,range:2}]};
  });
  score.composition.baseTrack={...score.composition.baseTrack,scope,sourceParts:order,melodyPart:chosen,preserved:'selected source parts, note rhythms, song length, intro and loop; pitches follow the chosen key and scale'};
  score=retuneTrackScore(score,{targetKey,targetScale:targetScale==='vibe'?QUICK_TRACKS[options.preset||'shattered'].scale:targetScale,sourceTonality:tonal,percussionPrograms});
  // Follow the selected vibe without replacing the source with a recipe song.
  if(['loss','shattered'].includes(options.preset))for(let i=1;i<score.tracks.length;i++){const t=score.tracks[i];if(t.channel===9)t.notes=t.notes.filter((n,j)=>options.preset==='loss'?false:j%8===0);else if(!/bass/.test(t.name))t.notes=t.notes.filter((n,j)=>j%(options.preset==='loss'?3:2)===0);}
- const fitted=fitSourceVoices(score);score=fitted.score;if(fitted.trimmed)styled.warnings.push(`${fitted.trimmed} backing gates reduced to fit eight simultaneous cartridge voices.`);
- checkScore(score);return{score,warnings:styled.warnings};
+ // Preserve every selected source part and note in the editable arrangement.
+ // Native export alone handles any required eight-voice playback reduction.
+ checkScore(score,{arranging:true});return{score,warnings:styled.warnings};
 }
 function melodyNotes(track,drums,length){
  const byTick=new Map();for(const n of track.notes){if(drums.has(n.program??track.program))continue;const old=byTick.get(n.tick);if(!old||n.key>old.key)byTick.set(n.tick,{...n});}

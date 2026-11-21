@@ -1,3 +1,4 @@
+import {validateHexStudio} from './native-hex-workspace.js';
 import{validateNativeEventSuppressions}from'./native-event-suppression.js';
 import{validateWarpRemovals}from'./warp-removal.js';
 import{validateAbilityStudio}from'./ability-studio-model.js';
@@ -174,6 +175,7 @@ export function validateProject(p, catalog = []) {
   for(const t of p.interiorTemplates||[])validateInterior(t,assetIds);
   p.tileSize = TILE; p.name = String(p.name || 'Imported project').slice(0,120); p.id = typeof p.id === 'string' ? p.id : uid();
   if (!ids.has(p.activeMapId)) p.activeMapId = p.maps[0].id;
+  validateHexStudio(p.hexStudio);
   validateRegionEdits(p.regionMaps);validateTravelEdits(p.travelEdits);validateTilesetAnimations(p.tilesetAnimations);validateDoorAnimations(p.doorAnimations);validateCryEdits(p.cryEdits);validateHMRules(p);validateSpriteStudio(p,assetIds);for(const g of p.spriteStudio?.groups||[])if(g.creature)validateCreature(creatureDefaults(g));for(const e of Object.values(p.romEdits||{}))for(const f of e.forms||[])if(!p.spriteStudio?.groups?.some(g=>g.id===f.groupId))throw Error('A native form references a missing sprite group.');if(p.developer!==undefined&&(!p.developer||typeof p.developer.enabled!=='boolean'))throw Error('Invalid developer mode.');if(p.textEdits!==undefined&&(!p.textEdits||Array.isArray(p.textEdits)||JSON.stringify(p.textEdits).length>8e6||Object.keys(p.textEdits).some(h=>!(/^[a-f0-9]{64}$/).test(h))))throw Error('Invalid dialogue edits.');validateQuests(p);validateGameEdits(p);for(const m of p.maps)lockMapRenderIntent(m);validateRenderIntents(p);validateAssemblies(p,assetIds);validateSmart(p,assetIds);validateWorld(p,assetIds);validateSeams(p);validateBuilder(p,assetIds);
   validateAbilityStudio(p);validateSourceSettings(p.sourceEngine);validateAuthoring(p);validateStory(p);validateNativeStory(p);return p;
 }
