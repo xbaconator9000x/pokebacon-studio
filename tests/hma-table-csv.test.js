@@ -106,7 +106,7 @@ test('binary ASCII CSV round-trips embedded NUL, control, high-bit and trailing 
  const raw=Uint8Array.of(0x41,0,0xff,0x0a,0x42);
  stageROMHex(project,ID,source,AT+7,raw);
  const csv=exportTableCSV(project,ID,source,table,{start:0,end:0,asciiHex:true});
- assert.match(csv,/^row,level,growth,link,label@hex\\r\\n/);
+ assert.match(csv,/^row,level,growth,link,label@hex\r\n/);
  assert.ok(csv.includes('4100FF0A42'));
  const fresh=newProject();saveTableDefinition(fresh,ID,source,table);
  importTableCSV(fresh,ID,source,table,csv);
@@ -121,9 +121,9 @@ test('binary ASCII CSV round-trips embedded NUL, control, high-bit and trailing 
 });
 test('binary ASCII CSV rejects malformed hex, width mismatch, non-ASCII and duplicate aliases atomically',()=>{
  const {source,project,table}=fixture();const before=JSON.stringify(project);
- const rejects=['row,label@hex\\n0,AB\\n','row,label@hex\\n0,000000000Z\\n','row,label@hex\\n0,00000000000\\n',
-  'row,level@hex\\n0,0000\\n','row,label,label@hex\\n0,Hello,48656C6C6F\\n',
-  'row,label@hex\\n0,4142434445\\n1,ZZZZZZZZZZ\\n'];
+ const rejects=['row,label@hex\n0,AB\n','row,label@hex\n0,000000000Z\n','row,label@hex\n0,00000000000\n',
+  'row,level@hex\n0,0000\n','row,label,label@hex\n0,Hello,48656C6C6F\n',
+  'row,label@hex\n0,4142434445\n1,ZZZZZZZZZZ\n'];
  for(const csv of rejects){assert.throws(()=>importTableCSV(project,ID,source,table,csv),undefined,csv);assert.equal(JSON.stringify(project),before);}
  assert.throws(()=>exportTableCSV(project,ID,source,table,{asciiHex:'yes'}),/boolean/);
 });
