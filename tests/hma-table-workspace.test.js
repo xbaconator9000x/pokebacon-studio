@@ -254,5 +254,11 @@ test('native arithmetic rejects coercible noninteger strings atomically',()=>{
  const plan=planSave(project),parts=new Map(plan.parts.map(x=>[x.id,structuredClone(x.value)]));
  const restored=assembleSavedProject(structuredClone(plan.header),savedProjectKeys(plan.header).map(k=>parts.get(k)));
  assert.equal(tableRecord(restored,sourceId,source,table,0).values.value,tableRecord(project,sourceId,source,table,0).values.value);
- const writer=new RomOutput(source);installROMHexEdits(writer,restored,sourceId,source);
+ const original=source.slice();
+ const writer=new RomOutput(source);installROMHexEdits(restored,sourceId,source,writer);
+ for(let row=0;row<2;row++){
+  const expected=tableRecord(restored,sourceId,source,table,row).values.value;
+  assert.equal(new DataView(writer.bytes.buffer,writer.bytes.byteOffset,writer.bytes.byteLength).getUint16(table.address+row*table.stride,true),expected,'native output must contain the reopened adjusted row');
+ }
+ assert.deepEqual(source,original,'native export must not mutate the source ROM');
 });
