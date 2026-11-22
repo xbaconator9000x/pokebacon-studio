@@ -281,6 +281,37 @@ export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,
   if(m&&m[4]==='"'&&/(^|[^\\])"/.test(m[5]))continue;
   if(m&&Number(m[2])===code)matches.push({i,m});
  }
+ if(matches.length===0){
+  // Compact single-line TOML label arrays are editable without normalizing
+  // other elements, comments or original-ROM bytes.
+  const candidates=[];
+  for(let j=start+2;j<end;j+=2){
+   const m=lines[j].match(/^(\\s*)(\\d+)(\\s*=\\s*)\\[([^\\r\\n]*)\\](\\s*(?:#.*)?)$/);
+   if(!m)continue;
+   const elements=[],pattern=/\\s*("(?:(?:\\\\.)|[^"\\\\])*"|'[^']*')\\s*(,|$)/gy;
+   let pos=0,valid=true;
+   while(pos<m[4].length){
+    pattern.lastIndex=pos;
+    const item=pattern.exec(m[4]);
+    if(!item){valid=false;break;}
+    elements.push({begin:item.index+item[0].indexOf(item[1]),end:item.index+item[0].indexOf(item[1])+item[1].length});
+    pos=pattern.lastIndex;
+    if(!item[2]&&pos<m[4].length){valid=false;break;}
+   }
+   const index=code-Number(m[2]);
+   if(valid&&index>=0&&index<elements.length)candidates.push({j,m,element:elements[index]});
+  }
+  if(candidates.length!==1)throw Error('Only unique standalone or compact array HMA labels are writable.');
+  const {j,m,element}=candidates[0];
+  const delimiter=label.includes("'")?'"':label.includes('"')?"'":m[4][element.begin];
+  const encoded=delimiter==='"'?label.replace(/\\\\/g,'\\\\\\\\').replace(/"/g,'\\\\"'):label;
+  const inner=m[4].slice(0,element.begin)+delimiter+encoded+delimiter+m[4].slice(element.end);
+  const copy=lines.slice();copy[j]=m[1]+m[2]+m[3]+'['+inner+']'+m[5];
+  const updated=copy.join(''),draft={hexStudio:{version:1,sources:{[sourceId]:{...state,hmaToml:updated}}}};
+  const after=hmaListLabels(draft,sourceId,source,listName);
+  if(after.length!==before.length||after.some((x,k)=>x.value!==before[k].value)||after.find(x=>x.value===code)?.label!==label)throw Error('HMA array label writeback changed numeric identities.');
+  state.hmaToml=updated;return {code,label};
+ }
  if(matches.length!==1)throw Error('Only unique standalone quoted HMA labels are writable.');
  const {i,m}=matches[0];
  // Basic TOML strings safely encode labels containing both quote types.
