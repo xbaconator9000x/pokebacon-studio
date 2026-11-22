@@ -282,19 +282,19 @@ export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,
   if(m&&Number(m[2])===code)matches.push({i,m});
  }
  if(matches.length===0){
-  // Compact single-line TOML label arrays are editable without normalizing
-  // other elements, comments or original-ROM bytes.
+  // A conservative single-line array writer preserves all other entries.
   const candidates=[];
   for(let j=start+2;j<end;j+=2){
-   const m=lines[j].match(/^(\\s*)(\\d+)(\\s*=\\s*)\\[([^\\r\\n]*)\\](\\s*(?:#.*)?)$/);
+   const m=lines[j].match(/^(\s*)(\d+)(\s*=\s*)\[([^\r\n]*)\](\s*(?:#.*)?)$/);
    if(!m)continue;
-   const elements=[],pattern=/\\s*("(?:(?:\\\\.)|[^"\\\\])*"|'[^']*')\\s*(,|$)/gy;
+   const elements=[],pattern=/\s*("(?:\\.|[^"\\])*"|'[^']*')\s*(,|$)/gy;
    let pos=0,valid=true;
    while(pos<m[4].length){
     pattern.lastIndex=pos;
     const item=pattern.exec(m[4]);
     if(!item){valid=false;break;}
-    elements.push({begin:item.index+item[0].indexOf(item[1]),end:item.index+item[0].indexOf(item[1])+item[1].length});
+    const begin=item.index+item[0].indexOf(item[1]);
+    elements.push({begin,end:begin+item[1].length});
     pos=pattern.lastIndex;
     if(!item[2]&&pos<m[4].length){valid=false;break;}
    }
@@ -304,7 +304,7 @@ export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,
   if(candidates.length!==1)throw Error('Only unique standalone or compact array HMA labels are writable.');
   const {j,m,element}=candidates[0];
   const delimiter=label.includes("'")?'"':label.includes('"')?"'":m[4][element.begin];
-  const encoded=delimiter==='"'?label.replace(/\\\\/g,'\\\\\\\\').replace(/"/g,'\\\\"'):label;
+  const encoded=delimiter==='"'?label.replace(/\\/g,'\\\\').replace(/"/g,'\\"'):label;
   const inner=m[4].slice(0,element.begin)+delimiter+encoded+delimiter+m[4].slice(element.end);
   const copy=lines.slice();copy[j]=m[1]+m[2]+m[3]+'['+inner+']'+m[5];
   const updated=copy.join(''),draft={hexStudio:{version:1,sources:{[sourceId]:{...state,hmaToml:updated}}}};
