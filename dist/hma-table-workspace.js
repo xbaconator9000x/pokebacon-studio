@@ -165,7 +165,13 @@ export function saveTableDefinition(project,sourceId,source,table){
  const dest=project.hexStudio.sources[sourceId];dest.tables=dest.tables.filter(x=>x.id!==table.id).concat([structuredClone(table)]);
  return table;
 }
-function decodeHmaBasicLabel(value){
+function decodeHmaBasicLabel(value,{multiline=false}={}){
+ // TOML multiline basic strings drop their opening newline and fold
+ // backslash-newline plus subsequent indentation and blank lines.
+ if(multiline){
+  value=value.replace(/^\r?\n/,'');
+  value=value.replace(/\\[ \t]*\r?\n[ \t\r\n]*/g,'');
+ }
  return value.replace(/\\(u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|.)/gs,(_,code)=>{
   const escapes={n:'\n',r:'\r',t:'\t',b:'\b',f:'\f','"':'"','\\':'\\'};
   if(Object.hasOwn(escapes,code))return escapes[code];
@@ -221,7 +227,7 @@ export function hmaListLabels(project,sourceId,source,listName){
      }else value+=ch;
     }
     if(!closed||value.length<1||value.length>100)throw Error('Incomplete HMA list string.');
-    words.push(quote==='"'?decodeHmaBasicLabel(value):value);
+    words.push(quote==='"'?decodeHmaBasicLabel(value,{multiline:triple}):value);
     whitespace();
     if(pos>=inner.length)break;
     if(inner[pos]!==',')throw Error('Missing HMA list separator.');
@@ -233,7 +239,7 @@ export function hmaListLabels(project,sourceId,source,listName){
   }else {
    // Decode TOML basic-string escapes without changing numeric label identity.
    if(raw.startsWith("'''")&&raw.endsWith("'''")&&raw.length>=6){add(start,raw.slice(3,-3));continue;}
-   if(raw.startsWith('"""')&&raw.endsWith('"""')&&raw.length>=6){add(start,decodeHmaBasicLabel(raw.slice(3,-3)));continue;}
+   if(raw.startsWith('"""')&&raw.endsWith('"""')&&raw.length>=6){add(start,decodeHmaBasicLabel(raw.slice(3,-3),{multiline:true}));continue;}
    const basic=raw.match(/^"((?:\\.|[^"\\])*)"$/);
    if(basic)add(start,decodeHmaBasicLabel(basic[1]));
    else if(raw.startsWith("'")&&raw.endsWith("'")&&raw.length>=2)add(start,raw.slice(1,-1));
