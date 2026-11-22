@@ -109,3 +109,32 @@ test('HMA TOML rejects unsafe rounded addresses and offset-pointer deltas',()=>{
  validateProject(reopened);
  assert.deepEqual(parseHMAToml(reopened.hexStudio.sources[ID].hmaToml,{romLength:source.length}).offsetPointers.map(x=>x.offset),[-8]);
 });
+
+
+test('multiline basic TOML array labels decode escaped quotes, slashes and Unicode across saved projects',()=>{
+ const {source,project}=scenario();
+ const raw=[
+  '[[List]]',
+  "Name = 'escaped.multiline'",
+  '0 = [',
+  '  """Quote: \\"ok\\"""",',
+  '  """Slash: \\\\ path""",',
+  '  """Unicode: \\u0041 and \\U00000042"""',
+  ']'
+ ].join('\n');
+ importHMAToml(project,ID,source,raw);
+ const expected=[
+  {value:0,label:'Quote: "ok"'},
+  {value:1,label:'Slash: \\ path'},
+  {value:2,label:'Unicode: A and B'}
+ ];
+ assert.deepEqual(hmaListLabels(project,ID,source,'escaped.multiline'),expected);
+ const save=planSave(project),parts=new Map(save.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ validateProject(reopened);
+ assert.equal(reopened.hexStudio.sources[ID].hmaToml,raw);
+ assert.deepEqual(hmaListLabels(reopened,ID,source,'escaped.multiline'),expected);
+ const malformed=raw.replace('\\u0041','\\uD800');
+ importHMAToml(reopened,ID,source,malformed);
+ assert.throws(()=>hmaListLabels(reopened,ID,source,'escaped.multiline'),/Unicode/);
+});
