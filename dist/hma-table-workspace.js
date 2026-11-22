@@ -6,8 +6,16 @@ const number=n=>typeof n==='string'&&/^0x[0-9a-f]+$/i.test(n)?parseInt(n.slice(2
 // TOML numeric addresses are never coerced from blank strings, booleans or
 // exponent notation. Unknown syntax is preserved in the original document.
 const tomlInteger=n=>{
- if(typeof n!=='string'||!/^(?:0x[0-9a-fA-F]+|[+-]?(?:0|[1-9][0-9]*))$/.test(n.trim()))return NaN;
- const parsed=number(n.trim());
+ if(typeof n!=='string')return NaN;
+ const token=n.trim();
+ // TOML permits separators only between digits, never next to a radix prefix,
+ // sign or another separator. Reject floats, exponents and implicit coercion.
+ const decimal=/^[+-]?(?:0|[1-9](?:_?[0-9])*)$/;
+ const hex=/^0x[0-9a-fA-F]+(?:_?[0-9a-fA-F]+)*$/;
+ const binary=/^0b[01]+(?:_?[01]+)*$/;
+ const octal=/^0o[0-7]+(?:_?[0-7]+)*$/;
+ if(![decimal,hex,binary,octal].some(pattern=>pattern.test(token)))return NaN;
+ const parsed=Number(token.replaceAll('_',''));
  // Reject rounded TOML addresses and offsets before they can select a native byte.
  return Number.isSafeInteger(parsed)?parsed:NaN;
 };
