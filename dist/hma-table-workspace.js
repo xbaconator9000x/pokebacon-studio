@@ -266,7 +266,7 @@ export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,
   for(let j=i+2;j<lines.length;j+=2)if(/^\s*\[\[?[A-Za-z0-9_]+\]\]?\s*$/.test(lines[j])){end=j;break;}
   const names=[];
   for(let j=i+2;j<end;j+=2){
-   const m=lines[j].match(/^\s*Name\s*=\s*(['"])(.*?)\1\s*$/);
+   const m=lines[j].match(/^\s*Name\s*=\s*(\x27{3}|\x22{3}|\x27|\x22)(.*?)\1\s*(?:#.*)?$/);
    if(m)names.push(m[2]);
   }
   if(names.length===1&&names[0]===listName)blocks.push([i,end]);
