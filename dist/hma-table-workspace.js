@@ -213,7 +213,7 @@ export function hmaListLabels(project,sourceId,source,listName){
      }else value+=ch;
     }
     if(!closed||value.length<1||value.length>100)throw Error('Incomplete HMA list string.');
-    words.push(quote==='"'&&!triple?decodeHmaBasicLabel(value):value);
+    words.push(quote==='"'?decodeHmaBasicLabel(value):value);
     whitespace();
     if(pos>=inner.length)break;
     if(inner[pos]!==',')throw Error('Missing HMA list separator.');
@@ -224,7 +224,8 @@ export function hmaListLabels(project,sourceId,source,listName){
    words.forEach((word,i)=>add(start+i,word));
   }else {
    // Decode TOML basic-string escapes without changing numeric label identity.
-   if((raw.startsWith("'''")&&raw.endsWith("'''")&&raw.length>=6)||(raw.startsWith('"""')&&raw.endsWith('"""')&&raw.length>=6)){add(start,raw.slice(3,-3));continue;}
+   if(raw.startsWith("'''")&&raw.endsWith("'''")&&raw.length>=6){add(start,raw.slice(3,-3));continue;}
+   if(raw.startsWith('"""')&&raw.endsWith('"""')&&raw.length>=6){add(start,decodeHmaBasicLabel(raw.slice(3,-3)));continue;}
    const basic=raw.match(/^"((?:\\.|[^"\\])*)"$/);
    if(basic)add(start,decodeHmaBasicLabel(basic[1]));
    else if(raw.startsWith("'")&&raw.endsWith("'")&&raw.length>=2)add(start,raw.slice(1,-1));
