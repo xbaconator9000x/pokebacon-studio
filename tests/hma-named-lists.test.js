@@ -151,3 +151,14 @@ test('HMA multiline TOML basic labels fold escaped newline and preserve split sa
  assert.equal(reopened.hexStudio.sources[ID].hmaToml,raw);
  assert.deepEqual(hmaListLabels(reopened,ID,source,'folded.labels'),expected);
 });
+
+
+test('ordinary HMA TOML array labels reject physical newlines and preserve original bytes',()=>{
+ const {source,project}=scenario(),before=source.slice();
+ for(const quote of ['"',"'"]){
+  const raw=['[[List]]',"Name = 'broken.newline'",'0 = [','  '+quote+'First','Second'+quote+',','  '+quote+'Next'+quote,']'].join('\\n');
+  importHMAToml(project,ID,source,raw);
+  assert.throws(()=>hmaListLabels(project,ID,source,'broken.newline'),/newline/);
+  assert.deepEqual(source,before);
+ }
+});
