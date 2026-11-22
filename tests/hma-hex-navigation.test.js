@@ -68,3 +68,21 @@ test('source offsets reject fractional, unsafe, negative and beyond-GBA values',
 test('named anchor lookup tolerates incomplete imported metadata without selecting it',()=>{
  assert.deepEqual(findHexAnchor([null,{}, {name:'Table',at:32}], 'table'),{name:'Table',at:32});
 });
+
+
+test('hex UI resets navigation and search cursors when a different source ROM opens',()=>{
+ const ui=readFileSync(new URL('../dist/hma-hex-ui.js',import.meta.url),'utf8');
+ assert.match(ui,/function syncHexSource\(\)/);
+ assert.match(ui,/state\.navigationSource===key/);
+ assert.match(ui,/state\.navigation=createHexNavigation\(0\)/);
+ assert.match(ui,/state\.maskResume=null/);
+ assert.match(ui,/state\.maskHits=\[\]/);
+ assert.match(ui,/function open\(tab=state\.tab\)\{\s*syncHexSource\(\)/);
+ assert.match(ui,/function render\(\)\{\s*syncHexSource\(\)/);
+});
+
+test('hex UI rejects invalid targets before modifying navigation history',()=>{
+ const ui=readFileSync(new URL('../dist/hma-hex-ui.js',import.meta.url),'utf8');
+ assert.match(ui,/offset>=data\(\)\.length\)throw Error\('Hex navigation target is outside the opened source ROM\.'/);
+ assert.ok(ui.indexOf("offset>=data().length)throw Error")<ui.indexOf("state.navigation=visitHexLocation(state.navigation,offset);"));
+});
