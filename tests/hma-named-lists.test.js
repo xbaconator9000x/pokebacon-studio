@@ -5,7 +5,7 @@ import {newProject,validateProject} from '../dist/model.js';
 import {RomOutput} from '../dist/rom-writer.js';
 import {installROMHexEdits} from '../dist/native-hex-workspace.js';
 import {planSave,assembleSavedProject,savedProjectKeys} from '../dist/project-store.js';
-import {parseHMAToml,importHMAToml,hmaListLabels,bindTableEnumList,saveTableDefinition,tableDefinitions,tableRecord,editTableField} from '../dist/hma-table-workspace.js';
+import {parseHMAToml,importHMAToml,hmaListLabels,bindTableEnumList,saveTableDefinition,tableDefinitions,tableRecord,editTableField,renameHMATomlNumericLabel} from '../dist/hma-table-workspace.js';
 const ID='a'.repeat(64),AT=0x7200;
 const TOML=['[[List]]',"Name = '''battle.weather'''",'0 = [',"  '''Clear''',","  '''Rain''',","  '''Hail''',",']',"7 = '''Harsh sunlight'''",'[[List]]',"Name = '''battle.weather.rare'''",'10 = [',"  '''Overcast''',","  '''Fog''',",']'].join('\n');
 function scenario(){
@@ -178,4 +178,19 @@ test('native typed cells reject coercive numbers atomically across save and expo
  const output=new RomOutput(source);installROMHexEdits(reopened,ID,source,output);
  assert.equal(output.bytes[AT+1],0x34);assert.equal(output.bytes[AT+2],0x12);
  assert.deepEqual(source,original);
+});
+
+test('standalone triple-quoted HMA label rename persists and preserves native bytes',()=>{
+ const {source,project}=scenario(),original=source.slice();
+ const raw=['[[List]]',"Name = 'triple.test'",'7 = """Sun""" # comment',"8 = '''Fog'''"].join('\n');
+ importHMAToml(project,ID,source,raw);
+ renameHMATomlNumericLabel(project,ID,source,'triple.test',7,'Bright');
+ renameHMATomlNumericLabel(project,ID,source,'triple.test',8,'Mist');
+ assert.match(project.hexStudio.sources[ID].hmaToml,/7 = """Bright""" # comment/);
+ const save=planSave(project),parts=new Map(save.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ validateProject(reopened);
+ assert.deepEqual(hmaListLabels(reopened,ID,source,'triple.test'),[{value:7,label:'Bright'},{value:8,label:'Mist'}]);
+ const output=new RomOutput(source);installROMHexEdits(reopened,ID,source,output);
+ assert.deepEqual(output.bytes,original);assert.deepEqual(source,original);
 });
