@@ -348,3 +348,21 @@ test('HMA writeback honors commented list section boundaries and preserves nativ
  assert.ok(hmaMetadata(restored,sourceId,source).raw.includes('[[NamedAnchors]] # stop'));
  const out=new RomOutput(source);installROMHexEdits(restored,sourceId,source,out);assert.deepEqual(out.bytes,source);
 });
+
+test('HMA compact arrays permit transactional numeric label edits with native byte preservation',()=>{
+ const rom=syntheticROM(),p=newProject();
+ const raw=['[[List]]',"Name = 'weather'",'4 = ["Sun", "Rain", "Snow"] # keep','[[List]]',"Name = 'other'","1 = ['First', 'Second']"].join('\\n')+'\\n';
+ importHMAToml(p,sourceId,rom,raw);
+ assert.deepEqual(renameHMATomlNumericLabels(p,sourceId,rom,[{listName:'weather',code:5,label:'Storm'},{listName:'other',code:2,label:'Third'}]),{updated:2});
+ const changed=hmaMetadata(p,sourceId,rom).raw;
+ assert.ok(changed.includes('4 = ["Sun", "Storm", "Snow"] # keep'));
+ assert.ok(changed.includes("1 = ['First', 'Third']"));
+ assert.deepEqual(hmaListLabels(p,sourceId,rom,'weather').map(x=>x.value),[4,5,6]);
+ assert.throws(()=>renameHMATomlNumericLabels(p,sourceId,rom,[{listName:'weather',code:4,label:'Dry'},{listName:'weather',code:99,label:'Missing'}]),/Unknown HMA label code/);
+ assert.equal(hmaMetadata(p,sourceId,rom).raw,changed);
+ const save=planSave(p),parts=new Map(save.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const restored=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ assert.equal(hmaMetadata(restored,sourceId,rom).raw,changed);
+ const output=new RomOutput(rom);installROMHexEdits(restored,sourceId,rom,output);
+ assert.deepEqual(output.bytes,rom);
+});
