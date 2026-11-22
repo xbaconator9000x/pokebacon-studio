@@ -138,3 +138,16 @@ test('multiline basic TOML array labels decode escaped quotes, slashes and Unico
  importHMAToml(reopened,ID,source,malformed);
  assert.throws(()=>hmaListLabels(reopened,ID,source,'escaped.multiline'),/Unicode/);
 });
+
+test('HMA multiline TOML basic labels fold escaped newline and preserve split saves',()=>{
+ const {source,project}=scenario();
+ const raw=['[[List]]',"Name = 'folded.labels'",'0 = """','First\\','   Second"""','3 = [','  """','Alpha\\','    ','    Beta""",','  """One\\u0041"""',']'].join('\n');
+ importHMAToml(project,ID,source,raw);
+ const expected=[{value:0,label:'FirstSecond'},{value:3,label:'AlphaBeta'},{value:4,label:'OneA'}];
+ assert.deepEqual(hmaListLabels(project,ID,source,'folded.labels'),expected);
+ const save=planSave(project),parts=new Map(save.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ validateProject(reopened);
+ assert.equal(reopened.hexStudio.sources[ID].hmaToml,raw);
+ assert.deepEqual(hmaListLabels(reopened,ID,source,'folded.labels'),expected);
+});
