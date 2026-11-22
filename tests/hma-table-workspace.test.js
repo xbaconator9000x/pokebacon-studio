@@ -321,3 +321,17 @@ test('HMA TOML standard radix integers and digit separators select only exact sa
  const reopened=assembleSavedProject(structuredClone(plan.header),savedProjectKeys(plan.header).map(k=>parts.get(k)));
  assert.equal(hmaMetadata(reopened,sourceId,source).raw,raw);
 });
+
+test('HMA triple-basic escaped quote protects comment and persists losslessly',()=>{
+ const rom=syntheticROM(),project=newProject(),original=Uint8Array.from(rom);
+ const raw=['[[NamedAnchors]]',"Name = 'escaped.comment'",'Address = 0x680',"Format = \"\"\"a\\\"#literal\"\"\" # trailing comment"].join('\n');
+ const parsed=parseHMAToml(raw,{romLength:rom.length});
+ assert.equal(parsed.anchors.length,1,JSON.stringify(parsed.warnings));
+ assert.equal(parsed.anchors[0].format,"a\\\"#literal");
+ importHMAToml(project,sourceId,rom,raw);
+ const save=planSave(project),parts=new Map(save.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ assert.equal(hmaMetadata(reopened,sourceId,rom).raw,raw);
+ const writer=new RomOutput(rom);installROMHexEdits(reopened,sourceId,rom,writer);
+ assert.deepEqual(writer.bytes,original);
+});
