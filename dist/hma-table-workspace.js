@@ -262,9 +262,9 @@ export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,
  if(!before.some(x=>x.value===code))throw Error('Unknown HMA label code.');
  const lines=raw.split(/(\r?\n)/),blocks=[];
  for(let i=0;i<lines.length;i+=2){
-  if(!/^\s*\[\[List\]\]\s*$/.test(lines[i]))continue;
+  if(!/^\s*\[\[List\]\]\s*(?:#.*)?$/.test(lines[i]))continue;
   let end=lines.length;
-  for(let j=i+2;j<lines.length;j+=2)if(/^\s*\[\[?[A-Za-z0-9_]+\]\]?\s*$/.test(lines[j])){end=j;break;}
+  for(let j=i+2;j<lines.length;j+=2)if(/^\s*\[\[?[A-Za-z0-9_]+\]\]?\s*(?:#.*)?$/.test(lines[j])){end=j;break;}
   const names=[];
   for(let j=i+2;j<end;j+=2){
    const m=lines[j].match(/^\s*Name\s*=\s*(\x27{3}|\x22{3}|\x27|\x22)(.*?)\1\s*(?:#.*)?$/);
