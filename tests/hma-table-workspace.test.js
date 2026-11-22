@@ -36,6 +36,24 @@ test('HMA TOML extracts recognized anchors/offset pointers and retains every uns
  assert.equal(hmaMetadata(restored,sourceId,source).raw,raw);
  validateProject(restored);
 });
+test('triple-quoted HMA List names rename atomically and survive split save and native export',()=>{
+ const source=syntheticROM(),p=newProject(),raw=[
+  '[[List]]',"Name = '''weather'''","7 = 'Rain'",
+  '[[List]]','Name = """terrain"""',"1 = 'Grass'"
+ ].join('\n')+'\n';
+ importHMAToml(p,sourceId,source,raw);
+ assert.deepEqual(renameHMATomlNumericLabels(p,sourceId,source,[
+  {listName:'weather',code:7,label:'Snow'},{listName:'terrain',code:1,label:'Rock'}
+ ]),{updated:2});
+ const plan=planSave(p),parts=new Map(plan.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(plan.header),savedProjectKeys(plan.header).map(k=>parts.get(k)));
+ assert.equal(hmaMetadata(reopened,sourceId,source).raw.includes("Name = '''weather'''"),true);
+ assert.equal(hmaMetadata(reopened,sourceId,source).raw.includes('Name = """terrain"""'),true);
+ assert.deepEqual(hmaListLabels(reopened,sourceId,source,'weather'),[{value:7,label:'Snow'}]);
+ assert.deepEqual(hmaListLabels(reopened,sourceId,source,'terrain'),[{value:1,label:'Rock'}]);
+ const out=new RomOutput(source);installROMHexEdits(reopened,sourceId,source,out);
+ assert.deepEqual(out.bytes,source);
+});
 test('typed tables read/write signed, unsigned, pointers and ASCII with exact native little-endian source bytes',()=>{
  const source=syntheticROM(),p=newProject(),table={id:'aipom-key',name:'Original Aipom controls',address:0x680,stride:18,count:3,fields:[
  {name:'level',type:'u8',offset:0},{name:'growth',type:'s16',offset:1},{name:'flags',type:'u32',offset:3},{name:'ref',type:'ptr',offset:7},{name:'label',type:'ascii',offset:11,length:7}]};
