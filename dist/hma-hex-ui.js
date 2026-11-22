@@ -14,19 +14,37 @@ export function hmaHexWorkshop(api){
  const session=()=>api.session(),data=()=>session().reader.bytes,id=()=>session().id,source=()=>api.project();
  const safe=f=>{try{const result=f();if(result&&typeof result.then==='function')result.catch(api.error);return result;}catch(error){api.error(error);return null;}};
  const nbytes=()=>hexState(source(),id())?.patches?.length||0;
+ function syncHexSource(){
+  const active=session();
+  const key=active?.id??null;
+  if(state.navigationSource===key)return;
+  state.navigationSource=key;
+  state.navigation=createHexNavigation(0);
+  state.offset=0;
+  state.maskResume=null;
+  state.maskHits=[];
+  state.maskQuery='';
+  state.pointerSite=0x200;
+  state.pointerTarget=0x200;
+ }
  function open(tab=state.tab){
+  syncHexSource();
   state.tab=tab;
   if(!session()){api.modal('ROM hex & tables','<p>Open the original GBA ROM to inspect real bytes and create reversible native edits. Projects cannot use arbitrary byte addresses without a matching source.</p><button id="hmaHexChoose" type="button" class="primary">Open GBA ROM</button>');$('#hmaHexChoose').onclick=()=>api.pickROM('hex');return;}
   render();
  }
- function jump(offset){state.tab='hex';state.navigation=visitHexLocation(state.navigation,offset);state.offset=currentHexLocation(state.navigation);render();}
- function traverse(direction){state.navigation=moveHexHistory(state.navigation,direction);state.offset=currentHexLocation(state.navigation);render();}
+ function jump(offset){
+  syncHexSource();
+  if(!Number.isSafeInteger(offset)||offset<0||offset>=data().length)throw Error('Hex navigation target is outside the opened source ROM.');
+  state.tab='hex';state.navigation=visitHexLocation(state.navigation,offset);state.offset=currentHexLocation(state.navigation);render();}
+ function traverse(direction){syncHexSource();state.navigation=moveHexHistory(state.navigation,direction);state.offset=currentHexLocation(state.navigation);render();}
  function shell(content){
   const bytes=data();
   api.modal('ROM hex & typed tables','<p class="hint-line">'+esc(session().reader.filename)+' · '+bytes.length.toLocaleString()+' bytes · '+nbytes()+' staged byte changes. Source ROM stays untouched.</p><div class="studio-tabs">'+[['hex','Hex'],['pointers','Pointers'],['tables','Typed tables'],['metadata','HMA metadata'],['changes','Review changes']].map(([tab,name])=>'<button type="button" data-hex-tab="'+tab+'" '+(state.tab===tab?'class="active"':'')+'>'+name+'</button>').join('')+'</div><div id="hmaHexBody">'+content+'</div>',null,'Done');
   document.querySelectorAll('[data-hex-tab]').forEach(b=>b.onclick=()=>open(b.dataset.hexTab));
  }
  function render(){
+  syncHexSource();
   if(state.tab==='hex')return hexScreen();
   if(state.tab==='pointers')return pointersScreen();
   if(state.tab==='tables')return tablesScreen();
