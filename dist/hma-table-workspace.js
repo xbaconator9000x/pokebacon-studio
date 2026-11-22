@@ -343,7 +343,12 @@ function bytesFor(type,value,length=0,sourceLength=32*1024*1024){
   const b=new Uint8Array(length);for(let i=0;i<text.length;i++)b[i]=text.charCodeAt(i);
   return b;
  }
- const n=typeof value==='string'?number(value):value,bits=types[type]*8,signed=type.startsWith('s'),min=signed?-(2**(bits-1)):0,max=signed?2**(bits-1)-1:2**bits-1;
+ // Numeric input must be an explicit integer. Number() otherwise silently
+  // accepts blank cells, exponents, booleans and rounded unsafe integers.
+  const token=typeof value==='string'?value.trim():null;
+  if(token!==null&&!/^(?:[+-]?(?:0|[1-9][0-9]*)|0[xX][0-9a-fA-F]+)$/.test(token))
+   throw Error('Native numeric fields require an explicit decimal or hexadecimal integer.');
+  const n=token===null?value:number(token),bits=types[type]*8,signed=type.startsWith('s'),min=signed?-(2**(bits-1)):0,max=signed?2**(bits-1)-1:2**bits-1;
  if(!Number.isInteger(n)||n<min||n>max)throw Error('Choose a '+type+' value between '+min+' and '+max+'.');
  if(type==='ptr'&&n!==0&&(n<0x08000200||n-0x08000000>=sourceLength))throw Error('Pointer must be zero or a valid 0x08xxxxxx source ROM address.');
  const b=new Uint8Array(types[type]),v=new DataView(b.buffer);
