@@ -162,3 +162,20 @@ test('ordinary HMA TOML array labels reject physical newlines and preserve origi
   assert.deepEqual(source,before);
  }
 });
+
+test('native typed cells reject coercive numbers atomically across save and export',()=>{
+ const {source,project,table}=scenario(),original=source.slice(),before=JSON.stringify(project);
+ for(const invalid of ['', ' ', '1e2', '0b11', '0o7', '01', 'Infinity', 'true', '9007199254740993']){
+  assert.throws(()=>editTableField(project,ID,source,table,0,'counter',invalid),/integer|value/i);
+  assert.equal(JSON.stringify(project),before);
+ }
+ assert.throws(()=>editTableField(project,ID,source,table,0,'counter',true),/value/i);
+ editTableField(project,ID,source,table,0,'counter','0x1234');
+ const save=planSave(project),parts=new Map(save.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ validateProject(reopened);
+ assert.equal(tableRecord(reopened,ID,source,table,0).values.counter,0x1234);
+ const output=new RomOutput(source);installROMHexEdits(reopened,ID,source,output);
+ assert.equal(output.bytes[AT+1],0x34);assert.equal(output.bytes[AT+2],0x12);
+ assert.deepEqual(source,original);
+});
