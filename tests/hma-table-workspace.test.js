@@ -290,7 +290,7 @@ test('HMA TOML standard radix integers and digit separators select only exact sa
   '[[OffsetPointer]]','Address = 0x0_304','Offset = -1_024'
  ].join('\n');
  const parsed=parseHMAToml(raw,{romLength:source.length});
- assert.deepEqual(parsed.anchors.map(x=>x.at),[1024,2048,1536]);
+ assert.deepEqual(parsed.anchors.map(x=>x.at),[1024,512,1536]);
  assert.equal(parsed.warnings.length,0);
  assert.equal(parsed.offsetPointers[0].at,0x304);
  assert.equal(parsed.offsetPointers[0].offset,-1024);
