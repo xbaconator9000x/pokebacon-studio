@@ -194,3 +194,19 @@ test('standalone triple-quoted HMA label rename persists and preserves native by
  const output=new RomOutput(source);installROMHexEdits(reopened,ID,source,output);
  assert.deepEqual(output.bytes,original);assert.deepEqual(source,original);
 });
+
+test('compact HMA arrays with trailing comma whitespace retain layout during label writeback',()=>{
+ const {source,project}=scenario();
+ const original="[[List]]\\nName = 'weather.trailing'\\n0 = ['Clear', 'Rain',   ] # retained\\n[[List]]\\nName = 'unrelated'\\n3 = 'Other'".replaceAll('\\n','\n');
+ importHMAToml(project,ID,source,original);
+ assert.deepEqual(hmaListLabels(project,ID,source,'weather.trailing'),[{value:0,label:'Clear'},{value:1,label:'Rain'}]);
+ renameHMATomlNumericLabel(project,ID,source,'weather.trailing',1,'Storm');
+ assert.equal(project.hexStudio.sources[ID].hmaToml,original.replace("'Rain'","'Storm'"));
+ assert.deepEqual(hmaListLabels(project,ID,source,'unrelated'),[{value:3,label:'Other'}]);
+ const saved=planSave(project),parts=new Map(saved.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const reopened=assembleSavedProject(structuredClone(saved.header),savedProjectKeys(saved.header).map(k=>parts.get(k)));
+ validateProject(reopened);
+ assert.equal(reopened.hexStudio.sources[ID].hmaToml,original.replace("'Rain'","'Storm'"));
+ const output=new RomOutput(source);installROMHexEdits(reopened,ID,source,output);
+ assert.deepEqual(output.bytes,source);
+});
