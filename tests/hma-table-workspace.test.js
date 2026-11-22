@@ -351,7 +351,7 @@ test('HMA writeback honors commented list section boundaries and preserves nativ
 
 test('HMA compact arrays permit transactional numeric label edits with native byte preservation',()=>{
  const rom=syntheticROM(),p=newProject();
- const raw=['[[List]]',"Name = 'weather'",'4 = ["Sun", "Rain", "Snow"] # keep','[[List]]',"Name = 'other'","1 = ['First', 'Second']"].join('\\n')+'\\n';
+ const raw=['[[List]]',"Name = 'weather'",'4 = ["Sun", "Rain", "Snow"] # keep','[[List]]',"Name = 'other'","1 = ['First', 'Second']"].join('\n')+'\n';
  importHMAToml(p,sourceId,rom,raw);
  assert.deepEqual(renameHMATomlNumericLabels(p,sourceId,rom,[{listName:'weather',code:5,label:'Storm'},{listName:'other',code:2,label:'Third'}]),{updated:2});
  const changed=hmaMetadata(p,sourceId,rom).raw;
