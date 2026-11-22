@@ -210,7 +210,7 @@ export function hmaListLabels(project,sourceId,source,listName){
      if(triple&&inner.slice(pos,pos+3)===quote.repeat(3)){pos+=3;closed=true;break;}
      if(!triple&&inner[pos]===quote){pos++;closed=true;break;}
      const ch=inner[pos++];
-     if(ch==='\\'&&quote==='"'&&!triple){
+     if(ch==='\\'&&quote==='"'){
       if(pos>=inner.length)throw Error('Incomplete HMA TOML escape.');
       const escaped=inner[pos++];
       if(escaped==='u'||escaped==='U'){
