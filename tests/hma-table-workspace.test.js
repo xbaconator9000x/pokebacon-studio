@@ -262,3 +262,21 @@ test('native arithmetic rejects coercible noninteger strings atomically',()=>{
  }
  assert.deepEqual(source,original,'native export must not mutate the source ROM');
 });
+
+test('HMA triple basic scalar and array escapes survive project reopen and native export',()=>{
+ const rom=syntheticROM(),original=rom.slice(),project=newProject();
+ const raw=['[[List]]',"Name = 'weather'",'7 = """Sunny\\u0020Day"""','8 = ["""Clear\\u0020Sky""", \'Rain\']'].join('\n');
+ importHMAToml(project,sourceId,rom,raw);
+ const expected=[{value:7,label:'Sunny Day'},{value:8,label:'Clear Sky'},{value:9,label:'Rain'}];
+ assert.deepEqual(hmaListLabels(project,sourceId,rom,'weather'),expected);
+ const save=planSave(project),parts=new Map(save.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ assert.equal(hmaMetadata(reopened,sourceId,rom).raw,raw);
+ assert.deepEqual(hmaListLabels(reopened,sourceId,rom,'weather'),expected);
+ const writer=new RomOutput(rom);installROMHexEdits(reopened,sourceId,rom,writer);
+ assert.deepEqual(writer.bytes,original);assert.deepEqual(rom,original);
+ for(const invalid of ['\\uD800','\\U00110000']){
+  const bad=newProject();importHMAToml(bad,sourceId,rom,['[[List]]',"Name = 'weather'",'7 = """Bad'+invalid+'"""'].join('\n'));
+  assert.throws(()=>hmaListLabels(bad,sourceId,rom,'weather'),/Unicode scalar/);
+ }
+});
