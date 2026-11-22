@@ -45,3 +45,26 @@ test('mobile hex workspace wires address history and imported anchor controls',(
  assert.match(ui,/findHexAnchor\(anchors/);
  assert.match(ui,/visitHexLocation\(state\.navigation/);
 });
+
+test('same-address visits preserve forward history and do not mutate the input',()=>{
+ let history=createHexNavigation(0x20);
+ history=visitHexLocation(visitHexLocation(history,0x40),0x60);
+ const back=moveHexHistory(history,-1);
+ const revisit=visitHexLocation(back,0x40);
+ assert.deepEqual(revisit,{entries:[0x20,0x40,0x60],index:1});
+ assert.equal(canMoveHexHistory(revisit,1),true);
+ assert.equal(currentHexLocation(moveHexHistory(revisit,1)),0x60);
+ assert.deepEqual(back,{entries:[0x20,0x40,0x60],index:1});
+});
+
+test('source offsets reject fractional, unsafe, negative and beyond-GBA values',()=>{
+ for(const offset of [-1,1.5,NaN,Infinity,0x100000000,Number.MAX_SAFE_INTEGER]){
+  assert.throws(()=>createHexNavigation(offset),/valid source-ROM offset/);
+  assert.throws(()=>visitHexLocation(createHexNavigation(),offset),/valid source-ROM offset/);
+ }
+ assert.equal(currentHexLocation(createHexNavigation(0xffffffff)),0xffffffff);
+});
+
+test('named anchor lookup tolerates incomplete imported metadata without selecting it',()=>{
+ assert.deepEqual(findHexAnchor([null,{}, {name:'Table',at:32}], 'table'),{name:'Table',at:32});
+});
