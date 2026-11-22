@@ -335,3 +335,16 @@ test('HMA triple-basic escaped quote protects comment and persists losslessly',(
  const writer=new RomOutput(rom);installROMHexEdits(reopened,sourceId,rom,writer);
  assert.deepEqual(writer.bytes,original);
 });
+
+test('HMA writeback honors commented list section boundaries and preserves native export',()=>{
+ const source=syntheticROM(),p=newProject();
+ const raw=['[[List]] # first',"Name = '''weather'''","7 = 'Rain'",'[[List]] # second',"Name = '''terrain'''","7 = 'Grass'",'[[NamedAnchors]] # stop',"Name = '''anchor'''",'Address = 0x680',"Format = '''[value.]2'''"].join('\n')+'\n';
+ importHMAToml(p,sourceId,source,raw);
+ assert.deepEqual(renameHMATomlNumericLabel(p,sourceId,source,'weather',7,'Snow'),{code:7,label:'Snow'});
+ assert.deepEqual(hmaListLabels(p,sourceId,source,'weather'),[{value:7,label:'Snow'}]);
+ assert.deepEqual(hmaListLabels(p,sourceId,source,'terrain'),[{value:7,label:'Grass'}]);
+ const plan=planSave(p),parts=new Map(plan.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const restored=assembleSavedProject(structuredClone(plan.header),savedProjectKeys(plan.header).map(k=>parts.get(k)));
+ assert.ok(hmaMetadata(restored,sourceId,source).raw.includes('[[NamedAnchors]] # stop'));
+ const out=new RomOutput(source);installROMHexEdits(restored,sourceId,source,out);assert.deepEqual(out.bytes,source);
+});
