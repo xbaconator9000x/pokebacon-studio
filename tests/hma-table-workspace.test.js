@@ -280,3 +280,26 @@ test('HMA triple basic scalar and array escapes survive project reopen and nativ
   assert.throws(()=>hmaListLabels(bad,sourceId,rom,'weather'),/Unicode scalar/);
  }
 });
+
+test('HMA TOML standard radix integers and digit separators select only exact safe native offsets',()=>{
+ const source=syntheticROM(),p=newProject();
+ const raw=[
+  '[[NamedAnchors]]',"Name = 'decimal.group'",'Address = 1_024',"Format = 'u8'",
+  '[[NamedAnchors]]',"Name = 'binary.group'",'Address = 0b10_0000_0000',"Format = 'u8'",
+  '[[NamedAnchors]]',"Name = 'octal.group'",'Address = 0o3_000',"Format = 'u8'",
+  '[[OffsetPointer]]','Address = 0x0_304','Offset = -1_024'
+ ].join('\n');
+ const parsed=parseHMAToml(raw,{romLength:source.length});
+ assert.deepEqual(parsed.anchors.map(x=>x.at),[1024,2048,1536]);
+ assert.equal(parsed.warnings.length,0);
+ assert.equal(parsed.offsetPointers[0].at,0x304);
+ assert.equal(parsed.offsetPointers[0].offset,-1024);
+ for(const invalid of ['1__024','_1024','1024_','0x_FF','0b10_2','0o8','9_007_199_254_740_993','1e3','0x20000000000001']){
+  const result=parseHMAToml(['[[NamedAnchors]]',"Name = 'invalid'",'Address = '+invalid,"Format = 'u8'"].join('\n'),{romLength:source.length});
+  assert.equal(result.anchors.length,0,invalid);
+ }
+ importHMAToml(p,sourceId,source,raw);
+ const plan=planSave(p),parts=new Map(plan.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(plan.header),savedProjectKeys(plan.header).map(k=>parts.get(k)));
+ assert.equal(hmaMetadata(reopened,sourceId,source).raw,raw);
+});
