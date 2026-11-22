@@ -290,6 +290,9 @@ export function renameHMATomlNumericLabel(project,sourceId,source,listName,code,
    const elements=[],pattern=/\s*("(?:\\.|[^"\\])*"|'[^']*')\s*(,|$)/gy;
    let pos=0,valid=true;
    while(pos<m[4].length){
+    // TOML permits whitespace after a trailing comma in an inline array.
+    // The numeric label reader accepts it; writeback must preserve it too.
+    if(/^\s*$/.test(m[4].slice(pos)))break;
     pattern.lastIndex=pos;
     const item=pattern.exec(m[4]);
     if(!item){valid=false;break;}
