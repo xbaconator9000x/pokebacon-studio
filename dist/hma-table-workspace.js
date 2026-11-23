@@ -132,6 +132,40 @@ export function importHMAToml(project,sourceId,source,text){
  project.hexStudio.sources[sourceId].hmaToml=metadata.raw;
  return{anchors:metadata.anchors.length,pointers:metadata.offsetPointers.length,warnings:metadata.warnings.length};
 }
+
+/** Rename one uniquely owned HMA anchor without normalizing unrelated TOML. */
+export function renameHMATomlAnchor(project,sourceId,source,oldName,newName){
+ if(!nameOk(oldName)||!nameOk(newName))throw Error('Invalid HMA anchor name.');
+ const state=hexState(project,sourceId);
+ if(!state?.hmaToml)throw Error('Import HMA metadata first.');
+ const metadata=hmaMetadata(project,sourceId,source);
+ const matches=metadata.anchors.filter(a=>a.name.toLowerCase()===oldName.toLowerCase());
+ if(matches.length!==1)throw Error('HMA anchor is missing or ambiguous.');
+ if(metadata.anchors.some(a=>a.name.toLowerCase()===newName.toLowerCase()&&a!==matches[0]))throw Error('HMA anchor name already exists.');
+ if(oldName===newName)return {name:newName,address:matches[0].at};
+ const raw=state.hmaToml,lines=raw.split(/(\r?\n)/);
+ let active=false,owners=[];
+ for(let i=0;i<lines.length;i+=2){
+  const line=lines[i];
+  if(/^\s*\[\[?[A-Za-z0-9_]+\]\]?\s*(?:#.*)?$/.test(line))active=/^\s*\[\[NamedAnchors\]\]/.test(line);
+  if(!active)continue;
+  const m=line.match(/^(\s*Name\s*=\s*)("""|'''|"|')(.*?)\2(\s*(?:#.*)?)$/);
+  if(m&&m[3]===matches[0].name)owners.push({i,m});
+ }
+ if(owners.length!==1)throw Error('HMA anchor source is ambiguous or unsupported.');
+ const {i,m}=owners[0];
+ // Never rewrite references in unknown HMA extensions or linked format strings.
+ const elsewhere=lines.filter((_,j)=>j!==i&&j%2===0).some(line=>line.includes(matches[0].name));
+ if(elsewhere)throw Error('HMA anchor has unresolved textual references; rename requires manual review.');
+ if(newName.includes(m[2]))throw Error('New HMA anchor name conflicts with TOML quoting.');
+ lines[i]=m[1]+m[2]+newName+m[2]+m[4];
+ const candidate=lines.join('');
+ const checked=parseHMAToml(candidate,{romLength:source.length});
+ if(checked.anchors.length!==metadata.anchors.length||!checked.anchors.some(a=>a.name===newName&&a.at===matches[0].at))throw Error('HMA anchor rename did not preserve native address ownership.');
+ state.hmaToml=candidate;
+ return {name:newName,address:matches[0].at};
+}
+
 export function hmaMetadata(project,sourceId,source){
  const raw=hexState(project,sourceId)?.hmaToml;
  return raw?parseHMAToml(raw,{romLength:source.length}):{anchors:[],lists:[],groups:[],offsetPointers:[],warnings:[],raw:''};
