@@ -7,6 +7,27 @@ import {hexState} from './native-hex-workspace.js';
 import {validateTable} from './hma-table-workspace.js';
 import {planSafeTableExpansion} from './hma-pointer-navigation.js';
 const TYPE='pokebacon-hma-reviewed-dependencies',MAX_JSON=65536;
+// Reject shadowed keys before JSON.parse can silently discard reviewed values.
+function rejectDuplicateJsonKeys(input){
+ const stack=[];
+ for(let i=0;i<input.length;){
+  if(input[i]==='"'){
+   const start=i++;
+   while(i<input.length){if(input[i]==='\\'){i+=2;continue;}if(input[i++]==='"')break;}
+   let next=i;while(/\s/.test(input[next]||''))next++;
+   if(input[next]===':'&&stack.at(-1)?.type==='object'){
+    const key=JSON.parse(input.slice(start,i)),seen=stack.at(-1).keys;
+    if(seen.has(key))throw Error('Duplicate key in engine review manifest: '+key);
+    seen.add(key);
+   }
+   continue;
+  }
+  if(input[i]==='{')stack.push({type:'object',keys:new Set()});
+  else if(input[i]==='[')stack.push({type:'array'});
+  else if(input[i]==='}'||input[i]===']')stack.pop();
+  i++;
+ }
+}
 function safeShape(x){return x&&typeof x==='object'&&!Array.isArray(x);}
 function layout(table){
  return {id:table.id,address:table.address,stride:table.stride,count:table.count,
@@ -52,7 +73,7 @@ export async function inspectEngineReviewManifest(project,sourceId,source,table,
  const input=typeof raw==='string'?raw:JSON.stringify(raw);
  if(typeof input!=='string'||input.length<2||input.length>MAX_JSON)throw Error('Engine review manifest exceeds the 64 KiB limit.');
  let manifest;
- try{manifest=JSON.parse(input);}catch{throw Error('Invalid engine review manifest JSON.');}
+ try{rejectDuplicateJsonKeys(input);manifest=JSON.parse(input);}catch(error){if(error.message?.startsWith('Duplicate key'))throw error;throw Error('Invalid engine review manifest JSON.');}
  assertKeys(manifest,['kind','version','source','table','pointerSites','primaryCount','extraCountSites','thumbSites','suggestedNewCount','provenance'],'manifest');
  if(manifest.kind!==TYPE||manifest.version!==1||!Array.isArray(manifest.pointerSites)||
   !Array.isArray(manifest.extraCountSites)||!Array.isArray(manifest.thumbSites)||
