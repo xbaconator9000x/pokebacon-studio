@@ -376,7 +376,7 @@ test('HMA named anchor rename preserves raw TOML, source address, save/reopen an
  assert.equal(hmaMetadata(p,sourceId,rom).raw,expected);
  assert.equal(hmaMetadata(p,sourceId,rom).anchors[0].at,0x680);
  const plan=planSave(p),parts=new Map(plan.parts.map(x=>[x.id,structuredClone(x.value)]));
- const reopened=assembleSavedProject(parts);
+ const reopened=assembleSavedProject(structuredClone(plan.header),savedProjectKeys(plan.header).map(k=>parts.get(k)));
  assert.equal(hmaMetadata(reopened,sourceId,rom).raw,expected);
  assert.throws(()=>renameHMATomlAnchor(reopened,sourceId,rom,'new.anchor','bad\'name'),/Invalid HMA anchor/);
  assert.equal(hmaMetadata(reopened,sourceId,rom).raw,expected);
