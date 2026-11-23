@@ -97,3 +97,20 @@ test('phone editor integrates file review, separate user confirmation, and expli
  for(const item of ['hmaGrowManifestFile','hmaGrowManifestValidate','hmaGrowManifestReport','hmaGrowExtraCounts','hmaExportEngineManifest','inspectEngineReviewManifest(','createEngineReviewManifest(','hmaGrowReviewed'])assert.ok(ui.includes(item),item);
  assert.match(ui,/checked=false/,'import does not pre-check user acceptance');
 });
+
+test('source-pinned review rejects shadowed JSON keys at every nesting level without mutating the project',async()=>{
+ const {project,source,id,table}=await fixture();
+ planSafeTableExpansion(project,id,source,table,POINTERS,{newCount:6,countSite:COUNT,countWidth:2});
+ const raw=JSON.stringify(await createEngineReviewManifest(project,id,source,table));
+ const samples=[
+  raw.replace('"version":1,','"version":1,"version":1,'),
+  raw.replace('"source":{','"source":{"sha256":"'+id+'",'),
+  raw.replace('"table":{','"table":{"stride":4,'),
+  raw.replace('"fields":[{','"fields":[{"name":"shadow",')
+ ];
+ const before=JSON.stringify(project);
+ for(const sample of samples){
+  await assert.rejects(()=>inspectEngineReviewManifest(project,id,source,table,sample),/Duplicate key/);
+  assert.equal(JSON.stringify(project),before);
+ }
+});
