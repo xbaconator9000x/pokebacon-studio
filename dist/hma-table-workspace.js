@@ -654,6 +654,9 @@ export function exportTableCSV(project,sourceId,source,table,{start=0,end=table.
  validateTable(table,source.length);
  if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<start||end>=table.count)
   throw Error('CSV export range must be within existing source table rows.');
+ // Keep every exported batch reimportable by the bounded native CSV parser.
+ if(end-start>=256||((end-start+1)*table.fields.length)>2048)
+  throw Error('CSV export exceeds the 256-row / 2,048-cell import batch limit.');
  const edit=new Map((hexState(project,sourceId)?.patches||[]).map(p=>[p.at,p.after]));
  if(typeof asciiHex!=='boolean')throw Error('CSV asciiHex option must be a boolean.');
  const lines=[['row',...table.fields.map(f=>f.name+(asciiHex&&f.type==='ascii'?'@hex':''))].map(encodeCSVCell).join(',')];
