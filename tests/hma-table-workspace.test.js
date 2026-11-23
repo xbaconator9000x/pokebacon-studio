@@ -5,7 +5,7 @@ import {newProject,validateProject} from '../dist/model.js';
 import {RomOutput} from '../dist/rom-writer.js';
 import {planSave,savedProjectKeys,assembleSavedProject} from '../dist/project-store.js';
 import {installROMHexEdits} from '../dist/native-hex-workspace.js';
-import {parseHMAToml,importHMAToml,hmaMetadata,hmaListLabels,validateTable,saveTableDefinition,tableDefinitions,tableRecord,editTableField,renameHMATomlNumericLabel,renameHMATomlNumericLabels,adjustTableColumn} from '../dist/hma-table-workspace.js';
+import {parseHMAToml,importHMAToml,hmaMetadata,renameHMATomlAnchor,hmaListLabels,validateTable,saveTableDefinition,tableDefinitions,tableRecord,editTableField,renameHMATomlNumericLabel,renameHMATomlNumericLabels,adjustTableColumn} from '../dist/hma-table-workspace.js';
 const sourceId='6'.repeat(64);
 test('HMA TOML extracts recognized anchors/offset pointers and retains every unsupported source directive losslessly',()=>{
  const raw=[
@@ -365,4 +365,23 @@ test('HMA compact arrays permit transactional numeric label edits with native by
  assert.equal(hmaMetadata(restored,sourceId,rom).raw,changed);
  const output=new RomOutput(rom);installROMHexEdits(restored,sourceId,rom,output);
  assert.deepEqual(output.bytes,rom);
+});
+
+test('HMA named anchor rename preserves raw TOML, source address, save/reopen and rejects unsafe references',()=>{
+ const rom=syntheticROM(),p=newProject();
+ const raw="# keep CRLF\r\n[[NamedAnchors]]\r\nName = '''old.anchor''' # name\r\nAddress = 0x000680\r\nFormat = '''[value.]4'''\r\n[General]\r\nCustom = 'untouched'\r\n";
+ importHMAToml(p,sourceId,rom,raw);
+ assert.deepEqual(renameHMATomlAnchor(p,sourceId,rom,'old.anchor','new.anchor'),{name:'new.anchor',address:0x680});
+ const expected=raw.replace("'''old.anchor''' # name","'''new.anchor''' # name");
+ assert.equal(hmaMetadata(p,sourceId,rom).raw,expected);
+ assert.equal(hmaMetadata(p,sourceId,rom).anchors[0].at,0x680);
+ const plan=planSave(p),parts=new Map(plan.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(parts);
+ assert.equal(hmaMetadata(reopened,sourceId,rom).raw,expected);
+ assert.throws(()=>renameHMATomlAnchor(reopened,sourceId,rom,'new.anchor','bad\'name'),/Invalid HMA anchor/);
+ assert.equal(hmaMetadata(reopened,sourceId,rom).raw,expected);
+ const linked=expected.replace("[General]","[General]\r\nReference = 'new.anchor'");
+ importHMAToml(reopened,sourceId,rom,linked);
+ assert.throws(()=>renameHMATomlAnchor(reopened,sourceId,rom,'new.anchor','third.anchor'),/unresolved textual references/);
+ assert.equal(hmaMetadata(reopened,sourceId,rom).raw,linked);
 });
