@@ -6,7 +6,7 @@ import {newProject,validateProject} from '../dist/model.js';
 import {RomOutput} from '../dist/rom-writer.js';
 import {stageROMHex,installROMHexEdits} from '../dist/native-hex-workspace.js';
 import {planSave,savedProjectKeys,assembleSavedProject} from '../dist/project-store.js';
-import {saveTableDefinition,tableRecord,previewTableCSV,importTableCSV,adjustTableColumn} from '../dist/hma-table-workspace.js';
+import {saveTableDefinition,tableRecord,exportTableCSV,previewTableCSV,importTableCSV,adjustTableColumn} from '../dist/hma-table-workspace.js';
 const ID='c'.repeat(64),AT=0x7400;
 function fixture(){
  const source=syntheticROM(),project=newProject(),table={id:'batch',name:'Native numeric records',address:AT,stride:8,count:8,fields:[{name:'level',type:'u8',offset:0},{name:'growth',type:'s16',offset:1},{name:'flag',type:'u32',offset:3}]};
@@ -71,4 +71,31 @@ test('unbounded row ranges, pointer arithmetic and non-integer deltas are reject
 test('touch table UI requires review before CSV staging and allows signed column deltas',()=>{
  const ui=readFileSync(new URL('../dist/hma-hex-ui.js',import.meta.url),'utf8');
  for(const name of ['hmaTableCSVPreview','hmaTableCSVApply','previewTableCSV(','Stage reviewed CSV','hmaBulkAdjust','hmaAdjustDelta','adjustTableColumn('])assert.ok(ui.includes(name),name);
+});
+
+test('large source table CSV exports are bounded, reimportable, and retain absolute row IDs',()=>{
+ const {source,project,table}=fixture();table.count=300;
+ const before=source.slice(),snapshot=JSON.stringify(project);
+ assert.throws(()=>exportTableCSV(project,ID,source,table),/256-row/);
+ assert.throws(()=>exportTableCSV(project,ID,source,table,{start:0,end:256}),/256-row/);
+ const csv=exportTableCSV(project,ID,source,table,{start:240,end:299});
+ assert.equal(csv.split('\\r\\n').filter(Boolean).length,61);
+ assert.match(csv,/\\r\\n240,/);assert.match(csv,/\\r\\n299,/);
+ assert.equal(previewTableCSV(project,ID,source,table,csv).records,60);
+ assert.equal(importTableCSV(project,ID,source,table,csv).records,60);
+ const out=new RomOutput(source);installROMHexEdits(project,ID,source,out);
+ assert.deepEqual(out.bytes.slice(AT,AT+300*8),before.slice(AT,AT+300*8));
+ assert.deepEqual(source,before);
+ assert.notEqual(JSON.stringify(project),snapshot);
+ const save=planSave(project),parts=new Map(save.parts.map(p=>[p.id,structuredClone(p.value)]));
+ const reopened=assembleSavedProject(structuredClone(save.header),savedProjectKeys(save.header).map(k=>parts.get(k)));
+ validateProject(reopened);
+ assert.equal(tableRecord(reopened,ID,source,table,299).values.level,0);
+});
+test('CSV export rejects wide batches that exceed import cell budget',()=>{
+ const {source,project,table}=fixture();table.count=300;
+ table.fields=Array.from({length:9},(_,i)=>({name:'f'+i,type:'u8',offset:i}));table.stride=9;
+ assert.throws(()=>exportTableCSV(project,ID,source,table,{start:0,end:255}),/2,048-cell/);
+ const csv=exportTableCSV(project,ID,source,table,{start:0,end:226});
+ assert.equal(previewTableCSV(project,ID,source,table,csv).records,227);
 });
