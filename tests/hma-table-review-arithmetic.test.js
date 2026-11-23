@@ -79,8 +79,8 @@ test('large source table CSV exports are bounded, reimportable, and retain absol
  assert.throws(()=>exportTableCSV(project,ID,source,table),/256-row/);
  assert.throws(()=>exportTableCSV(project,ID,source,table,{start:0,end:256}),/256-row/);
  const csv=exportTableCSV(project,ID,source,table,{start:240,end:299});
- assert.equal(csv.split('\\r\\n').filter(Boolean).length,61);
- assert.match(csv,/\\r\\n240,/);assert.match(csv,/\\r\\n299,/);
+ assert.equal(csv.split('\r\n').filter(Boolean).length,61);
+ assert.match(csv,/\r\n240,/);assert.match(csv,/\r\n299,/);
  assert.equal(previewTableCSV(project,ID,source,table,csv).records,60);
  assert.equal(importTableCSV(project,ID,source,table,csv).records,60);
  const out=new RomOutput(source);installROMHexEdits(project,ID,source,out);
