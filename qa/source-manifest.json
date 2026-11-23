@@ -1894,7 +1894,7 @@
     "dist/native-scene-import.js": "f4baab955b8ef8c631d7edfaadc4d6d98c84a69b8ac42d5b9af1a368ec482b9c",
     "dist/quest-reference-index.js": "7f18ab4bbc8efeb4576d88cc011b23d4917dfdbb7ca9cf2018e9f837fdb17bab",
     "dist/native-movement-bridge.js": "707aced628a38b444a905cd4d6eb9a275dd9ffa5b3ed585e495db55ebe45dee4",
-    "dist/native-hex-workspace.js": "710cd6d8eb735c9f995e5ef4d5377d69a98e22fec9652d14a8c623b22dd37849",
+    "dist/native-hex-workspace.js": "30cf477e4d1a4a3e3e863f12643bb2d9acaccc8600f3a4af04b660b95775d393",
     "dist/hma-table-workspace.js": "a38710934188f8d593698dc77c858a23b02b81f8d056d0a3e38915080f1d2066",
     "dist/hma-hex-navigation.js": "74f262fa40b2c6fe7a283dfe83b72ded7378674dbc8d264871ce2a2b726b694a",
     "dist/hma-hex-ui.js": "4c9ed6785dc0734d9f3e949dfd3d54bec0576c6d02f8aba04b7b620aee60d586",
