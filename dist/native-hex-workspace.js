@@ -54,6 +54,13 @@ export function validateHexStudio(model){
    if(!Number.isInteger(p.at)||p.at<0||p.at>=LIMIT||!Number.isInteger(p.before)||p.before<0||p.before>255||!Number.isInteger(p.after)||p.after<0||p.after>255||p.before===p.after||seen.has(p.at))throw Error('Invalid, duplicated or unchanged staged native ROM patch.');
    seen.add(p.at);
   }
+  const bookmarks=state.bookmarks||[];
+  if(!Array.isArray(bookmarks)||bookmarks.length>64)throw Error('Invalid saved ROM bookmarks.');
+  const names=new Set();
+  for(const item of bookmarks){
+   if(!item||typeof item.name!=='string'||!item.name.trim()||item.name!==item.name.trim()||item.name.length>64||/[\x00-\x1f\x7f]/.test(item.name)||!Number.isInteger(item.at)||item.at<0||item.at>=LIMIT||names.has(item.name.toLowerCase()))throw Error('Invalid or duplicated source ROM bookmark.');
+   names.add(item.name.toLowerCase());
+  }
   const repoints=state.repoints||[];
   if(!Array.isArray(repoints)||repoints.length>32)throw Error('Saved HMA table repoint list is invalid or exceeds its safe limit.');
   const usedSites=new Set(),usedTables=new Set();
@@ -270,4 +277,27 @@ export function installROMHexEdits(project,sourceId,source,output){
   output.write(rows[i].at,Uint8Array.from(rows.slice(i,j).map(x=>x.after)));spans++;i=j;
  }
  return{bytes:rows.length,spans};
+}
+
+/** Persistent bookmarks are source-specific metadata, never ROM edits. */
+export function hexBookmarks(project,sourceId){
+ const entries=store(project,sourceId)?.bookmarks||[];
+ if(!Array.isArray(entries))throw Error('Invalid saved ROM bookmarks.');
+ return entries.map(x=>({...x}));
+}
+export function saveHexBookmark(project,sourceId,source,name,at){
+ const label=String(name??'').trim();
+ if(!label||label.length>64||/[\x00-\x1f\x7f]/.test(label))throw Error('Bookmark names must contain 1–64 printable characters.');
+ if(!validAt(at,source.length))throw Error('Bookmark offset is outside the source ROM.');
+ const entries=hexBookmarks(project,sourceId),index=entries.findIndex(x=>x.name.toLowerCase()===label.toLowerCase());
+ if(index<0&&entries.length>=64)throw Error('At most 64 bookmarks per original ROM.');
+ if(index<0)entries.push({name:label,at});else entries[index]={name:label,at};
+ store(project,sourceId,true).bookmarks=entries;
+ return {name:label,at};
+}
+export function deleteHexBookmark(project,sourceId,name){
+ const entries=hexBookmarks(project,sourceId),index=entries.findIndex(x=>x.name===name);
+ if(index<0)throw Error('The selected ROM bookmark no longer exists.');
+ entries.splice(index,1);store(project,sourceId,true).bookmarks=entries;
+ return entries.length;
 }
