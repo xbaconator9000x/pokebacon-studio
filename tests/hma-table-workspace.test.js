@@ -392,10 +392,10 @@ test('HMA anchor rename is reachable from the metadata editor and preserves nati
  // UI wiring is a deployed-source contract, exercised separately by mobile-browser QA.
  const ui=readFileSync(new URL('../dist/hma-hex-ui.js',import.meta.url),'utf8');
  assert.match(ui,/data-hma-rename/);
- assert.match(ui,/api\\.change\\(\\(\\)=>renameHMATomlAnchor/);
- assert.match(ui,/state\\.anchorQuery=next/);
+ assert.ok(ui.includes('api.change(()=>renameHMATomlAnchor'));
+ assert.ok(ui.includes('state.anchorQuery=next'));
  const rom=syntheticROM(),p=newProject();
- const raw="[[NamedAnchors]]\\r\\nName = 'original.anchor' # keep\\r\\nAddress = 0x680\\r\\nFormat = 'u8'\\r\\n";
+ const raw="[[NamedAnchors]]\r\nName = 'original.anchor' # keep\r\nAddress = 0x680\r\nFormat = 'u8'\r\n";
  importHMAToml(p,sourceId,rom,raw);
  const bytes=Uint8Array.from(rom);
  renameHMATomlAnchor(p,sourceId,rom,'original.anchor','renamed.anchor');
