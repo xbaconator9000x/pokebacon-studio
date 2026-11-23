@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {syntheticROM} from '../scripts/synthetic-map-rom.mjs';
 import {newProject,validateProject} from '../dist/model.js';
@@ -384,4 +385,26 @@ test('HMA named anchor rename preserves raw TOML, source address, save/reopen an
  importHMAToml(reopened,sourceId,rom,linked);
  assert.throws(()=>renameHMATomlAnchor(reopened,sourceId,rom,'new.anchor','third.anchor'),/unresolved textual references/);
  assert.equal(hmaMetadata(reopened,sourceId,rom).raw,linked);
+});
+
+test('HMA anchor rename is reachable from the metadata editor and preserves native source ownership',()=>{
+ const fs=requireSource=>requireSource;
+ // UI wiring is a deployed-source contract, exercised separately by mobile-browser QA.
+ const ui=readFileSync(new URL('../dist/hma-hex-ui.js',import.meta.url),'utf8');
+ assert.match(ui,/data-hma-rename/);
+ assert.match(ui,/api\\.change\\(\\(\\)=>renameHMATomlAnchor/);
+ assert.match(ui,/state\\.anchorQuery=next/);
+ const rom=syntheticROM(),p=newProject();
+ const raw="[[NamedAnchors]]\\r\\nName = 'original.anchor' # keep\\r\\nAddress = 0x680\\r\\nFormat = 'u8'\\r\\n";
+ importHMAToml(p,sourceId,rom,raw);
+ const bytes=Uint8Array.from(rom);
+ renameHMATomlAnchor(p,sourceId,rom,'original.anchor','renamed.anchor');
+ assert.equal(hmaMetadata(p,sourceId,rom).raw,raw.replace('original.anchor','renamed.anchor'));
+ assert.deepEqual(rom,bytes);
+ const plan=planSave(p),parts=new Map(plan.parts.map(x=>[x.id,structuredClone(x.value)]));
+ const reopened=assembleSavedProject(structuredClone(plan.header),savedProjectKeys(plan.header).map(k=>parts.get(k)));
+ assert.equal(hmaMetadata(reopened,sourceId,rom).anchors[0].name,'renamed.anchor');
+ const output=new RomOutput(rom);
+ installROMHexEdits(reopened,sourceId,rom,output);
+ assert.deepEqual(output.bytes.slice(0,rom.length),rom);
 });
