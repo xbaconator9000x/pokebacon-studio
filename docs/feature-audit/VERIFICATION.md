@@ -56,3 +56,9 @@ Delivered-source follow-up: recovered the 4.72.5/code-145 APK and 4.72.3 source 
 No record is marked fully_verified for a complete native gameplay workflow. No Android physical test, current private Shattered ROM acceptance, arbitrary custom code editing, delivered APK integration, DS implementation or automatic development daemon is claimed. Future sessions follow the roadmap and existing GitHub tracking.
 
 Reconciliation slice validation: 399 tests passed, zero failed, two optional skips (401 total); 1,864 deployed fingerprints and all 98 inventory records/12 upstream pins validate. Four new source-layout runtime tests exercise synthetic fixtures only. Full recovered editor UI, native compilation, physical Android and Shattered gameplay remain open.
+
+## Android device acceptance, 4.72.8 candidate (25 Nov 2026)
+
+Build: PR #29 head 494dd21 (merged as bc70296), CI-built unsigned APK signed locally with the original release key. Certificate SHA-256 1181de51…7add matches the pinned original; package dev.shattered.mapstudio.next; APK Signature Scheme v2 and v3 verified.
+
+Reported by the author on their Android phone, by hand and without screenshots: the signed build installed as an in-place update over the existing install, existing projects still opened, an exported ROM booted in an emulator, and the ROM hex and typed tables workshop opened and appeared to work. Not independently recorded: hex bookmark reopen behaviour was not specifically confirmed, and no gameplay beyond boot was tested. This is an informal author report, not a verified gameplay acceptance; issue #14 stays open.
