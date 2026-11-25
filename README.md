@@ -5,7 +5,7 @@ Development tracking: [capability audit and current roadmap](docs/feature-audit/
 · [acceptance evidence](docs/feature-audit/VERIFICATION.md).
 The audit distinguishes implemented, tested, integrated and released features.
 
-Development candidate **4.72.7** adds guided native event conditions and readable state names, retaining the recovered mobile sprite/UI work. [Delivery and verification](docs/feature-audit/DELIVERY_4_72_7.md). Earlier [source provenance](docs/source-reconciliation.md) remains historical evidence.
+Development candidate **4.72.8** brings in native event trades and scene recipes, a native trainer party editor, the ROM hex and typed tables workshop with bookmarks, and a fix for the SHA-256 check on older Android WebViews. It builds on 4.72.7's guided native event conditions and readable state names, and keeps the recovered mobile sprite/UI work. [Delivery and verification](docs/feature-audit/DELIVERY_4_72_7.md). Earlier [source provenance](docs/source-reconciliation.md) remains historical evidence.
 
 **Build and export Pokémon ROM hacks on your phone or Android handheld.**
 
