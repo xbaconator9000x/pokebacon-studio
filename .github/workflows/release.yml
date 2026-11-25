@@ -1,0 +1,73 @@
+name: Release
+# Manual only. Builds the Android APK from main, signs it with the original
+# release key held in repository secrets, refuses to publish unless the signing
+# certificate matches the pinned original, then creates the GitHub release.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, exactly as in package.json (for example 4.72.8)'
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: release
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PINNED_CERT_SHA256: 1181de51b390457daaf04ea9c63108dc084da9597bef23bf2bc19090e1ae7add
+      VERSION: ${{ inputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Check version and tag
+        run: |
+          set -euo pipefail
+          case "$VERSION" in (*[!0-9.]*|'') echo "Version must be digits and dots only."; exit 1;; esac
+          test "$(node -p "require('./package.json').version")" = "$VERSION" || { echo "package.json version does not match $VERSION"; exit 1; }
+          if gh release view "v$VERSION" >/dev/null 2>&1; then echo "Release v$VERSION already exists."; exit 1; fi
+      - name: Run checks
+        run: |
+          node scripts/qa-source-gate.mjs
+          node scripts/check-feature-audit.mjs
+          npm test
+      - name: Install Android build tools
+        run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Build unsigned APK
+        run: ANDROID_SDK_ROOT="$ANDROID_HOME" python3 android/build.py --unsigned
+      - name: Sign and verify
+        env:
+          KEYSTORE_BASE64: ${{ secrets.POKEBACON_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.POKEBACON_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$KEYSTORE_BASE64" && test -n "$KEYSTORE_PASSWORD" || { echo "Signing secrets are not set."; exit 1; }
+          KS="$RUNNER_TEMP/release.p12"
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$KS"
+          UNSIGNED="$(ls android/build/PokeBacon_Studio_v*_unsigned.apk)"
+          OUT="$RUNNER_TEMP/PokeBacon_Studio_v${VERSION}.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign --ks "$KS" --ks-type PKCS12 --ks-key-alias pokebacon \
+            --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEYSTORE_PASSWORD --out "$OUT" "$UNSIGNED"
+          rm -f "$KS"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$OUT" | tee "$RUNNER_TEMP/verify.txt"
+          grep -q "Verified using v2 scheme (APK Signature Scheme v2): true" "$RUNNER_TEMP/verify.txt"
+          grep -q "certificate SHA-256 digest: $PINNED_CERT_SHA256" "$RUNNER_TEMP/verify.txt" || { echo "Signing certificate does not match the pinned original. Not publishing."; exit 1; }
+          echo "APK=$OUT" >> "$GITHUB_ENV"
+      - name: Create release
+        run: |
+          set -euo pipefail
+          NOTES="release-notes/v${VERSION}.md"
+          if [ -f "$NOTES" ]; then NOTESARG=(--notes-file "$NOTES"); else NOTESARG=(--generate-notes); fi
+          gh release create "v${VERSION}" "$APK" --target "$GITHUB_SHA" --title "PokéBacon Studio ${VERSION}" --latest "${NOTESARG[@]}"
