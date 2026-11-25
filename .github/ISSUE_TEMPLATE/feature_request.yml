@@ -1,0 +1,43 @@
+name: Feature request
+description: Suggest something for PokéBacon Studio
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a look at the [open feature backlog (#15)](https://github.com/xbaconator9000x/pokebacon-studio/issues/15) first. Your idea might already be on the list, and you can add to it there.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The job you can't do yet, or the part that's too hard on a phone.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like it to do?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the editor?
+      options:
+        - Maps and tiles
+        - Events, scripts and quests
+        - Sprites and graphics
+        - Music
+        - Game data (Pokémon, items, trainers)
+        - Exporting and playtesting
+        - Phone controls and layout
+        - Something else
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Links to other tools that do this well, screenshots, or ideas for how it could work.
+    validations:
+      required: false
