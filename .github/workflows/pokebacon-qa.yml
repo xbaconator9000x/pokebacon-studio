@@ -36,6 +36,19 @@ jobs:
         run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - name: Compile native shell and package all reconciled assets
         run: ANDROID_SDK_ROOT="$ANDROID_HOME" python3 android/build.py --unsigned
+      - name: Prepare unsigned APK for local release signing
+        run: |
+          mkdir -p "$RUNNER_TEMP/pokebacon-signable"
+          cp android/build/PokeBacon_Studio_v*_unsigned.apk "$RUNNER_TEMP/pokebacon-signable/"
+          cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" "$RUNNER_TEMP/pokebacon-signable/apksigner.jar"
+          test "$(find "$RUNNER_TEMP/pokebacon-signable" -name '*_unsigned.apk' | wc -l)" -eq 1
+      - name: Export unsigned, exact-head build (no private keys)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pokebacon-unsigned-release-candidate
+          path: ${{ runner.temp }}/pokebacon-signable/
+          if-no-files-found: error
+          retention-days: 3
   portable-and-ui:
     runs-on: ubuntu-latest
     timeout-minutes: 12

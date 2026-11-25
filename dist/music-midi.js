@@ -70,17 +70,17 @@ export function readMIDI(input){
  if(!tracks.length)throw Error('This MIDI contains no notes.');if(tracks.length>256)throw Error('This MIDI has more than 256 sounding parts. Split it into smaller files.');
  const score={ppq:24,length,tempos:[...tempos].filter(([tick])=>tick<length).sort((a,b)=>a[0]-b[0]).map(([tick,bpm])=>({tick,bpm})),tracks};
  const loopMarker=markers.find(m=>m.text==='loopstart');if(loopMarker&&loopMarker.tick<length)score.loopStart=loopMarker.tick;
- const stats=checkScore(score,{arranging:true});if(length>512*96)warnings.add('This file exceeds 512 bars. The arranger starts with bars 1–512; choose the section to export.');if(stats.peak>8||stats.parts>10)warnings.add('Solo or mute parts to meet the ten-part / eight-note ROM playback budget.');warnings.add('Timing is quantized to 24 ticks per beat; tempos are rounded to even BPM. MIDI instruments are selected in the arranger.');return{score,warnings:[...warnings]};
+ const stats=checkScore(score,{arranging:true});if(length>512*96)warnings.add('This file exceeds 512 bars. The arranger starts with bars 1–512; choose the section to export.');if(stats.peak>8||stats.parts>10)warnings.add('All MIDI instrument parts remain editable. Native export interleaves nonoverlapping parts into ten GBA tracks and may reduce the densest simultaneous voices.');warnings.add('Timing is quantized to 24 ticks per beat; tempos are rounded to even BPM. General MIDI programs are automatically mapped to available instruments.');return{score,warnings:[...warnings]};
 }
 
 export function writeMIDI(score){
- checkScore(score);const u32=n=>[n>>>24&255,n>>>16&255,n>>>8&255,n&255],vlq=n=>{const b=[n&127];while(n=Math.floor(n/128))b.unshift((n&127)|128);return b;},chunk=(tag,b)=>[...new TextEncoder().encode(tag),...u32(b.length),...b];
- const tracks=score.tracks.map((tr,index)=>{const channel=tr.channel===9?9:(index>=9?index+1:index),events=[];
+ checkScore(score,{arranging:true});const u32=n=>[n>>>24&255,n>>>16&255,n>>>8&255,n&255],vlq=n=>{const b=[n&127];while(n=Math.floor(n/128))b.unshift((n&127)|128);return b;},chunk=(tag,b)=>[...new TextEncoder().encode(tag),...u32(b.length),...b];
+ const tracks=score.tracks.map((tr,index)=>{const channel=tr.channel===9?9:(index%15)>=9?(index%15)+1:index%15,events=[];
   if(index===0&&score.loopStart!==undefined)for(const [tick,text]of [[score.loopStart,'loopStart'],[score.length,'loopEnd']]){const b=[...new TextEncoder().encode(text)];events.push({tick,order:-1,b:[255,6,b.length,...b]});}
   if(index===0)for(const t of score.tempos){const n=Math.round(60000000/t.bpm);events.push({tick:t.tick,order:1,b:[255,0x51,3,n>>>16&255,n>>>8&255,n&255]});}
-  const name=[...new TextEncoder().encode((tr.name||'Part '+(index+1)).slice(0,120))];events.push({tick:0,order:-3,b:[255,3,...vlq(name.length),...name]},{tick:0,order:-2,b:[0xc0+channel,tr.midiProgram??tr.program]});
+  const name=[...new TextEncoder().encode((tr.name||'Part '+(index+1)).slice(0,120))];events.push({tick:0,order:-3,b:[255,3,...vlq(name.length),...name]},{tick:tr.notes.reduce((first,n)=>Math.min(first,n.tick),score.length),order:-2,b:[0xc0+channel,tr.midiProgram??tr.program]});
   for(const p of automationFor(tr)){const bend=Math.max(0,Math.min(16383,p.bend*128+8192));for(const b of [[0xb0+channel,101,0],[0xb0+channel,100,0],[0xb0+channel,6,p.range],[0xb0+channel,7,p.volume],[0xb0+channel,10,p.pan],[0xe0+channel,bend&127,bend>>7]])events.push({tick:p.tick,order:1,b});}
   for(const n of tr.notes)events.push({tick:n.tick,order:2,b:[0x90+channel,n.key,n.velocity]},{tick:n.tick+n.duration,order:0,b:[0x80+channel,n.key,0]});
   events.sort((a,b)=>a.tick-b.tick||a.order-b.order);let tick=0;const b=[];for(const e of events){b.push(...vlq(e.tick-tick),...e.b);tick=e.tick;}b.push(...vlq(score.length-tick),255,47,0);return chunk('MTrk',b);
- });return Uint8Array.from([...chunk('MThd',[0,1,0,tracks.length,0,24]),...tracks.flat()]);
+ });return Uint8Array.from([...chunk('MThd',[0,1,tracks.length>>>8,tracks.length&255,0,24]),...tracks.flat()]);
 }

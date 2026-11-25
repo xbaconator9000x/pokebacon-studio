@@ -76,3 +76,5 @@ Analysis: [ROM_STORAGE_ANALYSIS_2026-11-01.md](ROM_STORAGE_ANALYSIS_2026-11-01.m
 
 - [x] Screenshot 153117: honour checked conversion for original-art overflow; reuse verified native palette layouts before quantising. Exact 18-palette failure reproduced and fixed for 15-map palette preparation; full matching 23-map project export passes (4.70.2).
 - [ ] Broaden raw compiled-ROM reimport support for separately stored metatile arrays with no verified count footer; retain the bound-check guard and prefer matching sidecars meanwhile.
+
+- [x] Reusable project-scoped Visual Scene event-page clipboard: cross-scene paste, fresh nested action/answer IDs, native-binding-safe scene duplication, save/reopen and native compilation regression (14 Nov 2026; real gameplay pending).
