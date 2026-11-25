@@ -1,0 +1,86 @@
+name: Bug report
+description: Something isn't working in PokéBacon Studio
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. The more detail you give, the faster I can fix it.
+        **Please don't attach ROM files, game saves or anything copyrighted.** Screenshots of the editor are fine.
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Shown next to the PokéBacon Studio name at the top of the app, for example 4.72.8.
+      placeholder: "4.72.8"
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Where are you using it?
+      options:
+        - Android app (APK)
+        - Web editor in a browser
+        - Web app on my Home Screen
+        - iPhone or iPad (native build)
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      description: For example "Samsung Galaxy S23, Android 14" or "iPhone 15, Safari".
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you were doing and what went wrong. Include any error message word for word.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to make it happen again
+      placeholder: |
+        1. Open ...
+        2. Tap ...
+        3. See ...
+    validations:
+      required: true
+  - type: dropdown
+    id: base-game
+    attributes:
+      label: Which base game are you editing?
+      options:
+        - FireRed
+        - LeafGreen
+        - Emerald
+        - Ruby or Sapphire
+        - A ROM hack
+        - Not relevant
+    validations:
+      required: false
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshots or a screen recording
+      description: Drag them in here. A short screen recording is brilliant.
+    validations:
+      required: false
+  - type: checkboxes
+    id: backup
+    attributes:
+      label: Before you send this
+      options:
+        - label: I haven't attached any ROM, save file or other copyrighted material.
+          required: true
