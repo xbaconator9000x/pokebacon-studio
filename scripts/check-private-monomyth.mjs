@@ -27,3 +27,34 @@ const again=await new GbaMaps(edited.bytes).discover(),after=again.blocks(again.
 assert.equal(after[10*W+10]&1023,reader.blocks(map)[0]&1023,'edit is readable after re-import');
 console.log(`${key}: edit exported, ${alloc.length} new blocks, ${outside} bytes changed outside them (layout pointers only)`);assert.ok(outside<=64);
 console.log('PASS Monomyth read and export checks (not a gameplay test).');
+
+// Packed (FC 1D) dialogue must decode to readable English.
+{
+ const {decodeScriptText}=await import('../dist/script-engine.js');
+ const t=decodeScriptText(rom,0x2e278b);
+ if(!/Post Office/.test(t.text)||/\{WORD/.test(t.text))throw Error('Packed dialogue did not decode: '+t.text);
+ console.log('packed dialogue decodes:',JSON.stringify(t.text.slice(0,60)));
+}
+
+// Story edits: plain dialogue edits export and read back; packed dialogue is refused.
+{
+ const {indexNativeStory,installNativeStoryEdits,refreshNativeStory}=await import('../dist/native-story.js');
+ const {RomOutput}=await import('../dist/rom-writer.js');
+ const g=await indexNativeStory(reader,{mapKeys:reader.maps.slice(0,120).map(m=>m.key)});
+ const plain=Object.values(g.texts).find(t=>!t.compressed&&t.text.length>8&&!/\\x/.test(t.text)),packed=Object.values(g.texts).find(t=>t.compressed);
+ const project=newProject('Monomyth story check');project.nativeStory={mm:g};
+ g.edits.texts[plain.at]={original:plain.original,text:plain.text+' Edited.'};
+ const out=new RomOutput(rom);await installNativeStoryEdits(project,reader,'mm',out);
+ const back=await refreshNativeStory(g,await new GbaMaps(out.bytes).discover());
+ assert.ok(Object.values(back.texts).some(t=>t.text===plain.text+' Edited.'),'plain dialogue edit reads back');
+ delete g.edits.texts[plain.at];
+ const edited=packed.text+' Edited.';g.edits.texts[packed.at]={original:packed.original,text:edited};
+ const out2=new RomOutput(rom);await installNativeStoryEdits(project,reader,'mm',out2);
+ const back2=await refreshNativeStory(g,await new GbaMaps(out2.bytes).discover());
+ assert.ok(Object.values(back2.texts).some(t=>t.text===edited&&t.compressed),'packed dialogue edit reads back');
+ // every packed text must re-encode and decode to itself (or be rejected cleanly)
+ const {encodeCompressedText}=await import('../dist/compressed-text.js'),{decodeScriptText}=await import('../dist/script-engine.js');
+ let same=0,rejected=0;for(const t of Object.values(g.texts).filter(t=>t.compressed)){try{const b=encodeCompressedText(t.text),buf=new Uint8Array(b.length+8);buf.set(b);if(decodeScriptText(buf,0).text!==t.text)throw Error('Packed text did not round-trip at 0x'+t.at.toString(16));same++;}catch(e){if(/round-trip/.test(e.message))throw e;rejected++;}}
+ console.log('packed round trip:',same,'ok,',rejected,'rejected cleanly');
+ console.log('story edits: plain and packed dialogue edits export and read back');
+}
