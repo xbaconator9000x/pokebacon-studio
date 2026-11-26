@@ -343,7 +343,8 @@
       "testEvidence": [
         "tests/rom.test.js",
         "tests/authority-guards.mjs",
-        "tests/platform-lifecycle.test.js"
+        "tests/platform-lifecycle.test.js",
+        "tests/save-recovery.test.js"
       ],
       "dependencies": [
         "REL"
@@ -354,7 +355,7 @@
       "acceptanceCriteria": [
         "Demonstrate transaction abort with target-engine constraints.",
         "Demonstrate worker fallback with target-engine constraints.",
-        "Added IndexedDB abort and worker-post failure tests; worker timeout, quota and interrupted export recovery need coverage.",
+        "Added IndexedDB abort and worker-post failure tests; worker timeout, worker failure, post failure, full-storage and interrupted-save recovery are now covered by tests/save-recovery.test.js with a fake database; interrupted ROM export recovery and real-device storage limits still need coverage.",
         "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
