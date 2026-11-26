@@ -35,3 +35,19 @@ console.log('PASS Monomyth read and export checks (not a gameplay test).');
  if(!/Post Office/.test(t.text)||/\{WORD/.test(t.text))throw Error('Packed dialogue did not decode: '+t.text);
  console.log('packed dialogue decodes:',JSON.stringify(t.text.slice(0,60)));
 }
+
+// Story edits: plain dialogue edits export and read back; packed dialogue is refused.
+{
+ const {indexNativeStory,installNativeStoryEdits,refreshNativeStory}=await import('../dist/native-story.js');
+ const {RomOutput}=await import('../dist/rom-writer.js');
+ const g=await indexNativeStory(reader,{mapKeys:reader.maps.slice(0,120).map(m=>m.key)});
+ const plain=Object.values(g.texts).find(t=>!t.compressed&&t.text.length>8&&!/\\x/.test(t.text)),packed=Object.values(g.texts).find(t=>t.compressed);
+ const project=newProject('Monomyth story check');project.nativeStory={mm:g};
+ g.edits.texts[plain.at]={original:plain.original,text:plain.text+' Edited.'};
+ const out=new RomOutput(rom);await installNativeStoryEdits(project,reader,'mm',out);
+ const back=await refreshNativeStory(g,await new GbaMaps(out.bytes).discover());
+ assert.ok(Object.values(back.texts).some(t=>t.text===plain.text+' Edited.'),'plain dialogue edit reads back');
+ delete g.edits.texts[plain.at];g.edits.texts[packed.at]={original:packed.original,text:'x'};
+ await assert.rejects(()=>installNativeStoryEdits(project,reader,'mm',new RomOutput(rom)),/read-only/);
+ console.log('story edits: plain dialogue exports and reads back; packed dialogue refused');
+}
