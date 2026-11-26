@@ -9,7 +9,7 @@ const runtime=process.env.MAP_STUDIO_QA_RUNTIME;
 if(!runtime)throw Error('Set MAP_STUDIO_QA_RUNTIME to the installed QA dependencies.');
 const require=createRequire(path.resolve(runtime,'package.json')),{chromium}=require('playwright');
 const root=path.resolve('dist'),screens=path.resolve(process.env.MAP_STUDIO_SCREENSHOTS||'/tmp/pokebacon-release-screens');fs.mkdirSync(screens,{recursive:true});
-const hook='\nglobalThis.__releaseQA={project:()=>project,sprites:()=>spriteTools,events:()=>eventsUI,story:()=>storyTools,presentation:()=>presentationTools,workspaceMenu,openWorkspace,persist,change,attachROM(reader,id){romSession={reader,id};}};';
+const hook='\nglobalThis.__releaseQA={project:()=>project,sprites:()=>spriteTools,events:()=>eventsUI,story:()=>storyTools,presentation:()=>presentationTools,workspaceMenu,openWorkspace,persist,change,attachROM(reader,id){romSession={reader,id};},romBrowser};';
 const server=http.createServer((req,res)=>{
  const url=new URL(req.url,'http://localhost'),name=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));
  if(name==='__fixture.mjs'){res.setHeader('Content-Type','text/javascript');res.end(fs.readFileSync('scripts/synthetic-map-rom.mjs'));return;}
@@ -147,6 +147,12 @@ try{
   const rom=syntheticROM();new DataView(rom.buffer).setUint32(0x550,0x08000680,true);
   const reader=await new GbaMaps(rom).discover();
   __releaseQA.attachROM(reader,'hma-fixture');
+  __releaseQA.romBrowser();
+  const q=x=>document.querySelector(x);q('#romClear').click();q('#romAll').click();
+  if(q('#romSelectedCount').textContent.split(' ')[0]!==String(reader.maps.length))throw Error('Select all did not select every map: '+q('#romSelectedCount').textContent);
+  q('#romSearch').value='zzzz-no-match';q('#romSearch').dispatchEvent(new Event('input'));q('#romClear').click();q('#romAll').click();
+  if(!q('#romSelectedCount').textContent.startsWith('0 '))throw Error('Select all selected maps hidden by the search filter');
+  q('#romSearch').value='';q('#romSearch').dispatchEvent(new Event('input'));q('#romClear').click();q('#dialog').close();
   await __releaseQA.openWorkspace('source');
  });
  await page.locator('#sourceHexWorkspace').click();
