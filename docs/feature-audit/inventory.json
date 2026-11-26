@@ -92,7 +92,8 @@
       "testEvidence": [
         "tests/rom.test.js",
         "tests/authority-guards.mjs",
-        "tests/platform-lifecycle.test.js"
+        "tests/platform-lifecycle.test.js",
+        "tests/export-allocation.test.js"
       ],
       "dependencies": [
         "REL"
@@ -103,7 +104,7 @@
       "acceptanceCriteria": [
         "Demonstrate aligned spans with target-engine constraints.",
         "Demonstrate ownership with target-engine constraints.",
-        "Expose the allocation plan and verify repeated exports do not grow duplicate resources.",
+        "Allocation plan is now shown in the export review (ROM space used) and tests/export-allocation.test.js verifies alignment, no overlap, deterministic repeat exports and no growth on a re-imported ROM, using the synthetic fixture only; a real private-ROM repeat export is still needed.",
         "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
@@ -343,7 +344,8 @@
       "testEvidence": [
         "tests/rom.test.js",
         "tests/authority-guards.mjs",
-        "tests/platform-lifecycle.test.js"
+        "tests/platform-lifecycle.test.js",
+        "tests/save-recovery.test.js"
       ],
       "dependencies": [
         "REL"
@@ -354,7 +356,7 @@
       "acceptanceCriteria": [
         "Demonstrate transaction abort with target-engine constraints.",
         "Demonstrate worker fallback with target-engine constraints.",
-        "Added IndexedDB abort and worker-post failure tests; worker timeout, quota and interrupted export recovery need coverage.",
+        "Added IndexedDB abort and worker-post failure tests; worker timeout, worker failure, post failure, full-storage and interrupted-save recovery are now covered by tests/save-recovery.test.js with a fake database; interrupted ROM export recovery and real-device storage limits still need coverage.",
         "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
@@ -1329,12 +1331,16 @@
         "dist/story-flow-ui.js",
         "dist/script-engine.js",
         "dist/script-data.js",
-        "dist/story-readable.js"
+        "dist/story-readable.js",
+        "dist/native-story-ui.js"
       ],
       "testEvidence": [
         "tests/story.test.js",
         "tests/story-reconcile.test.js",
-        "tests/scene-outline.test.js"
+        "tests/scene-outline.test.js",
+        "tests/native-story-coexistence.test.js",
+        "tests/native-story-sharing.test.js",
+        "scripts/test-release-mobile-browser.mjs"
       ],
       "dependencies": [
         "REL"
@@ -1350,12 +1356,13 @@
       ],
       "verification": {
         "implemented": true,
-        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix.",
+        "tested": "Listed tests establish only bounded fixture/model/native-byte claims; see acceptance matrix. Shared-script safety (where-used list, shared-edit confirmation, private copy for one event) has 8 synthetic-ROM tests in tests/native-story-sharing.test.js, including a byte-level proof that a root-bound flow copy leaves the other event and the shared source bytes unchanged, and a real 412px Chromium workflow in scripts/test-release-mobile-browser.mjs. No emulator, retail-game or physical-device execution is claimed.",
         "integrated": "PR branch only; latest delivered APK source not reconciled.",
         "released": false,
         "gameplayVerified": false
       },
-      "backlogGroup": "REL"
+      "backlogGroup": "REL",
+      "implementationNotes": "Command, dialogue and movement dialogs now list every original event entry that reaches the shared script (map, event, live native or replaced by an authored scene) and require an explicit confirmation before saving a change that other live native events would also receive. 'Edit only this event' opens the existing structural flow editor, which writes a private copy for that one event. Still open: parameter inputs, recursion limits, a call-graph view, copying a single routine rather than a whole event script, and gameplay verification."
     },
     {
       "id": "EVT08",
