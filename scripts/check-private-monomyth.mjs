@@ -64,7 +64,7 @@ console.log('PASS Monomyth read and export checks (not a gameplay test).');
  const {discoverGameData,readGameData,applyGameDataEdits}=await import('../dist/game-data.js');
  const {RomOutput}=await import('../dist/rom-writer.js');
  const profile=await discoverGameData(reader,{sourceSha256:'monomyth'});
- assert.ok(profile?.rse&&profile.speciesCount===405&&profile.moveCount===680,'species and moves discovered');
+ assert.ok(profile?.rse&&profile.speciesCount===405&&profile.moveCount===680&&profile.itemCount===447,'species and moves discovered');
  const data=readGameData(reader.bytes,profile),out=new RomOutput(reader.bytes);
  applyGameDataEdits(reader.bytes,profile,{species:{1:{stats:[data.species[1].stats[0]+1,...data.species[1].stats.slice(1)]}},moves:{1:{power:41}}},out);
  const back=readGameData(out.bytes,profile);

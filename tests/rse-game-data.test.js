@@ -15,23 +15,27 @@ function rom(){
  const mv=0x1c0000;
  b.set([1],mv);
  for(let i=1;i<M;i++)b.set([0,i===1?40:i===2?50:30+i%40,i===2?1:0,i<=2?100:90,i===1?35:i===2?25:20,0,0,0],mv+i*16);
+ const it=0x200000;
+ for(let i=0;i<60;i++){const s=i===0?'~':i===1?'Master Ball':i===2?'Ultra Ball':'Item'+String.fromCharCode(97+i%26)+String.fromCharCode(97+(i>>3));b.set([...(i===0?[0x01]:enc(s)),0xff],it+i*32);b[it+i*32+30]=i;}
  return b;
 }
 test('Emerald-style hack tables are found by structure and edited in place',async()=>{
  const b=rom(),p=await discoverGameData({bytes:b,maps:[],byKey:()=>null},{sourceSha256:'a'.repeat(64)});
  assert.ok(p.rse);assert.equal(p.speciesCount,320);assert.equal(p.moveCount,300);
- assert.equal(p.capabilities.items,false);assert.equal(p.capabilities.trainers,false);
+ assert.equal(p.capabilities.items,true);assert.equal(p.itemCount,60);assert.equal(p.capabilities.trainers,false);
  const data=readGameData(b,p);
  assert.equal(data.species[1].stats[0],41);assert.equal(data.species[1].catchRate,190);assert.equal(data.moves[1].power,40);
  const out=new RomOutput(b);
- applyGameDataEdits(b,p,{species:{1:{name:'Newname',stats:[90,50,60,45,55,65],types:[1,2],catchRate:30,friendship:50,eggCycles:15}},moves:{1:{power:60,name:'Big Pound'}}},out);
+ applyGameDataEdits(b,p,{items:{5:{price:777,name:'Super Thing'}},species:{1:{name:'Newname',stats:[90,50,60,45,55,65],types:[1,2],catchRate:30,friendship:50,eggCycles:15}},moves:{1:{power:60,name:'Big Pound'}}},out);
  const back=readGameData(out.bytes,p);
  assert.deepEqual([back.species[1].name,back.species[1].stats[0],back.species[1].types,back.species[1].catchRate,back.species[1].friendship,back.species[1].eggCycles],['Newname',90,[1,2],30,50,15]);
+ assert.deepEqual([back.items[5].price,back.items[5].name],[777,'Super Thing']);
  assert.deepEqual([back.moves[1].power,back.moves[1].name],[60,'Big Pound']);
  assert.equal(out.bytes.slice(p.baseStats+1*24+12,p.baseStats+1*24+16).join(),b.slice(p.baseStats+24+12,p.baseStats+24+16).join(),'unconfirmed fields are untouched');
 });
 test('fields with unconfirmed layout refuse changes instead of dropping them',async()=>{
  const b=rom(),p=await discoverGameData({bytes:b,maps:[],byKey:()=>null},{sourceSha256:'a'.repeat(64)});
  assert.throws(()=>applyGameDataEdits(b,p,{species:{1:{baseExp:99}}},new RomOutput(b)),/not editable yet/);
+ assert.throws(()=>applyGameDataEdits(b,p,{items:{5:{holdEffect:9}}},new RomOutput(b)),/not editable yet/);
  assert.equal(discoverRseGameData(new Uint8Array(0x300000),'x'),null);
 });

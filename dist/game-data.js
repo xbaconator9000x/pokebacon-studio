@@ -1,7 +1,7 @@
 import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 import{patchNativeItems}from'./rom-items.js';
 import{encodeTrainerParty}from'./native-trainer-party.js';
-import{discoverRseGameData,readRseSpecies}from'./rse-game-data.js';
+import{discoverRseGameData,readRseSpecies,readRseItem}from'./rse-game-data.js';
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -422,6 +422,8 @@ function readMove(bytes, p, id) {
 }
 function readItem(bytes, p, id) {
   integer(id, 0, p.itemCount - 1, "Item");
+  if (p.rse)
+    return readRseItem(get(bytes).b, p, id, fixedName);
   const { b, v, ptr } = get(bytes), a = p.items + id * 44;
   return { id, name: fixedName(b, a, 14), price: v.getUint16(a + 16, true), holdEffect: b[a + 18], holdEffectParam: b[a + 19], descriptionAddress: ptr(a + 20), pocket: b[a + 26], type: b[a + 27] };
 }
@@ -478,6 +480,18 @@ function applyRseSpecies(source, output, p, id, patch, report) {
   patchFields(b, patch, [["catchRate", 8, 1, 0, 255], ["genderRatio", 9, 1, 0, 255], ["eggCycles", 10, 1, 1, 255], ["friendship", 11, 1, 0, 255]]);
   output.write(at, b);
   report.push("Species " + id);
+}
+function applyRseItem(source, output, p, id, patch, report) {
+  integer(id, 1, p.itemCount - 1, "Item");
+  const at = p.items + id * 32, b = record(source, at, 32), now = readRseItem(source, p, id, fixedName);
+  for (const k of ["holdEffect", "holdEffectParam"])
+    if (patch[k] !== void 0 && patch[k] !== now[k])
+      throw Error("This ROM's item " + k + " data is not editable yet.");
+  if (patch.name !== void 0)
+    writeName(b, 0, 14, patch.name);
+  patchFields(b, patch, [["price", 30, 2, 0, 65535]]);
+  output.write(at, b);
+  report.push("Item " + id);
 }
 function record(source, at, length) {
   return source.slice(at, at + length);
@@ -609,6 +623,10 @@ function applyGameDataEdits(source, p, edits, output) {
     report.push("Move " + id);
   }
   for (const [idText, patch] of Object.entries(edits.items || {})) {
+    if (p.rse) {
+      applyRseItem(source, output, p, Number(idText), patch, report);
+      continue;
+    }
     const id = integer(Number(idText), 1, p.itemCount - 1, "Item"), at = p.items + id * 44, b = record(source, at, 44);
     patchFields(b, patch, [["price", 16, 2, 0, 65535], ["holdEffect", 18, 1, 0, 255], ["holdEffectParam", 19, 1, 0, 255]]);
     if (patch.name !== void 0)
