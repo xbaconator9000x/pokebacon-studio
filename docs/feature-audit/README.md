@@ -41,4 +41,6 @@ The 4.72.6 source reconciliation is retained. Follow the remaining workflow
 gates rather than repeating that recovery or treating the condition builder
 as complete event-page/quest parity.
 
+After 4.72.8, [shared script safety (EVT07)](SHARED_SCRIPT_SAFETY_DEV.md) adds a where-used list and a confirmation before an edit that other events would also receive, plus an "Edit only this event" route. It is unreleased, tested on synthetic fixtures and a 412px browser only, with no gameplay or device claim.
+
 The source-settings undo/redo persistence defect has a fix in this batch. A shared split-section registry now drives undo/redo save scope, covering text, region, cry, door and HM sections as well. Map-only strokes retain incremental saves. The raw planSave map-only API still intentionally omits unchanged section payloads: callers must supply the correct scope. Actual IndexedDB API tests use fake-indexeddb; they do not claim a physical Android test.

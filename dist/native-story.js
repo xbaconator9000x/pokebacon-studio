@@ -85,6 +85,37 @@ export function nativeStoryImpact(project,sourceId,graph,address){
  const authoredRoots=sourceRoots.filter(root=>!!authoredNativeRoot(project,sourceId,root));
  return{sourceRoots,authoredRoots,liveNativeRoots:sourceRoots.filter(root=>!authoredNativeRoot(project,sourceId,root)),mapCount:new Set(sourceRoots.map(root=>root.mapKey)).size};
 }
+// Itemised where-used for the script command at `address`: every original event
+// entry that reaches it, labelled as a live native entry or one that an authored
+// scene now replaces. An entry with its own flow copy (`ownCopy`) is still counted:
+// a flow can keep links to shared dialogue and routines, so this errs on the side of asking. Counts always cover every entry; `limit` only trims the
+// rows returned for display (`truncated` says how many were left out).
+export function nativeStoryWhereUsed(project,sourceId,graph,address,{limit=100}={}){
+ const impact=nativeStoryImpact(project,sourceId,graph,address);
+ const rows=impact.sourceRoots.map(root=>{
+  const owner=authoredNativeRoot(project,sourceId,root);
+  return{rootId:root.id,mapKey:root.mapKey,mapName:root.mapName||root.mapKey,kind:root.kind,title:root.title||root.id,status:owner?'replaced':'native',ownCopy:!!graph.edits?.flows?.[root.id],...(owner?{replacedBy:owner.marker?.title||'Authored scene'}:{})};
+ }).sort((a,b)=>a.mapName.localeCompare(b.mapName)||a.kind.localeCompare(b.kind)||a.rootId.localeCompare(b.rootId,undefined,{numeric:true}));
+ const shown=Number.isFinite(limit)&&limit>=0?rows.slice(0,limit):rows;
+ return{entries:shown,total:rows.length,truncated:rows.length-shown.length,native:rows.filter(r=>r.status==='native').length,replaced:rows.filter(r=>r.status==='replaced').length,mapCount:impact.mapCount};
+}
+// Decide whether changing the shared script at `address` from the event
+// `currentRootId` would also change other live native events. `sharedWith` holds
+// those other events; confirmation is required whenever it is not empty. Editing
+// only the current event is done with a root-bound structural flow, which writes
+// a private copy and leaves the shared source bytes and other entries alone.
+export function planSharedEdit(project,sourceId,graph,address,currentRootId=null,{limit=100}={}){
+ const use=nativeStoryWhereUsed(project,sourceId,graph,address,{limit:Infinity});
+ const others=use.entries.filter(e=>e.status==='native'&&e.rootId!==currentRootId);
+ const current=use.entries.find(e=>e.rootId===currentRootId)||null;
+ const maps=new Set(others.map(e=>e.mapKey)).size,plural=(n,word)=>n+' '+word+(n===1?'':'s');
+ const summary=others.length
+  ?'This change also affects '+plural(others.length,'other event')+' in '+plural(maps,'map')+'. Choose "Edit only this event" to change a private copy instead.'
+  :use.native?'No other event uses this, so the change stays with this event.'
+  :'No original event still runs this natively; every entry that reaches it is replaced by an authored scene.';
+ const shown=Number.isFinite(limit)&&limit>=0?use.entries.slice(0,limit):use.entries;
+ return{entries:shown,total:use.total,truncated:use.total-shown.length,native:use.native,replaced:use.replaced,mapCount:use.mapCount,sharedWith:others,sharedCount:others.length,sharedMapCount:maps,requiresConfirmation:others.length>0,canEditOnlyThis:!!current&&current.status==='native',currentStatus:current?current.status:'unrelated',summary};
+}
 export function reviewNativeStoryOwnership(project,sourceId,graph,edits=graph.edits||{}){
  const replaced=[],flows=new Set(Object.keys(edits.flows||{}));
  for(const root of graph.roots||[]){

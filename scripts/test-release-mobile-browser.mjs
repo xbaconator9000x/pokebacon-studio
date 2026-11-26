@@ -83,6 +83,62 @@ try{
  await page.reload();await page.waitForFunction(()=>globalThis.__releaseQA&&document.querySelector('#loading')?.hidden);
  assert.equal(await page.evaluate(()=>__releaseQA.project().nativeStory['synthetic-event'].symbols.flags[512]),'Has the gate key');
  assert.equal(await page.evaluate(()=>Object.keys(__releaseQA.project().nativeStory['synthetic-event'].edits.flows).length),1);
+ // Shared-script safety on a real 412px browser: where-used list, confirmation
+ // gate on shared edits, no gate for an event with its own script, and the
+ // "Edit only this event" route into the flow editor.
+ await page.evaluate(async()=>{
+  document.querySelector('#dialog')?.close();
+  const qa=__releaseQA,{syntheticROM}=await import('/__fixture.mjs'),{compileScript}=await import('/script-engine.js'),{GbaMaps}=await import('/rom.js'),{indexNativeStory}=await import('/native-story.js');
+  const bytes=syntheticROM(),dv=new DataView(bytes.buffer);
+  bytes[0x3000]=3;dv.setUint32(0x3004,0x08003200,true);
+  for(let i=0;i<3;i++){bytes[0x3200+i*24]=i+1;dv.setUint32(0x3210+i*24,i<2?0x08005000:0x08005100,true);}
+  bytes.set(compileScript('@start:\nmessage @text\nend\n@text:\n= Shared dialogue.$\n',0x5000,'frlg').bytes,0x5000);
+  bytes.set(compileScript('@start:\nmessage @text\nend\n@text:\n= Private dialogue.$\n',0x5100,'frlg').bytes,0x5100);
+  const reader=await new GbaMaps(bytes).discover(),graph=await indexNativeStory(reader,{mapKeys:['0.0']});
+  qa.attachROM(reader,'shared-event');qa.change(()=>{qa.project().nativeStory={...qa.project().nativeStory,'shared-event':graph};});qa.story().open();
+ });
+
+ const sharedPick=async(query)=>{await page.locator('#nativeStoryFind').click();await page.locator('#storyEventQuery').fill(query);await page.locator('[data-story-event-result]').first().click();await page.locator('#nativeStoryFind').waitFor({state:'visible'});await page.selectOption('#nativeStoryView','steps');};
+ const sharedOpenCommand=async()=>{const closed=page.locator('details:has([data-native-command]):not([open]) > summary');if(await closed.count())await closed.first().click();await page.locator('[data-native-command]:visible').first().click();};
+ const sharedEdits=()=>page.evaluate(()=>{const n=__releaseQA.project().nativeStory['shared-event'];return{commands:Object.keys(n.edits.commands).length,texts:Object.keys(n.edits.texts).length,flows:Object.keys(n.edits.flows||{}).length};});
+ // 1. A shared command: the dialog itemises every entry and asks for confirmation.
+ await sharedPick('Shared');
+ await sharedOpenCommand();await page.locator('#nativeSharedOk').waitFor({state:'visible'});
+ assert.match(await page.locator('.native-shared-note').innerText(),/also affects 1 other event in 1 map/);
+ assert.match(await page.locator('.native-where-used > summary').innerText(),/Where this is used \(2\)/);
+ await page.locator('.native-where-used > summary').click();
+ const sharedListed=await page.locator('.native-where-used li').allInnerTexts();
+ assert.equal(sharedListed.length,2);assert.ok(sharedListed.some(t=>/\(this event\)/.test(t)),'current event is marked');assert.ok(sharedListed.every(t=>/PALLET TOWN/.test(t)));
+ await page.locator('#nativeSharedOk').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(screens,'shared-command-412.png')});
+ const sharedBox=await page.locator('#nativeSharedOk').boundingBox();assert.ok(sharedBox.width>=24&&sharedBox.height>=24,'confirm tick is a phone-sized target');
+ assert.ok(await page.locator('#nativeEditOnlyThis').isVisible());
+ const sharedFooter=await page.locator('#dialogFooter').boundingBox();assert.ok(sharedFooter.y>=0&&sharedFooter.y+sharedFooter.height<=915,'save controls stay inside the viewport');
+ // Saving without confirming is refused and changes nothing.
+ await page.locator('#submitDialog').click();await page.locator('#dialogError').waitFor({state:'visible'});
+ assert.match(await page.locator('#dialogError').innerText(),/also changes 1 other event\. Tick the box/);
+ assert.ok(await page.locator('#nativeSharedOk').isVisible(),'dialog stays open');assert.deepEqual(await sharedEdits(),{commands:0,texts:0,flows:0});
+ // Confirmed saves go through.
+ await page.locator('#nativeSharedOk').check();await page.locator('#submitDialog').click();await page.locator('#nativeSharedOk').waitFor({state:'hidden'});
+ // 2. Shared dialogue is gated the same way.
+ await page.locator('[data-native-text]:visible').first().click();await page.locator('#nativeText0').waitFor({state:'visible'});
+ await page.locator('#nativeText0').fill('Changed for everyone.');
+ await page.locator('#submitDialog').click();await page.locator('#dialogError').waitFor({state:'visible'});assert.deepEqual(await sharedEdits(),{commands:0,texts:0,flows:0});
+ await page.locator('#nativeSharedOk').check();await page.locator('#submitDialog').click();await page.locator('#nativeText0').waitFor({state:'hidden'});
+ assert.equal((await sharedEdits()).texts,1);
+ await page.evaluate(()=>{const n=__releaseQA.project().nativeStory['shared-event'];__releaseQA.change(()=>{n.edits.texts={};});});
+ // 3. An event with its own script is not gated.
+ await sharedPick('Private');
+ await sharedOpenCommand();await page.locator('.native-shared-note').waitFor({state:'visible'});
+ assert.match(await page.locator('.native-shared-note').innerText(),/No other event uses this/);
+ assert.equal(await page.locator('#nativeSharedOk').count(),0);assert.equal(await page.locator('#nativeEditOnlyThis').count(),0);
+ await page.screenshot({path:path.join(screens,'private-command-412.png')});
+ await page.locator('#cancelDialog').click();
+ // 4. "Edit only this event" opens the flow editor and saves nothing by itself.
+ await sharedPick('Shared');
+ await sharedOpenCommand();await page.locator('#nativeEditOnlyThis').waitFor({state:'visible'});
+ await page.locator('#nativeEditOnlyThis').click();await page.locator('#flowList').waitFor({state:'visible'});
+ await page.screenshot({path:path.join(screens,'edit-only-this-event-412.png')});
+ assert.deepEqual(await sharedEdits(),{commands:0,texts:0,flows:0});
  // Actual 412px mobile-browser flow: original ROM byte -> typed table -> HMA
  // anchor import -> split IndexedDB project save and re-open.
  await page.evaluate(async()=>{
@@ -154,5 +210,5 @@ try{
  assert.equal(restored.autoTable,2);
 
  assert.equal(errors.length,0,errors.join('\n'));
- console.log('PASS mobile sprite tools, IndexedDB reload, event search, named-state branch creation and saved structure after reload. Screenshots: '+screens);
+ console.log('PASS mobile sprite tools, IndexedDB reload, event search, named-state branch creation, saved structure after reload and shared-script confirmation. Screenshots: '+screens);
 }finally{await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));}
