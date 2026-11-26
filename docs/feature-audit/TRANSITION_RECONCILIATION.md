@@ -20,8 +20,20 @@ dynamic return audit, relocated tables and reopening modified door timing.
 These are synthetic byte/model tests, not device or gameplay acceptance.
 Physical Android, private-ROM gameplay and signed APK acceptance remain open.
 
-PR #17 is not fully superseded: palette-export review, prepared-artwork
-initialisation and independent pin visibility still require separate review.
+PR #17 closeout (checked against main 1c8563a on 2026-11-26): the three items
+once held back are already present on main and were not ported again.
+- Palette-export review: planArtworkPalettes with reviewed conversion, covered
+  by tests/palette-review-budget.test.js and tests/palette-conversion.test.js.
+- Prepared-artwork initialisation: PackedArtworkCompiler bounds, covered by
+  tests/prepared-artwork-init.test.js.
+- Independent pin visibility: the sprite comparison pin has its own visibility
+  toggle (spriteComparisonVisible), covered by tests/sprite-reference-validation.test.js.
+The 11 palette and artwork tests pass on main. The donor's remaining differences
+are older copies of files that main has since moved past (adapter capability
+check, protected-border verification, hex workspace, trainer encounters), so
+merging it would remove current behaviour. One donor-only script,
+scripts/test-private-palette-export-ui.mjs, needs a private ROM and project and
+was not ported. None of this is device or gameplay acceptance.
 PR #11 remains unmerged: page dispatch needs validation of disabled pages,
 malformed conditions, sidecar persistence, compiler and preview equivalence.
 
