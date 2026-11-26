@@ -58,3 +58,18 @@ console.log('PASS Monomyth read and export checks (not a gameplay test).');
  console.log('packed round trip:',same,'ok,',rejected,'rejected cleanly');
  console.log('story edits: plain and packed dialogue edits export and read back');
 }
+
+// Species and moves are found by structure and edit in place.
+{
+ const {discoverGameData,readGameData,applyGameDataEdits}=await import('../dist/game-data.js');
+ const {RomOutput}=await import('../dist/rom-writer.js');
+ const profile=await discoverGameData(reader,{sourceSha256:'monomyth'});
+ assert.ok(profile?.rse&&profile.speciesCount===405&&profile.moveCount===680,'species and moves discovered');
+ const data=readGameData(reader.bytes,profile),out=new RomOutput(reader.bytes);
+ applyGameDataEdits(reader.bytes,profile,{species:{1:{stats:[data.species[1].stats[0]+1,...data.species[1].stats.slice(1)]}},moves:{1:{power:41}}},out);
+ const back=readGameData(out.bytes,profile);
+ assert.equal(back.species[1].stats[0],data.species[1].stats[0]+1);assert.equal(back.moves[1].power,41);
+ let changed=0;for(let i=0;i<reader.bytes.length;i++)if(reader.bytes[i]!==out.bytes[i])changed++;
+ assert.ok(changed<=3,'only the edited bytes change');
+ console.log('species/moves: 405 species, 680 moves; edits read back; bytes changed:',changed);
+}

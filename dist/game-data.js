@@ -1,6 +1,7 @@
 import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 import{patchNativeItems}from'./rom-items.js';
 import{encodeTrainerParty}from'./native-trainer-party.js';
+import{discoverRseGameData,readRseSpecies}from'./rse-game-data.js';
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -394,7 +395,7 @@ async function discoverGameData(reader, { sourceSha256, progress = () => {
   const prepared=identifyEngineProfile(b,sha)?.game;if(prepared){const p={...prepared,capabilities:{...prepared.capabilities},sourceSha256:sha};p.wild=get(b).ptr(0x82990);p.wildCount=0;if(p.wild>=0){while(p.wildCount<512){const at=p.wild+p.wildCount*20;if(at+20>b.length)break;if(b[at]===255&&b[at+1]===255)break;p.wildCount++;}p.wildRefs=refsTo(b,p.wild);if(p.wildCount<512&&p.wildRefs.length){p.capabilities.encounters=true;try{readEncounters(b,p);}catch{p.capabilities.encounters=false;}}}trustedGameProfiles.set(p,b);return p;}
   const c = await discoverProfile(b, reader, progress),{ptr}=get(b);
   const caps={species:!!c.VERIFIED_TOOLS.monsters,moves:!!c.VERIFIED_TOOLS.monsters,items:!!c.VERIFIED_TOOLS.items,trainers:!!c.VERIFIED_TOOLS.trainers,encounters:!!c.VERIFIED_TOOLS.encounters};
-  if(!Object.values(caps).some(Boolean))return null;
+  if(!Object.values(caps).some(Boolean)){const rse=discoverRseGameData(b,sha);if(rse){trustedGameProfiles.set(rse,b);return rse;}return null;}
   const p={version:2,sourceSha256:sha,capabilities:caps,speciesCount:c.MONSTER_COUNT||0,moveCount:c.MOVE_COUNT||0,itemCount:c.ITEM_COUNT||0,abilityCount:c.ABILITY_COUNT||0,trainerCount:c.TRAINER_COUNT||0,trainerClassCount:c.TRAINER_CLASS_COUNT||0,speciesNames:ptr(324),moveNames:ptr(328),baseStats:ptr(444),abilityNames:ptr(448),items:ptr(456),moves:ptr(460),trainers:c.TRAINER_DATA_ADDRESS,trainerClasses:c.TRAINER_CLASS_NAMES_DIRECT,wild:c.MAP_ENCOUNTER_TABLE_DIRECT,itemIcons:c.ITEM_BITMAPS_ADDRESS,learnsets:null,evolutions:null,wildCount:0};
   if(caps.species){try{p.learnsets=discoverLearnsets(b,p.speciesCount,p.moveCount);}catch{}try{p.evolutions=discoverEvolutions(b,p.speciesCount);}catch{}for(let id=0;id<p.speciesCount;id++)fixedName(b,p.speciesNames+id*11,11);for(let id=0;id<p.abilityCount;id++)fixedName(b,p.abilityNames+id*13,13);}
   if(caps.moves)for(let id=0;id<p.moveCount;id++){const at=p.moves+id*12;if(at<0||at+12>b.length||b[at+2]>17||b[at+3]>100||b[at+5]>100){caps.moves=false;break;}fixedName(b,p.moveNames+id*13,13);}
@@ -404,6 +405,8 @@ async function discoverGameData(reader, { sourceSha256, progress = () => {
 
 function readSpecies(bytes, p, id) {
   integer(id, 0, p.speciesCount - 1, "Species");
+  if (p.rse)
+    return readRseSpecies(get(bytes).b, p, id, fixedName);
   const { b, v, ptr } = get(bytes), a = p.baseStats + id * 28, effort = v.getUint16(a + 10, true), evolutions = [];
   for (let j = 0; p.evolutions!==null && j < (p.evolutionSlots||5); j++) {
     const at = p.evolutions + (id * (p.evolutionSlots||5) + j) * 8, method = v.getUint16(at, true);
@@ -414,7 +417,7 @@ function readSpecies(bytes, p, id) {
 }
 function readMove(bytes, p, id) {
   integer(id, 0, p.moveCount - 1, "Move");
-  const { b } = get(bytes), a = p.moves + id * 12;
+  const { b } = get(bytes), a = p.moves + id * (p.moveStride || 12);
   return { id, name: fixedName(b, p.moveNames + id * 13, 13), effect: b[a], power: b[a + 1], type: b[a + 2], accuracy: b[a + 3], pp: b[a + 4], secondaryChance: b[a + 5], target: b[a + 6], priority: b[a + 7] << 24 >> 24, flags: b[a + 8] };
 }
 function readItem(bytes, p, id) {
@@ -450,6 +453,31 @@ function readEncounters(bytes, p) {
 }
 function readGameData(bytes, p) {
   return { species: Array.from({ length: p.capabilities?.species===false?0:p.speciesCount }, (_, i) => readSpecies(bytes, p, i)), moves: Array.from({ length: p.capabilities?.moves===false?0:p.moveCount }, (_, i) => readMove(bytes, p, i)), items: Array.from({ length: p.capabilities?.items===false?0:p.itemCount }, (_, i) => readItem(bytes, p, i)), abilities: Array.from({ length: p.abilityCount }, (_, i) => fixedName(bytes, p.abilityNames + i * (p.abilityNameLength||13), p.abilityNameLength||13)), trainerClasses: Array.from({ length: p.trainerClassCount }, (_, i) => fixedName(bytes, p.trainerClasses + i * 13, 13)), trainers: Array.from({ length: p.trainerCount }, (_, i) => readTrainer(bytes, p, i)), encounters: p.capabilities?.encounters===false?[]:readEncounters(bytes, p) };
+}
+function applyRseSpecies(source, output, p, id, patch, report) {
+  integer(id, 1, p.speciesCount - 1, "Species");
+  const at = p.baseStats + id * 24, b = record(source, at, 24), now = readRseSpecies(source, p, id, fixedName);
+  for (const k of ["baseExp", "abilities", "evYield", "items", "growthRate", "eggGroups", "learnset", "evolutions"])
+    if (patch[k] !== void 0 && JSON.stringify(patch[k]) !== JSON.stringify(now[k]))
+      throw Error("This ROM's " + k + " data is not editable yet.");
+  if (patch.name !== void 0) {
+    const n = record(source, p.speciesNames + id * 11, 11);
+    writeName(n, 0, 11, patch.name);
+    output.write(p.speciesNames + id * 11, n);
+  }
+  if (patch.stats) {
+    if (patch.stats.length !== 6)
+      throw Error("Six base stats are required.");
+    patch.stats.forEach((n, i) => b[i] = integer(n, 1, 255, "Base stat"));
+  }
+  if (patch.types) {
+    if (patch.types.length !== 2)
+      throw Error("types needs two values.");
+    patch.types.forEach((n, i) => b[6 + i] = integer(n, 0, p.typeMax, "types"));
+  }
+  patchFields(b, patch, [["catchRate", 8, 1, 0, 255], ["genderRatio", 9, 1, 0, 255], ["eggCycles", 10, 1, 1, 255], ["friendship", 11, 1, 0, 255]]);
+  output.write(at, b);
+  report.push("Species " + id);
 }
 function record(source, at, length) {
   return source.slice(at, at + length);
@@ -497,6 +525,10 @@ function applyGameDataEdits(source, p, edits, output) {
   for(const key of ['species','moves','items','trainers','encounters'])if(Object.keys(edits[key]||{}).length&&p.capabilities?.[key]===false)throw Error('The '+key+' table format is not supported in this ROM.');
   const report = [];
   for (const [idText, patch] of Object.entries(edits.species || {})) {
+    if (p.rse) {
+      applyRseSpecies(source, output, p, Number(idText), patch, report);
+      continue;
+    }
     const id = integer(Number(idText), 1, p.speciesCount - 1, "Species"), at = p.baseStats + id * 28, b = record(source, at, 28), v = new DataView(b.buffer);
     if (patch.name !== void 0) {
       const n = record(source, p.speciesNames + id * 11, 11);
@@ -566,7 +598,7 @@ function applyGameDataEdits(source, p, edits, output) {
     report.push("Species " + id);
   }
   for (const [idText, patch] of Object.entries(edits.moves || {})) {
-    const id = integer(Number(idText), 1, p.moveCount - 1, "Move"), at = p.moves + id * 12, b = record(source, at, 12);
+    const id = integer(Number(idText), 1, p.moveCount - 1, "Move"), at = p.moves + id * (p.moveStride || 12), b = record(source, at, p.moveStride || 12);
     patchFields(b, patch, [["effect", 0, 1, 0, 213], ["power", 1, 1, 0, 255], ["type", 2, 1, 0, p.typeMax||17], ["accuracy", 3, 1, 0, 100], ["pp", 4, 1, 1, 255], ["secondaryChance", 5, 1, 0, 100], ["target", 6, 1, 0, 255], ["priority", 7, 1, -7, 7], ["flags", 8, 1, 0, 255]]);
     if (patch.name !== void 0) {
       const n = record(source, p.moveNames + id * 13, 13);
