@@ -1,8 +1,9 @@
+import { isCompressedText, decodeCompressedText } from "./compressed-text.js";
 // Reused from the existing PokéWebKit Mobile port; original credits retained in README.
 import { SCRIPT_DATA } from "./script-data.js";
 const BASE = 134217728;
 const ALIASES = { if1: "goto_if", if2: "call_if", loadpointer: "loadword", setbyte: "setmysteryeventstatus", setbyte2: "loadbyte", writebytetooffset: "setptr", loadbytefrompointer: "loadbytefromptr", setfarbyte: "setptrbyte", copyscriptbanks: "copylocal", compare: "compare_var_to_value", comparevars: "compare_var_to_var", callasm: "callnative", special2: "specialvar", pause: "delay", sound: "playse", checksound: "waitse", fanfare: "playfanfare", playsong: "playbgm", playsong2: "savebgm", fadedefault: "fadedefaultbgm", fadesong: "fadenewbgm", fadeout: "fadeoutbgm", fadein: "fadeinbgm", warpmuted: "warpsilent", warpwalk: "warpdoor", warp3: "setwarp", warp4: "setdivewarp", warp5: "setholewarp", countpokemon: "getpartysize", getplayerpos: "getplayerxy", checkitemroom: "checkitemspace", addpcitem: "addpcitem", testdecoration: "checkdecor", checkdecoration: "checkdecorspace", hidesprite: "removeobject", showsprite: "addobject", hidespritepos: "removeobjectat", showspritepos: "addobjectat", movesprite: "setobjectxy", spriteface: "turnobject", movesprite2: "setobjectxyperm", spritebehave: "setobjectmovementtype", preparemsg: "message", preparemsg2: "messageautoscroll", closeonkeypress: "waitmessage", givepokemon: "givemon", bufferpokemon: "bufferspeciesname", bufferfirstpokemon: "bufferleadmonspeciesname", bufferpartypokemon: "bufferpartymonnick", bufferitem: "bufferitemname", bufferattack: "buffermovename", bufferstring: "bufferstring", pokemart2: "pokemartdecoration", pokemart3: "pokemartdecoration2", pokecasino: "playslotmachine", paymoney: "removemoney", setwildbattle: "setwildbattle", dowildbattle: "dowildbattle", setmaptile: "setmetatile", resetweather: "resetweather", doweather: "doweather", setmapfooter: "setmaplayoutindex", sethealingplace: "setrespawn", cry: "playmoncry", waitcry: "waitmoncry", darken: "doflash", lighten: "setflashlevel", doanimation: "dofieldeffect", setanimation: "setfieldeffectargument", checkanimation: "waitfieldeffect", showmoney: "showmoneybox", hidemoney: "hidemoneybox", updatemoney: "updatemoneybox", checkattack: "checkpartymove" };
-const CONTROL_ARGS = { 1: 1, 2: 1, 3: 1, 4: 3, 5: 1, 6: 1, 7: 0, 8: 1, 9: 0, 10: 0, 11: 2, 12: 1, 13: 1, 14: 1, 15: 0, 16: 2, 17: 1, 18: 1, 19: 1, 20: 1, 21: 0, 22: 0, 23: 0, 24: 0 };
+const CONTROL_ARGS = { 25: 1, 28: 1, 1: 1, 2: 1, 3: 1, 4: 3, 5: 1, 6: 1, 7: 0, 8: 1, 9: 0, 10: 0, 11: 2, 12: 1, 13: 1, 14: 1, 15: 0, 16: 2, 17: 1, 18: 1, 19: 1, 20: 1, 21: 0, 22: 0, 23: 0, 24: 0 };
 const textTokens = SCRIPT_DATA.tokens;
 const charKeys = Object.keys(SCRIPT_DATA.characters).sort((a, b) => b.length - a.length);
 const inverse = /* @__PURE__ */ new Map();
@@ -112,6 +113,8 @@ function textEncode(text) {
   return Uint8Array.from(bytes);
 }
 function decodeScriptText(bytes, address) {
+  if (isCompressedText(bytes, address))
+    return decodeCompressedText(bytes, address);
   let text = "", i = address;
   for (; i < Math.min(address + 8192, bytes.length); i++) {
     const b = bytes[i];
@@ -128,6 +131,11 @@ function decodeScriptText(bytes, address) {
     if (b === 251) {
       text += "\\p";
       continue;
+    }
+    if (b === 252 && bytes[i + 1] === 29) {
+      const seg = decodeCompressedText(bytes, i);
+      text += seg.text;
+      return { text, length: i + seg.length - address, compressed: true };
     }
     if (b === 252) {
       const n = CONTROL_ARGS[bytes[i + 1]];

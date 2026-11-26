@@ -27,3 +27,11 @@ const again=await new GbaMaps(edited.bytes).discover(),after=again.blocks(again.
 assert.equal(after[10*W+10]&1023,reader.blocks(map)[0]&1023,'edit is readable after re-import');
 console.log(`${key}: edit exported, ${alloc.length} new blocks, ${outside} bytes changed outside them (layout pointers only)`);assert.ok(outside<=64);
 console.log('PASS Monomyth read and export checks (not a gameplay test).');
+
+// Packed (FC 1D) dialogue must decode to readable English.
+{
+ const {decodeScriptText}=await import('../dist/script-engine.js');
+ const t=decodeScriptText(rom,0x2e278b);
+ if(!/Post Office/.test(t.text)||/\{WORD/.test(t.text))throw Error('Packed dialogue did not decode: '+t.text);
+ console.log('packed dialogue decodes:',JSON.stringify(t.text.slice(0,60)));
+}
