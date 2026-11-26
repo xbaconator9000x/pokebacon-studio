@@ -30,6 +30,15 @@ export function decompressLZ(bytes,address,maxSize=0x40000){
  * include/decompress.h and src/decompress.c (hedara90 and contributors).
  * All vector, bitstream and back-reference bounds are checked before use.
  */
+// Builds that place the attribute table after the metatiles (Monomyth) give the
+// metatile count through the attribute table's own length (2 bytes each); the
+// gap between the two tables then fixes 16 (two layers) or 24 (three layers)
+// bytes per metatile. Returns 'normal', 'triple' or null when it can't tell.
+export function metatileFormatAfterAttrs(t,bounds,valid=()=>true){
+  const after=[...bounds].filter(a=>a>t.attrs).sort((a,b)=>a-b)[0];if(after===undefined)return null;
+  const n=(after-t.attrs)/2,gap=t.attrs-t.metatiles;if(![512,640].includes(n)||!valid(t.metatiles,gap))return null;
+  return gap===n*24?'triple':gap===n*16?'normal':null;
+}
 export function decompressGraphics(bytes,address,maxSize=0x40000){
   if(bytes[address]===0x10)return decompressLZ(bytes,address,maxSize);
   const fail=()=>{throw new Error('Invalid or truncated Smol graphics.');};
@@ -159,6 +168,10 @@ export class GbaMaps {
     const primaries=[...new Set(layouts.map(m=>m.primary))].map(a=>this.tileset(a));
     let normal=0,triple=0;
     for(const t of primaries){
+      // Some builds (e.g. Monomyth) store the attribute table after the
+      // metatiles. The metatile count then comes from the attribute table's own
+      // length (2 bytes each) and the gap before it fixes 16 or 24 bytes each.
+      if(t.attrs>t.metatiles&&this.engine!=='frlg'){const f=metatileFormatAfterAttrs(t,bounds,(a,n)=>this.valid(a,n));if(f==='triple')triple++;else if(f==='normal')normal++;continue;}
       if(![512,640].includes(t.count)||t.attrs>=t.metatiles||!this.valid(t.metatiles,t.count*24))continue;
       const next=[...bounds].filter(a=>a>t.metatiles).sort((a,b)=>a-b)[0],n16=next===t.metatiles+t.count*16,n24=next===t.metatiles+t.count*24;
       if(n16&&!n24)normal++;else if(n24&&!n16)triple++;
