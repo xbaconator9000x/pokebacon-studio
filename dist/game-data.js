@@ -1,7 +1,7 @@
 import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 import{patchNativeItems}from'./rom-items.js';
 import{encodeTrainerParty}from'./native-trainer-party.js';
-import{discoverRseGameData,readRseSpecies,readRseItem,readRseTrainer,encodeRseParty,readRseTrainerClass}from'./rse-game-data.js';
+import{discoverRseGameData,discoverTrainerTable,readRseSpecies,readRseItem,readRseTrainer,encodeRseParty,readRseTrainerClass}from'./rse-game-data.js';
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -400,6 +400,7 @@ async function discoverGameData(reader, { sourceSha256, progress = () => {
   if(caps.species){try{p.learnsets=discoverLearnsets(b,p.speciesCount,p.moveCount);}catch{}try{p.evolutions=discoverEvolutions(b,p.speciesCount);}catch{}for(let id=0;id<p.speciesCount;id++)fixedName(b,p.speciesNames+id*11,11);for(let id=0;id<p.abilityCount;id++)fixedName(b,p.abilityNames+id*13,13);}
   if(caps.moves)for(let id=0;id<p.moveCount;id++){const at=p.moves+id*12;if(at<0||at+12>b.length||b[at+2]>17||b[at+3]>100||b[at+5]>100){caps.moves=false;break;}fixedName(b,p.moveNames+id*13,13);}
   if(caps.encounters){while(p.wildCount<512){const at=p.wild+p.wildCount*20;if(b[at]===255&&b[at+1]===255)break;p.wildCount++;}p.wildRefs=refsTo(b,p.wild);if(p.wildCount===512||!p.wildRefs.length)caps.encounters=false;}
+  if(!p.capabilities.trainers&&p.capabilities.species&&!p.itemTable){const t=discoverTrainerTable(b);if(t){p.trainers=t.trainers;p.trainerCount=t.count;p.trainerClasses=t.classes;p.trainerClassCount=t.classCount;p.capabilities.trainers=true;}}
   trustedGameProfiles.set(p,b);return p;
 }
 

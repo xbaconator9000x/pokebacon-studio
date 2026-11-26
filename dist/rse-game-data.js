@@ -48,21 +48,8 @@ export function discoverRseGameData(b,sourceSha256){
  for(let at=0;at+32*100<b.length&&items<0;at++){
   if(b[at]===0xc7&&master.every((v,i)=>b[at+i]===v)&&ultra.every((v,i)=>b[at+32+i]===v)){items=at-32;itemCount=run(b,items+32,32,x=>nameOk(b,x,14))+1;}
  }
- // Trainers: 40-byte records, party flags first (1 = moves, 2 = held item),
- // name at +4, party count at +32 and party pointer at +36. A table of trainer
- // class names (13 bytes each) sits immediately before the first record.
- const trainerOk=x=>{if(x<0||x+40>b.length||b[x]>3)return false;const f=b.subarray(x+4,x+16).indexOf(0xff);if(f<0)return false;const n=b[x+32]|b[x+33]<<8,q=(b[x+36]|b[x+37]<<8|b[x+38]<<16|b[x+39]<<24>>>0)-BASE;return b[x+34]===0&&b[x+35]===0&&n>=1&&n<=6&&q>=0&&q<b.length;};
- let trainers=-1,trainerCount=0,trainerClasses=-1,trainerClassCount=0;
- for(let at=0;at+40*200<Math.min(b.length,0x1200000)&&trainers<0;at+=4){
-  if(!trainerOk(at)||!trainerOk(at+40)||!trainerOk(at+80))continue;
-  let s=at;while(trainerOk(s-40))s-=40;
-  const n=run(b,s,40,trainerOk);
-  if(n>=200){trainers=s;trainerCount=n;}else at=s+n*40;
- }
- if(trainers>=0){let top=0;for(let i=0;i<trainerCount;i++)top=Math.max(top,b[trainers+i*40+1]);
-  trainerClassCount=top+1;trainerClasses=trainers-trainerClassCount*13;let good=0;
-  for(let i=0;i<trainerClassCount;i++)if(nameOk(b,trainerClasses+i*13,13))good++;
-  if(trainerClasses<0||good<trainerClassCount*0.9)trainers=-1;}
+ const tr=discoverTrainerTable(b);
+ const trainers=tr?tr.trainers:-1,trainerCount=tr?tr.count:0,trainerClasses=tr?tr.classes:-1,trainerClassCount=tr?tr.classCount:0;
  const speciesCount=Math.min(nameCount,statCount);
  const moveOk=x=>x+16<=b.length&&b[x+2]<=24&&b[x+3]<=100&&b[x+4]>=1&&b[x+4]<=64&&b[x+5]<=100;
  const moveCount=Math.min(moveNameCount,run(b,moves+16,16,moveOk)+1);
@@ -116,3 +103,26 @@ export function encodeRseParty(b,p,id,tr){
  return{flags,count:tr.party.length,bytes:out};
 }
 export function readRseTrainerClass(b,p,i,fixedName){return tolerantName(fixedName,b,p.trainerClasses+i*13,13);}
+
+// Trainers: 40-byte records, party flags first (1 = moves, 2 = held item),
+// name at +4, party count at +32 and party pointer at +36. The table of trainer
+// class names (13 bytes each) sits immediately before the first record.
+export function discoverTrainerTable(b){
+ const trainerOk=x=>{if(x<0||x+40>b.length||b[x]>3)return false;const f=b.subarray(x+4,x+16).indexOf(0xff);if(f<0)return false;const n=b[x+32]|b[x+33]<<8,q=(b[x+36]|b[x+37]<<8|b[x+38]<<16|b[x+39]<<24>>>0)-BASE;return b[x+34]===0&&b[x+35]===0&&n>=1&&n<=6&&q>=0&&q<b.length;};
+ // Entry 0 is a placeholder in most games: no name and no party.
+ const noneOk=x=>x>=0&&x+40<=b.length&&b[x+4]===0xff&&b[x+32]===0&&b[x+36]===0&&b[x+39]===0;
+ for(let at=0;at+40*200<Math.min(b.length,0x1200000);at+=4){
+  if(!trainerOk(at)||!trainerOk(at+40)||!trainerOk(at+80))continue;
+  let s=at;while(trainerOk(s-40))s-=40;
+  const n=run(b,s,40,trainerOk);
+  if(n<200){at=s+n*40;continue;}
+  let start=s,count=n;if(noneOk(s-40)){start=s-40;count++;}
+  let top=0;for(let i=0;i<count;i++)top=Math.max(top,b[start+i*40+1]);
+  const classCount=top+1,classes=start-Math.ceil(classCount*13/4)*4;let good=0;
+  if(classes<0)return null;
+  for(let i=0;i<classCount;i++)if(nameOk(b,classes+i*13,13)||(i===0&&b[classes]===0xff))good++;
+  if(good<classCount*0.9)return null;
+  return{trainers:start,count,classes,classCount};
+ }
+ return null;
+}
