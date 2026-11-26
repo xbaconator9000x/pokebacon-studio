@@ -49,3 +49,41 @@ export function decodeSegment(bytes,address){
  }
  return{text,length:o-address,compressed:true,ended};
 }
+
+// Encoder: the inverse of decodeSegment. Words are spelled out letter by letter
+// (the dictionary is only a space saver), so every decoded text re-encodes to
+// bytes that decode back to the same text.
+const PUNCT=new Map([['.',38],[',',39],['?',41],['!',42],['-',43],[':',44],['/',45],['(',46],[')',47],['…',48],['é',49]]);
+const TOKENS=new Map([['{PLAYER}',56],['{NAME2}',57],['{NAME3}',58],['{STR1}',59],['{STR2}',60],['{STR3}',61]]);
+const CTRL=new Map([['\\n',50],['\\l',51],['\\p',52]]);
+export function encodeCompressedText(text){
+ if(typeof text!=='string')throw Error('Dialogue must be text.');
+ text=text.replace(/\r?\n/g,'\\n');
+ const syms=[];let i=0;
+ const esc=idx=>syms.push(55,idx>>6,idx&63);
+ while(i<text.length){
+  const rest=text.slice(i);let m;
+  if((m=rest.match(/^\\xfc\\x19\\x([0-9a-f]{2})/i))){esc(parseInt(m[1],16));i+=m[0].length;continue;}
+  if((m=rest.match(/^\\xfc\\x1c\\x([0-9a-f]{2})/i))){esc(0x100|parseInt(m[1],16));i+=m[0].length;continue;}
+  if(rest.startsWith('\\x36')){syms.push(40);i+=4;continue;}
+  if(rest.startsWith('\\x06')){syms.push(27,49);i+=4;continue;}
+  let hit=false;
+  for(const[k,v]of CTRL)if(rest.startsWith(k)){syms.push(v);i+=k.length;hit=true;break;}
+  if(hit)continue;
+  for(const[k,v]of TOKENS)if(rest.startsWith(k)){syms.push(v);i+=k.length;hit=true;break;}
+  if(hit)continue;
+  const c=text[i];i++;
+  if(c===' ')syms.push(0);
+  else if(c>='a'&&c<='z')syms.push(c.charCodeAt(0)-96);
+  else if(c>='A'&&c<='Z')syms.push(27,c.charCodeAt(0)-64);
+  else if(c>='0'&&c<='9')syms.push(28+Number(c));
+  else if(PUNCT.has(c))syms.push(PUNCT.get(c));
+  else if(c==='‘')syms.push(53);else if(c==='“')syms.push(27,53);
+  else if(c==='’')syms.push(54);else if(c==='”')syms.push(27,54);
+  else throw Error('This game\u2019s packed text cannot store \u201C'+c+'\u201D.');
+ }
+ syms.push(63);while(syms.length%4)syms.push(63);
+ const out=[0xfc,0x1d];
+ for(let k=0;k<syms.length;k+=4){const[a,b,c,d]=syms.slice(k,k+4);out.push(a<<2|b>>4,(b&15)<<4|c>>2,(c&3)<<6|d);}
+ return Uint8Array.from(out);
+}

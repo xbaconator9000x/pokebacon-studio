@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {decodeCompressedText,isCompressedText} from '../dist/compressed-text.js';
+import {decodeCompressedText,isCompressedText,encodeCompressedText} from '../dist/compressed-text.js';
 import {decodeScriptText} from '../dist/script-engine.js';
 const BASE=0x08000000;
 function pack(syms){while(syms.length%4)syms.push(63);const o=[];for(let i=0;i<syms.length;i+=4){const[a,b,c,d]=syms.slice(i,i+4);o.push(a<<2|b>>4,(b&15)<<4|c>>2,(c&3)<<6|d);}return o;}
@@ -33,4 +33,14 @@ test('packed text can follow plain text in the same string',()=>{
  const r=decodeScriptText(b,0x3000);
  assert.equal(r.text,'PoHi');
  assert.equal(r.compressed,true);assert.equal(r.length,4+text.length);
+});
+test('packed text re-encodes to bytes that decode to the same text',()=>{
+ const b=rom();
+ for(const text of ['Hello, {PLAYER}!\\nIt’s “fine”... 42?\\pBye-bye.','Café: A/B (C) \\xfc\\x19\\x27Hi','']){
+  const bytes=encodeCompressedText(text),buf=new Uint8Array(0x4000);buf.set(bytes);
+  const r=decodeScriptText(buf,0);
+  assert.equal(r.text,text);
+  assert.equal(r.length,bytes.length);
+ }
+ assert.throws(()=>encodeCompressedText('日本'),/cannot store/);void b;
 });
