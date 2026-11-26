@@ -1,7 +1,7 @@
 import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 import{patchNativeItems}from'./rom-items.js';
 import{encodeTrainerParty}from'./native-trainer-party.js';
-import{discoverRseGameData,readRseSpecies,readRseItem}from'./rse-game-data.js';
+import{discoverRseGameData,readRseSpecies,readRseItem,readRseTrainer,encodeRseParty,readRseTrainerClass}from'./rse-game-data.js';
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -429,6 +429,8 @@ function readItem(bytes, p, id) {
 }
 function readTrainer(bytes, p, id) {
   integer(id, 0, p.trainerCount - 1, "Trainer");
+  if (p.rse)
+    return readRseTrainer(get(bytes).b, p, id, fixedName);
   const { b, v, ptr } = get(bytes), a = p.trainers + id * 40, flags = b[a], customMoves = !!(flags & 1), heldItems = !!(flags & 2), count = b[a + 32], start = ptr(a + 36), stride = customMoves ? (heldItems&&p.expandedTrainerParty?32:16) : 8, party = [];
   for (let j = 0; j < count; j++) {
     const at = start + j * stride;
@@ -454,7 +456,7 @@ function readEncounters(bytes, p) {
   return rows;
 }
 function readGameData(bytes, p) {
-  return { species: Array.from({ length: p.capabilities?.species===false?0:p.speciesCount }, (_, i) => readSpecies(bytes, p, i)), moves: Array.from({ length: p.capabilities?.moves===false?0:p.moveCount }, (_, i) => readMove(bytes, p, i)), items: Array.from({ length: p.capabilities?.items===false?0:p.itemCount }, (_, i) => readItem(bytes, p, i)), abilities: Array.from({ length: p.abilityCount }, (_, i) => fixedName(bytes, p.abilityNames + i * (p.abilityNameLength||13), p.abilityNameLength||13)), trainerClasses: Array.from({ length: p.trainerClassCount }, (_, i) => fixedName(bytes, p.trainerClasses + i * 13, 13)), trainers: Array.from({ length: p.trainerCount }, (_, i) => readTrainer(bytes, p, i)), encounters: p.capabilities?.encounters===false?[]:readEncounters(bytes, p) };
+  return { species: Array.from({ length: p.capabilities?.species===false?0:p.speciesCount }, (_, i) => readSpecies(bytes, p, i)), moves: Array.from({ length: p.capabilities?.moves===false?0:p.moveCount }, (_, i) => readMove(bytes, p, i)), items: Array.from({ length: p.capabilities?.items===false?0:p.itemCount }, (_, i) => readItem(bytes, p, i)), abilities: Array.from({ length: p.abilityCount }, (_, i) => fixedName(bytes, p.abilityNames + i * (p.abilityNameLength||13), p.abilityNameLength||13)), trainerClasses: Array.from({ length: p.trainerClassCount }, (_, i) => p.rse ? readRseTrainerClass(bytes, p, i, fixedName) : fixedName(bytes, p.trainerClasses + i * 13, 13)), trainers: Array.from({ length: p.trainerCount }, (_, i) => readTrainer(bytes, p, i)), encounters: p.capabilities?.encounters===false?[]:readEncounters(bytes, p) };
 }
 function applyRseSpecies(source, output, p, id, patch, report) {
   integer(id, 1, p.speciesCount - 1, "Species");
@@ -650,7 +652,7 @@ function applyGameDataEdits(source, p, edits, output) {
       throw Error("A double battle needs at least two Pok\xE9mon.");
     const needsParty = ["party", "customMoves", "heldItems"].some((key) => owns(patch,key));
     if (needsParty) {
-      const encoded=encodeTrainerParty(source,p,id,tr);
+      const encoded=p.rse?encodeRseParty(source,p,id,tr):encodeTrainerParty(source,p,id,tr);
       b[0]=encoded.flags;
       b[32]=encoded.count;
       v.setUint32(36,BASE+output.allocate(encoded.bytes,"Trainer party"),true);

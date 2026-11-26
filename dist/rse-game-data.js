@@ -48,14 +48,29 @@ export function discoverRseGameData(b,sourceSha256){
  for(let at=0;at+32*100<b.length&&items<0;at++){
   if(b[at]===0xc7&&master.every((v,i)=>b[at+i]===v)&&ultra.every((v,i)=>b[at+32+i]===v)){items=at-32;itemCount=run(b,items+32,32,x=>nameOk(b,x,14))+1;}
  }
+ // Trainers: 40-byte records, party flags first (1 = moves, 2 = held item),
+ // name at +4, party count at +32 and party pointer at +36. A table of trainer
+ // class names (13 bytes each) sits immediately before the first record.
+ const trainerOk=x=>{if(x<0||x+40>b.length||b[x]>3)return false;const f=b.subarray(x+4,x+16).indexOf(0xff);if(f<0)return false;const n=b[x+32]|b[x+33]<<8,q=(b[x+36]|b[x+37]<<8|b[x+38]<<16|b[x+39]<<24>>>0)-BASE;return b[x+34]===0&&b[x+35]===0&&n>=1&&n<=6&&q>=0&&q<b.length;};
+ let trainers=-1,trainerCount=0,trainerClasses=-1,trainerClassCount=0;
+ for(let at=0;at+40*200<Math.min(b.length,0x1200000)&&trainers<0;at+=4){
+  if(!trainerOk(at)||!trainerOk(at+40)||!trainerOk(at+80))continue;
+  let s=at;while(trainerOk(s-40))s-=40;
+  const n=run(b,s,40,trainerOk);
+  if(n>=200){trainers=s;trainerCount=n;}else at=s+n*40;
+ }
+ if(trainers>=0){let top=0;for(let i=0;i<trainerCount;i++)top=Math.max(top,b[trainers+i*40+1]);
+  trainerClassCount=top+1;trainerClasses=trainers-trainerClassCount*13;let good=0;
+  for(let i=0;i<trainerClassCount;i++)if(nameOk(b,trainerClasses+i*13,13))good++;
+  if(trainerClasses<0||good<trainerClassCount*0.9)trainers=-1;}
  const speciesCount=Math.min(nameCount,statCount);
  const moveOk=x=>x+16<=b.length&&b[x+2]<=24&&b[x+3]<=100&&b[x+4]>=1&&b[x+4]<=64&&b[x+5]<=100;
  const moveCount=Math.min(moveNameCount,run(b,moves+16,16,moveOk)+1);
- const capabilities={species:true,moves:true,items:items>=0,trainers:false,encounters:false};
- return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount,itemCount,abilityCount:0,trainerCount:0,trainerClassCount:0,
+ const capabilities={species:true,moves:true,items:items>=0,trainers:trainers>=0,encounters:false};
+ return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount,itemCount,abilityCount:0,trainerCount:trainers>=0?trainerCount:0,trainerClassCount:trainers>=0?trainerClassCount:0,
   speciesNames:names,baseStats:stats,statsStride:24,moveNames,moves,moveStride:16,learnsets:null,evolutions:null,evolutionSlots:5,speciesAbilities:null,
-  items,itemStride:32,itemNames:-1,abilityNames:-1,trainers:-1,wild:-1,wildCount:0,
-  itemFields:['name','price'],speciesFields:['stats','types','catchRate','genderRatio','eggCycles','friendship'],typeMax:24};
+  items,itemStride:32,itemNames:-1,abilityNames:-1,trainers,trainerClasses,wild:-1,wildCount:0,
+  itemFields:['name','price'],rseTrainers:true,speciesFields:['stats','types','catchRate','genderRatio','eggCycles','friendship'],typeMax:24};
 }
 // Names may hold glyphs the shared decoder does not know; show them as "?" so
 // the table stays readable (an unchanged name is never written back).
@@ -72,3 +87,32 @@ export function readRseItem(b,p,id,fixedName){
  const a=p.items+id*32,v=new DataView(b.buffer,b.byteOffset,b.byteLength);
  return{id,name:tolerantName(fixedName,b,a,14),price:v.getUint16(a+30,true),holdEffect:b[a+26],holdEffectParam:b[a+27],descriptionAddress:-1,pocket:0,type:0};
 }
+
+// Party members: +0 personality (u32, 0 = random), +4 IV quality, +6 level,
+// +8 species, then a held item (u16) and/or four moves, and two trailing
+// bytes whose meaning is not decoded (kept as they are).
+const partyStride=flags=>[12,20,16,24][flags&3];
+export function readRseTrainer(b,p,id,fixedName){
+ const v=new DataView(b.buffer,b.byteOffset,b.byteLength),a=p.trainers+id*40,flags=b[a]&3,stride=partyStride(flags),count=b[a+32],start=v.getUint32(a+36,true)-BASE,party=[];
+ for(let j=0;j<count;j++){
+  const at=start+j*stride,moveAt=at+(flags&2?12:10);
+  party.push({ivQuality:v.getUint16(at+4,true),level:b[at+6],species:v.getUint16(at+8,true),heldItem:flags&2?v.getUint16(at+10,true):0,moves:flags&1?Array.from({length:4},(_,i)=>v.getUint16(moveAt+i*2,true)):[]});
+ }
+ return{id,name:tolerantName(fixedName,b,a+4,12),trainerClass:b[a+1],sprite:b[a+3],genderMusic:b[a+2],customMoves:!!(flags&1),heldItems:!!(flags&2),doubleBattle:!!b[a+24],ai:v.getUint32(a+28,true),items:Array.from({length:4},(_,i)=>v.getUint16(a+16+i*2,true)),party};
+}
+// Re-encode a party, keeping each member's personality and trailing bytes.
+export function encodeRseParty(b,p,id,tr){
+ const v=new DataView(b.buffer,b.byteOffset,b.byteLength),a=p.trainers+id*40,oldFlags=b[a]&3,oldStride=partyStride(oldFlags),oldCount=b[a+32],oldStart=v.getUint32(a+36,true)-BASE;
+ if(!Array.isArray(tr.party)||tr.party.length<1||tr.party.length>6)throw Error('A trainer needs one to six Pok\u00E9mon.');
+ const flags=(tr.customMoves?1:0)|(tr.heldItems?2:0),stride=partyStride(flags),out=new Uint8Array(stride*tr.party.length),dv=new DataView(out.buffer);
+ tr.party.forEach((m,i)=>{
+  const at=i*stride;
+  if(i<oldCount){const o=oldStart+i*oldStride;out.set(b.subarray(o,o+4),at);out.set(b.subarray(o+oldStride-2,o+oldStride),at+stride-2);}
+  const n=(x,lo,hi,l)=>{if(!Number.isInteger(x)||x<lo||x>hi)throw Error(l+' must be a whole number from '+lo+' to '+hi+'.');return x;};
+  dv.setUint16(at+4,n(m.ivQuality??0,0,65535,'IV quality'),true);out[at+6]=n(m.level,1,100,'Level');dv.setUint16(at+8,n(m.species,1,p.speciesCount-1,'Species'),true);
+  if(flags&2)dv.setUint16(at+10,n(m.heldItem??0,0,p.itemCount-1,'Held item'),true);
+  if(flags&1){const mv=m.moves||[];for(let k=0;k<4;k++)dv.setUint16(at+(flags&2?12:10)+k*2,n(mv[k]??0,0,p.moveCount-1,'Move'),true);}
+ });
+ return{flags,count:tr.party.length,bytes:out};
+}
+export function readRseTrainerClass(b,p,i,fixedName){return tolerantName(fixedName,b,p.trainerClasses+i*13,13);}

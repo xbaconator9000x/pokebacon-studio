@@ -64,12 +64,14 @@ console.log('PASS Monomyth read and export checks (not a gameplay test).');
  const {discoverGameData,readGameData,applyGameDataEdits}=await import('../dist/game-data.js');
  const {RomOutput}=await import('../dist/rom-writer.js');
  const profile=await discoverGameData(reader,{sourceSha256:'monomyth'});
- assert.ok(profile?.rse&&profile.speciesCount===405&&profile.moveCount===680&&profile.itemCount===447,'species and moves discovered');
+ assert.ok(profile?.rse&&profile.speciesCount===405&&profile.moveCount===680&&profile.itemCount===447&&profile.trainerCount===640&&profile.trainerClassCount===116,'species and moves discovered');
  const data=readGameData(reader.bytes,profile),out=new RomOutput(reader.bytes);
  applyGameDataEdits(reader.bytes,profile,{species:{1:{stats:[data.species[1].stats[0]+1,...data.species[1].stats.slice(1)]}},moves:{1:{power:41}}},out);
  const back=readGameData(out.bytes,profile);
  assert.equal(back.species[1].stats[0],data.species[1].stats[0]+1);assert.equal(back.moves[1].power,41);
  let changed=0;for(let i=0;i<reader.bytes.length;i++)if(reader.bytes[i]!==out.bytes[i])changed++;
  assert.ok(changed<=3,'only the edited bytes change');
+ {const tdat=data.trainers[36],edit=structuredClone(tdat);edit.party[0].level=77;const o3=new RomOutput(reader.bytes);applyGameDataEdits(reader.bytes,profile,{trainers:{36:{party:edit.party,customMoves:edit.customMoves,heldItems:edit.heldItems}}},o3);const t3=readGameData(o3.bytes,profile).trainers[36];assert.equal(t3.party[0].level,77);assert.deepEqual(t3.party[0].moves,tdat.party[0].moves);assert.equal(t3.party.length,tdat.party.length);
+  let bad=0;for(const tr of data.trainers)for(const m of tr.party)if(!(m.level>=1&&m.level<=100&&m.species>=1&&m.species<405))bad++;assert.equal(bad,0,'every party member is plausible');}
  console.log('species/moves: 405 species, 680 moves; edits read back; bytes changed:',changed);
 }
