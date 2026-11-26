@@ -92,7 +92,8 @@
       "testEvidence": [
         "tests/rom.test.js",
         "tests/authority-guards.mjs",
-        "tests/platform-lifecycle.test.js"
+        "tests/platform-lifecycle.test.js",
+        "tests/export-allocation.test.js"
       ],
       "dependencies": [
         "REL"
@@ -103,7 +104,7 @@
       "acceptanceCriteria": [
         "Demonstrate aligned spans with target-engine constraints.",
         "Demonstrate ownership with target-engine constraints.",
-        "Expose the allocation plan and verify repeated exports do not grow duplicate resources.",
+        "Allocation plan is now shown in the export review (ROM space used) and tests/export-allocation.test.js verifies alignment, no overlap, deterministic repeat exports and no growth on a re-imported ROM, using the synthetic fixture only; a real private-ROM repeat export is still needed.",
         "Complete applicable Import → Inspect → Edit → Save → Reopen → Export → Execute → Reimport → Validate checks; keep unsupported bytes unchanged."
       ],
       "verification": {
