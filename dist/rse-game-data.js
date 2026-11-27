@@ -115,7 +115,7 @@ export function encodeRseParty(b,p,id,tr){
  });
  return{flags,count:tr.party.length,bytes:out};
 }
-export function readRseTrainerClass(b,p,i,fixedName){return tolerantName(fixedName,b,p.trainerClasses+i*13,13);}
+export function readRseTrainerClass(b,p,i,fixedName){if(p.trainerLayout)return 'Class kept as is';return tolerantName(fixedName,b,p.trainerClasses+i*13,13);}
 
 // Trainers: 40-byte records, party flags first (1 = moves, 2 = held item),
 // name at +4, party count at +32 and party pointer at +36. The table of trainer
@@ -170,10 +170,11 @@ export function discoverAnchoredSpecies(b,sourceSha256){
  let last=3,miss=0;for(let i=4;miss<20;i++){if(valid(i)){last=i;miss=0;}else miss++;}
  const speciesCount=last+1;
  const am=discoverAnchoredMoves(b),ai=discoverAnchoredItems(b);
- const capabilities={species:true,moves:!!am,items:!!ai,trainers:false,encounters:false};
- return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount:am?am.moveCount:0,itemCount:ai?ai.itemCount:0,moveLayout:am?am.moveLayout:void 0,itemLayout:ai?ai.itemLayout:void 0,itemFields:ai?['price']:void 0,abilityCount:0,trainerCount:0,trainerClassCount:0,
+ const lt=am&&ai?discoverLayoutTrainers(b,speciesCount,am.moveCount,ai.itemCount):null;
+ const capabilities={species:true,moves:!!am,items:!!ai,trainers:!!lt,encounters:false};
+ return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount:am?am.moveCount:0,itemCount:ai?ai.itemCount:0,moveLayout:am?am.moveLayout:void 0,itemLayout:ai?ai.itemLayout:void 0,itemFields:ai?['price']:void 0,abilityCount:0,trainerCount:lt?lt.trainerCount:0,trainerClassCount:lt?1:0,trainerLayout:lt?lt.trainerLayout:void 0,
   speciesNames:nameBase,baseStats:start,statsStride:S,speciesLayout:{stride:S,nameBase,nameStride,nameLen:11,types:0,catchRate:8,genderRatio:0,eggCycles:0,friendship:0},
-  moveNames:-1,moves:am?am.moves:-1,learnsets:null,evolutions:null,evolutionSlots:5,speciesAbilities:null,items:ai?ai.items:-1,itemNames:-1,abilityNames:-1,trainers:-1,wild:-1,wildCount:0,
+  moveNames:-1,moves:am?am.moves:-1,learnsets:null,evolutions:null,evolutionSlots:5,speciesAbilities:null,items:ai?ai.items:-1,itemNames:-1,abilityNames:-1,trainers:lt?lt.trainers:-1,trainerClasses:-1,wild:-1,wildCount:0,
   speciesFields:['name','stats','catchRate'],typeMax:0};
 }
 
@@ -296,4 +297,65 @@ export function discoverWildTable(b,speciesCount,isReferenced){
   if(n>=20&&b[x]===255&&b[x+1]===255){let s=a;while(s-20>=0&&row(s-20))s-=20;if(!isReferenced||isReferenced(s))return{table:s,count:n+(a-s)/20};}
  }
  return null;
+}
+
+// Trainer tables of pokeemerald-expansion releases. The record size and field
+// positions differ between releases, so they are found from the first
+// trainers (Sawyer, then five Aqua grunts): the name locates each record, the
+// party pointer is the field that leads to party arrays, the party member size
+// is the common step between those arrays, and the party size is the field
+// that matches the gaps between them.
+function gcd(a,b){while(b)[a,b]=[b,a%b];return a;}
+export function discoverLayoutTrainers(b,speciesCount,moveCount,itemCount){
+ const dv=new DataView(b.buffer,b.byteOffset,b.byteLength);
+ const nameLocs=n=>{const out=[];for(const v of [n.toUpperCase(),n[0]+n.slice(1).toLowerCase()])for(const at of findAll(b,[...ENC2(v),0xff],64))out.push(at);return out;};
+ const sawyer=nameLocs('SAWYER'),grunt=new Set(nameLocs('GRUNT'));
+ const ptrAt=a=>{if(a<0||a+4>b.length)return -1;const v=dv.getUint32(a,true);return v>=BASE&&v<BASE+b.length&&(v&3)===0?v-BASE:-1;};
+ const cands=[];
+ for(let S=24;S<=128;S+=4){
+  for(const s0 of sawyer)if([1,2,3,4,5].filter(k=>grunt.has(s0+k*S)).length>=3)cands.push([s0,S]);
+  for(const g of grunt){let run=0;while(grunt.has(g+run*S))run++;if(run>=4&&!grunt.has(g-S))cands.push([g-S,S]);}
+ }
+ for(const [s0,S] of cands){
+  const org=s0-S-S; // origin of record 1 is name - S; fields are read from there
+  const rec=i=>s0+(i-1)*S-S,N=i=>{const a=rec(i);return a;};
+  for(let rel=(4-N(1)%4)%4;rel<2*S;rel+=4){
+   if(![1,2,3,4,5,6].every(i=>ptrAt(N(i)+rel)>0))continue;
+   // gather records
+   const ptrs=[];let last=0,miss=0;
+   for(let i=1;miss<4;i++){const a=N(i);if(a+2*S>b.length)break;const q=ptrAt(a+rel);if(q>0&&q+40<b.length){ptrs.push([i,q]);last=i;miss=0;}else miss++;}
+   if(last<50)continue;
+   const uniq=[...new Set(ptrs.map(x=>x[1]))].sort((x,y)=>x-y);
+   const diffs=[];for(let i=1;i<uniq.length;i++)if(uniq[i]-uniq[i-1]<=7*64)diffs.push(uniq[i]-uniq[i-1]);
+   let M=0;for(let c=28;c<=64&&!M;c+=4)if(diffs.length>=30&&diffs.filter(d=>d%c===0).length>=diffs.length*0.9)M=c;
+   if(!M)continue;
+   const monOk=q=>dv.getUint16(q+20,true)>0&&dv.getUint16(q+20,true)<speciesCount&&b[q+26]>=1&&b[q+26]<=100&&dv.getUint16(q+22,true)<itemCount+1&&[0,1,2,3].every(k=>dv.getUint16(q+12+k*2,true)<moveCount);
+   const sizeOf=new Map();uniq.forEach((q,i)=>{if(i+1<uniq.length)sizeOf.set(q,(uniq[i+1]-q)/M);});
+   let good=0,tot=0;for(const [,q] of ptrs){const n=sizeOf.get(q);if(!n||n>6)continue;tot++;let ok=true;for(let k=0;k<n;k++)if(!monOk(q+k*M)){ok=false;break;}if(ok)good++;}
+   if(tot<30||good<tot*0.95)continue;
+   // party size field
+   let size=null;
+   for(const bits of [8,3]){for(let at=0;at<2*S&&!size;at++)for(let sh=0;sh+bits<=32&&!size;sh++){if(bits===8&&sh%8)continue;const f={at,sh,bits};let m=0,t=0;for(const [i,q] of ptrs){const n=sizeOf.get(q);if(!n||n>6)continue;t++;if(getField(b,N(i),f)===n)m++;}if(t>=30&&m>=t*0.95)size=f;}if(size)break;}
+   if(!size)continue;
+   return{trainers:N(1)-S+0,trainerLayout:{stride:S,partyAt:rel,sizeAt:size,monStride:M,nameAt:S,species:20,level:26,held:22,moves:12,nameLen:11},trainerCount:last+1};
+  }
+ }
+ return null;
+}
+export function readLayoutTrainer(b,p,id,fixedName){
+ const L=p.trainerLayout,a=p.trainers+id*L.stride,dv=new DataView(b.buffer,b.byteOffset,b.byteLength),count=getField(b,a,L.sizeAt),q=dv.getUint32(a+L.partyAt,true)-BASE,party=[];
+ for(let j=0;j<count;j++){const m=q+j*L.monStride;party.push({ivQuality:0,level:b[m+L.level],species:dv.getUint16(m+L.species,true),heldItem:dv.getUint16(m+L.held,true),moves:Array.from({length:4},(_,k)=>dv.getUint16(m+L.moves+k*2,true))});}
+ return{id,name:tolerantName(fixedName,b,a+L.nameAt,L.nameLen),trainerClass:0,sprite:0,genderMusic:0,customMoves:true,heldItems:true,doubleBattle:false,ai:0,items:[0,0,0,0],party};
+}
+export function encodeLayoutParty(b,p,id,tr){
+ const L=p.trainerLayout,a=p.trainers+id*L.stride,dv=new DataView(b.buffer,b.byteOffset,b.byteLength),oldCount=getField(b,a,L.sizeAt),oldQ=dv.getUint32(a+L.partyAt,true)-BASE;
+ if(!Array.isArray(tr.party)||tr.party.length<1||tr.party.length>6)throw Error('A trainer needs one to six Pok\u00E9mon.');
+ const out=new Uint8Array(L.monStride*tr.party.length),od=new DataView(out.buffer);
+ const n=(x,lo,hi,l)=>{if(!Number.isInteger(x)||x<lo||x>hi)throw Error(l+' must be a whole number from '+lo+' to '+hi+'.');return x;};
+ tr.party.forEach((m,i)=>{
+  const at=i*L.monStride,src=oldQ+Math.min(i,oldCount-1)*L.monStride;out.set(b.subarray(src,src+L.monStride),at);
+  out[at+L.level]=n(m.level,1,100,'Level');od.setUint16(at+L.species,n(m.species,1,p.speciesCount-1,'Species'),true);od.setUint16(at+L.held,n(m.heldItem??0,0,p.itemCount||65535,'Held item'),true);
+  const mv=m.moves||[];for(let k=0;k<4;k++)od.setUint16(at+L.moves+k*2,n(mv[k]??0,0,p.moveCount-1,'Move'),true);
+ });
+ return out;
 }

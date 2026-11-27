@@ -28,4 +28,5 @@ if(caps.species)assert.equal(back.species[1].stats[0],edits.species[1].stats[0])
 if(caps.moves)assert.equal(back.moves[1].power,edits.moves[1].power);
 if(caps.items)assert.equal(back.items[1].price,edits.items[1].price);
 if(caps.trainers)assert.equal(back.trainers[5].party[0].level,edits.trainers[5].party[0].level);
+if(caps.trainers&&profile.trainerLayout){const o2=new RomOutput(reader.bytes),t6=structuredClone(data.trainers[20]);t6.party.push({...t6.party[t6.party.length-1],level:50});applyGameDataEdits(reader.bytes,profile,{trainers:{20:{name:"Wade",party:t6.party}}},o2);const rd2=await new GbaMaps(o2.bytes).discover(),p2=await discoverGameData(rd2,{sourceSha256:"y"}),b2=readGameData(o2.bytes,p2);assert.equal(b2.trainers[20].name,'Wade');assert.equal(b2.trainers[20].party.length,t6.party.length);assert.deepEqual(b2.trainers[20].party,t6.party);assert.deepEqual(b2.trainers[21],data.trainers[21]);console.log('trainer layout edits read back');}
 console.log('edits read back');
