@@ -46,6 +46,6 @@ test('Emerald-style hack tables are found by structure and edited in place',asyn
 test('fields with unconfirmed layout refuse changes instead of dropping them',async()=>{
  const b=rom(),p=await discoverGameData({bytes:b,maps:[],byKey:()=>null},{sourceSha256:'a'.repeat(64)});
  assert.throws(()=>applyGameDataEdits(b,p,{species:{1:{baseExp:99}}},new RomOutput(b)),/not editable yet/);
- assert.throws(()=>applyGameDataEdits(b,p,{items:{5:{holdEffect:9}}},new RomOutput(b)),/not editable yet/);
+ { const o=new RomOutput(b);applyGameDataEdits(b,p,{items:{5:{holdEffect:9,holdEffectParam:3}}},o);const it=readGameData(o.bytes,p).items[5];assert.equal(it.holdEffect,9);assert.equal(it.holdEffectParam,3); }
  assert.equal(discoverRseGameData(new Uint8Array(0x300000),'x'),null);
 });
