@@ -58,3 +58,29 @@ console.log('PASS Monomyth read and export checks (not a gameplay test).');
  console.log('packed round trip:',same,'ok,',rejected,'rejected cleanly');
  console.log('story edits: plain and packed dialogue edits export and read back');
 }
+
+// Species and moves are found by structure and edit in place.
+{
+ const {discoverGameData,readGameData,applyGameDataEdits}=await import('../dist/game-data.js');
+ const {RomOutput}=await import('../dist/rom-writer.js');
+ const profile=await discoverGameData(reader,{sourceSha256:'monomyth'});
+ assert.ok(profile?.rse&&profile.speciesCount===405&&profile.moveCount===680&&profile.itemCount===447&&profile.trainerCount===640&&profile.trainerClassCount===116,'species and moves discovered');
+ const data=readGameData(reader.bytes,profile),out=new RomOutput(reader.bytes);
+ applyGameDataEdits(reader.bytes,profile,{species:{1:{stats:[data.species[1].stats[0]+1,...data.species[1].stats.slice(1)]}},moves:{1:{power:41}}},out);
+ assert.equal(profile.abilityCount,212,'ability table');assert.equal(data.abilities[data.species[1].abilities[0]],'Static','ability names');
+ { const o2=new RomOutput(reader.bytes);applyGameDataEdits(reader.bytes,profile,{species:{1:{abilities:[10,11]}}},o2);const r2=readGameData(o2.apply?o2.apply(reader.bytes):o2.bytes,profile);assert.deepEqual(r2.species[1].abilities,[10,11]);}
+ assert.equal(profile.learnsetStride,4,'learnset table');assert.ok(data.species[25].learnset.length>5,'learnset read');
+ { const o3=new RomOutput(reader.bytes),ls=[...data.species[25].learnset,{move:33,level:99}];applyGameDataEdits(reader.bytes,profile,{species:{25:{learnset:ls}}},o3);const r3=readGameData(o3.bytes,profile);assert.deepEqual(r3.species[25].learnset,ls);assert.deepEqual(r3.species[24].learnset,data.species[24].learnset);}
+ assert.equal(profile.evolutionSlots,8);assert.ok(data.species[1].evolutions.length===1&&data.species[1].evolutions[0].method===4,'evolutions read');
+ { const o4=new RomOutput(reader.bytes),ev=[{...data.species[1].evolutions[0],param:30}];applyGameDataEdits(reader.bytes,profile,{species:{1:{evolutions:ev}}},o4);const r4=readGameData(o4.bytes,profile);assert.deepEqual(r4.species[1].evolutions,ev);assert.throws(()=>applyGameDataEdits(reader.bytes,profile,{species:{1:{evolutions:[{method:23,param:5,species:3}]}}},new RomOutput(reader.bytes)),/Only friendship/);}
+ assert.equal(profile.wildCount,211,'wild table');
+ { const o5=new RomOutput(reader.bytes),enc=readGameData(reader.bytes,profile).encounters,r0=enc[0],g=structuredClone(r0.groups.land);g.rate=9;g.slots[0].species=25;g.slots[0].minLevel=7;g.slots[0].maxLevel=8;applyGameDataEdits(reader.bytes,profile,{encounters:{[r0.key]:{land:g}}},o5);const rd5=await new GbaMaps(o5.bytes).discover(),p5=await discoverGameData(rd5,{sourceSha256:'x'});assert.equal(p5.wildCount,211);const e5=readGameData(o5.bytes,p5).encounters;assert.deepEqual(e5[0].groups.land,g);assert.deepEqual(e5[1],enc[1]);assert.equal(e5.length,211);}
+ { const o6=new RomOutput(reader.bytes),src=data.items.find(i=>i.name==='Choice Band'),dst=data.items.find(i=>i.name==='Soothe Bell');applyGameDataEdits(reader.bytes,profile,{items:{[dst.id]:{holdEffect:src.holdEffect,holdEffectParam:src.holdEffectParam}}},o6);const it=readGameData(o6.bytes,profile).items[dst.id];assert.equal(it.holdEffect,src.holdEffect);assert.equal(it.holdEffectParam,src.holdEffectParam);assert.equal(it.price,dst.price);}
+ const back=readGameData(out.bytes,profile);
+ assert.equal(back.species[1].stats[0],data.species[1].stats[0]+1);assert.equal(back.moves[1].power,41);
+ let changed=0;for(let i=0;i<reader.bytes.length;i++)if(reader.bytes[i]!==out.bytes[i])changed++;
+ assert.ok(changed<=3,'only the edited bytes change');
+ {const tdat=data.trainers[36],edit=structuredClone(tdat);edit.party[0].level=77;const o3=new RomOutput(reader.bytes);applyGameDataEdits(reader.bytes,profile,{trainers:{36:{party:edit.party,customMoves:edit.customMoves,heldItems:edit.heldItems}}},o3);const t3=readGameData(o3.bytes,profile).trainers[36];assert.equal(t3.party[0].level,77);assert.deepEqual(t3.party[0].moves,tdat.party[0].moves);assert.equal(t3.party.length,tdat.party.length);
+  let bad=0;for(const tr of data.trainers)for(const m of tr.party)if(!(m.level>=1&&m.level<=100&&m.species>=1&&m.species<405))bad++;assert.equal(bad,0,'every party member is plausible');}
+ console.log('species/moves: 405 species, 680 moves; edits read back; bytes changed:',changed);
+}
