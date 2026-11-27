@@ -55,8 +55,8 @@ export function discoverRseGameData(b,sourceSha256){
  const moveCount=Math.min(moveNameCount,run(b,moves+16,16,moveOk)+1);
  const capabilities={species:true,moves:true,items:items>=0,trainers:trainers>=0,encounters:false};
  return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount,itemCount,abilityCount:0,trainerCount:trainers>=0?trainerCount:0,trainerClassCount:trainers>=0?trainerClassCount:0,
-  speciesNames:names,baseStats:stats,statsStride:24,moveNames,moves,moveStride:16,learnsets:null,evolutions:null,evolutionSlots:5,speciesAbilities:null,
-  items,itemStride:32,itemNames:-1,abilityNames:-1,trainers,trainerClasses,wild:-1,wildCount:0,
+  speciesNames:names,baseStats:stats,statsStride:24,speciesLayout:{stride:24,nameBase:names,nameStride:11,nameLen:11,types:8,catchRate:8,genderRatio:9,eggCycles:10,friendship:11},moveNames,moves,moveStride:16,learnsets:null,evolutions:null,evolutionSlots:5,speciesAbilities:null,
+  items,itemStride:32,itemLayout:{stride:32,nameBase:items,nameStride:32,nameLen:14,priceAt:30,priceBytes:2,holdAt:26},itemNames:-1,abilityNames:-1,trainers,trainerClasses,wild:-1,wildCount:0,
   itemFields:['name','price'],rseTrainers:true,speciesFields:['stats','types','catchRate','genderRatio','eggCycles','friendship'],typeMax:24};
 }
 // Names may hold glyphs the shared decoder does not know; show them as "?" so
@@ -67,12 +67,16 @@ function tolerantName(fixedName,b,at,n){
   return s.trim();}
 }
 export function readRseSpecies(b,p,id,fixedName){
- const a=p.baseStats+id*24;
- return{id,name:tolerantName(fixedName,b,p.speciesNames+id*11,11),stats:Array.from(b.slice(a,a+6)),types:[b[a+6],b[a+7]],catchRate:b[a+8],baseExp:0,evYield:[0,0,0,0,0,0],items:[0,0],genderRatio:b[a+9],eggCycles:b[a+10],friendship:b[a+11],growthRate:0,eggGroups:[0,0],abilities:[0,0],learnset:[],evolutions:[]};
+ const L=p.speciesLayout,a=p.baseStats+id*L.stride;
+ return{id,name:tolerantName(fixedName,b,L.nameBase+id*L.nameStride,L.nameLen),stats:Array.from(b.slice(a,a+6)),types:[b[a+6],b[a+7]],catchRate:b[a+8],baseExp:0,evYield:[0,0,0,0,0,0],items:[0,0],genderRatio:L.genderRatio?b[a+L.genderRatio]:0,eggCycles:L.eggCycles?b[a+L.eggCycles]:0,friendship:L.friendship?b[a+L.friendship]:0,growthRate:0,eggGroups:[0,0],abilities:[0,0],learnset:[],evolutions:[]};
 }
 export function readRseItem(b,p,id,fixedName){
- const a=p.items+id*32,v=new DataView(b.buffer,b.byteOffset,b.byteLength);
- return{id,name:tolerantName(fixedName,b,a,14),price:v.getUint16(a+30,true),holdEffect:b[a+26],holdEffectParam:b[a+27],descriptionAddress:-1,pocket:0,type:0};
+ const L=p.itemLayout,a=p.items+id*L.stride,v=new DataView(b.buffer,b.byteOffset,b.byteLength);
+ return{id,name:tolerantName(fixedName,b,L.nameBase+id*L.nameStride,L.nameLen),price:L.priceBytes===4?v.getUint32(a+L.priceAt,true):v.getUint16(a+L.priceAt,true),holdEffect:L.holdAt===undefined?0:b[a+L.holdAt],holdEffectParam:L.holdAt===undefined?0:b[a+L.holdAt+1],descriptionAddress:-1,pocket:0,type:0};
+}
+export function readLayoutMove(b,p,id,fixedName){
+ const L=p.moveLayout,a=p.moves+id*L.stride,f=k=>L[k]===undefined?0:b[a+L[k]];
+ return{id,name:tolerantName(fixedName,b,L.nameBase+id*L.nameStride,L.nameLen),effect:0,power:f('power'),type:0,accuracy:f('accuracy'),pp:f('pp'),secondaryChance:0,target:0,priority:0,flags:0};
 }
 
 // Party members: +0 personality (u32, 0 = random), +4 IV quality, +6 level,
@@ -125,4 +129,39 @@ export function discoverTrainerTable(b){
   return{trainers:start,count,classes,classCount};
  }
  return null;
+}
+
+// Games whose species records start with the six base stats (every decomp and
+// expansion release, and most hacks). The record size is measured from
+// Bulbasaur, Ivysaur and Venusaur, so any release works. Only the stats and
+// the catch rate (byte 8) are treated as editable; type numbering and the rest
+// differ between releases.
+const ENC=s=>[...s].map(c=>c>='A'&&c<='Z'?0xbb+c.charCodeAt(0)-65:0xd5+c.charCodeAt(0)-97);
+function findAll(b,pat,limit=64){const out=[];const first=pat[0];for(let i=b.indexOf(first);i>=0&&i+pat.length<=b.length&&out.length<limit;i=b.indexOf(first,i+1)){let ok=true;for(let k=1;k<pat.length;k++)if(b[i+k]!==pat[k]){ok=false;break;}if(ok)out.push(i);}return out;}
+export function discoverAnchoredSpecies(b,sourceSha256){
+ const bul=findAll(b,[45,49,49,45,65,65]),ivy=findAll(b,[60,62,63,60,80,80]),ven=findAll(b,[80,82,83,80,100,100]);
+ let hit=null;
+ for(const x of bul)for(const y of ivy){const S=y-x;if(S<20||S>1024)continue;if(ven.includes(y+S)){if(hit)return null;hit={x,S};}}
+ if(!hit)return null;
+ const S=hit.S,start=hit.x-S;
+ // Names: inline in each record, or a separate table.
+ let nameBase=-1,nameStride=0;
+ const bn=ENC('Bulbasaur'),inn=ENC('Ivysaur');
+ for(let off=0;off+inn.length<S&&nameBase<0;off++){
+  if(bn.every((v,i)=>b[hit.x+off+i]===v)&&b[hit.x+off+bn.length]===0xff&&inn.every((v,i)=>b[hit.x+S+off+i]===v)){nameBase=start+off;nameStride=S;}
+ }
+ if(nameBase<0){
+  const nb=findAll(b,[...bn,0xff]).filter(x=>x>0),ni=findAll(b,[...inn,0xff]);
+  for(const x of nb)for(const y of ni){const d=y-x;if(d>=10&&d<=24){nameBase=x-d;nameStride=d;}}
+ }
+ if(nameBase<0)return null;
+ const nameValid=i=>{const a=nameBase+i*nameStride;let n=0;for(;n<12&&b[a+n]!==0xff;n++){const c=b[a+n];if(!(c===0||c>=0xa1&&c<=0xee||[0xab,0xac,0xad,0xae,0xb0,0xb4,0x1b,0xf0,0xba,0xb8,0x2e].includes(c)))return false;}return n>0&&n<12&&b[a]!==0;};
+ const valid=i=>{const a=start+i*S;if(a+S>b.length)return false;for(let k=0;k<6;k++)if(!b[a+k])return false;return b[a+6]<40&&b[a+7]<40&&nameValid(i);};
+ let last=3,miss=0;for(let i=4;miss<20;i++){if(valid(i)){last=i;miss=0;}else miss++;}
+ const speciesCount=last+1;
+ const capabilities={species:true,moves:false,items:false,trainers:false,encounters:false};
+ return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount:0,itemCount:0,abilityCount:0,trainerCount:0,trainerClassCount:0,
+  speciesNames:nameBase,baseStats:start,statsStride:S,speciesLayout:{stride:S,nameBase,nameStride,nameLen:11,types:0,catchRate:8,genderRatio:0,eggCycles:0,friendship:0},
+  moveNames:-1,moves:-1,learnsets:null,evolutions:null,evolutionSlots:5,speciesAbilities:null,items:-1,itemNames:-1,abilityNames:-1,trainers:-1,wild:-1,wildCount:0,
+  speciesFields:['name','stats','catchRate'],typeMax:0};
 }

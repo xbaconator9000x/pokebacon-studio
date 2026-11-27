@@ -1,7 +1,7 @@
 import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 import{patchNativeItems}from'./rom-items.js';
 import{encodeTrainerParty}from'./native-trainer-party.js';
-import{discoverRseGameData,discoverTrainerTable,readRseSpecies,readRseItem,readRseTrainer,encodeRseParty,readRseTrainerClass}from'./rse-game-data.js';
+import{discoverRseGameData,discoverAnchoredSpecies,discoverTrainerTable,readRseSpecies,readRseItem,readLayoutMove,readRseTrainer,encodeRseParty,readRseTrainerClass}from'./rse-game-data.js';
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -395,7 +395,7 @@ async function discoverGameData(reader, { sourceSha256, progress = () => {
   const prepared=identifyEngineProfile(b,sha)?.game;if(prepared){const p={...prepared,capabilities:{...prepared.capabilities},sourceSha256:sha};p.wild=get(b).ptr(0x82990);p.wildCount=0;if(p.wild>=0){while(p.wildCount<512){const at=p.wild+p.wildCount*20;if(at+20>b.length)break;if(b[at]===255&&b[at+1]===255)break;p.wildCount++;}p.wildRefs=refsTo(b,p.wild);if(p.wildCount<512&&p.wildRefs.length){p.capabilities.encounters=true;try{readEncounters(b,p);}catch{p.capabilities.encounters=false;}}}trustedGameProfiles.set(p,b);return p;}
   const c = await discoverProfile(b, reader, progress),{ptr}=get(b);
   const caps={species:!!c.VERIFIED_TOOLS.monsters,moves:!!c.VERIFIED_TOOLS.monsters,items:!!c.VERIFIED_TOOLS.items,trainers:!!c.VERIFIED_TOOLS.trainers,encounters:!!c.VERIFIED_TOOLS.encounters};
-  if(!Object.values(caps).some(Boolean)){const rse=discoverRseGameData(b,sha);if(rse){trustedGameProfiles.set(rse,b);return rse;}return null;}
+  if(!Object.values(caps).some(Boolean)){const rse=discoverRseGameData(b,sha);if(rse){trustedGameProfiles.set(rse,b);return rse;}const anchored=discoverAnchoredSpecies(b,sha);if(anchored){trustedGameProfiles.set(anchored,b);return anchored;}return null;}
   const p={version:2,sourceSha256:sha,capabilities:caps,speciesCount:c.MONSTER_COUNT||0,moveCount:c.MOVE_COUNT||0,itemCount:c.ITEM_COUNT||0,abilityCount:c.ABILITY_COUNT||0,trainerCount:c.TRAINER_COUNT||0,trainerClassCount:c.TRAINER_CLASS_COUNT||0,speciesNames:ptr(324),moveNames:ptr(328),baseStats:ptr(444),abilityNames:ptr(448),items:ptr(456),moves:ptr(460),trainers:c.TRAINER_DATA_ADDRESS,trainerClasses:c.TRAINER_CLASS_NAMES_DIRECT,wild:c.MAP_ENCOUNTER_TABLE_DIRECT,itemIcons:c.ITEM_BITMAPS_ADDRESS,learnsets:null,evolutions:null,wildCount:0};
   if(caps.species){try{p.learnsets=discoverLearnsets(b,p.speciesCount,p.moveCount);}catch{}try{p.evolutions=discoverEvolutions(b,p.speciesCount);}catch{}for(let id=0;id<p.speciesCount;id++)fixedName(b,p.speciesNames+id*11,11);for(let id=0;id<p.abilityCount;id++)fixedName(b,p.abilityNames+id*13,13);}
   if(caps.moves)for(let id=0;id<p.moveCount;id++){const at=p.moves+id*12;if(at<0||at+12>b.length||b[at+2]>17||b[at+3]>100||b[at+5]>100){caps.moves=false;break;}fixedName(b,p.moveNames+id*13,13);}
@@ -418,6 +418,8 @@ function readSpecies(bytes, p, id) {
 }
 function readMove(bytes, p, id) {
   integer(id, 0, p.moveCount - 1, "Move");
+  if (p.moveLayout)
+    return readLayoutMove(get(bytes).b, p, id, fixedName);
   const { b } = get(bytes), a = p.moves + id * (p.moveStride || 12);
   return { id, name: fixedName(b, p.moveNames + id * 13, 13), effect: b[a], power: b[a + 1], type: b[a + 2], accuracy: b[a + 3], pp: b[a + 4], secondaryChance: b[a + 5], target: b[a + 6], priority: b[a + 7] << 24 >> 24, flags: b[a + 8] };
 }
@@ -461,38 +463,66 @@ function readGameData(bytes, p) {
 }
 function applyRseSpecies(source, output, p, id, patch, report) {
   integer(id, 1, p.speciesCount - 1, "Species");
-  const at = p.baseStats + id * 24, b = record(source, at, 24), now = readRseSpecies(source, p, id, fixedName);
+  const L = p.speciesLayout, at = p.baseStats + id * L.stride, b = record(source, at, L.stride), now = readRseSpecies(source, p, id, fixedName);
   for (const k of ["baseExp", "abilities", "evYield", "items", "growthRate", "eggGroups", "learnset", "evolutions"])
     if (patch[k] !== void 0 && JSON.stringify(patch[k]) !== JSON.stringify(now[k]))
       throw Error("This ROM's " + k + " data is not editable yet.");
+  for (const k of ["genderRatio", "eggCycles", "friendship"])
+    if (!L[k] && patch[k] !== void 0 && patch[k] !== now[k])
+      throw Error("This ROM's " + k + " data is not editable yet.");
+  if (!L.types && patch.types && JSON.stringify(patch.types) !== JSON.stringify(now.types))
+    throw Error("This ROM's types data is not editable yet.");
   if (patch.name !== void 0) {
-    const n = record(source, p.speciesNames + id * 11, 11);
-    writeName(n, 0, 11, patch.name);
-    output.write(p.speciesNames + id * 11, n);
+    const n = record(source, L.nameBase + id * L.nameStride, L.nameLen);
+    writeName(n, 0, L.nameLen, patch.name);
+    output.write(L.nameBase + id * L.nameStride, n);
   }
   if (patch.stats) {
     if (patch.stats.length !== 6)
       throw Error("Six base stats are required.");
     patch.stats.forEach((n, i) => b[i] = integer(n, 1, 255, "Base stat"));
   }
-  if (patch.types) {
+  if (patch.types && L.types) {
     if (patch.types.length !== 2)
       throw Error("types needs two values.");
     patch.types.forEach((n, i) => b[6 + i] = integer(n, 0, p.typeMax, "types"));
   }
-  patchFields(b, patch, [["catchRate", 8, 1, 0, 255], ["genderRatio", 9, 1, 0, 255], ["eggCycles", 10, 1, 1, 255], ["friendship", 11, 1, 0, 255]]);
+  patchFields(b, patch, [["catchRate", 8, 1, 0, 255], ...["genderRatio", "eggCycles", "friendship"].filter((k) => L[k]).map((k) => [k, L[k], 1, k === "eggCycles" ? 1 : 0, 255])]);
   output.write(at, b);
   report.push("Species " + id);
 }
+function applyLayoutMove(source, output, p, id, patch, report) {
+  integer(id, 1, p.moveCount - 1, "Move");
+  const L = p.moveLayout, at = p.moves + id * L.stride, b = record(source, at, L.stride), now = readLayoutMove(source, p, id, fixedName);
+  for (const k of ["effect", "type", "secondaryChance", "target", "priority", "flags"])
+    if (patch[k] !== void 0 && patch[k] !== now[k])
+      throw Error("This ROM's move " + k + " data is not editable yet.");
+  if (patch.name !== void 0) {
+    const n = record(source, L.nameBase + id * L.nameStride, L.nameLen);
+    writeName(n, 0, L.nameLen, patch.name);
+    output.write(L.nameBase + id * L.nameStride, n);
+  }
+  patchFields(b, patch, [["power", L.power, 1, 0, 255], ["accuracy", L.accuracy, 1, 0, 255], ["pp", L.pp, 1, 1, 255]].filter((f) => f[1] !== void 0));
+  output.write(at, b);
+  report.push("Move " + id);
+}
 function applyRseItem(source, output, p, id, patch, report) {
   integer(id, 1, p.itemCount - 1, "Item");
-  const at = p.items + id * 32, b = record(source, at, 32), now = readRseItem(source, p, id, fixedName);
+  const L = p.itemLayout, at = p.items + id * L.stride, b = record(source, at, L.stride), now = readRseItem(source, p, id, fixedName);
   for (const k of ["holdEffect", "holdEffectParam"])
     if (patch[k] !== void 0 && patch[k] !== now[k])
       throw Error("This ROM's item " + k + " data is not editable yet.");
-  if (patch.name !== void 0)
-    writeName(b, 0, 14, patch.name);
-  patchFields(b, patch, [["price", 30, 2, 0, 65535]]);
+  if (patch.name !== void 0) {
+    const na = L.nameBase + id * L.nameStride;
+    if (na >= at && na + L.nameLen <= at + L.stride)
+      writeName(b, na - at, L.nameLen, patch.name);
+    else {
+      const n = record(source, na, L.nameLen);
+      writeName(n, 0, L.nameLen, patch.name);
+      output.write(na, n);
+    }
+  }
+  patchFields(b, patch, [["price", L.priceAt, L.priceBytes, 0, L.priceBytes === 4 ? 4294967295 : 65535]]);
   output.write(at, b);
   report.push("Item " + id);
 }
@@ -615,6 +645,10 @@ function applyGameDataEdits(source, p, edits, output) {
     report.push("Species " + id);
   }
   for (const [idText, patch] of Object.entries(edits.moves || {})) {
+    if (p.moveLayout) {
+      applyLayoutMove(source, output, p, Number(idText), patch, report);
+      continue;
+    }
     const id = integer(Number(idText), 1, p.moveCount - 1, "Move"), at = p.moves + id * (p.moveStride || 12), b = record(source, at, p.moveStride || 12);
     patchFields(b, patch, [["effect", 0, 1, 0, 213], ["power", 1, 1, 0, 255], ["type", 2, 1, 0, p.typeMax||17], ["accuracy", 3, 1, 0, 100], ["pp", 4, 1, 1, 255], ["secondaryChance", 5, 1, 0, 100], ["target", 6, 1, 0, 255], ["priority", 7, 1, -7, 7], ["flags", 8, 1, 0, 255]]);
     if (patch.name !== void 0) {
