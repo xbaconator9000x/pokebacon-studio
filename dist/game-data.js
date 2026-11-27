@@ -589,10 +589,16 @@ function applyRseItem(source, output, p, id, patch, report) {
   integer(id, 1, p.itemCount - 1, "Item");
   const L = p.itemLayout, at = p.items + id * L.stride, b = record(source, at, L.stride), now = readRseItem(source, p, id, fixedName);
   for (const k of ["holdEffect", "holdEffectParam"])
-    if (patch[k] !== void 0 && patch[k] !== now[k])
+    if (patch[k] !== void 0 && patch[k] !== now[k] && L.holdAt === void 0)
       throw Error("This ROM's item " + k + " data is not editable yet.");
   if (patch.name !== void 0 && patch.name !== now.name)
     layoutNameEdit(source, output, L, at, id, p.items, b, patch.name);
+  if (L.holdAt !== void 0) {
+    if (patch.holdEffect !== void 0)
+      b[L.holdAt] = integer(patch.holdEffect, 0, 255, "Held effect");
+    if (patch.holdEffectParam !== void 0)
+      b[L.holdAt + 1] = integer(patch.holdEffectParam, 0, 255, "Held effect strength");
+  }
   if (patch.price !== void 0)
     setField(b, 0, L.price, integer(patch.price, 0, 2 ** L.price.bits - 1, "Price"));
   output.write(at, b);

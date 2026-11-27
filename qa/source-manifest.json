@@ -1607,7 +1607,7 @@
     "dist/foreground-split-ui.js": "5751d0249e6a31d297899d7d4302708caa1ddd8f2b2a53a5facd7389ec25cf4c",
     "dist/foreground-split.js": "a8d1cd744ce08a0178f1754c62fa69f33f604b25940e74d1b68c019f2fff7ae5",
     "dist/format-upgrade.js": "be0dae8546a5ecd27ee7bbb2d8ce45063aa95e212f1724e3aa9f4697438ebd49",
-    "dist/game-data.js": "1d77fb49794e770cd1db0265aaf7faa69b0d10feb92c5bcf112b4475a3096c64",
+    "dist/game-data.js": "f34e3fe57d3176e42d2326a6023339a98b1090e9b6148645fa9dcd292b575e9c",
     "dist/game-edits.js": "0d844f97c47e7a07083fb22b46573b60b1bed9fe2f9b16a85e4a3b6cc52ae0f6",
     "dist/game-rules.js": "5152d70e40208994deb98bb5fdbfbc43991ec9d43855bb483b8488a66a29b106",
     "dist/game-runtime.js": "05fd8ffc23183d84139a3ed9f782aee09d962815c05af18378cc17e88aaa17e0",
