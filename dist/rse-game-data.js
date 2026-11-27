@@ -281,3 +281,19 @@ export function discoverEvolutionTable(b,count){
  }
  return null;
 }
+
+// Wild encounter headers: 20-byte rows (bank, map, 0, 0, then pointers for
+// land, water, rock smash and fishing) ended by a row starting 0xff 0xff.
+export function discoverWildTable(b,speciesCount,isReferenced){
+ const dv=new DataView(b.buffer,b.byteOffset,b.byteLength);
+ const ptr=a=>{const v=dv.getUint32(a,true);return v>=BASE&&v<BASE+b.length?v-BASE:-1;};
+ const mon=(p,n)=>{if(p<0||p+n*4>b.length)return false;for(let i=0;i<n;i++){const q=p+i*4,m=dv.getUint16(q+2,true);if(b[q]<1||b[q]>100||b[q+1]<b[q]||b[q+1]>100||m<1||m>=speciesCount)return false;}return true;};
+ const row=a=>{if(b[a+2]||b[a+3])return false;let g=0;for(let k=0;k<4;k++){if(dv.getUint32(a+4+k*4,true)===0)continue;const i=ptr(a+4+k*4);if(i<0||i+8>b.length||b[i]>100||b[i+1]!==0)return false;if(!mon(ptr(i+4),[12,5,5,10][k]))return false;g++;}return g>0;};
+ const seen=new Set();
+ for(let a=0;a+20<=b.length;a+=4){
+  if(seen.has(a)||!row(a))continue;
+  let n=0,x=a;while(x+20<=b.length&&row(x)){seen.add(x);n++;x+=20;}
+  if(n>=20&&b[x]===255&&b[x+1]===255){let s=a;while(s-20>=0&&row(s-20))s-=20;if(!isReferenced||isReferenced(s))return{table:s,count:n+(a-s)/20};}
+ }
+ return null;
+}

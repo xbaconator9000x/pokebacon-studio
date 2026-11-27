@@ -1,7 +1,7 @@
 import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 import{patchNativeItems}from'./rom-items.js';
 import{encodeTrainerParty}from'./native-trainer-party.js';
-import{discoverRseGameData,discoverAnchoredSpecies,discoverTrainerTable,readRseSpecies,readRseItem,readLayoutMove,getField,setField,readRseTrainer,encodeRseParty,readRseTrainerClass}from'./rse-game-data.js';
+import{discoverRseGameData,discoverAnchoredSpecies,discoverWildTable,discoverTrainerTable,readRseSpecies,readRseItem,readLayoutMove,getField,setField,readRseTrainer,encodeRseParty,readRseTrainerClass}from'./rse-game-data.js';
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -396,7 +396,7 @@ async function discoverGameData(reader, { sourceSha256, progress = () => {
   const prepared=identifyEngineProfile(b,sha)?.game;if(prepared){const p={...prepared,capabilities:{...prepared.capabilities},sourceSha256:sha};p.wild=get(b).ptr(0x82990);p.wildCount=0;if(p.wild>=0){while(p.wildCount<512){const at=p.wild+p.wildCount*20;if(at+20>b.length)break;if(b[at]===255&&b[at+1]===255)break;p.wildCount++;}p.wildRefs=refsTo(b,p.wild);if(p.wildCount<512&&p.wildRefs.length){p.capabilities.encounters=true;try{readEncounters(b,p);}catch{p.capabilities.encounters=false;}}}trustedGameProfiles.set(p,b);return p;}
   const c = await discoverProfile(b, reader, progress),{ptr}=get(b);
   const caps={species:!!c.VERIFIED_TOOLS.monsters,moves:!!c.VERIFIED_TOOLS.monsters,items:!!c.VERIFIED_TOOLS.items,trainers:!!c.VERIFIED_TOOLS.trainers,encounters:!!c.VERIFIED_TOOLS.encounters};
-  if(!Object.values(caps).some(Boolean)){const rse=discoverRseGameData(b,sha);if(rse){trustedGameProfiles.set(rse,b);return rse;}const anchored=discoverAnchoredSpecies(b,sha);if(anchored){trustedGameProfiles.set(anchored,b);return anchored;}return null;}
+  if(!Object.values(caps).some(Boolean)){const rse=discoverRseGameData(b,sha);if(rse){const w=rse.capabilities.species?discoverWildTable(b,rse.speciesCount,t=>refsTo(b,t).length>0):null;if(w){const refs=refsTo(b,w.table);if(refs.length){rse.wild=w.table;rse.wildCount=w.count;rse.wildRefs=refs;rse.capabilities.encounters=true;}}trustedGameProfiles.set(rse,b);return rse;}const anchored=discoverAnchoredSpecies(b,sha);if(anchored){trustedGameProfiles.set(anchored,b);return anchored;}return null;}
   const p={version:2,sourceSha256:sha,capabilities:caps,speciesCount:c.MONSTER_COUNT||0,moveCount:c.MOVE_COUNT||0,itemCount:c.ITEM_COUNT||0,abilityCount:c.ABILITY_COUNT||0,trainerCount:c.TRAINER_COUNT||0,trainerClassCount:c.TRAINER_CLASS_COUNT||0,speciesNames:ptr(324),moveNames:ptr(328),baseStats:ptr(444),abilityNames:ptr(448),items:ptr(456),moves:ptr(460),trainers:c.TRAINER_DATA_ADDRESS,trainerClasses:c.TRAINER_CLASS_NAMES_DIRECT,wild:c.MAP_ENCOUNTER_TABLE_DIRECT,itemIcons:c.ITEM_BITMAPS_ADDRESS,learnsets:null,evolutions:null,wildCount:0};
   if(caps.species){try{p.learnsets=discoverLearnsets(b,p.speciesCount,p.moveCount);}catch{}try{p.evolutions=discoverEvolutions(b,p.speciesCount);}catch{}for(let id=0;id<p.speciesCount;id++)fixedName(b,p.speciesNames+id*11,11);for(let id=0;id<p.abilityCount;id++)fixedName(b,p.abilityNames+id*13,13);}
   if(caps.moves)for(let id=0;id<p.moveCount;id++){const at=p.moves+id*12;if(at<0||at+12>b.length||b[at+2]>17||b[at+3]>100||b[at+5]>100){caps.moves=false;break;}fixedName(b,p.moveNames+id*13,13);}
