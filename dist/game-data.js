@@ -1,7 +1,7 @@
 import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 import{patchNativeItems}from'./rom-items.js';
 import{encodeTrainerParty}from'./native-trainer-party.js';
-import{discoverRseGameData,discoverAnchoredSpecies,discoverWildTable,discoverTrainerTable,readRseSpecies,readRseItem,readLayoutMove,getField,setField,readRseTrainer,encodeRseParty,readRseTrainerClass}from'./rse-game-data.js';
+import{discoverRseGameData,discoverAnchoredSpecies,discoverWildTable,discoverTrainerTable,readRseSpecies,readRseItem,readLayoutMove,getField,setField,readRseTrainer,encodeRseParty,readRseTrainerClass,readLayoutTrainer,encodeLayoutParty}from'./rse-game-data.js';
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -437,6 +437,8 @@ function readItem(bytes, p, id) {
 }
 function readTrainer(bytes, p, id) {
   integer(id, 0, p.trainerCount - 1, "Trainer");
+  if (p.trainerLayout)
+    return readLayoutTrainer(get(bytes).b, p, id, fixedName);
   if (p.rse)
     return readRseTrainer(get(bytes).b, p, id, fixedName);
   const { b, v, ptr } = get(bytes), a = p.trainers + id * 40, flags = b[a], customMoves = !!(flags & 1), heldItems = !!(flags & 2), count = b[a + 32], start = ptr(a + 36), stride = customMoves ? (heldItems&&p.expandedTrainerParty?32:16) : 8, party = [];
@@ -584,6 +586,30 @@ function applyLayoutMove(source, output, p, id, patch, report) {
       setField(b, 0, L.fields[k], integer(patch[k], k === "pp" ? 1 : 0, 2 ** L.fields[k].bits - 1, k));
   output.write(at, b);
   report.push("Move " + id);
+}
+function applyLayoutTrainer(source, output, p, id, patch, report) {
+  integer(id, 1, p.trainerCount - 1, "Trainer");
+  const L = p.trainerLayout, at = p.trainers + id * L.stride, now = readLayoutTrainer(source, p, id, fixedName);
+  for (const k of ["trainerClass", "sprite", "genderMusic", "ai", "doubleBattle", "items", "customMoves", "heldItems"])
+    if (patch[k] !== void 0 && JSON.stringify(patch[k]) !== JSON.stringify(now[k]))
+      throw Error("This ROM's trainer " + k + " data is not editable yet.");
+  if (patch.name !== void 0 && patch.name !== now.name) {
+    const n = record(source, at + L.nameAt, L.nameLen);
+    writeName(n, 0, L.nameLen, patch.name);
+    output.write(at + L.nameAt, n);
+  }
+  if (patch.party && JSON.stringify(patch.party) !== JSON.stringify(now.party)) {
+    if (patch.party.some((m) => m.ivQuality))
+      throw Error("This ROM's trainer IV data is not editable yet.");
+    const bytes = encodeLayoutParty(source, p, id, { party: patch.party }), addr = output.allocate(bytes, "Trainer party");
+    const d = new Uint8Array(4);
+    new DataView(d.buffer).setUint32(0, BASE + addr, true);
+    const sz = record(source, at + L.sizeAt.at, 4);
+    setField(sz, 0, { at: 0, sh: L.sizeAt.sh, bits: L.sizeAt.bits }, patch.party.length);
+    output.write(at + L.sizeAt.at, sz);
+    output.write(at + L.partyAt, d);
+  }
+  report.push("Trainer " + id);
 }
 function applyRseItem(source, output, p, id, patch, report) {
   integer(id, 1, p.itemCount - 1, "Item");
@@ -735,6 +761,10 @@ function applyGameDataEdits(source, p, edits, output) {
     report.push("Item " + id);
   }
   for (const [idText, patch] of Object.entries(edits.trainers || {})) {
+    if (p.trainerLayout) {
+      applyLayoutTrainer(source, output, p, Number(idText), patch, report);
+      continue;
+    }
     const id = integer(Number(idText), 1, p.trainerCount - 1, "Trainer"), old = readTrainer(source, p, id), tr = { ...old, ...patch }, at = p.trainers + id * 40, b = record(source, at, 40), v = new DataView(b.buffer);
     if (patch.name !== void 0)
       writeName(b, 4, 12, patch.name);
