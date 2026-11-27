@@ -67,6 +67,12 @@ console.log('PASS Monomyth read and export checks (not a gameplay test).');
  assert.ok(profile?.rse&&profile.speciesCount===405&&profile.moveCount===680&&profile.itemCount===447&&profile.trainerCount===640&&profile.trainerClassCount===116,'species and moves discovered');
  const data=readGameData(reader.bytes,profile),out=new RomOutput(reader.bytes);
  applyGameDataEdits(reader.bytes,profile,{species:{1:{stats:[data.species[1].stats[0]+1,...data.species[1].stats.slice(1)]}},moves:{1:{power:41}}},out);
+ assert.equal(profile.abilityCount,212,'ability table');assert.equal(data.abilities[data.species[1].abilities[0]],'Static','ability names');
+ { const o2=new RomOutput(reader.bytes);applyGameDataEdits(reader.bytes,profile,{species:{1:{abilities:[10,11]}}},o2);const r2=readGameData(o2.apply?o2.apply(reader.bytes):o2.bytes,profile);assert.deepEqual(r2.species[1].abilities,[10,11]);}
+ assert.equal(profile.learnsetStride,4,'learnset table');assert.ok(data.species[25].learnset.length>5,'learnset read');
+ { const o3=new RomOutput(reader.bytes),ls=[...data.species[25].learnset,{move:33,level:99}];applyGameDataEdits(reader.bytes,profile,{species:{25:{learnset:ls}}},o3);const r3=readGameData(o3.bytes,profile);assert.deepEqual(r3.species[25].learnset,ls);assert.deepEqual(r3.species[24].learnset,data.species[24].learnset);}
+ assert.equal(profile.evolutionSlots,8);assert.ok(data.species[1].evolutions.length===1&&data.species[1].evolutions[0].method===4,'evolutions read');
+ { const o4=new RomOutput(reader.bytes),ev=[{...data.species[1].evolutions[0],param:30}];applyGameDataEdits(reader.bytes,profile,{species:{1:{evolutions:ev}}},o4);const r4=readGameData(o4.bytes,profile);assert.deepEqual(r4.species[1].evolutions,ev);assert.throws(()=>applyGameDataEdits(reader.bytes,profile,{species:{1:{evolutions:[{method:23,param:5,species:3}]}}},new RomOutput(reader.bytes)),/Only friendship/);}
  const back=readGameData(out.bytes,profile);
  assert.equal(back.species[1].stats[0],data.species[1].stats[0]+1);assert.equal(back.moves[1].power,41);
  let changed=0;for(let i=0;i<reader.bytes.length;i++)if(reader.bytes[i]!==out.bytes[i])changed++;

@@ -317,6 +317,7 @@ var u16data = (list) => {
   return b;
 };
 function readLearnset(bytes, at, moveCount, stride=2) {
+ if(stride===4){if(at<0)return [];const entries=[];for(let i=0;i<128;i++){const n=at+i*4;if(n+4>bytes.length)throw Error("Learnset lies outside ROM.");const move=bytes[n]|bytes[n+1]<<8,level=bytes[n+2]|bytes[n+3]<<8;if(move===65535)return entries;if(move<1||move>=moveCount||level>100)throw Error("Invalid learnset.");entries.push({move,level});}throw Error("Learnset has no terminator.");}
  if(stride===3){if(at<0)return [];const entries=[];for(let i=0;i<128;i++){const n=at+i*3;if(at<0||n+3>bytes.length)throw Error("Learnset lies outside ROM.");const move=bytes[n]|bytes[n+1]<<8,level=bytes[n+2];if(level===255||move===65535)return entries;if(move>=moveCount||level>100)throw Error("Invalid expanded learnset.");entries.push({move,level});}throw Error("Learnset has no terminator.");}
   const { v } = get(bytes), entries = [];
   let prev = 0;
@@ -406,8 +407,12 @@ async function discoverGameData(reader, { sourceSha256, progress = () => {
 
 function readSpecies(bytes, p, id) {
   integer(id, 0, p.speciesCount - 1, "Species");
-  if (p.rse)
-    return readRseSpecies(get(bytes).b, p, id, fixedName);
+  if (p.rse) {
+    const s = readRseSpecies(get(bytes).b, p, id, fixedName);
+    if (p.learnsets) s.learnset = readLearnset(bytes, get(bytes).ptr(p.learnsets + id * 4), p.moveCount, p.learnsetStride);
+    if (p.evolutionStride) s.evolutions = readEvolutions(bytes, p, id);
+    return s;
+  }
   const { b, v, ptr } = get(bytes), a = p.baseStats + id * 28, effort = v.getUint16(a + 10, true), evolutions = [];
   for (let j = 0; p.evolutions!==null && j < (p.evolutionSlots||5); j++) {
     const at = p.evolutions + (id * (p.evolutionSlots||5) + j) * 8, method = v.getUint16(at, true);
@@ -461,11 +466,65 @@ function readEncounters(bytes, p) {
 function readGameData(bytes, p) {
   return { species: Array.from({ length: p.capabilities?.species===false?0:p.speciesCount }, (_, i) => readSpecies(bytes, p, i)), moves: Array.from({ length: p.capabilities?.moves===false?0:p.moveCount }, (_, i) => readMove(bytes, p, i)), items: Array.from({ length: p.capabilities?.items===false?0:p.itemCount }, (_, i) => readItem(bytes, p, i)), abilities: Array.from({ length: p.abilityCount }, (_, i) => fixedName(bytes, p.abilityNames + i * (p.abilityNameLength||13), p.abilityNameLength||13)), trainerClasses: Array.from({ length: p.trainerClassCount }, (_, i) => p.rse ? readRseTrainerClass(bytes, p, i, fixedName) : fixedName(bytes, p.trainerClasses + i * 13, 13)), trainers: Array.from({ length: p.trainerCount }, (_, i) => readTrainer(bytes, p, i)), encounters: p.capabilities?.encounters===false?[]:readEncounters(bytes, p) };
 }
+function writeEvolutions(source, output, p, id, list) {
+  const slots = p.evolutionSlots, stride = p.evolutionStride, now = readEvolutions(source, p, id);
+  if (!Array.isArray(list) || list.length > slots)
+    throw Error("At most " + slots + " evolutions fit.");
+  const d = new Uint8Array(stride), dv = new DataView(d.buffer);
+  list.forEach((e, i) => {
+    const method = integer(e.method, 1, 65535, "Evolution method"), param = integer(e.param, 0, 65535, "Evolution parameter"), target = integer(e.species, 1, p.speciesCount - 1, "Evolution species");
+    const kept = now.some((n) => n.method === method && n.param === param && n.species === target);
+    if (!kept) {
+      if (![1, 4, 7].includes(method))
+        throw Error("Only friendship, level and item evolutions are editable in this ROM; other methods can be kept but not created.");
+      if (method === 4)
+        integer(param, 1, 100, "Evolution level");
+      if (method === 7)
+        integer(param, 1, p.itemCount - 1, "Evolution item");
+      if (method === 1 && param !== 0)
+        throw Error("Friendship evolutions take no parameter.");
+    }
+    dv.setUint16(i * 8, method, true);
+    dv.setUint16(i * 8 + 2, param, true);
+    dv.setUint16(i * 8 + 4, target, true);
+  });
+  output.write(p.evolutions + id * stride, d);
+}
+function readEvolutions(bytes, p, id) {
+  const v = get(bytes).v, out = [];
+  for (let j = 0; j < p.evolutionSlots; j++) {
+    const at = p.evolutions + id * p.evolutionStride + j * 8, method = v.getUint16(at, true);
+    if (method)
+      out.push({ method, param: v.getUint16(at + 2, true), species: v.getUint16(at + 4, true) });
+  }
+  return out;
+}
+function writeLearnset(output, p, id, learnset) {
+  if (!p.learnsets)
+    throw Error('The level-up table format is not supported in this ROM.');
+  if (!Array.isArray(learnset) || learnset.length > 127)
+    throw Error("Keep the learnset within127 entries.");
+  const wide = p.learnsetStride === 3 || p.learnsetStride === 4;
+  let prev = 0;
+  const words = learnset.map((e) => {
+    const level = integer(e.level, wide ? 0 : 1, 100, "Learn level"), move = integer(e.move, 1, p.moveCount - 1, "Learn move");
+    if (level < prev)
+      throw Error("Learnset must be ordered by level.");
+    prev = level;
+    return p.learnsetStride === 4 ? [move & 255, move >>> 8, level, 0] : p.learnsetStride === 3 ? [move & 255, move >>> 8, level] : level << 9 | move;
+  });
+  if (p.learnsetStride === 4) words.push([255, 255, 0, 0]);
+  else if (p.learnsetStride === 3) words.push([0, 0, 255]);
+  else words.push(65535);
+  const a = output.allocate(wide ? Uint8Array.from(words.flat()) : u16data(words), "Level-up learnset"), d = new Uint8Array(4);
+  new DataView(d.buffer).setUint32(0, BASE + a, true);
+  output.write(p.learnsets + id * 4, d);
+}
 function applyRseSpecies(source, output, p, id, patch, report) {
   integer(id, 1, p.speciesCount - 1, "Species");
   const L = p.speciesLayout, at = p.baseStats + id * L.stride, b = record(source, at, L.stride), now = readRseSpecies(source, p, id, fixedName);
   for (const k of ["baseExp", "abilities", "evYield", "items", "growthRate", "eggGroups", "learnset", "evolutions"])
-    if (patch[k] !== void 0 && JSON.stringify(patch[k]) !== JSON.stringify(now[k]))
+    if (!(k === "abilities" && L.abilities !== void 0) && !(k === "learnset" && p.learnsets) && !(k === "evolutions" && p.evolutionStride) && patch[k] !== void 0 && JSON.stringify(patch[k]) !== JSON.stringify(now[k]))
       throw Error("This ROM's " + k + " data is not editable yet.");
   for (const k of ["genderRatio", "eggCycles", "friendship"])
     if (!L[k] && patch[k] !== void 0 && patch[k] !== now[k])
@@ -476,6 +535,11 @@ function applyRseSpecies(source, output, p, id, patch, report) {
     const n = record(source, L.nameBase + id * L.nameStride, L.nameLen);
     writeName(n, 0, L.nameLen, patch.name);
     output.write(L.nameBase + id * L.nameStride, n);
+  }
+  if (patch.abilities && L.abilities !== void 0) {
+    if (patch.abilities.length !== 2)
+      throw Error("Two abilities are required.");
+    patch.abilities.forEach((n, i) => b[L.abilities + i] = integer(n, 0, p.abilityCount - 1, "Ability"));
   }
   if (patch.stats) {
     if (patch.stats.length !== 6)
@@ -489,6 +553,10 @@ function applyRseSpecies(source, output, p, id, patch, report) {
   }
   patchFields(b, patch, [["catchRate", 8, 1, 0, 255], ...["genderRatio", "eggCycles", "friendship"].filter((k) => L[k]).map((k) => [k, L[k], 1, k === "eggCycles" ? 1 : 0, 255])]);
   output.write(at, b);
+  if (patch.learnset && JSON.stringify(patch.learnset) !== JSON.stringify(readSpecies(source, p, id).learnset))
+    writeLearnset(output, p, id, patch.learnset);
+  if (patch.evolutions && p.evolutionStride && JSON.stringify(patch.evolutions) !== JSON.stringify(readEvolutions(source, p, id)))
+    writeEvolutions(source, output, p, id, patch.evolutions);
   report.push("Species " + id);
 }
 function layoutNameEdit(source, output, L, at, id, base, b, name) {
@@ -611,23 +679,8 @@ function applyGameDataEdits(source, p, edits, output) {
       patch.items.forEach((n, i) => v.setUint16(12 + i * 2, integer(n, 0, p.itemCount - 1, "Held item"), true));
     }
     output.write(at, b);
-    if (patch.learnset) {
-      if(p.learnsets===null)throw Error('The level-up table format is not supported in this ROM.');
-      if (!Array.isArray(patch.learnset) || patch.learnset.length > 127)
-        throw Error("Keep the learnset within127 entries.");
-      let prev = 0;
-      const words = patch.learnset.map((e) => {
-        const level = integer(e.level, p.learnsetStride===3?0:1, 100, "Learn level"), move = integer(e.move, 1, p.moveCount - 1, "Learn move");
-        if (level < prev)
-          throw Error("Learnset must be ordered by level.");
-        prev = level;
-        return p.learnsetStride===3?[move&255,move>>>8,level]:level << 9 | move;
-      });
-      if(p.learnsetStride===3)words.push([0,0,255]);else words.push(65535);
-      const a = output.allocate(p.learnsetStride===3?Uint8Array.from(words.flat()):u16data(words), "Level-up learnset"), d = new Uint8Array(4);
-      new DataView(d.buffer).setUint32(0, BASE + a, true);
-      output.write(p.learnsets + id * 4, d);
-    }
+    if (patch.learnset)
+      writeLearnset(output, p, id, patch.learnset);
     if (patch.evolutions) {
       if(p.evolutionSlots>5)throw Error("Expanded evolution branches require source editing in this engine pack.");
       if(p.evolutions===null)throw Error('The evolution table format is not supported in this ROM.');

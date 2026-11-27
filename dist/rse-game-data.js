@@ -48,16 +48,19 @@ export function discoverRseGameData(b,sourceSha256){
  for(let at=0;at+32*100<b.length&&items<0;at++){
   if(b[at]===0xc7&&master.every((v,i)=>b[at+i]===v)&&ultra.every((v,i)=>b[at+32+i]===v)){items=at-32;itemCount=run(b,items+32,32,x=>nameOk(b,x,14))+1;}
  }
+ const learn=discoverLearnsetTable(b,speciesCount0(names,nameCount,statCount),Math.min(moveNameCount,run(b,moves+16,16,x=>x+16<=b.length&&b[x+2]<=24&&b[x+3]<=100&&b[x+4]>=1&&b[x+4]<=64&&b[x+5]<=100)+1));
+ const evo=discoverEvolutionTable(b,speciesCount0(names,nameCount,statCount));
+ const abil=discoverAbilityTable(b,stats,speciesCount0(names,nameCount,statCount));
  const tr=discoverTrainerTable(b);
  const trainers=tr?tr.trainers:-1,trainerCount=tr?tr.count:0,trainerClasses=tr?tr.classes:-1,trainerClassCount=tr?tr.classCount:0;
  const speciesCount=Math.min(nameCount,statCount);
  const moveOk=x=>x+16<=b.length&&b[x+2]<=24&&b[x+3]<=100&&b[x+4]>=1&&b[x+4]<=64&&b[x+5]<=100;
  const moveCount=Math.min(moveNameCount,run(b,moves+16,16,moveOk)+1);
  const capabilities={species:true,moves:true,items:items>=0,trainers:trainers>=0,encounters:false};
- return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount,itemCount,abilityCount:0,trainerCount:trainers>=0?trainerCount:0,trainerClassCount:trainers>=0?trainerClassCount:0,
-  speciesNames:names,baseStats:stats,statsStride:24,speciesLayout:{stride:24,nameBase:names,nameStride:11,nameLen:11,types:8,catchRate:8,genderRatio:9,eggCycles:10,friendship:11},moveNames,moves,moveStride:16,learnsets:null,evolutions:null,evolutionSlots:5,speciesAbilities:null,
-  items,itemStride:32,itemLayout:{stride:32,nameBase:items,nameStride:32,nameLen:14,price:{at:30,sh:0,bits:16},holdAt:26},itemNames:-1,abilityNames:-1,trainers,trainerClasses,wild:-1,wildCount:0,
-  itemFields:['name','price'],rseTrainers:true,speciesFields:['stats','types','catchRate','genderRatio','eggCycles','friendship'],typeMax:24};
+ return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount,itemCount,abilityCount:abil?abil.count:0,trainerCount:trainers>=0?trainerCount:0,trainerClassCount:trainers>=0?trainerClassCount:0,
+  speciesNames:names,baseStats:stats,statsStride:24,speciesLayout:{stride:24,nameBase:names,nameStride:11,nameLen:11,abilities:abil?20:void 0,types:8,catchRate:8,genderRatio:9,eggCycles:10,friendship:11},moveNames,moves,moveStride:16,learnsets:learn?learn.table:null,learnsetStride:learn?4:void 0,evolutions:evo?evo.table:null,evolutionSlots:evo?evo.slots:5,evolutionStride:evo?evo.slots*8:void 0,speciesAbilities:null,
+  items,itemStride:32,itemLayout:{stride:32,nameBase:items,nameStride:32,nameLen:14,price:{at:30,sh:0,bits:16},holdAt:26},itemNames:-1,abilityNames:abil?abil.base:-1,trainers,trainerClasses,wild:-1,wildCount:0,
+  itemFields:['name','price'],rseTrainers:true,speciesFields:['stats','types','catchRate','genderRatio','eggCycles','friendship',...(abil?['abilities']:[]),...(learn?['learnset']:[]),...(evo?['evolutions']:[])],typeMax:24};
 }
 // Names may hold glyphs the shared decoder does not know; show them as "?" so
 // the table stays readable (an unchanged name is never written back).
@@ -68,7 +71,7 @@ function tolerantName(fixedName,b,at,n){
 }
 export function readRseSpecies(b,p,id,fixedName){
  const L=p.speciesLayout,a=p.baseStats+id*L.stride;
- return{id,name:tolerantName(fixedName,b,L.nameBase+id*L.nameStride,L.nameLen),stats:Array.from(b.slice(a,a+6)),types:[b[a+6],b[a+7]],catchRate:b[a+8],baseExp:0,evYield:[0,0,0,0,0,0],items:[0,0],genderRatio:L.genderRatio?b[a+L.genderRatio]:0,eggCycles:L.eggCycles?b[a+L.eggCycles]:0,friendship:L.friendship?b[a+L.friendship]:0,growthRate:0,eggGroups:[0,0],abilities:[0,0],learnset:[],evolutions:[]};
+ return{id,name:tolerantName(fixedName,b,L.nameBase+id*L.nameStride,L.nameLen),stats:Array.from(b.slice(a,a+6)),types:[b[a+6],b[a+7]],catchRate:b[a+8],baseExp:0,evYield:[0,0,0,0,0,0],items:[0,0],genderRatio:L.genderRatio?b[a+L.genderRatio]:0,eggCycles:L.eggCycles?b[a+L.eggCycles]:0,friendship:L.friendship?b[a+L.friendship]:0,growthRate:0,eggGroups:[0,0],abilities:L.abilities===undefined?[0,0]:[b[a+L.abilities],b[a+L.abilities+1]],learnset:[],evolutions:[]};
 }
 export function getField(b,a,f){let v=0;for(let i=3;i>=0;i--)v=v*256+(b[a+f.at+i]||0);return Math.floor(v/2**f.sh)%2**f.bits;}
 export function setField(b,a,f,x){const m=2**f.bits-1;if(!Number.isInteger(x)||x<0||x>m)throw Error('Value must be a whole number from 0 to '+m+'.');let v=0;for(let i=3;i>=0;i--)v=v*256+(b[a+f.at+i]||0);const old=Math.floor(v/2**f.sh)%2**f.bits;v+=(x-old)*2**f.sh;for(let i=0;i<4;i++){b[a+f.at+i]=v%256;v=Math.floor(v/256);}}
@@ -230,6 +233,51 @@ export function discoverAnchoredItems(b){
   const u=anchoredTable(b,anchors,specs,160,true);
   if(u&&u.nameOff+14<=u.stride){let last=0,miss=0;for(let i=1;miss<24;i++){const a=u.base+i*u.stride;if(a+u.stride>b.length)break;let n=0;while(n<14&&b[a+u.nameOff+n]!==0xff)n++;if(n>0&&n<14&&b[a+u.nameOff]!==0){last=i;miss=0;}else miss++;}
    return{items:u.base,itemLayout:{stride:u.stride,nameBase:u.base+u.nameOff,nameStride:u.stride,nameLen:14,price:u.fields.price},itemCount:last+1};}
+ }
+ return null;
+}
+
+function speciesCount0(names,nameCount,statCount){return Math.min(nameCount,statCount);}
+// Ability names: 13-byte records headed by a "-------" placeholder. Found from
+// the abilities most species use, which must name real abilities; a table is
+// accepted only when every ability byte of every species points inside it.
+export function discoverAbilityTable(b,stats,speciesCount){
+ const mark=[0xae,0xae,0xae,0xae,0xae,0xae,0xae,0xff];
+ for(const at of findAll(b,mark,32)){
+  if(b[at-1]===0xae)continue;
+  let count=0;while(count<512){const a=at+count*13;if(a+13>b.length)break;let n=0;while(n<13&&b[a+n]!==0xff)n++;if(n===13||(count>0&&n===0))break;let ok=true;for(let i=0;i<n;i++){const c=b[a+i];if(!(c===0||c>=0xa1&&c<=0xee||[0xab,0xac,0xad,0xae,0xb0,0xb4,0x1b,0xf0,0xba,0xb8,0x2e].includes(c)))ok=false;}if(!ok)break;count++;}
+  if(count<50)continue;
+  let fit=true;for(let i=1;i<speciesCount;i++){const a=stats+i*24;if(b[a+20]>=count||b[a+21]>=count){fit=false;break;}}
+  if(fit)return{base:at,count};
+ }
+ return null;
+}
+
+// Level-up lists: a table of one pointer per species to entries of
+// (move u16, level u16), ended by move 0xffff. Found by structure.
+export function discoverLearnsetTable(b,speciesCount,moveCount){
+ const dv=new DataView(b.buffer,b.byteOffset,b.byteLength);
+ const listOk=(q,allowEmpty)=>{if(q<0||q+4>b.length||q%2)return false;let prev=0;for(let n=0;n<100;n++){if(q+n*4+4>b.length)return false;const m=dv.getUint16(q+n*4,true),l=dv.getUint16(q+n*4+2,true);if(m===0xffff)return n>0||allowEmpty;if(m<1||m>=moveCount||l>100||l<prev)return false;prev=l;}return false;};
+ const ptrOk=(a,first)=>{const v=dv.getUint32(a,true);return v>=BASE&&v<BASE+b.length&&listOk(v-BASE,first);};
+ let run=0;
+ for(let a=0;a+4<=Math.min(b.length,0x1e00000);a+=4){
+  if(ptrOk(a,run===0||run===1)){run++;if(run>=speciesCount){const t=a-(run-1)*4;if(ptrOk(t,true)&&ptrOk(t+4,false))return{table:t};}}else run=0;
+ }
+ return null;
+}
+
+// Evolutions: per species a fixed number of 8-byte slots (method, parameter,
+// target species, zero). Empty slots are all zero and only follow used ones.
+export function discoverEvolutionTable(b,count){
+ const dv=new DataView(b.buffer,b.byteOffset,b.byteLength);
+ for(const K of [8,5,6,7,4]){
+  const S=K*8;
+  for(let a=0;a+count*S<=Math.min(b.length,0x1e00000);a+=4){
+   let used=0,ok=true;
+   for(let i=0;i<count&&ok;i++){let empty=false;for(let k=0;k<K;k++){const o=a+i*S+k*8,m=dv.getUint16(o,true),p=dv.getUint16(o+2,true),t=dv.getUint16(o+4,true),z=dv.getUint16(o+6,true);
+    if(m===0){if(p||t||z){ok=false;break;}empty=true;}else{if(empty||m>64||t<1||t>=count||z){ok=false;break;}used++;}}}
+   if(ok&&used>=count/4)return{table:a,slots:K};
+  }
  }
  return null;
 }
