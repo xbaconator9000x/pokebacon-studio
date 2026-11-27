@@ -1,7 +1,7 @@
 import {ENGINE_SAVE_PROFILES,identifyEngineProfile} from './engine-profiles.js';
 import{patchNativeItems}from'./rom-items.js';
 import{encodeTrainerParty}from'./native-trainer-party.js';
-import{discoverRseGameData,discoverAnchoredSpecies,discoverTrainerTable,readRseSpecies,readRseItem,readLayoutMove,readRseTrainer,encodeRseParty,readRseTrainerClass}from'./rse-game-data.js';
+import{discoverRseGameData,discoverAnchoredSpecies,discoverTrainerTable,readRseSpecies,readRseItem,readLayoutMove,getField,setField,readRseTrainer,encodeRseParty,readRseTrainerClass}from'./rse-game-data.js';
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -491,18 +491,29 @@ function applyRseSpecies(source, output, p, id, patch, report) {
   output.write(at, b);
   report.push("Species " + id);
 }
+function layoutNameEdit(source, output, L, at, id, base, b, name) {
+  if (L.namePtr !== void 0)
+    throw Error("This ROM keeps names in text pointers; renaming is not editable yet.");
+  const na = L.nameBase + id * L.nameStride;
+  if (na >= at && na + L.nameLen <= at + L.stride)
+    writeName(b, na - at, L.nameLen, name);
+  else {
+    const n = record(source, na, L.nameLen);
+    writeName(n, 0, L.nameLen, name);
+    output.write(na, n);
+  }
+}
 function applyLayoutMove(source, output, p, id, patch, report) {
   integer(id, 1, p.moveCount - 1, "Move");
   const L = p.moveLayout, at = p.moves + id * L.stride, b = record(source, at, L.stride), now = readLayoutMove(source, p, id, fixedName);
   for (const k of ["effect", "type", "secondaryChance", "target", "priority", "flags"])
     if (patch[k] !== void 0 && patch[k] !== now[k])
       throw Error("This ROM's move " + k + " data is not editable yet.");
-  if (patch.name !== void 0) {
-    const n = record(source, L.nameBase + id * L.nameStride, L.nameLen);
-    writeName(n, 0, L.nameLen, patch.name);
-    output.write(L.nameBase + id * L.nameStride, n);
-  }
-  patchFields(b, patch, [["power", L.power, 1, 0, 255], ["accuracy", L.accuracy, 1, 0, 255], ["pp", L.pp, 1, 1, 255]].filter((f) => f[1] !== void 0));
+  if (patch.name !== void 0 && patch.name !== now.name)
+    layoutNameEdit(source, output, L, at, id, p.moves, b, patch.name);
+  for (const k of ["power", "accuracy", "pp"])
+    if (patch[k] !== void 0 && L.fields[k])
+      setField(b, 0, L.fields[k], integer(patch[k], k === "pp" ? 1 : 0, 2 ** L.fields[k].bits - 1, k));
   output.write(at, b);
   report.push("Move " + id);
 }
@@ -512,17 +523,10 @@ function applyRseItem(source, output, p, id, patch, report) {
   for (const k of ["holdEffect", "holdEffectParam"])
     if (patch[k] !== void 0 && patch[k] !== now[k])
       throw Error("This ROM's item " + k + " data is not editable yet.");
-  if (patch.name !== void 0) {
-    const na = L.nameBase + id * L.nameStride;
-    if (na >= at && na + L.nameLen <= at + L.stride)
-      writeName(b, na - at, L.nameLen, patch.name);
-    else {
-      const n = record(source, na, L.nameLen);
-      writeName(n, 0, L.nameLen, patch.name);
-      output.write(na, n);
-    }
-  }
-  patchFields(b, patch, [["price", L.priceAt, L.priceBytes, 0, L.priceBytes === 4 ? 4294967295 : 65535]]);
+  if (patch.name !== void 0 && patch.name !== now.name)
+    layoutNameEdit(source, output, L, at, id, p.items, b, patch.name);
+  if (patch.price !== void 0)
+    setField(b, 0, L.price, integer(patch.price, 0, 2 ** L.price.bits - 1, "Price"));
   output.write(at, b);
   report.push("Item " + id);
 }

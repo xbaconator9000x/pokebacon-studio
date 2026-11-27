@@ -56,7 +56,7 @@ export function discoverRseGameData(b,sourceSha256){
  const capabilities={species:true,moves:true,items:items>=0,trainers:trainers>=0,encounters:false};
  return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount,itemCount,abilityCount:0,trainerCount:trainers>=0?trainerCount:0,trainerClassCount:trainers>=0?trainerClassCount:0,
   speciesNames:names,baseStats:stats,statsStride:24,speciesLayout:{stride:24,nameBase:names,nameStride:11,nameLen:11,types:8,catchRate:8,genderRatio:9,eggCycles:10,friendship:11},moveNames,moves,moveStride:16,learnsets:null,evolutions:null,evolutionSlots:5,speciesAbilities:null,
-  items,itemStride:32,itemLayout:{stride:32,nameBase:items,nameStride:32,nameLen:14,priceAt:30,priceBytes:2,holdAt:26},itemNames:-1,abilityNames:-1,trainers,trainerClasses,wild:-1,wildCount:0,
+  items,itemStride:32,itemLayout:{stride:32,nameBase:items,nameStride:32,nameLen:14,price:{at:30,sh:0,bits:16},holdAt:26},itemNames:-1,abilityNames:-1,trainers,trainerClasses,wild:-1,wildCount:0,
   itemFields:['name','price'],rseTrainers:true,speciesFields:['stats','types','catchRate','genderRatio','eggCycles','friendship'],typeMax:24};
 }
 // Names may hold glyphs the shared decoder does not know; show them as "?" so
@@ -70,13 +70,19 @@ export function readRseSpecies(b,p,id,fixedName){
  const L=p.speciesLayout,a=p.baseStats+id*L.stride;
  return{id,name:tolerantName(fixedName,b,L.nameBase+id*L.nameStride,L.nameLen),stats:Array.from(b.slice(a,a+6)),types:[b[a+6],b[a+7]],catchRate:b[a+8],baseExp:0,evYield:[0,0,0,0,0,0],items:[0,0],genderRatio:L.genderRatio?b[a+L.genderRatio]:0,eggCycles:L.eggCycles?b[a+L.eggCycles]:0,friendship:L.friendship?b[a+L.friendship]:0,growthRate:0,eggGroups:[0,0],abilities:[0,0],learnset:[],evolutions:[]};
 }
+export function getField(b,a,f){let v=0;for(let i=3;i>=0;i--)v=v*256+(b[a+f.at+i]||0);return Math.floor(v/2**f.sh)%2**f.bits;}
+export function setField(b,a,f,x){const m=2**f.bits-1;if(!Number.isInteger(x)||x<0||x>m)throw Error('Value must be a whole number from 0 to '+m+'.');let v=0;for(let i=3;i>=0;i--)v=v*256+(b[a+f.at+i]||0);const old=Math.floor(v/2**f.sh)%2**f.bits;v+=(x-old)*2**f.sh;for(let i=0;i<4;i++){b[a+f.at+i]=v%256;v=Math.floor(v/256);}}
+function layoutName(fixedName,b,L,id){
+ if(L.namePtr!==undefined){const q=(b[id*L.stride+L.base+L.namePtr]|b[id*L.stride+L.base+L.namePtr+1]<<8|b[id*L.stride+L.base+L.namePtr+2]<<16|b[id*L.stride+L.base+L.namePtr+3]<<24>>>0)-BASE;return q>=0&&q<b.length?tolerantName(fixedName,b,q,24):'';}
+ return tolerantName(fixedName,b,L.nameBase+id*L.nameStride,L.nameLen);
+}
 export function readRseItem(b,p,id,fixedName){
- const L=p.itemLayout,a=p.items+id*L.stride,v=new DataView(b.buffer,b.byteOffset,b.byteLength);
- return{id,name:tolerantName(fixedName,b,L.nameBase+id*L.nameStride,L.nameLen),price:L.priceBytes===4?v.getUint32(a+L.priceAt,true):v.getUint16(a+L.priceAt,true),holdEffect:L.holdAt===undefined?0:b[a+L.holdAt],holdEffectParam:L.holdAt===undefined?0:b[a+L.holdAt+1],descriptionAddress:-1,pocket:0,type:0};
+ const L=p.itemLayout,a=p.items+id*L.stride,hold=L.holdAt;
+ return{id,name:layoutName(fixedName,b,{...L,base:p.items},id),price:getField(b,a,L.price),holdEffect:hold===undefined?0:b[a+hold],holdEffectParam:hold===undefined?0:b[a+hold+1],descriptionAddress:-1,pocket:0,type:0};
 }
 export function readLayoutMove(b,p,id,fixedName){
- const L=p.moveLayout,a=p.moves+id*L.stride,f=k=>L[k]===undefined?0:b[a+L[k]];
- return{id,name:tolerantName(fixedName,b,L.nameBase+id*L.nameStride,L.nameLen),effect:0,power:f('power'),type:0,accuracy:f('accuracy'),pp:f('pp'),secondaryChance:0,target:0,priority:0,flags:0};
+ const L=p.moveLayout,a=p.moves+id*L.stride,f=k=>L.fields[k]?getField(b,a,L.fields[k]):0;
+ return{id,name:layoutName(fixedName,b,{...L,base:p.moves},id),effect:0,power:f('power'),type:0,accuracy:f('accuracy'),pp:f('pp'),secondaryChance:0,target:0,priority:0,flags:0};
 }
 
 // Party members: +0 personality (u32, 0 = random), +4 IV quality, +6 level,
@@ -137,6 +143,7 @@ export function discoverTrainerTable(b){
 // the catch rate (byte 8) are treated as editable; type numbering and the rest
 // differ between releases.
 const ENC=s=>[...s].map(c=>c>='A'&&c<='Z'?0xbb+c.charCodeAt(0)-65:0xd5+c.charCodeAt(0)-97);
+export function findAllBytes(b,pat,limit){return findAll(b,pat,limit);}
 function findAll(b,pat,limit=64){const out=[];const first=pat[0];for(let i=b.indexOf(first);i>=0&&i+pat.length<=b.length&&out.length<limit;i=b.indexOf(first,i+1)){let ok=true;for(let k=1;k<pat.length;k++)if(b[i+k]!==pat[k]){ok=false;break;}if(ok)out.push(i);}return out;}
 export function discoverAnchoredSpecies(b,sourceSha256){
  const bul=findAll(b,[45,49,49,45,65,65]),ivy=findAll(b,[60,62,63,60,80,80]),ven=findAll(b,[80,82,83,80,100,100]);
@@ -159,9 +166,66 @@ export function discoverAnchoredSpecies(b,sourceSha256){
  const valid=i=>{const a=start+i*S;if(a+S>b.length)return false;for(let k=0;k<6;k++)if(!b[a+k])return false;return b[a+6]<40&&b[a+7]<40&&nameValid(i);};
  let last=3,miss=0;for(let i=4;miss<20;i++){if(valid(i)){last=i;miss=0;}else miss++;}
  const speciesCount=last+1;
- const capabilities={species:true,moves:false,items:false,trainers:false,encounters:false};
- return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount:0,itemCount:0,abilityCount:0,trainerCount:0,trainerClassCount:0,
+ const am=discoverAnchoredMoves(b),ai=discoverAnchoredItems(b);
+ const capabilities={species:true,moves:!!am,items:!!ai,trainers:false,encounters:false};
+ return{version:2,rse:true,sourceSha256,capabilities,speciesCount,moveCount:am?am.moveCount:0,itemCount:ai?ai.itemCount:0,moveLayout:am?am.moveLayout:void 0,itemLayout:ai?ai.itemLayout:void 0,itemFields:ai?['price']:void 0,abilityCount:0,trainerCount:0,trainerClassCount:0,
   speciesNames:nameBase,baseStats:start,statsStride:S,speciesLayout:{stride:S,nameBase,nameStride,nameLen:11,types:0,catchRate:8,genderRatio:0,eggCycles:0,friendship:0},
-  moveNames:-1,moves:-1,learnsets:null,evolutions:null,evolutionSlots:5,speciesAbilities:null,items:-1,itemNames:-1,abilityNames:-1,trainers:-1,wild:-1,wildCount:0,
+  moveNames:-1,moves:am?am.moves:-1,learnsets:null,evolutions:null,evolutionSlots:5,speciesAbilities:null,items:ai?ai.items:-1,itemNames:-1,abilityNames:-1,trainers:-1,wild:-1,wildCount:0,
   speciesFields:['name','stats','catchRate'],typeMax:0};
+}
+
+// Table of records with a pointer to a name string, found from known entries:
+// entries are matched by name, then field positions by known values.
+const ENC2=s=>[...s].map(c=>c===' '?0:c==='é'?0x1b:c>='A'&&c<='Z'?0xbb+c.charCodeAt(0)-65:c>='a'&&c<='z'?0xd5+c.charCodeAt(0)-97:c==='-'?0xae:0xac);
+function ptrLocs(b,names){
+ const out=new Set();
+ for(const n of names){const e=ENC2(n);for(const at of findAll(b,[...e,0xff],16)){if(at>0&&b[at-1]!==0xff)continue;const x=at+BASE,pat=[x&255,x>>8&255,x>>16&255,x>>>24];for(const q of findAll(b,pat,64))if(q%4===0)out.add(q);}}
+ return out;
+}
+function anchoredTable(b,anchors,specs,maxStride){
+ // anchors: [{id,names:[variants]}] ; specs: {field:{bits:[..],values:[..]}}
+ const locs=anchors.map(a=>ptrLocs(b,a.names));
+ const [a0,a1]=anchors;
+ for(const p0 of locs[0])for(const p1 of locs[1]){
+  const d=p1-p0,k=a1.id-a0.id;
+  if(d<=0||d%k)continue;const S=d/k;if(S<12||S>maxStride||S%4)continue;
+  if(!anchors.every((a,i)=>locs[i].has(p0+(a.id-a0.id)*S)))continue;
+  for(let nameOff=0;nameOff<S;nameOff+=4){
+   const base=p0-a0.id*S-nameOff;if(base<0)break;
+   const fields={};let ok=true;
+   for(const [name,spec] of Object.entries(specs)){
+    let found=null;
+    for(const bits of spec.bits){for(let at=0;at+4<=S&&!found;at++)for(let sh=0;sh+bits<=32&&!found;sh++){
+     const f={at,sh,bits};if(anchors.every((a,i)=>getField(b,base+a.id*S,f)===spec.values[i]))found=f;}if(found)break;}
+    if(!found){ok=false;break;}fields[name]=found;
+   }
+   if(ok)return{base,stride:S,fields,nameOff};
+  }
+ }
+ return null;
+}
+function countPtrRecords(b,base,S,miss,off){
+ let last=0,m=0;for(let i=1;m<miss;i++){const a=base+i*S+off;if(a+S>b.length)break;const q=(b[a]|b[a+1]<<8|b[a+2]<<16|b[a+3]<<24>>>0)-BASE;let ok=false;
+  if(q>0&&q<b.length&&b[q]!==0xff){let n=0;while(n<24&&b[q+n]!==0xff&&(b[q+n]===0||b[q+n]>=0xa1&&b[q+n]<=0xee||[0xab,0xac,0xad,0xae,0xb0,0xb4,0x1b,0xf0,0xba,0xb8,0x2e].includes(b[q+n])))n++;ok=n>0&&n<24&&b[q+n]===0xff;}
+  if(ok){last=i;m=0;}else m++;}
+ return last+1;
+}
+export function discoverAnchoredMoves(b){
+ const v=(n)=>[n,n.toUpperCase()];
+ const A=[[1,'Pound',40,100,35],[2,'Karate Chop',50,100,25],[4,'Comet Punch',18,85,15],[5,'Mega Punch',80,85,20],[6,'Pay Day',40,100,20]];
+ const anchors=A.map(x=>({id:x[0],names:v(x[1])}));
+ const t=anchoredTable(b,anchors,{power:{bits:[9,8,7],values:A.map(x=>x[2])},accuracy:{bits:[7,8],values:A.map(x=>x[3])},pp:{bits:[8,6],values:A.map(x=>x[4])}},128);
+ if(!t)return null;
+ const count=countPtrRecords(b,t.base,t.stride,12,t.nameOff);
+ return{moves:t.base,moveLayout:{stride:t.stride,namePtr:t.nameOff,fields:t.fields},moveCount:count};
+}
+export function discoverAnchoredItems(b){
+ // Two known orderings of the first Poké Balls: older and newer releases.
+ const orders=[[[1,'Master Ball',0],[2,'Ultra Ball',800],[3,'Great Ball',600]],[[1,'Poké Ball',200],[2,'Great Ball',600],[3,'Ultra Ball',800],[4,'Master Ball',0]]];
+ for(const A of orders){
+  const anchors=A.map(x=>({id:x[0],names:[x[1],x[1].toUpperCase()]}));
+  const t=anchoredTable(b,anchors,{price:{bits:[32,16],values:A.map(x=>x[2])}},160);
+  if(t)return{items:t.base,itemLayout:{stride:t.stride,namePtr:t.nameOff,price:t.fields.price},itemCount:countPtrRecords(b,t.base,t.stride,24,t.nameOff)};
+ }
+ return null;
 }
