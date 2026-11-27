@@ -177,14 +177,14 @@ export function discoverAnchoredSpecies(b,sourceSha256){
 // Table of records with a pointer to a name string, found from known entries:
 // entries are matched by name, then field positions by known values.
 const ENC2=s=>[...s].map(c=>c===' '?0:c==='é'?0x1b:c>='A'&&c<='Z'?0xbb+c.charCodeAt(0)-65:c>='a'&&c<='z'?0xd5+c.charCodeAt(0)-97:c==='-'?0xae:0xac);
-function ptrLocs(b,names){
+function ptrLocs(b,names,inline){
  const out=new Set();
- for(const n of names){const e=ENC2(n);for(const at of findAll(b,[...e,0xff],16)){if(at>0&&b[at-1]!==0xff)continue;const x=at+BASE,pat=[x&255,x>>8&255,x>>16&255,x>>>24];for(const q of findAll(b,pat,64))if(q%4===0)out.add(q);}}
+ for(const n of names){const e=ENC2(n);for(const at of findAll(b,[...e,0xff],16)){if(inline){out.add(at);continue;}const x=at+BASE,pat=[x&255,x>>8&255,x>>16&255,x>>>24];for(const q of findAll(b,pat,64))if(q%4===0)out.add(q);}}
  return out;
 }
-function anchoredTable(b,anchors,specs,maxStride){
+function anchoredTable(b,anchors,specs,maxStride,inline){
  // anchors: [{id,names:[variants]}] ; specs: {field:{bits:[..],values:[..]}}
- const locs=anchors.map(a=>ptrLocs(b,a.names));
+ const locs=anchors.map(a=>ptrLocs(b,a.names,inline));
  const [a0,a1]=anchors;
  for(const p0 of locs[0])for(const p1 of locs[1]){
   const d=p1-p0,k=a1.id-a0.id;
@@ -224,8 +224,12 @@ export function discoverAnchoredItems(b){
  const orders=[[[1,'Master Ball',0],[2,'Ultra Ball',800],[3,'Great Ball',600]],[[1,'Poké Ball',200],[2,'Great Ball',600],[3,'Ultra Ball',800],[4,'Master Ball',0]]];
  for(const A of orders){
   const anchors=A.map(x=>({id:x[0],names:[x[1],x[1].toUpperCase()]}));
-  const t=anchoredTable(b,anchors,{price:{bits:[32,16],values:A.map(x=>x[2])}},160);
+  const specs={price:{bits:[32,16],values:A.map(x=>x[2])}};
+  const t=anchoredTable(b,anchors,specs,160);
   if(t)return{items:t.base,itemLayout:{stride:t.stride,namePtr:t.nameOff,price:t.fields.price},itemCount:countPtrRecords(b,t.base,t.stride,24,t.nameOff)};
+  const u=anchoredTable(b,anchors,specs,160,true);
+  if(u&&u.nameOff+14<=u.stride){let last=0,miss=0;for(let i=1;miss<24;i++){const a=u.base+i*u.stride;if(a+u.stride>b.length)break;let n=0;while(n<14&&b[a+u.nameOff+n]!==0xff)n++;if(n>0&&n<14&&b[a+u.nameOff]!==0){last=i;miss=0;}else miss++;}
+   return{items:u.base,itemLayout:{stride:u.stride,nameBase:u.base+u.nameOff,nameStride:u.stride,nameLen:14,price:u.fields.price},itemCount:last+1};}
  }
  return null;
 }

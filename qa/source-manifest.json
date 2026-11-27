@@ -1807,7 +1807,7 @@
     "dist/rom-world.js": "bf5ee0dcb4df760710bf17b23af0c05a545ca6fd070c4095bcf145a02cb2d79b",
     "dist/rom-writer.js": "5a361752b9e97ce7e6d99543d1da2079b586912d7ff7416b0ed0dca11c0bae72",
     "dist/rom.js": "011bd37ae1f4ab28ea61d4d2bbd9efce72469fb73051836020324c4d45924313",
-    "dist/rse-game-data.js": "35aa65389e69a0cfbaa6e6eb041ce541ae0c791167f357bab6ff3ed850995d24",
+    "dist/rse-game-data.js": "505bdb6f59482551b14cbd6fb8139c501d6e7971caaeb8d95b4891a6de5eb6ec",
     "dist/save-profiles.js": "832d32d22f994d56162644d42980fe6acfcbc796cf5d1c52c01ea23df510dc29",
     "dist/save-worker.js": "af6ca816ee483ff37da6b2db825ba54daa9bf3e87ec3ee394f171c4d9e7af0dc",
     "dist/scene-compiler.js": "4d7d871105492c1fe7dfca0c8de73997c5519d9b5d2cee7fededa984558de9dd",
