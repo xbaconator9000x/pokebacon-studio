@@ -477,10 +477,12 @@ function writeEvolutions(source, output, p, id, list) {
     const method = integer(e.method, 1, 65535, "Evolution method"), param = integer(e.param, 0, 65535, "Evolution parameter"), target = integer(e.species, 1, p.speciesCount - 1, "Evolution species");
     const kept = now.some((n) => n.method === method && n.param === param && n.species === target);
     if (!kept) {
-      if (![1, 4, 7].includes(method))
-        throw Error("Only friendship, level and item evolutions are editable in this ROM; other methods can be kept but not created.");
-      if (method === 4)
+      if (![1, 4, 7, 8, 9, 10, 23].includes(method))
+        throw Error("Only friendship, level, item, stat-comparison level and known-move evolutions are editable in this ROM; other methods can be kept but not created.");
+      if ([4, 8, 9, 10].includes(method))
         integer(param, 1, 100, "Evolution level");
+      if (method === 23)
+        integer(param, 1, p.moveCount - 1, "Evolution move");
       if (method === 7)
         integer(param, 1, p.itemCount - 1, "Evolution item");
       if (method === 1 && param !== 0)
