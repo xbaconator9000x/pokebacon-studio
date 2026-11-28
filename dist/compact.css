@@ -35,4 +35,11 @@ dialog .smart-actions button,dialog .smart-panel-actions button{min-height:38px;
 .story-more-list{position:absolute;right:0;z-index:20;min-width:210px;display:flex;flex-direction:column;gap:4px;padding:8px;background:#fff;border:1px solid #bacd94;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .story-header .story-more-list{top:100%}.story-footer .story-more-list{bottom:100%}
 .story-more-list button{width:100%;text-align:left;min-height:40px!important;font-size:13px!important}
+.workspace-choices{gap:5px!important}.workspace-choices>button{min-height:52px!important;padding:6px 12px!important}
+.workspace-choices small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.smart-actions button{flex:1 1 auto}
+.studio-tabs{flex-wrap:wrap!important;overflow:visible!important;gap:5px!important;padding-bottom:4px!important}
+.studio-tabs button{flex:1 1 auto!important;min-height:34px!important;padding:2px 10px!important;font-size:12px!important;border-radius:17px}
+#authorContent .map-tool-grid{display:none!important}
+.studio-metrics{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:6px!important}.studio-metrics span{padding:6px!important;font-size:10px}.studio-metrics b{font-size:18px}
 }
