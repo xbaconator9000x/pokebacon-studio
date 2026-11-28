@@ -1,0 +1,45 @@
+/* Phone-first compact layer: smaller chrome, icon-only secondary buttons. Loaded last. */
+@media(max-width:700px){
+.topbar{height:44px;min-height:44px;padding-top:env(safe-area-inset-top);gap:6px}
+.topbar .brand>span:last-child{display:none}
+.topbar .workspace-button{min-height:34px;padding:2px 8px;font-size:12px}
+.topbar #exportButton{min-height:34px;min-width:34px;padding:0 8px}.topbar #exportButton span{display:none}
+.topbar #menuButton{min-height:34px;min-width:34px}
+.topbar [data-install-link]{font-size:0;text-decoration:none;min-width:34px;min-height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,.14);color:#fff}
+.topbar [data-install-link]::before{content:"⤓";font-size:18px}
+.mapbar{height:38px;min-height:38px;padding:2px 10px}.mapbar button{min-height:32px;font-size:12px;padding:2px 8px}
+.toolrow{height:48px;min-height:48px;padding:2px 6px}.tools button{min-height:42px;font-size:10px;padding:2px}.history button{min-height:38px}
+.tool-subtools{padding:4px 10px}.tool-subtools button{min-height:32px!important;height:32px;font-size:12px;padding:2px 12px}
+.main .contextbar{min-height:26px;height:28px;padding:2px 10px}.main .contextbar button{min-height:24px!important;height:24px;font-size:11px;padding:1px 8px}
+.statusbar{min-height:20px}.mobile-dock button{min-height:50px}
+.mapbar .new-map-button span,.mapbar .rom-button span,.mapbar .reference-button span{display:none}
+.mapbar .new-map-button,.mapbar .rom-button,.mapbar .reference-button{min-width:38px;padding:0 8px}
+.mapbar .map-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.statusbar #gestureHint{display:none}
+.main .contextbar #toolHint{display:none}.main .contextbar{justify-content:space-between}
+.game-tabs{flex-wrap:wrap!important;overflow:visible;gap:5px;padding:2px 0 6px!important}
+.game-tabs button{flex:1 1 auto!important;min-height:34px!important;padding:2px 10px;font-size:12px;border-radius:17px}
+dialog .world-row{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;padding:8px 10px!important;margin:6px 0}
+dialog .world-row>span{flex:1;min-width:0}dialog .world-row>span b{font-size:15px}
+dialog .world-row>button{flex:0 0 auto;width:auto!important;min-width:56px;min-height:36px!important;padding:2px 12px}
+dialog .smart-actions button,dialog .smart-panel-actions button{min-height:38px;font-size:13px;padding:2px 12px}
+#storyHost .story-header,.story-header{display:flex!important;flex-wrap:wrap!important;gap:5px;padding:6px 10px!important;align-items:center}
+.story-header b{flex:1 1 100%;order:-1}.story-header button{flex:1 1 auto;min-height:32px!important;font-size:12px;padding:2px 8px}.story-header b{font-size:15px}
+.native-story-controls{display:grid!important;grid-template-columns:1fr 1fr;gap:6px 8px!important;padding:6px 10px!important}
+.native-story-controls label{font-size:11px;margin:0}.native-story-controls select,.native-story-controls input{min-height:36px!important;font-size:13px;padding:2px 8px}
+.native-story-controls #nativeStoryCounts{grid-column:1/-1;font-size:11px}
+.story-footer{display:flex!important;flex-wrap:wrap!important;gap:5px;padding:5px 10px!important}
+.story-footer button{flex:1 1 auto;min-height:32px!important;font-size:11px;padding:2px 8px}
+.story-more{position:relative;flex:0 0 auto}.story-footer .story-more{margin-left:auto}.story-more>summary{list-style:none;min-height:32px;display:inline-flex;align-items:center;padding:2px 12px;border:1px solid #c9d6b2;border-radius:10px;background:#fff;font-size:12px;font-weight:700;cursor:pointer}
+.story-more>summary::-webkit-details-marker{display:none}
+.story-more-list{position:absolute;right:0;z-index:20;min-width:210px;display:flex;flex-direction:column;gap:4px;padding:8px;background:#fff;border:1px solid #bacd94;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.story-header .story-more-list{top:100%}.story-footer .story-more-list{bottom:100%}
+.story-more-list button{width:100%;text-align:left;min-height:40px!important;font-size:13px!important}
+.workspace-choices{gap:5px!important}.workspace-choices>button{min-height:52px!important;padding:6px 12px!important}
+.workspace-choices small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.smart-actions button{flex:1 1 auto}
+.studio-tabs{flex-wrap:wrap!important;overflow:visible!important;gap:5px!important;padding-bottom:4px!important}
+.studio-tabs button{flex:1 1 auto!important;min-height:34px!important;padding:2px 10px!important;font-size:12px!important;border-radius:17px}
+#authorContent .map-tool-grid{display:none!important}
+.studio-metrics{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:6px!important}.studio-metrics span{padding:6px!important;font-size:10px}.studio-metrics b{font-size:18px}
+}

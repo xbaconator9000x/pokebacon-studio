@@ -33,12 +33,13 @@
 </defs></svg>
 <div id="app">
   <header class="topbar">
+    <h1 class="sr-only">PokéBacon Studio</h1>
     <a class="brand" href="./" aria-label="PokéBacon Studio 4.72.8"><span class="brand-mark"><svg><use href="#i-maps"/></svg></span><span>POKÉBACON<small>STUDIO <span>4.72.8</span></small></span></a>
-    <button id="workspaceButton" class="workspace-button" aria-label="Switch workspace">Map editor ▾</button>
+    <button id="workspaceButton" class="workspace-button" aria-label="Map editor, switch workspace">Map editor ▾</button>
     <button id="projectTitle" class="project-title" title="Project settings">Loading workshop…</button>
     <span id="saveState" class="save-state" role="status">Opening</span>
     <a href="install.html" data-install-link class="compact" aria-label="Install PokéBacon Studio">Install</a>
-    <button id="exportButton" class="primary compact"><svg><use href="#i-export"/></svg><span>Export</span></button>
+    <button id="exportButton" class="primary compact" aria-label="Export"><svg><use href="#i-export"/></svg><span>Export</span></button>
     <button id="menuButton" class="icon-button" aria-label="Project menu"><svg><use href="#i-menu"/></svg></button>
   </header>
   <div class="workbench">
@@ -76,7 +77,7 @@
 <input type="file" id="romInput" accept=".gba,application/octet-stream" hidden>
 <div id="toast" role="status" aria-live="polite"></div>
 <script type="module" src="app.js"></script><script type="module" src="version-ui.js"></script>
-<link rel="stylesheet" href="sprite-mobile.css">
+<link rel="stylesheet" href="sprite-mobile.css"><link rel="stylesheet" href="compact.css">
 <script type="module" src="sprite-mobile.js"></script>
 <script src="install.js" defer></script>
 </body></html>
